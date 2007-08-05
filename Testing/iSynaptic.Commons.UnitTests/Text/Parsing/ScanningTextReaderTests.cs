@@ -5,9 +5,9 @@ using System.Text;
 
 using MbUnit.Framework;
 
-using iSynaptic.Commons.Text;
+using iSynaptic.Commons.Text.Parsing;
 
-namespace iSynaptic.Commons.UnitTests.Text
+namespace iSynaptic.Commons.UnitTests.Text.Parsing
 {
     [TestFixture]
     public class ScanningTextReaderTests

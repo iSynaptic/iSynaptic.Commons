@@ -43,7 +43,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Text\ScanningTextReaderTests.cs" />
+    <Compile Include="Text\Parsing\ScanningTextReaderTests.cs" />
+    <Compile Include="Text\Parsing\SimpleScannerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Application\iSynaptic.Commons\iSynaptic.Commons.csproj">

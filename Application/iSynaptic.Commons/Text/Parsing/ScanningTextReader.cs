@@ -3,12 +3,17 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 
-namespace iSynaptic.Commons.Text
+namespace iSynaptic.Commons.Text.Parsing
 {
     public class ScanningTextReader : TextReader
     {
         private TextReader _InnerReader = null;
         private List<char> _LookAheadList = null;
+        private int _LastCharacterRead = -1;
+
+        private int _Position = -1;
+        private int _Column = 0;
+        private int _Line = 1;
 
         public ScanningTextReader(TextReader innerReader)
         {
@@ -16,6 +21,26 @@ namespace iSynaptic.Commons.Text
                 throw new ArgumentNullException("innerReader");
 
             _InnerReader = innerReader;
+        }
+
+        public int LastCharacterRead
+        {
+            get { return _LastCharacterRead; }
+        }
+
+        public int Position
+        {
+            get { return _Position; }
+        }
+
+        public int Column
+        {
+            get { return _Column; }
+        }
+
+        public int Line
+        {
+            get { return _Line; }
         }
 
         protected List<char> LookAheadList
@@ -58,13 +83,26 @@ namespace iSynaptic.Commons.Text
 
         public override int Read()
         {
+            bool lastCharacterWasNewline = (_LastCharacterRead == '\n');
+
             if (LookAheadList.Count <= 0)
-                return _InnerReader.Read();
+                _LastCharacterRead = _InnerReader.Read();
+            else
+            {
+                _LastCharacterRead = LookAheadList[0];
+                LookAheadList.RemoveAt(0);
+            }
 
-            int returnValue = LookAheadList[0];
-            LookAheadList.RemoveAt(0);
+            if (lastCharacterWasNewline)
+            {
+                _Column = 1;
+                _Line++;
+            }
+            else
+                _Column++;
 
-            return returnValue;
+            _Position++;
+            return _LastCharacterRead;
         }
     }
 }
