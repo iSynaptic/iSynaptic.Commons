@@ -13,7 +13,7 @@ namespace iSynaptic.Commons.UnitTests.Text.Parsing
     public class ScanningTextReaderTests
     {
         [Test]
-        [ExpectedArgumentNullException("innerReader")]
+        [ExpectedArgumentNullException]
         public void InnerReaderRequired()
         {
             ScanningTextReader scanningReader = new ScanningTextReader(null);
