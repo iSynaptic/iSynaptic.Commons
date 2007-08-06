@@ -58,7 +58,7 @@
 		<NCover  
 			ToolPath="$(NCoverPath)"
 			CommandLineExe="$(MBUnitPath)\MbUnit.Cons.exe"
-			CommandLineArgs="@(TestAssemblies, ' ') /report-type:Xml /report-name-format:UnitTestResults /report-folder:$(ArtifactsOutputPath)"
+			CommandLineArgs="@(TestAssemblies, ' ') /report-type:Xml /report-name-format:UnitTestResults /report-folder:&quot;$(ArtifactsOutputPath)&quot;"
 			CoverageFile="$(ArtifactsOutputPath)\CodeCoverage.xml"
 			LogFile="$(ArtifactsOutputPath)\CodeCoverage.log" 
 			WorkingDirectory="$(BinariesOutputPath)"
