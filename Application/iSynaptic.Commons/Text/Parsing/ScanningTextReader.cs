@@ -93,6 +93,14 @@ namespace iSynaptic.Commons.Text.Parsing
                 LookAheadList.RemoveAt(0);
             }
 
+            if (_LastCharacterRead == -1)
+            {
+                _Column = -1;
+                _Line = -1;
+                _Position = -1;
+                return -1;
+            }
+
             if (lastCharacterWasNewline)
             {
                 _Column = 1;

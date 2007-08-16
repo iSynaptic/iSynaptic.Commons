@@ -20,6 +20,32 @@ namespace iSynaptic.Commons.UnitTests.Text.Parsing
         }
 
         [Test]
+        public void ValidatePosition()
+        {
+            StringReader reader = new StringReader("Test");
+            ScanningTextReader scanningReader = new ScanningTextReader(reader);
+
+            Assert.AreEqual(-1, scanningReader.Position);
+            
+            scanningReader.Read();
+            Assert.AreEqual(0, scanningReader.Position);
+
+            scanningReader.Read();
+            scanningReader.Read();
+            Assert.AreEqual(2, scanningReader.Position);
+
+            scanningReader.Read();
+            Assert.AreEqual(3, scanningReader.Position);
+
+            scanningReader.Read();
+            Assert.AreEqual(-1, scanningReader.Position);
+
+            scanningReader.Read();
+            scanningReader.Read();
+            Assert.AreEqual(-1, scanningReader.Position);
+        }
+
+        [Test]
         public void ReadNormally()
         {
             StringReader reader = new StringReader("Test");
