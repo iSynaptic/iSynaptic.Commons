@@ -38,6 +38,7 @@
     <Compile Include="AOP\NestedScope.cs" />
     <Compile Include="AOP\Scope.cs" />
     <Compile Include="AOP\ScopeBounds.cs" />
+    <Compile Include="Collections\ReadOnlyDictionary.cs" />
     <Compile Include="DataEventArgs.cs" />
     <Compile Include="Func.cs" />
     <Compile Include="Proc.cs" />
@@ -48,6 +49,7 @@
     <Compile Include="Text\Parsing\SimpleScanner.cs" />
     <Compile Include="Text\Parsing\Token.cs" />
     <Compile Include="Text\Parsing\TokenKind.cs" />
+    <Compile Include="Xml\ProcessingInstruction.cs" />
     <Compile Include="Xml\ProcessingInstructionParser.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
