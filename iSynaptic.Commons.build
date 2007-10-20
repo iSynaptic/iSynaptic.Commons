@@ -4,6 +4,7 @@
   
   <PropertyGroup>
     <SolutionName>iSynaptic.Commons</SolutionName>
+    <SatisfactoryCodeCoverage>40</SatisfactoryCodeCoverage> <!-- This should be removed -->
     <TestingFramework>MbUnit</TestingFramework>
   </PropertyGroup>
 

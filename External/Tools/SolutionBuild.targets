@@ -22,10 +22,10 @@
 
     <NUnitPath>$(ExternalToolsPath)\NUnit</NUnitPath>
     <MbUnitPath>$(ExternalToolsPath)\MbUnit</MbUnitPath>
-    
+
     <TestingFramework>NUnit</TestingFramework>
     <TestingOutputFileName>UnitTestResults</TestingOutputFileName>
-    
+
     <NCoverPath>$(ExternalToolsPath)\NCover</NCoverPath>
     <NCoverExplorerPath>$(ExternalToolsPath)\NCoverExplorer</NCoverExplorerPath>
   </PropertyGroup>
@@ -35,7 +35,6 @@
     <ReportingFile Include="CodeCoverage.log" />
     <ReportingFile Include="CodeCoverage.xml" />
     <ReportingFile Include="CodeCoverageSummary.xml" />
-    <ReportingFile Include="$(TestingOutputFileName)" />
     <ReportingFile Include="CoverageReport.xsl" />
   </ItemGroup>
 
@@ -72,9 +71,9 @@
 
   <Target Name="UnitTest" DependsOnTargets="Build">
     <Error Text="Unrecognized Testing Framework." Condition="$(TestingFramework) != 'NUnit' And $(TestingFramework) != 'MbUnit'" />
-    
+
     <NCover
-      Condition="$(TestingFramework) == 'NUnit'" 
+      Condition="$(TestingFramework) == 'NUnit'"
 			ToolPath="$(NCoverPath)"
 			CommandLineExe="$(NUnitPath)\nunit-console.exe"
 			CommandLineArgs="@(TestingAssembly -> '&quot;$(BinariesPath)\%(Filename)%(Extension)&quot;') /xml=$(RootBuildPath)\$(Configuration)\$(TestingOutputFileName).xml /framework=v2.0.50727"
@@ -92,6 +91,10 @@
 			LogFile="$(RootBuildPath)\$(Configuration)\CodeCoverage.log"
 			WorkingDirectory="$(BinariesPath)"
 			Assemblies="@(ApplicationAssembly)" />
+
+    <CreateItem Include="$(TestingOutputFileName).xml">
+      <Output TaskParameter="Include" ItemName="ReportingFile" />
+    </CreateItem>
   </Target>
 
   <Target Name="ValidateCodeCoverage" DependsOnTargets="UnitTest" >
