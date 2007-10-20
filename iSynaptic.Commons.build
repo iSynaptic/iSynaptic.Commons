@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Project DefaultTargets="BuildComplete" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="External\Tools\SolutionBuild.targets" />
+  
+  <PropertyGroup>
+    <SolutionName>iSynaptic.Commons</SolutionName>
+    <TestingFramework>MbUnit</TestingFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ApplicationProject Include="Application\$(SolutionName)\$(SolutionName).csproj" />
+
+    <TestingProject Include="Testing\$(SolutionName).UnitTests\$(SolutionName).UnitTests.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!--ExcludeCoverageReporting Include="Assembly|Namespace|Class">
+			<FilterExpression>{Regular Expression}</FilterExpression>
+		</ExcludeCoverageReporting-->
+  </ItemGroup>
+</Project>

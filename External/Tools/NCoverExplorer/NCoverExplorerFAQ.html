@@ -75,8 +75,8 @@
         </div>
         <a class="question" onclick="return Toggle('answer2')">2. What versions of NCover does it work with?</a><br/>
         <div id="answer2" style="display:none">
-			<P class="answer">NCoverExplorer has been tested with both NCover 1.3.3 and up to the latest NCover 1.5.5. It will NOT
-				work with NCover 1.4.6.	Note that NCover 1.5.5 only works with .NET 2.0 and requires at least NCoverExplorer 1.3.5
+			<P class="answer">NCoverExplorer has been tested with both NCover 1.3.3 and up to the latest NCover 1.5.7. It will NOT
+				work with NCover 1.4.6.	Note that NCover 1.5.x only works with .NET 2.0 and requires at least NCoverExplorer 1.3.5
 				and/or a TestDriven.Net build > 2.0.1786 due to a limitation in NCover or else you will get duplicate nodes in your 
 				coverage results.
 			</P>
@@ -210,7 +210,7 @@
         <a class="question" onclick="return Toggle('answer11')">11. Where can I download the latest version?</a><br/>
         <div id="answer11" style="display:none">
 			<P class="answer">To download NCoverExplorer <b>without</b> TestDriven.Net, you can find it
-				<A href="http://www.kiwidude.com/dotnet/NCoverExplorer.zip">here</A>.
+				<A href="http://www.kiwidude.com/dotnet/DownloadPage.html">here</A>.
 			</P>
 			<P class="answer">Download it as part of the install with TestDriven.Net from <A href="http://www.testdriven.net/">here</A>.
 			</P>
@@ -221,13 +221,15 @@
 				<PRE class="usage">
 					<SPAN class="treeviewBlue">CTRL+A</SPAN>  - Collapse all nodes recursively.
 					<SPAN class="treeviewBlue">CTRL+E</SPAN>  - Edit in VS.Net at the current caret position.
+					<SPAN class="treeviewBlue">CTRL+F</SPAN>  - Display the Find Class dialog.
 					<SPAN class="treeviewBlue">CTRL+L</SPAN>  - Expand all nodes recursively.
 					<SPAN class="treeviewBlue">CTRL+N</SPAN>  - Run NCover (via configuration dialog).
 					<SPAN class="treeviewBlue">CTRL+O</SPAN>  - Open coverage xml file.
+					<SPAN class="treeviewBlue">CTRL+P</SPAN>  - Print current source code class file.
 					<SPAN class="treeviewBlue">CTRL+Q</SPAN>  - Expand all covered child nodes.
 					<SPAN class="treeviewBlue">CTRL+S</SPAN>  - Save coverage xml file as displayed (without excluded nodes).
 					<SPAN class="treeviewBlue">F2</SPAN>      - Display the options dialog.
-					<SPAN class="treeviewBlue">F3</SPAN>      - Display the statistics summary dialog.
+					<SPAN class="treeviewBlue">F4</SPAN>      - Display the statistics summary dialog.
 					<SPAN class="treeviewBlue">F5</SPAN>      - Reload the current source code file.
 					<SPAN class="treeviewBlue">F6</SPAN>      - Display the reports dialog.
 					<SPAN class="treeviewBlue">DEL</SPAN>     - Exclude node and children from coverage tree and recalculate coverage.
@@ -266,13 +268,13 @@
 		</div>
         <a class="question" onclick="return Toggle('answer13')">13. Where are my personal settings stored?</a><br/>
         <div id="answer13" style="display:none">
-			<P class="answer">C:\Documents and Settings\[User Name]\Application Data\KiwiDevelopment\NCoverExplorer\NCoverExplorer.config
+			<P class="answer">C:\Documents and Settings\[User Name]\Application Data\KiwiNova\NCoverExplorer\NCoverExplorer.config
 			</P>
 		</div>
         <a class="question" onclick="return Toggle('answer14')">14. Where can I download the custom NAnt/MSBuild tasks from?</a><br/>
         <div id="answer14" style="display:none">
 			<P class="answer">A zip file containing the task source code, compiled assemblies and examples can be found
-				<A href="http://www.kiwidude.com/dotnet/NCoverExplorer.Extras.zip">here</A>
+				<A href="http://www.kiwidude.com/dotnet/DownloadPage.html">here</A>
 			</P>
 		</div>
         <a class="question" onclick="return Toggle('answer15')">15. I get an "Illegal characters in path" exception - why?</a><br/>
@@ -296,6 +298,6 @@
 			The case sensitivity constraint is fixed in NCoverExplorer 1.3.5.
 			</P>
 		</div>
-		<P class="subtitle">---------------------------------<BR/>FAQ last updated Sep 3rd 2006.</P>
+		<P class="subtitle">---------------------------------<BR/>FAQ last updated Jul 21st 2007.</P>
     </body>
 </html>

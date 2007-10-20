@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Project DefaultTargets="BuildComplete" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <SatisfactoryCodeCoverage>95</SatisfactoryCodeCoverage>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+
+    <Configuration>Release</Configuration>
+
+    <RootBuildPath>$(MSBuildProjectDirectory)\Build</RootBuildPath>
+    <BinariesPath>$(RootBuildPath)\$(Configuration)\Binaries</BinariesPath>
+    <MetadataPath>$(RootBuildPath)\$(Configuration)\Metadata</MetadataPath>
+    <ReportingPath>$(RootBuildPath)\$(Configuration)\Reporting</ReportingPath>
+
+    <ExternalPath>$(MSBuildProjectDirectory)\External</ExternalPath>
+    <ExternalReferencesPath>$(ExternalPath)\References</ExternalReferencesPath>
+    <ExternalToolsPath>$(ExternalPath)\Tools</ExternalToolsPath>
+
+    <MSBuildCommunityTasksPath>$(ExternalToolsPath)\MSBuildCommunityTasks</MSBuildCommunityTasksPath>
+    <NCoverExplorerExtras>$(ExternalToolsPath)\NCoverExplorerExtras</NCoverExplorerExtras>
+
+    <NUnitPath>$(ExternalToolsPath)\NUnit</NUnitPath>
+    <MbUnitPath>$(ExternalToolsPath)\MbUnit</MbUnitPath>
+    
+    <TestingFramework>NUnit</TestingFramework>
+    <TestingOutputFileName>UnitTestResults</TestingOutputFileName>
+    
+    <NCoverPath>$(ExternalToolsPath)\NCover</NCoverPath>
+    <NCoverExplorerPath>$(ExternalToolsPath)\NCoverExplorer</NCoverExplorerPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ReportingFile Include="CodeCoverageSummary.html" />
+    <ReportingFile Include="CodeCoverage.log" />
+    <ReportingFile Include="CodeCoverage.xml" />
+    <ReportingFile Include="CodeCoverageSummary.xml" />
+    <ReportingFile Include="$(TestingOutputFileName)" />
+    <ReportingFile Include="CoverageReport.xsl" />
+  </ItemGroup>
+
+  <Import Project="$(ExternalToolsPath)\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets" />
+  <Import Project="$(NCoverExplorerExtras)\NCoverExplorer.MSBuildTasks.targets" />
+
+  <Target Name="Clean">
+    <Delete Files="$(RootBuildPath)\**" ContinueOnError="false" />
+
+    <RemoveDir Directories="$(RootBuildPath)" ContinueOnError="false" />
+    <RemoveDir Directories="%(ApplicationProject.RelativeDir)bin;%(ApplicationProject.RelativeDir)obj" ContinueOnError="false" />
+    <RemoveDir Directories="%(TestingProject.RelativeDir)bin;%(TestingProject.RelativeDir)obj" ContinueOnError="false" />
+  </Target>
+
+  <Target Name="Build" DependsOnTargets="Clean">
+    <MakeDir Directories="$(RootBuildPath);$(BinariesPath)" />
+
+    <MSBuild
+				Projects="@(ApplicationProject)"
+				Properties="OutputPath=$(BinariesPath);Configuration=$(Configuration);TreatWarningsAsErrors=$(TreatWarningsAsErrors);DebugSymbols=$(DebugSymbols);DebugType=$(DebugType)"
+        Targets="Build">
+
+      <Output ItemName="ApplicationAssembly" TaskParameter="TargetOutputs" />
+    </MSBuild>
+
+    <MSBuild
+        Projects="@(TestingProject)"
+        Properties="OutputPath=$(BinariesPath);Configuration=$(Configuration);TreatWarningsAsErrors=$(TreatWarningsAsErrors);DebugSymbols=$(DebugSymbols);DebugType=$(DebugType)"
+        Targets="Build">
+
+      <Output ItemName="TestingAssembly" TaskParameter="TargetOutputs" />
+    </MSBuild>
+  </Target>
+
+  <Target Name="UnitTest" DependsOnTargets="Build">
+    <Error Text="Unrecognized Testing Framework." Condition="$(TestingFramework) != 'NUnit' And $(TestingFramework) != 'MbUnit'" />
+    
+    <NCover
+      Condition="$(TestingFramework) == 'NUnit'" 
+			ToolPath="$(NCoverPath)"
+			CommandLineExe="$(NUnitPath)\nunit-console.exe"
+			CommandLineArgs="@(TestingAssembly -> '&quot;$(BinariesPath)\%(Filename)%(Extension)&quot;') /xml=$(RootBuildPath)\$(Configuration)\$(TestingOutputFileName).xml /framework=v2.0.50727"
+			CoverageFile="$(RootBuildPath)\$(Configuration)\CodeCoverage.xml"
+			LogFile="$(RootBuildPath)\$(Configuration)\CodeCoverage.log"
+			WorkingDirectory="$(BinariesPath)"
+			Assemblies="@(ApplicationAssembly)" />
+
+    <NCover
+      Condition="$(TestingFramework) == 'MbUnit'"
+			ToolPath="$(NCoverPath)"
+			CommandLineExe="$(MBUnitPath)\MbUnit.Cons.exe"
+			CommandLineArgs="@(TestingAssembly -> '&quot;$(BinariesPath)\%(Filename)%(Extension)&quot;', ' ') /report-type:Xml /report-name-format:$(TestingOutputFileName) /report-folder:&quot;$(RootBuildPath)\$(Configuration)&quot;"
+			CoverageFile="$(RootBuildPath)\$(Configuration)\CodeCoverage.xml"
+			LogFile="$(RootBuildPath)\$(Configuration)\CodeCoverage.log"
+			WorkingDirectory="$(BinariesPath)"
+			Assemblies="@(ApplicationAssembly)" />
+  </Target>
+
+  <Target Name="ValidateCodeCoverage" DependsOnTargets="UnitTest" >
+    <NCoverExplorer
+      ToolPath="$(NCoverExplorerPath)"
+      ProjectName="$(SolutionName)"
+      ReportType="4"
+      OutputDir="$(RootBuildPath)\$(Configuration)"
+      XmlReportName="CodeCoverageSummary.xml"
+      HtmlReportName="CodeCoverageSummary.html"
+      ShowExcluded="true"
+      SatisfactoryCoverage="$(SatisfactoryCodeCoverage)"
+      MinimumCoverage="$(SatisfactoryCodeCoverage)"
+      FailCombinedMinimum="true"
+      CoverageFiles="$(RootBuildPath)\$(Configuration)\CodeCoverage.xml"
+      Exclusions="@(ExcludeCoverageReporting -> '&lt;CoverageExclusion&gt;&lt;ExclusionType&gt;%(Identity)&lt;/ExclusionType&gt;&lt;Pattern&gt;%(FilterExpression)&lt;/Pattern&gt;&lt;IsRegex&gt;true&lt;/IsRegex&gt;&lt;/CoverageExclusion&gt;', '')" />
+  </Target>
+
+  <Target Name="LayoutOutputFiles">
+    <CreateItem Include="$(BinariesPath)\*.pdb;$(BinariesPath)\*.xml">
+      <Output TaskParameter="Include" ItemName ="MetadataFile" />
+    </CreateItem>
+
+    <MakeDir Directories="$(MetadataPath);$(ReportingPath)" />
+
+    <Move SourceFiles="@(MetadataFile)" DestinationFolder="$(MetadataPath)" />
+    <Move SourceFiles="@(ReportingFile -> '$(RootBuildPath)\$(Configuration)\%(Identity)')" DestinationFolder="$(ReportingPath)" />
+  </Target>
+
+  <Target Name="CorePackage" />
+
+  <Target Name="Package" DependsOnTargets="@(PrePackageTargets);CorePackage;@(ChildPackageTargets);@(PostPackageTargets)" />
+
+  <Target Name="BuildLocal" DependsOnTargets="ValidateCodeCoverage;LayoutOutputFiles" />
+  <Target Name="BuildComplete" DependsOnTargets="BuildLocal;Package" />
+</Project>

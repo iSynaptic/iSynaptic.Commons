@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iSynaptic.Commons", "Applic
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{18EC14AD-C78C-4686-BD2F-4212DC9920DA}"
 	ProjectSection(SolutionItems) = preProject
-		master.build = master.build
+		iSynaptic.Commons.build = iSynaptic.Commons.build
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Testing", "Testing", "{E397EEB0-2166-4C1E-A169-F09076EF8D5C}"
