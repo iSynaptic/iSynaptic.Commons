@@ -11,19 +11,15 @@ namespace iSynaptic.Commons
         [ThreadStatic]
         private static T _Current = null;
 
-        protected Scope() : this(true)
+        protected Scope()
         {
-        }
-
-        internal Scope(bool checkNested)
-        {
-            if (checkNested && GetCurrent() != null)
+            if (GetCurrent() != null)
                 ThrowNestedScopeNotAllowed();
 
-            SetCurrent(this as T);
+            _Current = this as T;
         }
 
-        protected void ThrowNestedScopeNotAllowed()
+        private void ThrowNestedScopeNotAllowed()
         {
             Exception ex = GetNestedScopeException();
             if (ex != null)
@@ -39,19 +35,16 @@ namespace iSynaptic.Commons
 
         public void Dispose()
         {
-            if(_Disposed != true)
+            if (_Disposed != true)
+            {
                 Dispose(true);
+                _Disposed = true;
+            }
         }
 
         protected virtual void Dispose(bool disposing)
         {
-            SetCurrent(null);
-            _Disposed = true;
-        }
-
-        protected static void SetCurrent(T current)
-        {
-            _Current = current;
+            _Current = null;
         }
 
         protected static T GetCurrent()
@@ -60,6 +53,11 @@ namespace iSynaptic.Commons
                 return _Current;
 
             return null;
+        }
+
+        protected bool Disposed
+        {
+            get { return _Disposed; }
         }
     }
 }

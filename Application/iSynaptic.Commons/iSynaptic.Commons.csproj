@@ -35,9 +35,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AOP\IoC.cs" />
-    <Compile Include="AOP\NestedScope.cs" />
+    <Compile Include="AOP\NestableScope.cs" />
     <Compile Include="AOP\Scope.cs" />
     <Compile Include="AOP\ScopeBounds.cs" />
+    <Compile Include="AOP\UnitOfWork.cs" />
     <Compile Include="Collections\ReadOnlyDictionary.cs" />
     <Compile Include="DataEventArgs.cs" />
     <Compile Include="Func.cs" />
