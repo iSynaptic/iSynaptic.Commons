@@ -10,7 +10,7 @@ namespace iSynaptic.Commons.Text.Parsing
         public static IEnumerable<Token<TokenKind>> ScanText(string input)
         {
             if (string.IsNullOrEmpty(input))
-                throw new ArgumentOutOfRangeException("intput");
+                throw new ArgumentOutOfRangeException("input");
 
             return ScanText(new StringReader(input));
         }

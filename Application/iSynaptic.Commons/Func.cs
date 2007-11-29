@@ -2,16 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace iSynaptic.Commons
+namespace System
 {
-    public delegate TRet Func<TRet>();
-    public delegate TRet Func<TRet, A0>(A0 a0);
-    public delegate TRet Func<TRet, A0, A1>(A0 a0, A1 a1);
-    public delegate TRet Func<TRet, A0, A1, A2>(A0 a0, A1 a1, A2 a2);
-    public delegate TRet Func<TRet, A0, A1, A2, A3>(A0 a0, A1 a1, A2 a2, A3 a3);
-    public delegate TRet Func<TRet, A0, A1, A2, A3, A4>(A0 a0, A1 a1, A2 a2, A3 a3, A4 a4);
-    public delegate TRet Func<TRet, A0, A1, A2, A3, A4, A5>(A0 a0, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5);
-    public delegate TRet Func<TRet, A0, A1, A2, A3, A4, A5, A6>(A0 a0, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6);
-    public delegate TRet Func<TRet, A0, A1, A2, A3, A4, A5, A6, A7>(A0 a0, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7);
-    public delegate TRet Func<TRet, A0, A1, A2, A3, A4, A5, A6, A7, A8>(A0 a0, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8);
+    public delegate TResult Func<TResult>();
+    public delegate TResult Func<T, TResult>(T arg);
+    public delegate TResult Func<T1, T2, TResult>(T1 arg1, T2 arg2);
+    public delegate TResult Func<T1, T2, T3, TResult>(T1 arg1, T2 arg2, T3 arg3);
+    public delegate TResult Func<T1, T2, T3, T4, TResult>(T1 arg1, T2 arg2, T3 arg3, T4 arg4);
 }

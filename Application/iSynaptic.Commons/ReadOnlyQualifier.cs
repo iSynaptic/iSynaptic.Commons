@@ -6,15 +6,15 @@ namespace iSynaptic.Commons
 {
     public partial class ReadOnlyQualifier<Q, T>
     {
-        private Func<T, Q> _GetHandler = null;
+        private Func<Q, T> _GetHandler = null;
         private Func<Q[]> _GetKnownQualifiersHandler = null;
 
-        public ReadOnlyQualifier(Func<T, Q> getHandler)
+        public ReadOnlyQualifier(Func<Q, T> getHandler)
             : this(getHandler, null)
         {
         }
 
-        public ReadOnlyQualifier(Func<T, Q> getHandler, Func<Q[]> getKnownQualifiersHandler)
+        public ReadOnlyQualifier(Func<Q, T> getHandler, Func<Q[]> getKnownQualifiersHandler)
         {
             if (getHandler == null)
                 throw new ArgumentNullException("getHandler");

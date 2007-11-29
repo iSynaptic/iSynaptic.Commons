@@ -23,7 +23,7 @@
     <NUnitPath>$(ExternalToolsPath)\NUnit</NUnitPath>
     <MbUnitPath>$(ExternalToolsPath)\MbUnit</MbUnitPath>
 
-    <TestingFramework>NUnit</TestingFramework>
+    <TestingFramework Condition="$(TestingFramework) == ''">NUnit</TestingFramework>
     <TestingOutputFileName>UnitTestResults</TestingOutputFileName>
 
     <NCoverPath>$(ExternalToolsPath)\NCover</NCoverPath>

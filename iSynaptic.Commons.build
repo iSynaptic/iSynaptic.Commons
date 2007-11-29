@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Project DefaultTargets="BuildComplete" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="External\Tools\SolutionBuild.targets" />
-  
   <PropertyGroup>
     <SolutionName>iSynaptic.Commons</SolutionName>
-    <SatisfactoryCodeCoverage>40</SatisfactoryCodeCoverage> <!-- This should be removed -->
+    <SatisfactoryCodeCoverage>40</SatisfactoryCodeCoverage> <!-- This will be removed -->
     <TestingFramework>MbUnit</TestingFramework>
   </PropertyGroup>
 
+  <Import Project="External\Tools\SolutionBuild.targets" />
+  
   <ItemGroup>
     <ApplicationProject Include="Application\$(SolutionName)\$(SolutionName).csproj" />
+    <ApplicationProject Include="Application\$(SolutionName)\$(SolutionName).v3.5.csproj" />
 
     <TestingProject Include="Testing\$(SolutionName).UnitTests\$(SolutionName).UnitTests.csproj" />
+    <TestingProject Include="Testing\$(SolutionName).UnitTests\$(SolutionName).UnitTests.v3.5.csproj" />
   </ItemGroup>
 
   <ItemGroup>

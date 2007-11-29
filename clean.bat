@@ -1,2 +1,3 @@
 @ECHO OFF
-%SYSTEMROOT%\Microsoft.NET\Framework\v2.0.50727\msbuild.exe iSynaptic.Commons.build /t:Clean %*
+%SYSTEMROOT%\Microsoft.NET\Framework\v3.5\msbuild.exe iSynaptic.Commons.build /t:Clean /p:Configuration=Debug %*
+%SYSTEMROOT%\Microsoft.NET\Framework\v3.5\msbuild.exe iSynaptic.Commons.build /t:Clean /p:Configuration=Release %*

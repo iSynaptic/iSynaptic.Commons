@@ -6,16 +6,16 @@ namespace iSynaptic.Commons
 {
     public partial class ReadWriteQualifier<Q, T>
     {
-        private Func<T, Q> _GetHandler = null;
-        private Proc<Q, T> _SetHandler = null;
+        private Func<Q, T> _GetHandler = null;
+        private Action<Q, T> _SetHandler = null;
         private Func<Q[]> _GetKnownQualifiersHandler = null;
 
-        public ReadWriteQualifier(Func<T, Q> getHandler, Proc<Q, T> setHandler)
+        public ReadWriteQualifier(Func<Q, T> getHandler, Action<Q, T> setHandler)
             : this(getHandler, setHandler, null)
         {
         }
 
-        public ReadWriteQualifier(Func<T, Q> getHandler, Proc<Q, T> setHandler, Func<Q[]> getKnownQualifiersHandler)
+        public ReadWriteQualifier(Func<Q, T> getHandler, Action<Q, T> setHandler, Func<Q[]> getKnownQualifiersHandler)
         {
             if (getHandler == null)
                 throw new ArgumentNullException("getHandler");

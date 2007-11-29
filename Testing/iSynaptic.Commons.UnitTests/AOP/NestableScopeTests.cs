@@ -1,7 +1,6 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
-
 using MbUnit.Framework;
 
 namespace iSynaptic.Commons.UnitTests.AOP
@@ -10,13 +9,47 @@ namespace iSynaptic.Commons.UnitTests.AOP
     public class NestableScopeTests
     {
         [Test]
-        public void CreateNestedScope()
+        [ExpectedException(typeof(ApplicationException))]
+        public void NestingAppDomainWithinThread()
+        {
+            using (new StubNestableScope(ScopeBounds.Thread))
+            using (new StubNestableScope(ScopeBounds.AppDomain))
+            {
+
+            }
+        }
+
+        [Test]
+        public void CurrentRetrievesScope()
         {
             using (StubNestableScope scope = new StubNestableScope())
             {
-                Assert.IsNotNull(StubNestableScope.Current, "Current nestable scope not null.");
-                Assert.AreEqual(scope, StubNestableScope.Current, "Current nestable scope is incorrect.");
+                Assert.AreEqual(scope, StubNestableScope.Current);
             }
+        }
+
+        [Test]
+        public void CurrentRetreivesNestedScope()
+        {
+            using (StubNestableScope scope = new StubNestableScope())
+            using (StubNestableScope scope2 = new StubNestableScope())
+            {
+                Assert.AreEqual(scope2, StubNestableScope.Current);
+            }
+        }
+
+        [Test]
+        public void ScopeAvailableInOtherMethods()
+        {
+            using (StubNestableScope scope = new StubNestableScope())
+            {
+                TestCurrentScope();
+            }
+        }
+
+        private void TestCurrentScope()
+        {
+            Assert.IsNotNull(StubNestableScope.Current);
         }
     }
 }
