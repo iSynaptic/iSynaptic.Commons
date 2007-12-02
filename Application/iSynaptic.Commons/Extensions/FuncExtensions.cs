@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace iSynaptic.Commons
+namespace iSynaptic.Commons.Extensions
 {
     public static class FuncExtensions
     {

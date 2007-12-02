@@ -2,23 +2,42 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using iSynaptic.Commons.Extensions;
+
 namespace iSynaptic.Commons
 {
     public abstract class Scope<T> : IDisposable where T : Scope<T>
     {
         private bool _Disposed = false;
+        private ScopeBounds _Bounds = ScopeBounds.Thread;
+
+        private static T _CurrentAppDomainScope = null;
 
         [ThreadStatic]
-        private static T _CurrentScope = null;
+        private static T _CurrentThreadScope = null;
 
-        protected Scope()
+        protected Scope() : this(ScopeBounds.Thread)
         {
-            Initialize();
+        }
+
+        protected Scope(ScopeBounds bounds) : this(bounds, true)
+        {
+        }
+
+        internal Scope(ScopeBounds bounds, bool shouldInitialize)
+        {
+            if (bounds.IsDefined() != true)
+                throw new ArgumentOutOfRangeException("bounds");
+
+            _Bounds = bounds;
+
+            if (shouldInitialize)
+                Initialize();
         }
 
         protected virtual void Initialize()
         {
-            if (_CurrentScope != null)
+            if (GetCurrentScope() != null)
                 NestedScopesNotAllowed();
 
             SetCurrentScope(this as T);
@@ -29,33 +48,47 @@ namespace iSynaptic.Commons
             throw new ApplicationException("Nested scopes are not allowed.");
         }
 
-        protected static T GetCurrentScope()
+        public static T GetCurrentScope()
         {
-            return _CurrentScope;
+            if (_CurrentAppDomainScope != null)
+                return _CurrentAppDomainScope;
+            else
+                return _CurrentThreadScope;
         }
 
         protected void SetCurrentScope(T scope)
         {
-            _CurrentScope = scope;
+            if (scope.Bounds == ScopeBounds.AppDomain)
+                _CurrentAppDomainScope = scope;
+            else
+                _CurrentThreadScope = scope;
         }
 
         public void Dispose()
         {
             if (_Disposed != true)
             {
-                _CurrentScope = null;
+                Dispose(true);
                 _Disposed = true;
             }
         }
 
         protected virtual void Dispose(bool disposing)
         {
-            _CurrentScope = null;
+            if (Bounds == ScopeBounds.AppDomain && _CurrentAppDomainScope == this)
+                _CurrentAppDomainScope = null;
+            else if (Bounds == ScopeBounds.Thread && _CurrentThreadScope == this)
+                _CurrentThreadScope = null;
         }
 
         protected bool Disposed
         {
             get { return _Disposed; }
+        }
+
+        protected ScopeBounds Bounds
+        {
+            get { return _Bounds; }
         }
     }
 }

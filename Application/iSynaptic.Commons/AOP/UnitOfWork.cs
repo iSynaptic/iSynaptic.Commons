@@ -22,11 +22,16 @@ namespace iSynaptic.Commons.AOP
             Items.AddRange(items);
         }
 
+        public abstract void Complete();
+
         protected List<T> Items
         {
             get { return _Items ?? (_Items = new List<T>()); }
         }
 
-        public abstract void Complete();
+        public static UnitOfWork<T> Current
+        {
+            get { return GetCurrentScope(); }
+        }
     }
 }

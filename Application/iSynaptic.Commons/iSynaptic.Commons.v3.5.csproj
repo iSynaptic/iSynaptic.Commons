@@ -44,17 +44,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ActionExtensions.cs" />
     <Compile Include="AOP\IoC.cs" />
     <Compile Include="AOP\NestableScope.cs" />
     <Compile Include="AOP\Scope.cs" />
     <Compile Include="AOP\ScopeBounds.cs" />
     <Compile Include="Collections\ReadOnlyDictionary.cs" />
     <Compile Include="DataEventArgs.cs" />
+    <Compile Include="Extensions\ActionExtensions.cs" />
     <Compile Include="Extensions\EnumExtensions.cs" />
-    <Compile Include="FuncExtensions.cs" />
+    <Compile Include="Extensions\FuncExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ReadOnlyQualifier.cs" />
+    <Compile Include="ReadableQualifier.cs" />
     <Compile Include="ReadWriteQualifier.cs" />
     <Compile Include="Text\Parsing\ScanningTextReader.cs" />
     <Compile Include="Text\Parsing\SimpleScanner.cs" />

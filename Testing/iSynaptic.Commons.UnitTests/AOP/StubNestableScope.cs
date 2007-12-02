@@ -16,7 +16,7 @@ namespace iSynaptic.Commons.UnitTests.AOP
 
         public static StubNestableScope Current
         {
-            get { return NestableScope<StubNestableScope>.GetCurrent(); }
+            get { return NestableScope<StubNestableScope>.GetCurrentScope(); }
         }
     }
 }

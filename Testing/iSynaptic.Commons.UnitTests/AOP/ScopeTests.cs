@@ -11,10 +11,40 @@ namespace iSynaptic.Commons.UnitTests.AOP
     {
         [Test]
         [ExpectedException(typeof(ApplicationException))]
-        public void NestedScopesNotAllowed()
+        public void NestedAppDomainBoundScopesNotAllowed()
         {
-            using (new StubScope())
-            using (new StubScope())
+            using (new StubScope(ScopeBounds.AppDomain))
+            using (new StubScope(ScopeBounds.AppDomain))
+            {
+            }
+        }
+
+        [Test]
+        [ExpectedException(typeof(ApplicationException))]
+        public void NestedThreadBoundScopesNotAllowed()
+        {
+            using (new StubScope(ScopeBounds.Thread))
+            using (new StubScope(ScopeBounds.Thread))
+            {
+            }
+        }
+
+        [Test]
+        [ExpectedException(typeof(ApplicationException))]
+        public void NestedThreadBoundInAppDomainBoundScopeNotAllowed()
+        {
+            using (new StubScope(ScopeBounds.AppDomain))
+            using (new StubScope(ScopeBounds.Thread))
+            {
+            }
+        }
+
+        [Test]
+        [ExpectedException(typeof(ApplicationException))]
+        public void NestedAppDomainBoundInThreadBoundScopeNotAllowed()
+        {
+            using (new StubScope(ScopeBounds.Thread))
+            using (new StubScope(ScopeBounds.AppDomain))
             {
             }
         }
@@ -26,6 +56,48 @@ namespace iSynaptic.Commons.UnitTests.AOP
             {
                 Assert.AreEqual(scope, StubScope.Current);
             }
+        }
+
+        [Test]
+        public void ThreadBoundScopeNotAvailableOnAnotherThread()
+        {
+            bool isAvailable = true;
+
+            Action assertCurrentScopeIsNull = delegate()
+            {
+                isAvailable = StubScope.Current != null;
+            };
+
+            using (StubScope scope = new StubScope(ScopeBounds.Thread))
+            {
+                IAsyncResult result = assertCurrentScopeIsNull.BeginInvoke(null, null);
+
+                result.AsyncWaitHandle.WaitOne();
+                assertCurrentScopeIsNull.EndInvoke(result);
+            }
+
+            Assert.IsFalse(isAvailable);
+        }
+
+        [Test]
+        public void AppDomainBoundScopeIsAvailableOnAnotherThread()
+        {
+            bool isAvailable = false;
+
+            Action assertCurrentScopeIsNull = delegate()
+            {
+                isAvailable = StubScope.Current != null;
+            };
+
+            using (StubScope scope = new StubScope(ScopeBounds.AppDomain))
+            {
+                IAsyncResult result = assertCurrentScopeIsNull.BeginInvoke(null, null);
+
+                result.AsyncWaitHandle.WaitOne();
+                assertCurrentScopeIsNull.EndInvoke(result);
+            }
+
+            Assert.IsTrue(isAvailable);
         }
     }
 }

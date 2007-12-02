@@ -43,11 +43,53 @@ namespace iSynaptic.Commons.UnitTests.AOP
         {
             using (StubNestableScope scope = new StubNestableScope())
             {
-                TestCurrentScope();
+                AssertCurrentScopeIsNotNull();
             }
         }
 
-        private void TestCurrentScope()
+        [Test]
+        public void ThreadBoundScopeNotAvailableOnAnotherThread()
+        {
+            bool isAvailable = true;
+
+            Action assertCurrentScopeIsNull = delegate()
+            {
+                isAvailable = StubNestableScope.Current != null;
+            };
+
+            using (StubNestableScope scope = new StubNestableScope(ScopeBounds.Thread))
+            {
+                IAsyncResult result = assertCurrentScopeIsNull.BeginInvoke(null, null);
+
+                result.AsyncWaitHandle.WaitOne();
+                assertCurrentScopeIsNull.EndInvoke(result);
+            }
+
+            Assert.IsFalse(isAvailable);
+        }
+
+        [Test]
+        public void AppDomainBoundScopeIsAvailableOnAnotherThread()
+        {
+            bool isAvailable = false;
+
+            Action assertCurrentScopeIsNull = delegate()
+            {
+                isAvailable = StubNestableScope.Current != null;
+            };
+
+            using (StubNestableScope scope = new StubNestableScope(ScopeBounds.AppDomain))
+            {
+                IAsyncResult result = assertCurrentScopeIsNull.BeginInvoke(null, null);
+
+                result.AsyncWaitHandle.WaitOne();
+                assertCurrentScopeIsNull.EndInvoke(result);
+            }
+
+            Assert.IsTrue(isAvailable);
+        }
+
+        private void AssertCurrentScopeIsNotNull()
         {
             Assert.IsNotNull(StubNestableScope.Current);
         }
