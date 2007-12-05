@@ -36,6 +36,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Transactions" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -60,6 +61,9 @@
     <Compile Include="Text\Parsing\SimpleScanner.cs" />
     <Compile Include="Text\Parsing\Token.cs" />
     <Compile Include="Text\Parsing\TokenKind.cs" />
+    <Compile Include="Transactions\ITransactional.cs" />
+    <Compile Include="Transactions\Transactional.cs" />
+    <Compile Include="Transactions\TransactionalConcurrencyException.cs" />
     <Compile Include="Xml\ProcessingInstruction.cs" />
     <Compile Include="Xml\ProcessingInstructionParser.cs" />
   </ItemGroup>

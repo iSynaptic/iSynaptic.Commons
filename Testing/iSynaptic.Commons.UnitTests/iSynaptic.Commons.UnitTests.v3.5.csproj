@@ -48,6 +48,7 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Data" />
+    <Reference Include="System.Transactions" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -58,6 +59,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Text\Parsing\ScanningTextReaderTests.cs" />
     <Compile Include="Text\Parsing\SimpleScannerTests.cs" />
+    <Compile Include="Transactions\SimpleObject.cs" />
+    <Compile Include="Transactions\TransactionalTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Application\iSynaptic.Commons\iSynaptic.Commons.v3.5.csproj">
