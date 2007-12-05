@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Transactions;
+using System.Threading;
 
 namespace iSynaptic.Commons.Transactions
 {
     public class Transactional<T> where T : class, ITransactional<T>
     {
+        #region EnlistmentManager
+        
         private class EnlistmentManager : IEnlistmentNotification
         {
             private string _Id = null;
@@ -25,14 +28,10 @@ namespace iSynaptic.Commons.Transactions
             {
                 KeyValuePair<Guid, T> value = _Transactional.Values[_Id];
 
-                lock (_Transactional._SyncLock)
-                {
-                    if (_Transactional._CurrentValue.Key != value.Key)
-                        throw new TransactionalConcurrencyException();
+                _Transactional._CurrentValue = _Transactional.CreatePair(value.Value);
+                _Transactional.Values.Remove(_Id);
 
-                    _Transactional._CurrentValue = _Transactional.CreatePair(value.Value);
-                }
-
+                Monitor.Exit(_Transactional._SyncLock);
                 enlistment.Done();
             }
 
@@ -43,6 +42,15 @@ namespace iSynaptic.Commons.Transactions
 
             public void Prepare(PreparingEnlistment preparingEnlistment)
             {
+                Monitor.Enter(_Transactional._SyncLock);
+
+                KeyValuePair<Guid, T> value = _Transactional.Values[_Id];
+                if (_Transactional._CurrentValue.Key != value.Key)
+                {
+                    Monitor.Exit(_Transactional._SyncLock);
+                    throw new TransactionalConcurrencyException();
+                }
+
                 preparingEnlistment.Prepared();
             }
 
@@ -52,6 +60,8 @@ namespace iSynaptic.Commons.Transactions
                 enlistment.Done();
             }
         }
+
+        #endregion
 
         private object _SyncLock = new object();
         private KeyValuePair<Guid, T> _CurrentValue = default(KeyValuePair<Guid, T>);
@@ -111,10 +121,7 @@ namespace iSynaptic.Commons.Transactions
 
             if (Transaction.Current == null)
             {
-                lock (_SyncLock)
-                {
-                    _CurrentValue = CreatePair(value);
-                }
+                _CurrentValue = CreatePair(value);
             }
         }
 
