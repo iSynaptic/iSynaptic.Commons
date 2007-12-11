@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace iSynaptic.Commons.Extensions.ObjectExtensions
 {
-    public static partial class ObjectExtensions
+    public static class MethodReflectionObjectExtensions
     {
         private static T GetDelegate<T>(string methodName, object target, params Type[] types)
         {
