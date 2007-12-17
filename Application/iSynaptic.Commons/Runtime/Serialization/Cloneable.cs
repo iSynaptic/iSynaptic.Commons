@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Reflection;
+using System.Reflection.Emit;
+using System.Runtime.Serialization;
 
 namespace iSynaptic.Commons.Runtime.Serialization
 {
@@ -89,15 +91,82 @@ namespace iSynaptic.Commons.Runtime.Serialization
             if (IsPrimative(_CloneType))
                 return s => s;
 
-            throw new NotImplementedException();
+            MethodInfo getTypeFromHandlerMethod = typeof(Type).GetMethod(
+               "GetTypeFromHandle",
+               BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic,
+               null,
+               new Type[]{
+                    typeof(RuntimeTypeHandle)
+                    },
+               null
+               );
+
+            MethodInfo getSafeUninitializedObjectMethod = typeof(FormatterServices).GetMethod(
+                "GetSafeUninitializedObject",
+                BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic,
+                null,
+                new Type[]{
+                    typeof(Type)
+                    },
+                null
+                );
+
+            DynamicMethod cloneMethod = new DynamicMethod(string.Format("Cloneable<{0}>_Clone", _CloneType.Name), _CloneType, new Type[] { _CloneType }, _CloneType, true);
+            ILGenerator gen = cloneMethod.GetILGenerator();
+
+            LocalBuilder clonedObj = gen.DeclareLocal(typeof(T));
+            
+            gen.Emit(OpCodes.Ldtoken, typeof(T));
+            gen.Emit(OpCodes.Call, getTypeFromHandlerMethod);
+            gen.Emit(OpCodes.Call, getSafeUninitializedObjectMethod);
+            gen.Emit(OpCodes.Castclass, typeof(T));
+            gen.Emit(OpCodes.Stloc_0);
+
+            foreach (FieldInfo field in GetFields())
+            {
+                if (IsPrimative(field.FieldType))
+                {
+                    gen.Emit(OpCodes.Ldloc_0);
+                    gen.Emit(OpCodes.Ldarg_0);
+                    gen.Emit(OpCodes.Ldfld, field);
+                    gen.Emit(OpCodes.Stfld, field);
+                }
+                else
+                {
+                    gen.Emit(OpCodes.Ldloc_0);
+                    gen.Emit(OpCodes.Ldarg_0);
+                    gen.Emit(OpCodes.Ldfld, field);
+
+                    MethodInfo childCloneMethod = typeof(Cloneable<>).MakeGenericType(field.FieldType).GetMethod(
+                        "Clone",
+                        BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic,
+                        null,
+                        new Type[]{
+                            field.FieldType
+                            },
+                        null
+                        );
+
+                    gen.Emit(OpCodes.Call, childCloneMethod);
+                    gen.Emit(OpCodes.Stfld, field);
+                }
+            }
+
+            gen.Emit(OpCodes.Ldloc_0);
+            gen.Emit(OpCodes.Ret);
+
+            return (Func<T, T>) cloneMethod.CreateDelegate(typeof(Func<T, T>));
         }
 
         public static T Clone(T source)
         {
-            if (_CloneHandler == null && CanClone())
-                _CloneHandler = BuildCloneHandler();
-            else
-                _CloneHandler = s => { throw new InvalidOperationException("This type cannot be cloned."); };
+            if (_CloneHandler == null)
+            {
+                if(CanClone())
+                    _CloneHandler = BuildCloneHandler();
+                else
+                    _CloneHandler = s => { throw new InvalidOperationException("This type cannot be cloned."); };
+            }
 
             return _CloneHandler(source);
         }

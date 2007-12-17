@@ -4,9 +4,11 @@ using System.Text;
 using System.Transactions;
 using System.Threading;
 
+using iSynaptic.Commons.Runtime.Serialization;
+
 namespace iSynaptic.Commons.Transactions
 {
-    public class Transactional<T> where T : class, ITransactional<T>
+    public class Transactional<T>
     {
         #region EnlistmentManager
         
@@ -17,9 +19,6 @@ namespace iSynaptic.Commons.Transactions
 
             public EnlistmentManager(string id, Transactional<T> transactional)
             {
-                if (transactional == null)
-                    throw new ArgumentNullException("transactional");
-
                 _Id = id;
                 _Transactional = transactional;
             }
@@ -67,7 +66,13 @@ namespace iSynaptic.Commons.Transactions
         private KeyValuePair<Guid, T> _CurrentValue = default(KeyValuePair<Guid, T>);
         private Dictionary<string, KeyValuePair<Guid, T>> _Values = null;
 
-        public Transactional() : this(null)
+        static Transactional()
+        {
+            if (Cloneable<T>.CanClone() != true)
+                throw new InvalidOperationException("Underlying type cannot be cloned.");
+        }
+
+        public Transactional() : this(default(T))
         {
         }
 
@@ -85,12 +90,12 @@ namespace iSynaptic.Commons.Transactions
 
                 if (Values.ContainsKey(id) != true)
                 {
-                    T newValue = null;
+                    T newValue = default(T);
 
                     if (_CurrentValue.Value != null)
-                        newValue = _CurrentValue.Value.Duplicate();
+                        newValue = Cloneable<T>.Clone(_CurrentValue.Value);
 
-                    Values.Add(id, new KeyValuePair<Guid, T>(_CurrentValue.Key, newValue));
+                    Values.Add(id, CreatePair(_CurrentValue.Key, newValue));
 
                     Enlist(id);
                 }
@@ -111,12 +116,12 @@ namespace iSynaptic.Commons.Transactions
                 if (Values.ContainsKey(id) != true)
                 {
                     if (value != null)
-                        Values.Add(id, CreatePair(value));
+                        Values.Add(id, CreatePair(_CurrentValue.Key, value));
 
                     Enlist(id);
                 }
                 else
-                    Values[id] = new KeyValuePair<Guid, T>(Values[id].Key, value);
+                    Values[id] = CreatePair(Values[id].Key, value);
             }
 
             if (Transaction.Current == null)
@@ -132,7 +137,12 @@ namespace iSynaptic.Commons.Transactions
 
         private KeyValuePair<Guid, T> CreatePair(T value)
         {
-            return new KeyValuePair<Guid, T>(Guid.NewGuid(), value);
+            return CreatePair(Guid.NewGuid(), value);
+        }
+
+        private KeyValuePair<Guid, T> CreatePair(Guid id, T value)
+        {
+            return new KeyValuePair<Guid, T>(id, value);
         }
 
         public T Value

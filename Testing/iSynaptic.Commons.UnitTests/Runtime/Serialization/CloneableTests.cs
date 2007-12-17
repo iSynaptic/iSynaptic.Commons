@@ -143,5 +143,49 @@ namespace iSynaptic.Commons.UnitTests.Runtime.Serialization
             Assert.IsFalse(Cloneable<DerivedNotCloneableStub>.CanClone());
             Assert.IsNull(Cloneable<DerivedNotCloneableStub>.Clone(new DerivedNotCloneableStub()));
         }
+
+        [Test]
+        public void CloneComplexType()
+        {
+            CloneableStub stub = new CloneableStub
+            {
+                Id = Guid.NewGuid(),
+                Name = "Name",
+                BirthDate = DateTime.Now,
+                YearsOfService = 25
+            };
+
+            CloneableStub clonedStub = Cloneable<CloneableStub>.Clone(stub);
+            Assert.IsNotNull(clonedStub);
+            Assert.IsFalse(object.ReferenceEquals(stub, clonedStub));
+
+            Assert.AreEqual(stub.Id, clonedStub.Id);
+            Assert.AreEqual(stub.Name, clonedStub.Name);
+            Assert.AreEqual(stub.BirthDate, clonedStub.BirthDate);
+            Assert.AreEqual(stub.YearsOfService, clonedStub.YearsOfService);
+        }
+
+        [Test]
+        public void CloneDerivedComplexType()
+        {
+            DerivedCloneableStub stub = new DerivedCloneableStub
+            {
+                Id = Guid.NewGuid(),
+                Name = "Name",
+                BirthDate = DateTime.Now,
+                YearsOfService = 25,
+                DerivedName = "DerivedName"
+            };
+
+            DerivedCloneableStub clonedStub = Cloneable<DerivedCloneableStub>.Clone(stub);
+            Assert.IsNotNull(clonedStub);
+            Assert.IsFalse(object.ReferenceEquals(stub, clonedStub));
+
+            Assert.AreEqual(stub.Id, clonedStub.Id);
+            Assert.AreEqual(stub.Name, clonedStub.Name);
+            Assert.AreEqual(stub.BirthDate, clonedStub.BirthDate);
+            Assert.AreEqual(stub.YearsOfService, clonedStub.YearsOfService);
+            Assert.AreEqual(stub.DerivedName, clonedStub.DerivedName);
+        }
     }
 }

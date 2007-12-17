@@ -429,5 +429,89 @@ namespace iSynaptic.Commons.UnitTests.Transactions
                 throw;
             }
         }
+
+        [Test]
+        public void SetValueWithoutTransaction()
+        {
+            var tso = new Transactional<SimpleObject>();
+
+            SimpleObject state = new SimpleObject();
+
+            state.TestInt = 7;
+            state.TestGuid = Guid.NewGuid();
+            state.TestString = "Testing";
+
+            Assert.IsNull(tso.Value);
+
+            tso.Value = state;
+
+            Assert.IsNotNull(state);
+            Assert.IsTrue(object.ReferenceEquals(state, tso.Value));
+        }
+
+        [Test]
+        public void SetValue()
+        {
+            var tso = new Transactional<SimpleObject>();
+
+            SimpleObject state = new SimpleObject();
+
+            state.TestInt = 7;
+            state.TestGuid = Guid.NewGuid();
+            state.TestString = "Testing";
+
+            Assert.IsNull(tso.Value);
+
+            using (TransactionScope scope = new TransactionScope())
+            {
+                tso.Value = state;
+
+                using (TransactionScope scopeTwo = new TransactionScope(TransactionScopeOption.Suppress))
+                {
+                    Assert.IsNull(tso.Value);
+                }
+
+                scope.Complete();
+            }
+
+            Assert.IsNotNull(tso.Value);
+            Assert.IsTrue(object.ReferenceEquals(state, tso.Value));
+        }
+
+        [Test]
+        public void SetValueTwice()
+        {
+            var tso = new Transactional<SimpleObject>();
+
+            SimpleObject state = new SimpleObject();
+
+            state.TestInt = 7;
+            state.TestGuid = Guid.NewGuid();
+            state.TestString = "Testing";
+
+            SimpleObject state2 = new SimpleObject();
+
+            state2.TestInt = 9;
+            state2.TestGuid = Guid.NewGuid();
+            state2.TestString = "Testing2";
+
+            Assert.IsNull(tso.Value);
+
+            using (TransactionScope scope = new TransactionScope())
+            {
+                tso.Value = state;
+                tso.Value = state2;
+
+                using (TransactionScope scopeTwo = new TransactionScope(TransactionScopeOption.Suppress))
+                {
+                    Assert.IsNull(tso.Value);
+                }
+
+                scope.Complete();
+            }
+
+            Assert.IsNotNull(tso.Value);
+            Assert.IsTrue(object.ReferenceEquals(state2, tso.Value));
+        }
     }
 }
