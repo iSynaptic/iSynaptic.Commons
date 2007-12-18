@@ -50,8 +50,10 @@
     <Compile Include="DataEventArgs.cs" />
     <Compile Include="ExtensionAttribute.cs" />
     <Compile Include="Extensions\ActionExtensions.cs" />
+    <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Extensions\EnumExtensions.cs" />
     <Compile Include="Extensions\FuncExtensions.cs" />
+    <Compile Include="Extensions\IndexedValue.cs" />
     <Compile Include="Extensions\ObjectExtensions\MethodReflectionObjectExtensions.cs" />
     <Compile Include="Func.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
