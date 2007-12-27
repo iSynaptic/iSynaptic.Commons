@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Transactions;
-using System.Threading;
 
+using iSynaptic.Commons.Collections.Generic;
 using iSynaptic.Commons.Runtime.Serialization;
+using iSynaptic.Commons.Threading;
 
 namespace iSynaptic.Commons.Transactions
 {
@@ -30,7 +30,7 @@ namespace iSynaptic.Commons.Transactions
                 _Transactional._CurrentValue = _Transactional.CreatePair(value.Value);
                 _Transactional.Values.Remove(_Id);
 
-                Monitor.Exit(_Transactional._SyncLock);
+                _Transactional._Lock.Exit();
                 enlistment.Done();
             }
 
@@ -41,12 +41,16 @@ namespace iSynaptic.Commons.Transactions
 
             public void Prepare(PreparingEnlistment preparingEnlistment)
             {
-                Monitor.Enter(_Transactional._SyncLock);
+                //ValueEqualityComparer<T> valueComparer = new ValueEqualityComparer<T>();
 
-                KeyValuePair<Guid, T> value = _Transactional.Values[_Id];
-                if (_Transactional._CurrentValue.Key != value.Key)
+                _Transactional._Lock.Enter();
+                
+                var value = _Transactional.Values[_Id];
+                var originalValue = _Transactional._CurrentValue;
+                
+                if (value.Key != originalValue.Key)// && valueComparer.Equals(originalValue.Value, value.Value) != true)
                 {
-                    Monitor.Exit(_Transactional._SyncLock);
+                    _Transactional._Lock.Exit();
                     throw new TransactionalConcurrencyException();
                 }
 
@@ -62,7 +66,7 @@ namespace iSynaptic.Commons.Transactions
 
         #endregion
 
-        private object _SyncLock = new object();
+        private SpinLock _Lock = new SpinLock();
         private KeyValuePair<Guid, T> _CurrentValue = default(KeyValuePair<Guid, T>);
         private Dictionary<string, KeyValuePair<Guid, T>> _Values = null;
 
@@ -70,6 +74,9 @@ namespace iSynaptic.Commons.Transactions
         {
             if (Cloneable<T>.CanClone() != true)
                 throw new InvalidOperationException("Underlying type cannot be cloned.");
+
+            //if (ValueEqualityComparer<T>.CanCompare() != true)
+            //    throw new InvalidOperationException("Underlying type cannot be compared via ValueEqualityComparer.");
         }
 
         public Transactional() : this(default(T))

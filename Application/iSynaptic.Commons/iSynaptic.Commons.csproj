@@ -46,7 +46,9 @@
     <Compile Include="AOP\Scope.cs" />
     <Compile Include="AOP\ScopeBounds.cs" />
     <Compile Include="AOP\UnitOfWork.cs" />
-    <Compile Include="Collections\ReadOnlyDictionary.cs" />
+    <Compile Include="ArrayIndex.cs" />
+    <Compile Include="Collections\Generic\ReadOnlyDictionary.cs" />
+    <Compile Include="Collections\Generic\ValueEqualityComparer.cs" />
     <Compile Include="DataEventArgs.cs" />
     <Compile Include="ExtensionAttribute.cs" />
     <Compile Include="Extensions\ActionExtensions.cs" />
@@ -64,10 +66,14 @@
     <Compile Include="Text\Parsing\SimpleScanner.cs" />
     <Compile Include="Text\Parsing\Token.cs" />
     <Compile Include="Text\Parsing\TokenKind.cs" />
+    <Compile Include="Threading\SpinLock.cs" />
     <Compile Include="Transactions\Transactional.cs" />
     <Compile Include="Transactions\TransactionalConcurrencyException.cs" />
     <Compile Include="Xml\ProcessingInstruction.cs" />
     <Compile Include="Xml\ProcessingInstructionParser.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Collections\Generic\Transactional\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

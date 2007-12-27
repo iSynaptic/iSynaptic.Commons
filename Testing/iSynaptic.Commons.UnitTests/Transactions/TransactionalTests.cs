@@ -513,5 +513,24 @@ namespace iSynaptic.Commons.UnitTests.Transactions
             Assert.IsNotNull(tso.Value);
             Assert.IsTrue(object.ReferenceEquals(state2, tso.Value));
         }
+
+        //[Test]
+        //public void CommitingOverlappingTransactionsWithNoValueChange()
+        //{
+        //    var tso = new Transactional<SimpleObject>();
+
+        //    using (TransactionScope scope = new TransactionScope())
+        //    {
+        //        var x = tso.Value;
+
+        //        using (TransactionScope scope2 = new TransactionScope(TransactionScopeOption.RequiresNew))
+        //        {
+        //            var y = tso.Value;
+        //            scope2.Complete();
+        //        }
+
+        //        scope.Complete();
+        //    }
+        //}
     }
 }

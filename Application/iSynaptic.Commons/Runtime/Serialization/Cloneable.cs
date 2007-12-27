@@ -9,33 +9,49 @@ namespace iSynaptic.Commons.Runtime.Serialization
 {
     public static class Cloneable<T>
     {
-        private static Type _CloneType = null;
+        private static Type _TargetType = null;
         private static Func<T, T> _CloneHandler = null;
 
         static Cloneable()
         {
-            _CloneType = typeof(T);
+            _TargetType = typeof(T);
         }
 
         public static bool CanClone()
         {
-            if (IsNotCloneable(_CloneType))
+            return CanClone(_TargetType);
+        }
+
+        private static bool CanClone(Type type)
+        {
+            if (IsNotCloneable(type))
                 return false;
 
-            if (IsPrimative(_CloneType))
+            if (IsValueObject(type))
                 return true;
 
-            foreach (FieldInfo field in GetFields())
+            if (type.IsArray)
+                return CanClone(GetUnderlyingArrayType(type));
+
+            foreach (FieldInfo field in GetFields(type))
             {
                 if (IsNotCloneable(field.FieldType))
                     return false;
 
-                if (IsPrimative(field.FieldType))
+                if (IsValueObject(field.FieldType))
                     continue;
 
+                if (type.IsArray)
+                {
+                    if (CanClone(GetUnderlyingArrayType(field.FieldType)))
+                        continue;
+                    else
+                        return false;
+                }
+
                 Type fieldClonableType = typeof(Cloneable<>).MakeGenericType(field.FieldType);
-                MethodInfo canCloneMethod = fieldClonableType.GetMethod("CanClone", BindingFlags.NonPublic | BindingFlags.Static);
-                Func<bool> canClone = (Func<bool>) Delegate.CreateDelegate(typeof(Func<bool>), canCloneMethod);
+                MethodInfo canCloneMethod = fieldClonableType.GetMethod("CanClone", BindingFlags.Public | BindingFlags.Static);
+                Func<bool> canClone = (Func<bool>)Delegate.CreateDelegate(typeof(Func<bool>), canCloneMethod);
 
                 if (canClone())
                     continue;
@@ -46,9 +62,19 @@ namespace iSynaptic.Commons.Runtime.Serialization
             return true;
         }
 
-        private static IEnumerable<FieldInfo> GetFields()
+        private static Type GetUnderlyingArrayType(Type type)
         {
-            Type currentType = _CloneType;
+            Type currentType = type;
+
+            while(currentType.IsArray)
+                currentType = currentType.GetElementType();
+
+            return currentType;
+        }
+
+        private static IEnumerable<FieldInfo> GetFields(Type type)
+        {
+            Type currentType = type;
             while (currentType != null)
             {
                 foreach (FieldInfo info in currentType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
@@ -63,13 +89,16 @@ namespace iSynaptic.Commons.Runtime.Serialization
 
         private static bool IsNotCloneable(Type inputType)
         {
+            if (typeof(Delegate).IsAssignableFrom(inputType))
+                return true;
+
             if (inputType == typeof(IntPtr))
                 return true;
 
             return false;
         }
 
-        private static bool IsPrimative(Type inputType)
+        private static bool IsValueObject(Type inputType)
         {
             if (inputType == typeof(string))
                 return true;
@@ -77,7 +106,13 @@ namespace iSynaptic.Commons.Runtime.Serialization
             if (inputType == typeof(DateTime))
                 return true;
 
+            if (inputType == typeof(TimeSpan))
+                return true;
+
             if (inputType == typeof(Guid))
+                return true;
+
+            if (inputType == typeof(decimal))
                 return true;
 
             if (inputType.IsPrimitive)
@@ -86,11 +121,8 @@ namespace iSynaptic.Commons.Runtime.Serialization
             return false;
         }
 
-        private static Func<T, T> BuildCloneHandler()
+        private static Func<T, T> BuildCloneHandler(Type type)
         {
-            if (IsPrimative(_CloneType))
-                return s => s;
-
             MethodInfo getTypeFromHandlerMethod = typeof(Type).GetMethod(
                "GetTypeFromHandle",
                BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic,
@@ -111,7 +143,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
                 null
                 );
 
-            DynamicMethod cloneMethod = new DynamicMethod(string.Format("Cloneable<{0}>_Clone", _CloneType.Name), _CloneType, new Type[] { _CloneType }, _CloneType, true);
+            DynamicMethod cloneMethod = new DynamicMethod(string.Format("Cloneable<{0}>_Clone", type.Name), type, new Type[] { type }, type, true);
             ILGenerator gen = cloneMethod.GetILGenerator();
 
             LocalBuilder clonedObj = gen.DeclareLocal(typeof(T));
@@ -122,9 +154,9 @@ namespace iSynaptic.Commons.Runtime.Serialization
             gen.Emit(OpCodes.Castclass, typeof(T));
             gen.Emit(OpCodes.Stloc_0);
 
-            foreach (FieldInfo field in GetFields())
+            foreach (FieldInfo field in GetFields(type))
             {
-                if (IsPrimative(field.FieldType))
+                if (IsValueObject(field.FieldType))
                 {
                     gen.Emit(OpCodes.Ldloc_0);
                     gen.Emit(OpCodes.Ldarg_0);
@@ -158,17 +190,58 @@ namespace iSynaptic.Commons.Runtime.Serialization
             return (Func<T, T>) cloneMethod.CreateDelegate(typeof(Func<T, T>));
         }
 
+        private static Func<T, T> BuildArrayCloneHandler(Type itemType)
+        {
+            Type clonableType = typeof(Cloneable<T>);
+            MethodInfo info = clonableType.GetMethod("ArrayClone", BindingFlags.NonPublic | BindingFlags.Static);
+
+            info = info.MakeGenericMethod(itemType);
+
+            return (Func<T, T>) Delegate.CreateDelegate(typeof(Func<T, T>), info);
+        }
+
         public static T Clone(T source)
         {
             if (_CloneHandler == null)
             {
-                if(CanClone())
-                    _CloneHandler = BuildCloneHandler();
+                if (CanClone())
+                {
+                    if (IsValueObject(_TargetType))
+                        _CloneHandler = s => s;
+                    else if (_TargetType.IsArray)
+                        _CloneHandler = BuildArrayCloneHandler(_TargetType.GetElementType());
+                    else
+                        _CloneHandler = BuildCloneHandler(_TargetType);
+                }
                 else
                     _CloneHandler = s => { throw new InvalidOperationException("This type cannot be cloned."); };
             }
 
             return _CloneHandler(source);
+        }
+
+        private static T ArrayClone<U>(T source)
+        {
+            Array sourceArray = (Array)(object)source;
+            ArrayIndex index = new ArrayIndex(sourceArray);
+
+            Array destArray = (Array) sourceArray.Clone();
+
+            if (sourceArray.Length <= 0)
+                return (T) (object) destArray;
+
+            while(true)
+            {
+                U item = (U)sourceArray.GetValue(index);
+                destArray.SetValue(Cloneable<U>.Clone(item), index);
+
+                if (index.CanIncrement())
+                    index.Increment();
+                else
+                    break;
+            }
+
+            return (T)(object)destArray;
         }
     }
 }

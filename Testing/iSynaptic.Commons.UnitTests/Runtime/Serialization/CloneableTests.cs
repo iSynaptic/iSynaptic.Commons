@@ -22,7 +22,7 @@ namespace iSynaptic.Commons.UnitTests.Runtime.Serialization
         public void CloneInt16()
         {
             Assert.IsTrue(Cloneable<Int16>.CanClone());
-            Assert.AreEqual((Int16) (-16), Cloneable<Int16>.Clone(-16));
+            Assert.AreEqual((Int16)(-16), Cloneable<Int16>.Clone(-16));
         }
 
         [Test]
@@ -85,7 +85,14 @@ namespace iSynaptic.Commons.UnitTests.Runtime.Serialization
         public void CloneDouble()
         {
             Assert.IsTrue(Cloneable<Double>.CanClone());
-            Assert.AreEqual((Double) 128, Cloneable<Double>.Clone(128));
+            Assert.AreEqual((Double)128, Cloneable<Double>.Clone(128));
+        }
+
+        [Test]
+        public void CloneDecimal()
+        {
+            Assert.IsTrue(Cloneable<decimal>.CanClone());
+            Assert.AreEqual((decimal)128, Cloneable<decimal>.Clone(128));
         }
 
         [Test]
@@ -118,6 +125,15 @@ namespace iSynaptic.Commons.UnitTests.Runtime.Serialization
 
             Assert.IsTrue(Cloneable<DateTime>.CanClone());
             Assert.AreEqual(now, Cloneable<DateTime>.Clone(now));
+        }
+
+        [Test]
+        public void CloneTimeSpan()
+        {
+            TimeSpan source = TimeSpan.FromMinutes(5);
+
+            Assert.IsTrue(Cloneable<TimeSpan>.CanClone());
+            Assert.AreEqual(source, Cloneable<TimeSpan>.Clone(source));
         }
 
         [Test]
@@ -156,13 +172,12 @@ namespace iSynaptic.Commons.UnitTests.Runtime.Serialization
             };
 
             CloneableStub clonedStub = Cloneable<CloneableStub>.Clone(stub);
+
+            Assert.IsTrue(Cloneable<CloneableStub>.CanClone());
             Assert.IsNotNull(clonedStub);
             Assert.IsFalse(object.ReferenceEquals(stub, clonedStub));
 
-            Assert.AreEqual(stub.Id, clonedStub.Id);
-            Assert.AreEqual(stub.Name, clonedStub.Name);
-            Assert.AreEqual(stub.BirthDate, clonedStub.BirthDate);
-            Assert.AreEqual(stub.YearsOfService, clonedStub.YearsOfService);
+            Assert.IsTrue(clonedStub.Equals(stub));
         }
 
         [Test]
@@ -178,14 +193,102 @@ namespace iSynaptic.Commons.UnitTests.Runtime.Serialization
             };
 
             DerivedCloneableStub clonedStub = Cloneable<DerivedCloneableStub>.Clone(stub);
+
+            Assert.IsTrue(Cloneable<DerivedCloneableStub>.CanClone());
             Assert.IsNotNull(clonedStub);
             Assert.IsFalse(object.ReferenceEquals(stub, clonedStub));
 
-            Assert.AreEqual(stub.Id, clonedStub.Id);
-            Assert.AreEqual(stub.Name, clonedStub.Name);
-            Assert.AreEqual(stub.BirthDate, clonedStub.BirthDate);
-            Assert.AreEqual(stub.YearsOfService, clonedStub.YearsOfService);
-            Assert.AreEqual(stub.DerivedName, clonedStub.DerivedName);
+            Assert.IsTrue(stub.Equals(clonedStub));
+        }
+
+        [Test]
+        public void CloneArray()
+        {
+            Guid idOne = Guid.NewGuid();
+            Guid idTwo = Guid.NewGuid();
+
+            DateTime birthDateOne = DateTime.Now.AddDays(-1);
+            DateTime birthDateTwo = DateTime.Now.AddDays(-2);
+
+            CloneableStub[] stubs = 
+            {
+                new CloneableStub { Id = idOne, BirthDate = birthDateOne, Name = "Stub 1", YearsOfService = 1},
+                new CloneableStub { Id = idTwo, BirthDate = birthDateTwo, Name = "Stub 2", YearsOfService = 2}
+            };
+
+            var clones = Cloneable<CloneableStub[]>.Clone(stubs);
+
+            Assert.IsTrue(Cloneable<CloneableStub[]>.CanClone());
+
+            Assert.IsFalse(object.ReferenceEquals(stubs, clones));
+            Assert.AreEqual(stubs.Length, clones.Length);
+
+            Assert.IsFalse(object.ReferenceEquals(stubs[0], clones[0]));
+            Assert.IsFalse(object.ReferenceEquals(stubs[1], clones[1]));
+
+            Assert.IsTrue(stubs[0].Equals(clones[0]));
+            Assert.IsTrue(stubs[1].Equals(clones[1]));
+        }
+
+        [Test]
+        public void CloneMultidimensionalArray()
+        {
+            Guid idOne = Guid.NewGuid();
+            Guid idTwo = Guid.NewGuid();
+
+            DateTime birthDateOne = DateTime.Now.AddDays(-1);
+            DateTime birthDateTwo = DateTime.Now.AddDays(-2);
+
+            CloneableStub[,] stubs = 
+            {
+                {
+                new CloneableStub { Id = idOne, BirthDate = birthDateOne, Name = "Stub 1", YearsOfService = 1},
+                new CloneableStub { Id = idTwo, BirthDate = birthDateTwo, Name = "Stub 2", YearsOfService = 2}
+                }
+            };
+
+            var clones = Cloneable<CloneableStub[,]>.Clone(stubs);
+
+            Assert.IsFalse(object.ReferenceEquals(stubs, clones));
+            Assert.AreEqual(stubs.Length, clones.Length);
+
+            Assert.IsFalse(object.ReferenceEquals(stubs[0, 0], clones[0, 0]));
+            Assert.IsFalse(object.ReferenceEquals(stubs[0, 1], clones[0, 1]));
+
+            Assert.IsTrue(stubs[0, 0].Equals(clones[0, 0]));
+            Assert.IsTrue(stubs[0, 1].Equals(clones[0, 1]));
+        }
+
+        [Test]
+        public void CloneJaggedArray()
+        {
+            Guid idOne = Guid.NewGuid();
+            Guid idTwo = Guid.NewGuid();
+
+            DateTime birthDateOne = DateTime.Now.AddDays(-1);
+            DateTime birthDateTwo = DateTime.Now.AddDays(-2);
+
+            CloneableStub[][] stubs = 
+            {
+                new CloneableStub[] {
+                    new CloneableStub { Id = idOne, BirthDate = birthDateOne, Name = "Stub 1", YearsOfService = 1},
+                    new CloneableStub { Id = idTwo, BirthDate = birthDateTwo, Name = "Stub 2", YearsOfService = 2}
+                }
+            };
+
+            var clones = Cloneable<CloneableStub[][]>.Clone(stubs);
+
+            Assert.IsTrue(Cloneable<CloneableStub[][]>.CanClone());
+
+            Assert.IsFalse(object.ReferenceEquals(stubs, clones));
+            Assert.AreEqual(stubs.Length, clones.Length);
+
+            Assert.IsFalse(object.ReferenceEquals(stubs[0][0], clones[0][0]));
+            Assert.IsFalse(object.ReferenceEquals(stubs[0][1], clones[0][1]));
+
+            Assert.IsTrue(stubs[0][0].Equals(clones[0][0]));
+            Assert.IsTrue(stubs[0][1].Equals(clones[0][1]));
+
         }
     }
 }

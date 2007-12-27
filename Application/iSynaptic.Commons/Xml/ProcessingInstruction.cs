@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Collections.ObjectModel;
 
-using iSynaptic.Commons.Collections;
+using iSynaptic.Commons.Collections.Generic;
 
 namespace iSynaptic.Commons.Xml
 {
