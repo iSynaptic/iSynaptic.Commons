@@ -10,7 +10,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
     public static class Cloneable<T>
     {
         private static Type _TargetType = null;
-        private static Func<T, T> _CloneHandler = null;
+        private static Func<T, IDictionary<object, object>, T> _CloneHandler = null;
 
         static Cloneable()
         {
@@ -27,7 +27,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
             if (IsNotCloneable(type))
                 return false;
 
-            if (IsValueObject(type))
+            if (IsCloningPrimitive(type))
                 return true;
 
             if (type.IsArray)
@@ -35,10 +35,16 @@ namespace iSynaptic.Commons.Runtime.Serialization
 
             foreach (FieldInfo field in GetFields(type))
             {
+                if (field.IsDefined(typeof(NonSerializedAttribute), true))
+                    continue;
+
+                if (field.FieldType == type)
+                    continue;
+
                 if (IsNotCloneable(field.FieldType))
                     return false;
 
-                if (IsValueObject(field.FieldType))
+                if (IsCloningPrimitive(field.FieldType))
                     continue;
 
                 if (type.IsArray)
@@ -66,7 +72,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
         {
             Type currentType = type;
 
-            while(currentType.IsArray)
+            while (currentType.IsArray)
                 currentType = currentType.GetElementType();
 
             return currentType;
@@ -98,7 +104,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
             return false;
         }
 
-        private static bool IsValueObject(Type inputType)
+        private static bool IsCloningPrimitive(Type inputType)
         {
             if (inputType == typeof(string))
                 return true;
@@ -121,7 +127,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
             return false;
         }
 
-        private static Func<T, T> BuildCloneHandler(Type type)
+        private static Func<T, IDictionary<object, object>, T> BuildCloneHandler(Type type)
         {
             MethodInfo getTypeFromHandlerMethod = typeof(Type).GetMethod(
                "GetTypeFromHandle",
@@ -143,20 +149,46 @@ namespace iSynaptic.Commons.Runtime.Serialization
                 null
                 );
 
-            DynamicMethod cloneMethod = new DynamicMethod(string.Format("Cloneable<{0}>_Clone", type.Name), type, new Type[] { type }, type, true);
+            Type dictionaryType = typeof(IDictionary<,>).MakeGenericType(typeof(object), typeof(object));
+            MethodInfo mapAddMethod = dictionaryType.GetMethod
+            (
+                "Add",
+                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+                null,
+                new Type[]
+                {
+                    typeof(object),
+                    typeof(object)
+                },
+                null
+            );
+
+            DynamicMethod cloneMethod = new DynamicMethod(string.Format("Cloneable<{0}>_Clone", type.Name), type, new Type[] { type, dictionaryType }, type, true);
             ILGenerator gen = cloneMethod.GetILGenerator();
 
-            LocalBuilder clonedObj = gen.DeclareLocal(typeof(T));
-            
-            gen.Emit(OpCodes.Ldtoken, typeof(T));
+            gen.DeclareLocal(type);
+
+            gen.Emit(OpCodes.Ldtoken, type);
             gen.Emit(OpCodes.Call, getTypeFromHandlerMethod);
             gen.Emit(OpCodes.Call, getSafeUninitializedObjectMethod);
-            gen.Emit(OpCodes.Castclass, typeof(T));
+            gen.Emit(OpCodes.Castclass, type);
             gen.Emit(OpCodes.Stloc_0);
+
+            if (!type.IsValueType)
+            {
+                gen.Emit(OpCodes.Ldarg_1);
+                gen.Emit(OpCodes.Ldarg_0);
+                gen.Emit(OpCodes.Ldloc_0);
+
+                gen.Emit(OpCodes.Call, mapAddMethod);
+            }
 
             foreach (FieldInfo field in GetFields(type))
             {
-                if (IsValueObject(field.FieldType))
+                if (field.IsDefined(typeof(NonSerializedAttribute), true))
+                    continue;
+
+                if (IsCloningPrimitive(field.FieldType))
                 {
                     gen.Emit(OpCodes.Ldloc_0);
                     gen.Emit(OpCodes.Ldarg_0);
@@ -168,13 +200,15 @@ namespace iSynaptic.Commons.Runtime.Serialization
                     gen.Emit(OpCodes.Ldloc_0);
                     gen.Emit(OpCodes.Ldarg_0);
                     gen.Emit(OpCodes.Ldfld, field);
+                    gen.Emit(OpCodes.Ldarg_1);
 
                     MethodInfo childCloneMethod = typeof(Cloneable<>).MakeGenericType(field.FieldType).GetMethod(
                         "Clone",
                         BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic,
                         null,
                         new Type[]{
-                            field.FieldType
+                            field.FieldType,
+                            dictionaryType
                             },
                         null
                         );
@@ -187,53 +221,74 @@ namespace iSynaptic.Commons.Runtime.Serialization
             gen.Emit(OpCodes.Ldloc_0);
             gen.Emit(OpCodes.Ret);
 
-            return (Func<T, T>) cloneMethod.CreateDelegate(typeof(Func<T, T>));
+            return (Func<T, IDictionary<object, object>, T>)cloneMethod.CreateDelegate(typeof(Func<T, IDictionary<object, object>, T>));
         }
 
-        private static Func<T, T> BuildArrayCloneHandler(Type itemType)
+        private static Func<T, IDictionary<object, object>, T> BuildArrayCloneHandler(Type itemType)
         {
             Type clonableType = typeof(Cloneable<T>);
             MethodInfo info = clonableType.GetMethod("ArrayClone", BindingFlags.NonPublic | BindingFlags.Static);
 
             info = info.MakeGenericMethod(itemType);
 
-            return (Func<T, T>) Delegate.CreateDelegate(typeof(Func<T, T>), info);
+            return (Func<T, IDictionary<object, object>, T>)Delegate.CreateDelegate(typeof(Func<T, IDictionary<object, object>, T>), info);
         }
 
         public static T Clone(T source)
         {
+            Dictionary<object, object> map = new Dictionary<object, object>();
+
+            return Clone(source, map);
+        }
+
+        private static T Clone(T source, IDictionary<object, object> map)
+        {
+            if (source == null)
+                return default(T);
+
+            if (typeof(T).IsValueType != true && map.ContainsKey(source))
+                return (T)map[source];
+
             if (_CloneHandler == null)
             {
                 if (CanClone())
                 {
-                    if (IsValueObject(_TargetType))
-                        _CloneHandler = s => s;
+                    if (IsCloningPrimitive(_TargetType))
+                        _CloneHandler = (s, m) => s;
                     else if (_TargetType.IsArray)
                         _CloneHandler = BuildArrayCloneHandler(_TargetType.GetElementType());
                     else
                         _CloneHandler = BuildCloneHandler(_TargetType);
                 }
                 else
-                    _CloneHandler = s => { throw new InvalidOperationException("This type cannot be cloned."); };
+                    _CloneHandler = (s, m) => { throw new InvalidOperationException("This type cannot be cloned."); };
             }
 
-            return _CloneHandler(source);
+            return _CloneHandler(source, map);
         }
 
-        private static T ArrayClone<U>(T source)
+        private static T ArrayClone<U>(T source, IDictionary<object, object> map)
         {
+            if (source == null)
+                return default(T);
+
+            if (map.ContainsKey(source))
+                return (T) map[source];
+
             Array sourceArray = (Array)(object)source;
             ArrayIndex index = new ArrayIndex(sourceArray);
 
-            Array destArray = (Array) sourceArray.Clone();
+            Array destArray = (Array)sourceArray.Clone();
+
+            map.Add(source, (T)(object)destArray);
 
             if (sourceArray.Length <= 0)
-                return (T) (object) destArray;
+                return (T)(object)destArray;
 
-            while(true)
+            while (true)
             {
                 U item = (U)sourceArray.GetValue(index);
-                destArray.SetValue(Cloneable<U>.Clone(item), index);
+                destArray.SetValue(Cloneable<U>.Clone(item, map), index);
 
                 if (index.CanIncrement())
                     index.Increment();

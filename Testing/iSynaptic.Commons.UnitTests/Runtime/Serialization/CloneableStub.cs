@@ -13,6 +13,18 @@ namespace iSynaptic.Commons.UnitTests.Runtime.Serialization
         public double BigNumber { get; set; }
         public decimal ADecimal { get; set; }
 
+        public CloneableStub FirstChild { get; set; }
+        public CloneableStub SecondChild { get; set; }
+
+        [NonSerialized]
+        private IntPtr _NotSerialized = IntPtr.Zero;
+
+        public IntPtr NotSerialized
+        {
+            get { return _NotSerialized; }
+            set { _NotSerialized = value; }
+        }
+
         public bool Equals(CloneableStub other)
         {
             return Id == other.Id &&
@@ -21,11 +33,6 @@ namespace iSynaptic.Commons.UnitTests.Runtime.Serialization
                 YearsOfService == other.YearsOfService &&
                 BigNumber == other.BigNumber &&
                 ADecimal == other.ADecimal;
-        }
-
-        public void Test(CloneableStub other)
-        {
-            ADecimal = other.ADecimal;
         }
     }
 }
