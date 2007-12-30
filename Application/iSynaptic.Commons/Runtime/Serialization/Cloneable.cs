@@ -22,6 +22,27 @@ namespace iSynaptic.Commons.Runtime.Serialization
             return CanClone(_TargetType);
         }
 
+        private static MethodInfo GetMethod(Type type, string methodName, params Type[] argumentTypes)
+        {
+            BindingFlags bindingFlags = BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+
+            if (argumentTypes != null && argumentTypes.Length > 0 && argumentTypes[0] == typeof(void))
+            {
+                return type.GetMethod(methodName, bindingFlags);
+            }
+            else
+            {
+                return type.GetMethod
+                (
+                    methodName,
+                    bindingFlags,
+                    null,
+                    argumentTypes,
+                    null
+                );
+            }
+        }
+
         private static bool CanClone(Type type)
         {
             if (IsNotCloneable(type))
@@ -56,7 +77,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
                 }
 
                 Type fieldClonableType = typeof(Cloneable<>).MakeGenericType(field.FieldType);
-                MethodInfo canCloneMethod = fieldClonableType.GetMethod("CanClone", BindingFlags.Public | BindingFlags.Static);
+                MethodInfo canCloneMethod = GetMethod(fieldClonableType, "CanClone");
                 Func<bool> canClone = (Func<bool>)Delegate.CreateDelegate(typeof(Func<bool>), canCloneMethod);
 
                 if (canClone())
@@ -129,40 +150,13 @@ namespace iSynaptic.Commons.Runtime.Serialization
 
         private static Func<T, IDictionary<object, object>, T> BuildCloneHandler(Type type)
         {
-            MethodInfo getTypeFromHandlerMethod = typeof(Type).GetMethod(
-               "GetTypeFromHandle",
-               BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic,
-               null,
-               new Type[]{
-                    typeof(RuntimeTypeHandle)
-                    },
-               null
-               );
-
-            MethodInfo getSafeUninitializedObjectMethod = typeof(FormatterServices).GetMethod(
-                "GetSafeUninitializedObject",
-                BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic,
-                null,
-                new Type[]{
-                    typeof(Type)
-                    },
-                null
-                );
+            MethodInfo getTypeFromHandlerMethod = GetMethod(typeof(Type), "GetTypeFromHandle", typeof(RuntimeTypeHandle));
+            MethodInfo getSafeUninitializedObjectMethod = GetMethod(typeof(FormatterServices), "GetSafeUninitializedObject", typeof(Type));
 
             Type dictionaryType = typeof(IDictionary<,>).MakeGenericType(typeof(object), typeof(object));
-            MethodInfo mapAddMethod = dictionaryType.GetMethod
-            (
-                "Add",
-                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
-                null,
-                new Type[]
-                {
-                    typeof(object),
-                    typeof(object)
-                },
-                null
-            );
 
+            MethodInfo mapAddMethod = GetMethod(dictionaryType, "Add", typeof(object), typeof(object));
+                
             DynamicMethod cloneMethod = new DynamicMethod(string.Format("Cloneable<{0}>_Clone", type.Name), type, new Type[] { type, dictionaryType }, type, true);
             ILGenerator gen = cloneMethod.GetILGenerator();
 
@@ -202,16 +196,9 @@ namespace iSynaptic.Commons.Runtime.Serialization
                     gen.Emit(OpCodes.Ldfld, field);
                     gen.Emit(OpCodes.Ldarg_1);
 
-                    MethodInfo childCloneMethod = typeof(Cloneable<>).MakeGenericType(field.FieldType).GetMethod(
-                        "Clone",
-                        BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic,
-                        null,
-                        new Type[]{
-                            field.FieldType,
-                            dictionaryType
-                            },
-                        null
-                        );
+                    Type fieldClonableType =typeof(Cloneable<>).MakeGenericType(field.FieldType);
+
+                    MethodInfo childCloneMethod = GetMethod(fieldClonableType, "Clone", field.FieldType, dictionaryType);
 
                     gen.Emit(OpCodes.Call, childCloneMethod);
                     gen.Emit(OpCodes.Stfld, field);
@@ -227,7 +214,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
         private static Func<T, IDictionary<object, object>, T> BuildArrayCloneHandler(Type itemType)
         {
             Type clonableType = typeof(Cloneable<T>);
-            MethodInfo info = clonableType.GetMethod("ArrayClone", BindingFlags.NonPublic | BindingFlags.Static);
+            MethodInfo info = GetMethod(clonableType, "ArrayClone", typeof(T), typeof(IDictionary<object, object>));
 
             info = info.MakeGenericMethod(itemType);
 
@@ -273,7 +260,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
                 return default(T);
 
             if (map.ContainsKey(source))
-                return (T) map[source];
+                return (T)map[source];
 
             Array sourceArray = (Array)(object)source;
             ArrayIndex index = new ArrayIndex(sourceArray);
