@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.Serialization;
@@ -9,6 +8,15 @@ namespace iSynaptic.Commons.Runtime.Serialization
 {
     public static class Cloneable<T>
     {
+        private static Type[] _FixedCloneablePrimitive =
+        {
+            typeof(string),
+            typeof(decimal),
+            typeof(DateTime),
+            typeof(TimeSpan),
+            typeof(Guid)
+        };
+
         private static Type _TargetType = null;
         private static Func<T, IDictionary<object, object>, T> _CloneHandler = null;
 
@@ -45,27 +53,29 @@ namespace iSynaptic.Commons.Runtime.Serialization
 
         private static bool CanClone(Type type)
         {
+            if (type.IsDefined(typeof(NonSerializedAttribute), true))
+                return false;
+
             if (IsNotCloneable(type))
                 return false;
 
-            if (IsCloningPrimitive(type))
+            if (IsCloneablePrimitive(type))
                 return true;
 
             if (type.IsArray)
                 return CanClone(GetUnderlyingArrayType(type));
 
-            foreach (FieldInfo field in GetFields(type))
+            Predicate<FieldInfo> whereFilter = f =>
+                (f.FieldType != type) &&
+                (f.IsDefined(typeof(NonSerializedAttribute), true) != true) &&
+                (f.FieldType.IsDefined(typeof(NonSerializedAttribute), true) != true);
+
+            foreach (FieldInfo field in GetFields(type, whereFilter))
             {
-                if (field.IsDefined(typeof(NonSerializedAttribute), true))
-                    continue;
-
-                if (field.FieldType == type)
-                    continue;
-
                 if (IsNotCloneable(field.FieldType))
                     return false;
 
-                if (IsCloningPrimitive(field.FieldType))
+                if (IsCloneablePrimitive(field.FieldType))
                     continue;
 
                 if (type.IsArray)
@@ -101,11 +111,21 @@ namespace iSynaptic.Commons.Runtime.Serialization
 
         private static IEnumerable<FieldInfo> GetFields(Type type)
         {
+            return GetFields(type, null);
+        }
+
+        private static IEnumerable<FieldInfo> GetFields(Type type, Predicate<FieldInfo> whereFilter)
+        {
             Type currentType = type;
             while (currentType != null)
             {
                 foreach (FieldInfo info in currentType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
-                    yield return info;
+                {
+                    if (whereFilter == null)
+                        yield return info;
+                    else if (whereFilter(info))
+                        yield return info;
+                }
 
                 if (currentType.BaseType != null)
                     currentType = currentType.BaseType;
@@ -125,21 +145,9 @@ namespace iSynaptic.Commons.Runtime.Serialization
             return false;
         }
 
-        private static bool IsCloningPrimitive(Type inputType)
+        private static bool IsCloneablePrimitive(Type inputType)
         {
-            if (inputType == typeof(string))
-                return true;
-
-            if (inputType == typeof(DateTime))
-                return true;
-
-            if (inputType == typeof(TimeSpan))
-                return true;
-
-            if (inputType == typeof(Guid))
-                return true;
-
-            if (inputType == typeof(decimal))
+            if(Array.Exists(_FixedCloneablePrimitive, x => x == inputType))
                 return true;
 
             if (inputType.IsPrimitive)
@@ -177,12 +185,13 @@ namespace iSynaptic.Commons.Runtime.Serialization
                 gen.Emit(OpCodes.Call, mapAddMethod);
             }
 
-            foreach (FieldInfo field in GetFields(type))
-            {
-                if (field.IsDefined(typeof(NonSerializedAttribute), true))
-                    continue;
+            Predicate<FieldInfo> whereFilter = f =>
+                (f.IsDefined(typeof(NonSerializedAttribute), true) != true) &&
+                (f.FieldType.IsDefined(typeof(NonSerializedAttribute), true) != true);
 
-                if (IsCloningPrimitive(field.FieldType))
+            foreach (FieldInfo field in GetFields(type, whereFilter))
+            {
+                if (IsCloneablePrimitive(field.FieldType))
                 {
                     gen.Emit(OpCodes.Ldloc_0);
                     gen.Emit(OpCodes.Ldarg_0);
@@ -240,7 +249,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
             {
                 if (CanClone())
                 {
-                    if (IsCloningPrimitive(_TargetType))
+                    if (IsCloneablePrimitive(_TargetType))
                         _CloneHandler = (s, m) => s;
                     else if (_TargetType.IsArray)
                         _CloneHandler = BuildArrayCloneHandler(_TargetType.GetElementType());
