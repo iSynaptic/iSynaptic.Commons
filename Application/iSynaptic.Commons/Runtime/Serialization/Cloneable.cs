@@ -18,86 +18,19 @@ namespace iSynaptic.Commons.Runtime.Serialization
         };
 
         private static Type _TargetType = null;
+
+        private static bool? _CanClone = null;
+        private static bool? _CanShallowClone = null;
+
         private static Func<T, IDictionary<object, object>, T> _CloneHandler = null;
+        private static Func<T, T> _ShallowCloneHandler = null;
 
         static Cloneable()
         {
             _TargetType = typeof(T);
         }
 
-        public static bool CanClone()
-        {
-            return CanClone(_TargetType);
-        }
-
-        private static MethodInfo GetMethod(Type type, string methodName, params Type[] argumentTypes)
-        {
-            BindingFlags bindingFlags = BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
-
-            if (argumentTypes != null && argumentTypes.Length > 0 && argumentTypes[0] == typeof(void))
-            {
-                return type.GetMethod(methodName, bindingFlags);
-            }
-            else
-            {
-                return type.GetMethod
-                (
-                    methodName,
-                    bindingFlags,
-                    null,
-                    argumentTypes,
-                    null
-                );
-            }
-        }
-
-        private static bool CanClone(Type type)
-        {
-            if (type.IsDefined(typeof(NonSerializedAttribute), true))
-                return false;
-
-            if (IsNotCloneable(type))
-                return false;
-
-            if (IsCloneablePrimitive(type))
-                return true;
-
-            if (type.IsArray)
-                return CanClone(GetUnderlyingArrayType(type));
-
-            Predicate<FieldInfo> whereFilter = f =>
-                (f.FieldType != type) &&
-                (f.IsDefined(typeof(NonSerializedAttribute), true) != true) &&
-                (f.FieldType.IsDefined(typeof(NonSerializedAttribute), true) != true);
-
-            foreach (FieldInfo field in GetFields(type, whereFilter))
-            {
-                if (IsNotCloneable(field.FieldType))
-                    return false;
-
-                if (IsCloneablePrimitive(field.FieldType))
-                    continue;
-
-                if (type.IsArray)
-                {
-                    if (CanClone(GetUnderlyingArrayType(field.FieldType)))
-                        continue;
-                    else
-                        return false;
-                }
-
-                Type fieldClonableType = typeof(Cloneable<>).MakeGenericType(field.FieldType);
-                MethodInfo canCloneMethod = GetMethod(fieldClonableType, "CanClone");
-                Func<bool> canClone = (Func<bool>)Delegate.CreateDelegate(typeof(Func<bool>), canCloneMethod);
-
-                if (canClone())
-                    continue;
-                else
-                    return false;
-            }
-
-            return true;
-        }
+        #region Helper Methods
 
         private static Type GetUnderlyingArrayType(Type type)
         {
@@ -134,8 +67,12 @@ namespace iSynaptic.Commons.Runtime.Serialization
             }
         }
 
+
         private static bool IsNotCloneable(Type inputType)
         {
+            if (inputType.IsDefined(typeof(NonSerializedAttribute), true))
+                return true;
+
             if (typeof(Delegate).IsAssignableFrom(inputType))
                 return true;
 
@@ -147,7 +84,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
 
         private static bool IsCloneablePrimitive(Type inputType)
         {
-            if(Array.Exists(_FixedCloneablePrimitive, x => x == inputType))
+            if (Array.Exists(_FixedCloneablePrimitive, x => x == inputType))
                 return true;
 
             if (inputType.IsPrimitive)
@@ -155,6 +92,212 @@ namespace iSynaptic.Commons.Runtime.Serialization
 
             return false;
         }
+
+        private static MethodInfo GetMethod(Type type, string methodName, params Type[] argumentTypes)
+        {
+            BindingFlags bindingFlags = BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+
+            if (argumentTypes != null && argumentTypes.Length > 0 && argumentTypes[0] == typeof(void))
+            {
+                return type.GetMethod(methodName, bindingFlags);
+            }
+            else
+            {
+                return type.GetMethod
+                (
+                    methodName,
+                    bindingFlags,
+                    null,
+                    argumentTypes,
+                    null
+                );
+            }
+        }
+
+        #endregion
+
+        #region CanClone
+
+        public static bool CanClone()
+        {
+            if (_CanClone.HasValue != true)
+                _CanClone = CanClone(_TargetType);
+
+            return _CanClone.Value;            
+        }
+
+        private static bool CanClone(Type type)
+        {
+            if (IsNotCloneable(type))
+                return false;
+
+            if (IsCloneablePrimitive(type))
+                return true;
+
+            if (type.IsArray)
+                return CanClone(GetUnderlyingArrayType(type));
+
+            Predicate<FieldInfo> whereFilter = f =>
+                (f.FieldType != type) &&
+                (f.IsDefined(typeof(NonSerializedAttribute), true) != true);
+
+            foreach (FieldInfo field in GetFields(type, whereFilter))
+            {
+                if (IsNotCloneable(field.FieldType))
+                    return false;
+
+                if (IsCloneablePrimitive(field.FieldType))
+                    continue;
+
+                if (type.IsArray)
+                {
+                    if (CanClone(GetUnderlyingArrayType(field.FieldType)))
+                        continue;
+                    else
+                        return false;
+                }
+
+                Type fieldClonableType = typeof(Cloneable<>).MakeGenericType(field.FieldType);
+                MethodInfo canCloneMethod = GetMethod(fieldClonableType, "CanClone");
+                Func<bool> canClone = (Func<bool>)Delegate.CreateDelegate(typeof(Func<bool>), canCloneMethod);
+
+                if (canClone())
+                    continue;
+                else
+                    return false;
+            }
+
+            return true;
+        }
+
+        #endregion
+
+        #region CanShallowClone
+
+        public static bool CanShallowClone()
+        {
+            if (_CanShallowClone.HasValue != true)
+                _CanShallowClone = CanShallowClone(_TargetType);
+
+            return _CanShallowClone.Value;            
+        }
+
+        private static bool CanShallowClone(Type type)
+        {
+            if (IsNotCloneable(type))
+                return false;
+
+            Predicate<FieldInfo> whereFilter = f =>
+                (f.FieldType != type) &&
+                (f.IsDefined(typeof(NonSerializedAttribute), true) != true);
+
+            foreach (FieldInfo field in GetFields(type, whereFilter))
+            {
+                if (IsNotCloneable(field.FieldType))
+                    return false;
+            }
+
+            return true;
+        }
+
+        #endregion
+
+        #region Clone Methods
+
+        public static T Clone(T source)
+        {
+            Dictionary<object, object> map = new Dictionary<object, object>();
+
+            return Clone(source, map);
+        }
+
+        private static T Clone(T source, IDictionary<object, object> map)
+        {
+            if (source == null)
+                return default(T);
+
+            if (typeof(T).IsValueType != true && map.ContainsKey(source))
+                return (T)map[source];
+
+            if (_CloneHandler == null)
+            {
+                if (CanClone())
+                {
+                    if (IsCloneablePrimitive(_TargetType))
+                        _CloneHandler = (s, m) => s;
+                    else if (_TargetType.IsArray)
+                        _CloneHandler = BuildArrayCloneHandler(_TargetType.GetElementType());
+                    else
+                        _CloneHandler = BuildCloneHandler(_TargetType);
+                }
+                else
+                    _CloneHandler = (s, m) => { throw new InvalidOperationException("This type cannot be cloned."); };
+            }
+
+            return _CloneHandler(source, map);
+        }
+
+        private static T ArrayClone<U>(T source, IDictionary<object, object> map)
+        {
+            if (source == null)
+                return default(T);
+
+            if (map.ContainsKey(source))
+                return (T)map[source];
+
+            Array sourceArray = (Array)(object)source;
+            ArrayIndex index = new ArrayIndex(sourceArray);
+
+            Array destArray = (Array)sourceArray.Clone();
+
+            map.Add(source, (T)(object)destArray);
+
+            if (sourceArray.Length <= 0)
+                return (T)(object)destArray;
+
+            while (true)
+            {
+                U item = (U)sourceArray.GetValue(index);
+                destArray.SetValue(Cloneable<U>.Clone(item, map), index);
+
+                if (index.CanIncrement())
+                    index.Increment();
+                else
+                    break;
+            }
+
+            return (T)(object)destArray;
+        }
+
+        public static T ShallowClone(T source)
+        {
+            if (source == null)
+                return default(T);
+
+            if (_ShallowCloneHandler == null)
+            {
+                if (CanShallowClone())
+                {
+                    if (IsCloneablePrimitive(_TargetType))
+                        _ShallowCloneHandler = s => s;
+                    else if (_TargetType.IsArray)
+                    {
+                        Array sourceArray = source as Array;
+                        return (T)(object)sourceArray.Clone();
+                    }
+                    else
+                        _ShallowCloneHandler = BuildShallowCloneHandler(_TargetType);
+                }
+                else
+                    _ShallowCloneHandler = s => { throw new InvalidOperationException("This type cannot be cloned."); };
+            }
+
+            return _ShallowCloneHandler(source);
+        }
+
+        #endregion
+
+        #region Build Handler Methods
 
         private static Func<T, IDictionary<object, object>, T> BuildCloneHandler(Type type)
         {
@@ -230,69 +373,39 @@ namespace iSynaptic.Commons.Runtime.Serialization
             return (Func<T, IDictionary<object, object>, T>)Delegate.CreateDelegate(typeof(Func<T, IDictionary<object, object>, T>), info);
         }
 
-        public static T Clone(T source)
+        private static Func<T, T> BuildShallowCloneHandler(Type type)
         {
-            Dictionary<object, object> map = new Dictionary<object, object>();
+            MethodInfo getTypeFromHandlerMethod = GetMethod(typeof(Type), "GetTypeFromHandle", typeof(RuntimeTypeHandle));
+            MethodInfo getSafeUninitializedObjectMethod = GetMethod(typeof(FormatterServices), "GetSafeUninitializedObject", typeof(Type));
 
-            return Clone(source, map);
-        }
+            DynamicMethod cloneMethod = new DynamicMethod(string.Format("Cloneable<{0}>_Clone", type.Name), type, new Type[] { type }, type, true);
+            ILGenerator gen = cloneMethod.GetILGenerator();
 
-        private static T Clone(T source, IDictionary<object, object> map)
-        {
-            if (source == null)
-                return default(T);
+            gen.DeclareLocal(type);
 
-            if (typeof(T).IsValueType != true && map.ContainsKey(source))
-                return (T)map[source];
+            gen.Emit(OpCodes.Ldtoken, type);
+            gen.Emit(OpCodes.Call, getTypeFromHandlerMethod);
+            gen.Emit(OpCodes.Call, getSafeUninitializedObjectMethod);
+            gen.Emit(OpCodes.Castclass, type);
+            gen.Emit(OpCodes.Stloc_0);
 
-            if (_CloneHandler == null)
+            Predicate<FieldInfo> whereFilter = f =>
+                (f.IsDefined(typeof(NonSerializedAttribute), true) != true);
+
+            foreach (FieldInfo field in GetFields(type, whereFilter))
             {
-                if (CanClone())
-                {
-                    if (IsCloneablePrimitive(_TargetType))
-                        _CloneHandler = (s, m) => s;
-                    else if (_TargetType.IsArray)
-                        _CloneHandler = BuildArrayCloneHandler(_TargetType.GetElementType());
-                    else
-                        _CloneHandler = BuildCloneHandler(_TargetType);
-                }
-                else
-                    _CloneHandler = (s, m) => { throw new InvalidOperationException("This type cannot be cloned."); };
+                gen.Emit(OpCodes.Ldloc_0);
+                gen.Emit(OpCodes.Ldarg_0);
+                gen.Emit(OpCodes.Ldfld, field);
+                gen.Emit(OpCodes.Stfld, field);
             }
 
-            return _CloneHandler(source, map);
+            gen.Emit(OpCodes.Ldloc_0);
+            gen.Emit(OpCodes.Ret);
+
+            return (Func<T, T>)cloneMethod.CreateDelegate(typeof(Func<T, T>));
         }
 
-        private static T ArrayClone<U>(T source, IDictionary<object, object> map)
-        {
-            if (source == null)
-                return default(T);
-
-            if (map.ContainsKey(source))
-                return (T)map[source];
-
-            Array sourceArray = (Array)(object)source;
-            ArrayIndex index = new ArrayIndex(sourceArray);
-
-            Array destArray = (Array)sourceArray.Clone();
-
-            map.Add(source, (T)(object)destArray);
-
-            if (sourceArray.Length <= 0)
-                return (T)(object)destArray;
-
-            while (true)
-            {
-                U item = (U)sourceArray.GetValue(index);
-                destArray.SetValue(Cloneable<U>.Clone(item, map), index);
-
-                if (index.CanIncrement())
-                    index.Increment();
-                else
-                    break;
-            }
-
-            return (T)(object)destArray;
-        }
+        #endregion
     }
 }
