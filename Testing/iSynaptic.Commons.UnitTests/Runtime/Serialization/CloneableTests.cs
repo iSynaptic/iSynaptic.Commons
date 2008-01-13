@@ -512,5 +512,20 @@ namespace iSynaptic.Commons.UnitTests.Runtime.Serialization
             Assert.IsTrue(object.ReferenceEquals(clonedChild.FirstChild, parent));
             Assert.IsTrue(object.ReferenceEquals(clonedChild.SecondChild, parent));
         }
+
+        [Test]
+        public void CloneReferenceOnly()
+        {
+            Guid id = Guid.NewGuid();
+            DateTime birthDate = DateTime.Now.AddDays(-1);
+
+            var stub = new CloneableStub { Id = id, BirthDate = birthDate, Name = "Stub 1", YearsOfService = 1 };
+            stub.ReferenceOnlyClone = stub;
+
+            var clonedStub = Cloneable<CloneableStub>.Clone(stub);
+
+            Assert.IsFalse(object.ReferenceEquals(stub, clonedStub));
+            Assert.IsTrue(object.ReferenceEquals(stub, clonedStub.ReferenceOnlyClone));
+        }
     }
 }

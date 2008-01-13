@@ -4,7 +4,7 @@ using System.Text;
 
 using iSynaptic.Commons.Extensions;
 
-namespace iSynaptic.Commons
+namespace iSynaptic.Commons.AOP
 {
     public abstract class Scope<T> : IDisposable where T : Scope<T>
     {

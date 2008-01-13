@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 
+using iSynaptic.Commons.Runtime.Serialization;
+
 namespace iSynaptic.Commons.UnitTests.Runtime.Serialization
 {
     public class CloneableStub : IEquatable<CloneableStub>
@@ -15,6 +17,15 @@ namespace iSynaptic.Commons.UnitTests.Runtime.Serialization
 
         public CloneableStub FirstChild { get; set; }
         public CloneableStub SecondChild { get; set; }
+
+        [CloneReferenceOnly]
+        private CloneableStub _ReferenceOnlyClone = null;
+
+        public CloneableStub ReferenceOnlyClone
+        {
+            get { return _ReferenceOnlyClone; }
+            set { _ReferenceOnlyClone = value; }
+        }
 
         [NonSerialized]
         private IntPtr _NotSerialized = IntPtr.Zero;

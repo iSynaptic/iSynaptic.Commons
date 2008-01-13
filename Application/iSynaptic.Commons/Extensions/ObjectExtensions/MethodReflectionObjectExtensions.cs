@@ -12,13 +12,18 @@ namespace iSynaptic.Commons.Extensions.ObjectExtensions
             Type targetType = target.GetType();
 
             MethodInfo info = targetType.GetMethod(methodName,
-                                       BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
-                                       null,
-                                       types ?? Type.EmptyTypes,
-                                       null);
+               BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.FlattenHierarchy,
+               null,
+               types ?? Type.EmptyTypes,
+               null);
 
             if (info != null)
-                return (T)(object)Delegate.CreateDelegate(typeof(T), target, info);
+            {
+                if(info.IsStatic)
+                    return (T)(object)Delegate.CreateDelegate(typeof(T), info);
+                else
+                    return (T)(object)Delegate.CreateDelegate(typeof(T), target, info);
+            }
             else
                 return default(T);
         }

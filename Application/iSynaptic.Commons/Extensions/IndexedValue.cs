@@ -4,7 +4,7 @@ using System.Text;
 
 namespace iSynaptic.Commons.Extensions
 {
-    public class IndexedValue<T>
+    public struct IndexedValue<T>
     {
         public IndexedValue(int index, T value)
         {
@@ -12,7 +12,7 @@ namespace iSynaptic.Commons.Extensions
             Value = value;
         }
 
-        public int Index { get; private set; }
-        public T Value { get; private set; }
+        public readonly int Index;
+        public readonly T Value;
     }
 }

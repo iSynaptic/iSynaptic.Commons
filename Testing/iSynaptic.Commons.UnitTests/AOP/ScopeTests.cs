@@ -4,6 +4,8 @@ using System.Text;
 
 using MbUnit.Framework;
 
+using iSynaptic.Commons.AOP;
+
 namespace iSynaptic.Commons.UnitTests.AOP
 {
     [TestFixture]

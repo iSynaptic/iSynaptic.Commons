@@ -4,6 +4,8 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.Serialization;
 
+using iSynaptic.Commons.Extensions;
+
 namespace iSynaptic.Commons.Runtime.Serialization
 {
     public static class Cloneable<T>
@@ -24,6 +26,9 @@ namespace iSynaptic.Commons.Runtime.Serialization
 
         private static Func<T, IDictionary<object, object>, T> _CloneHandler = null;
         private static Func<T, T> _ShallowCloneHandler = null;
+
+        private static readonly Predicate<FieldInfo> _FieldIncludeFilter = f =>
+            (f.IsDefined(typeof(NonSerializedAttribute), true) != true);
 
         static Cloneable()
         {
@@ -47,16 +52,16 @@ namespace iSynaptic.Commons.Runtime.Serialization
             return GetFields(type, null);
         }
 
-        private static IEnumerable<FieldInfo> GetFields(Type type, Predicate<FieldInfo> whereFilter)
+        private static IEnumerable<FieldInfo> GetFields(Type type, Predicate<FieldInfo> includeFilter)
         {
             Type currentType = type;
             while (currentType != null)
             {
                 foreach (FieldInfo info in currentType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
                 {
-                    if (whereFilter == null)
+                    if (includeFilter == null)
                         yield return info;
-                    else if (whereFilter(info))
+                    else if (includeFilter(info))
                         yield return info;
                 }
 
@@ -137,11 +142,9 @@ namespace iSynaptic.Commons.Runtime.Serialization
             if (type.IsArray)
                 return CanClone(GetUnderlyingArrayType(type));
 
-            Predicate<FieldInfo> whereFilter = f =>
-                (f.FieldType != type) &&
-                (f.IsDefined(typeof(NonSerializedAttribute), true) != true);
+            Predicate<FieldInfo> includeFilter = _FieldIncludeFilter.And(f => f.FieldType != type);
 
-            foreach (FieldInfo field in GetFields(type, whereFilter))
+            foreach (FieldInfo field in GetFields(type, includeFilter))
             {
                 if (IsNotCloneable(field.FieldType))
                     return false;
@@ -159,7 +162,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
 
                 Type fieldClonableType = typeof(Cloneable<>).MakeGenericType(field.FieldType);
                 MethodInfo canCloneMethod = GetMethod(fieldClonableType, "CanClone");
-                Func<bool> canClone = (Func<bool>)Delegate.CreateDelegate(typeof(Func<bool>), canCloneMethod);
+                var canClone = canCloneMethod.ToFunc<bool>();
 
                 if (canClone())
                     continue;
@@ -187,11 +190,9 @@ namespace iSynaptic.Commons.Runtime.Serialization
             if (IsNotCloneable(type))
                 return false;
 
-            Predicate<FieldInfo> whereFilter = f =>
-                (f.FieldType != type) &&
-                (f.IsDefined(typeof(NonSerializedAttribute), true) != true);
+            Predicate<FieldInfo> includeFilter = _FieldIncludeFilter.And(f => f.FieldType != type);
 
-            foreach (FieldInfo field in GetFields(type, whereFilter))
+            foreach (FieldInfo field in GetFields(type, includeFilter))
             {
                 if (IsNotCloneable(field.FieldType))
                     return false;
@@ -328,13 +329,10 @@ namespace iSynaptic.Commons.Runtime.Serialization
                 gen.Emit(OpCodes.Call, mapAddMethod);
             }
 
-            Predicate<FieldInfo> whereFilter = f =>
-                (f.IsDefined(typeof(NonSerializedAttribute), true) != true) &&
-                (f.FieldType.IsDefined(typeof(NonSerializedAttribute), true) != true);
-
-            foreach (FieldInfo field in GetFields(type, whereFilter))
+            foreach (FieldInfo field in GetFields(type, _FieldIncludeFilter))
             {
-                if (IsCloneablePrimitive(field.FieldType))
+                if (IsCloneablePrimitive(field.FieldType) || 
+                    (field.FieldType.IsValueType != true && field.IsDefined(typeof(CloneReferenceOnlyAttribute), true)))
                 {
                     gen.Emit(OpCodes.Ldloc_0);
                     gen.Emit(OpCodes.Ldarg_0);
@@ -360,7 +358,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
             gen.Emit(OpCodes.Ldloc_0);
             gen.Emit(OpCodes.Ret);
 
-            return (Func<T, IDictionary<object, object>, T>)cloneMethod.CreateDelegate(typeof(Func<T, IDictionary<object, object>, T>));
+            return cloneMethod.ToFunc<T, IDictionary<object, object>, T>();
         }
 
         private static Func<T, IDictionary<object, object>, T> BuildArrayCloneHandler(Type itemType)
@@ -370,7 +368,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
 
             info = info.MakeGenericMethod(itemType);
 
-            return (Func<T, IDictionary<object, object>, T>)Delegate.CreateDelegate(typeof(Func<T, IDictionary<object, object>, T>), info);
+            return info.ToFunc<T, IDictionary<object, object>, T>();
         }
 
         private static Func<T, T> BuildShallowCloneHandler(Type type)
@@ -389,10 +387,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
             gen.Emit(OpCodes.Castclass, type);
             gen.Emit(OpCodes.Stloc_0);
 
-            Predicate<FieldInfo> whereFilter = f =>
-                (f.IsDefined(typeof(NonSerializedAttribute), true) != true);
-
-            foreach (FieldInfo field in GetFields(type, whereFilter))
+            foreach (FieldInfo field in GetFields(type, _FieldIncludeFilter))
             {
                 gen.Emit(OpCodes.Ldloc_0);
                 gen.Emit(OpCodes.Ldarg_0);
@@ -403,7 +398,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
             gen.Emit(OpCodes.Ldloc_0);
             gen.Emit(OpCodes.Ret);
 
-            return (Func<T, T>)cloneMethod.CreateDelegate(typeof(Func<T, T>));
+            return cloneMethod.ToFunc<T, T>();
         }
 
         #endregion

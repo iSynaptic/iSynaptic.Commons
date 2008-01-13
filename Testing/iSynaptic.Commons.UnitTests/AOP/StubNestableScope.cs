@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 
+using iSynaptic.Commons.AOP;
+
 namespace iSynaptic.Commons.UnitTests.AOP
 {
     public class StubNestableScope : NestableScope<StubNestableScope>

@@ -56,13 +56,16 @@
     <Compile Include="AOP\ScopeTests.cs" />
     <Compile Include="AOP\StubNestableScope.cs" />
     <Compile Include="AOP\StubScope.cs" />
+    <Compile Include="BaseTestFixture.cs" />
     <Compile Include="Extensions\EnumerableExtensionsTests.cs" />
+    <Compile Include="Linq\EnumerableTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Runtime\Serialization\CloneableStub.cs" />
     <Compile Include="Runtime\Serialization\CloneableTests.cs" />
     <Compile Include="Runtime\Serialization\DerivedCloneableStub.cs" />
     <Compile Include="Runtime\Serialization\DerivedNotCloneableStub.cs" />
     <Compile Include="Runtime\Serialization\NotCloneableStub.cs" />
+    <Compile Include="SpecificationTests.cs" />
     <Compile Include="Text\Parsing\ScanningTextReaderTests.cs" />
     <Compile Include="Text\Parsing\SimpleScannerTests.cs" />
     <Compile Include="Transactions\SimpleObject.cs" />
@@ -73,6 +76,9 @@
       <Project>{D2770B18-76B1-484D-B48E-8330E1671DF5}</Project>
       <Name>iSynaptic.Commons.v3.5</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Linq\Customers.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
