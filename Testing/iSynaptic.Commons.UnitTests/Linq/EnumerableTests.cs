@@ -27,7 +27,8 @@ namespace iSynaptic.Commons.UnitTests.Linq
                 select n;
 
             var results = new List<int>(lowNums);
-            ArrayAssert.AreEqual(new int[] { 4, 1, 3, 2, 0 }, results.ToArray());
+
+            Assert.IsTrue(results.SequenceEqual(new int[] { 4, 1, 3, 2, 0 }));
         }
 
         [Test]
@@ -42,7 +43,7 @@ namespace iSynaptic.Commons.UnitTests.Linq
 
             var expectedIds = new List<int> { 5, 17, 29, 31, 53 };
 
-            Verify(soldOut, p => p.ProductID, expectedIds);
+            Assert.IsTrue(expectedIds.SequenceEqual(soldOut.Select(p => p.ProductID)));
         }
 
         [Test]
@@ -58,7 +59,7 @@ namespace iSynaptic.Commons.UnitTests.Linq
             var expectedIds = new List<int>(Enumerable.Range(1, 77));
             expectedIds.Remove(5, 17, 29, 31, 33, 53);
 
-            Verify(expensiveInStockProducts, p => p.ProductID, expectedIds);
+            Assert.IsTrue(expectedIds.SequenceEqual(expensiveInStockProducts.Select(p => p.ProductID)));
         }
 
         [Test]
@@ -73,27 +74,10 @@ namespace iSynaptic.Commons.UnitTests.Linq
 
             var expectedIds = new List<string> { "LAZYK", "TRAIH", "WHITC" };
 
-            Verify(waCustomers, c => c.CustomerID, expectedIds);
+            Assert.IsTrue(expectedIds.SequenceEqual(waCustomers.Select(c => c.CustomerID)));
         }
 
         #region Helper Methods
-
-        public void Verify<TItem, TId>(IEnumerable<TItem> resultsToVerify, Func<TItem, TId> idSelector, ICollection<TId> ids)
-        {
-            List<TItem> items = resultsToVerify is List<TItem> ? resultsToVerify as List<TItem> : new List<TItem>(resultsToVerify);
-
-            Assert.IsTrue(items.TrueForAll(item =>
-            {
-                if (ids.Contains(idSelector(item)))
-                {
-                    ids.Remove(idSelector(item));
-                    return true;
-                }
-                return false;
-            }), "Items were returned that were not expected.");
-
-            Assert.AreEqual(0, ids.Count, "Some expected items where not found.");
-        }
 
         public List<Product> GetProductList()
         {

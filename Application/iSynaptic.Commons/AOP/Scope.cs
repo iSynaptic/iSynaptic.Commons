@@ -66,10 +66,10 @@ namespace iSynaptic.Commons.AOP
 
         public void Dispose()
         {
-            if (_Disposed != true)
+            if (Disposed != true)
             {
                 Dispose(true);
-                _Disposed = true;
+                Disposed = true;
             }
         }
 
@@ -84,6 +84,7 @@ namespace iSynaptic.Commons.AOP
         protected bool Disposed
         {
             get { return _Disposed; }
+            private set { _Disposed = value; }
         }
 
         protected ScopeBounds Bounds

@@ -31,6 +31,40 @@ namespace System.Linq
                 yield return selector(item);
         }
 
+        public static bool SequenceEqual<TSource>(this IEnumerable<TSource> self, IEnumerable<TSource> second)
+        {
+            return self.SequenceEqual(second, null);
+        }
+
+        public static bool SequenceEqual<TSource>(this IEnumerable<TSource> self, IEnumerable<TSource> second, IEqualityComparer<TSource> comparer)
+        {
+            if (self == null)
+                throw new ArgumentNullException("self");
+
+            if (second == null)
+                throw new ArgumentNullException("second");
+
+            if (comparer == null)
+                comparer = EqualityComparer<TSource>.Default;
+
+            using (IEnumerator<TSource> enumeratorOne = self.GetEnumerator())
+            {
+                using (IEnumerator<TSource> enumeratorTwo = second.GetEnumerator())
+                {
+                    while (enumeratorOne.MoveNext())
+                    {
+                        if (!enumeratorTwo.MoveNext() || !comparer.Equals(enumeratorOne.Current, enumeratorTwo.Current))
+                            return false;
+                    }
+
+                    if (enumeratorTwo.MoveNext())
+                        return false;
+                }
+            }
+
+            return true;
+        }
+
         public static TSource[] ToArray<TSource>(this IEnumerable<TSource> source)
         {
             if (source == null)

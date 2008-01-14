@@ -4,6 +4,8 @@ using System.Text;
 
 using MbUnit.Framework;
 
+using System.Linq;
+
 using iSynaptic.Commons.Extensions;
 using iSynaptic.Commons.Extensions.ObjectExtensions;
 
@@ -166,34 +168,82 @@ namespace iSynaptic.Commons.UnitTests
         }
 
         [Test]
-        [Ignore]
         public void MeetsSpecification()
         {
             int[] values = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+            var gtFive = new GreaterThanFiveSpecification();
+            var ltSeven = new LessThanSevenSpecification();
+
+            Assert.IsTrue(gtFive.MeetsSpecifcation(values).SequenceEqual(new int[] { 6, 7, 8, 9 }));
+            Assert.IsTrue(ltSeven.MeetsSpecifcation(values).SequenceEqual(new int[] { 0, 1, 2, 3, 4, 5, 6, }));
+            Assert.IsTrue((gtFive && ltSeven).MeetsSpecifcation(values).SequenceEqual(new int[] { 6 }));
         }
 
         [Test]
-        [Ignore]
         public void FailsSpecification()
         {
+            int[] values = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+            var gtFive = new GreaterThanFiveSpecification();
+            var ltSeven = new LessThanSevenSpecification();
+
+            Assert.IsTrue(gtFive.FailsSpecification(values).SequenceEqual(new int[] { 0, 1, 2, 3, 4, 5 }));
+            Assert.IsTrue(ltSeven.FailsSpecification(values).SequenceEqual(new int[] { 7, 8, 9 }));
+            Assert.IsTrue((gtFive && ltSeven).FailsSpecification(values).SequenceEqual(new int[] { 0, 1, 2, 3, 4, 5, 7, 8, 9 }));
         }
 
         [Test]
-        [Ignore]
         public void IsSatisfiedBySingleItem()
         {
+            var gtFive = new GreaterThanFiveSpecification();
+
+            Assert.IsTrue(gtFive.IsSatisfiedBy(6));
+            Assert.IsFalse(gtFive.IsSatisfiedBy(4));
         }
 
         [Test]
-        [Ignore]
         public void IsSatisfiedByParams()
         {
+            var gtFive = new GreaterThanFiveSpecification();
+
+            Assert.IsTrue(gtFive.IsSatisfiedBy(6, 7));
+            Assert.IsFalse(gtFive.IsSatisfiedBy(3, 4));
         }
 
         [Test]
-        [Ignore]
         public void IsSatisfiedByIEnumerable()
         {
+            var gtFive = new GreaterThanFiveSpecification();
+            var valuesGreaterThanFive = new List<int> { 6, 7, 8, 9 };
+            var valuesLessThanFive = new List<int> { 1, 2, 3, 4 };
+
+            Assert.IsTrue(gtFive.IsSatisfiedBy(valuesGreaterThanFive));
+            Assert.IsFalse(gtFive.IsSatisfiedBy(valuesLessThanFive));
+
+        }
+
+        [Test]
+        public void UnwrapsPredicateSpecification()
+        {
+            Predicate<int> predicate = val => val > 5;
+            Specification<int> spec = predicate;
+
+            Predicate<int> unwrapedPredicate = spec;
+
+            Assert.IsTrue(object.ReferenceEquals(predicate, unwrapedPredicate));
+        }
+
+        [Test]
+        public void UnwrapsSpecificationFromPredicate()
+        {
+            var gtFive = new GreaterThanFiveSpecification();
+            Predicate<int> predicate = gtFive;
+
+            Specification<int> unwrapped = predicate;
+
+            Assert.IsAssignableFrom(typeof(GreaterThanFiveSpecification), unwrapped);
+            Assert.IsTrue(object.ReferenceEquals(gtFive, unwrapped));
         }
     }
 

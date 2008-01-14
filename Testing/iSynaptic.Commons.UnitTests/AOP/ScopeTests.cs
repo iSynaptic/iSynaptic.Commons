@@ -101,5 +101,14 @@ namespace iSynaptic.Commons.UnitTests.AOP
 
             Assert.IsTrue(isAvailable);
         }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void UndefinedBoundsValues()
+        {
+            using (StubScope scope = new StubScope((ScopeBounds)73))
+            {
+            }
+        }
     }
 }
