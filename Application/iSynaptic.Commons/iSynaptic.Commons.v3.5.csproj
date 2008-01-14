@@ -60,6 +60,9 @@
     <Compile Include="Extensions\EnumExtensions.cs" />
     <Compile Include="Extensions\FuncExtensions.cs" />
     <Compile Include="Extensions\IndexedValue.cs" />
+    <Compile Include="Extensions\LookAheadableValue.cs" />
+    <Compile Include="Extensions\LookAheadEnumerable.cs" />
+    <Compile Include="Extensions\LookAheadEnumerator.cs" />
     <Compile Include="Extensions\MethodInfoExtensions.cs" />
     <Compile Include="Extensions\ObjectExtensions\MethodReflectionObjectExtensions.cs" />
     <Compile Include="Extensions\PredicateExtensions.cs" />

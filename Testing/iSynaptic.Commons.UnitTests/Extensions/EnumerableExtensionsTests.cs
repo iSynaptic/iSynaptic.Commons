@@ -24,5 +24,28 @@ namespace iSynaptic.Commons.UnitTests.Extensions
                 index++;
             }
         }
+
+        [Test]
+        public void LookAheadEnumerable()
+        {
+            int[] items = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+            using (var enumerator = items.AsLookAheadable().GetEnumerator())
+            {
+                Assert.IsTrue(enumerator.MoveNext());
+                Assert.AreEqual(1, enumerator.Current.Value);
+                Assert.AreEqual(2, enumerator.Current.LookAhead(0));
+
+                Assert.IsTrue(enumerator.MoveNext());
+                Assert.AreEqual(2, enumerator.Current.Value);
+                Assert.AreEqual(3, enumerator.Current.LookAhead(0));
+                Assert.AreEqual(5, enumerator.Current.LookAhead(2));
+                Assert.AreEqual(4, enumerator.Current.LookAhead(1));
+
+                Assert.IsTrue(enumerator.MoveNext());
+                Assert.AreEqual(3, enumerator.Current.Value);
+                Assert.AreEqual(4, enumerator.Current.LookAhead(0));
+            }
+        }
     }
 }

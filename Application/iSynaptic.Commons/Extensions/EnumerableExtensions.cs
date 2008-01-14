@@ -14,6 +14,14 @@ namespace iSynaptic.Commons.Extensions
                 yield return new IndexedValue<T>(index++, item);
         }
 
+        public static IEnumerable<LookAheadableValue<T>> AsLookAheadable<T>(this IEnumerable<T> self)
+        {
+            if (self == null)
+                throw new ArgumentNullException("self");
+
+            return new LookAheadEnumerable<T>(self);
+        }
+
         public static string Delimit<T>(this IEnumerable<T> self, string delimiter)
         {
             return Delimit(self, delimiter, item => item.ToString());
