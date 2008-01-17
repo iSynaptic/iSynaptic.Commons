@@ -85,5 +85,31 @@ namespace iSynaptic.Commons.Extensions
         }
 
         #endregion
+
+        #region ToDisposable
+
+        public static IDisposable ToDisposable(this Action self)
+        {
+            if (self == null)
+                throw new ArgumentNullException("self");
+
+            return new DisposableAction(self);
+        }
+
+        private class DisposableAction : IDisposable
+        {
+            private Action _Action = null;
+            public DisposableAction(Action action)
+            {
+                _Action = action;
+            }
+
+            public void Dispose()
+            {
+                _Action();
+            }
+        }
+
+        #endregion
     }
 }

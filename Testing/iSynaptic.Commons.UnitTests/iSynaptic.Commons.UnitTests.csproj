@@ -53,6 +53,7 @@
     <Compile Include="AOP\StubNestableScope.cs" />
     <Compile Include="AOP\StubScope.cs" />
     <Compile Include="BaseTestFixture.cs" />
+    <Compile Include="Extensions\ActionExtensionsTests.cs" />
     <Compile Include="Extensions\EnumerableExtensionsTests.cs" />
     <Compile Include="Linq\EnumerableTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
