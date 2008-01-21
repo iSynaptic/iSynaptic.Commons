@@ -10,7 +10,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
 {
     public static class Cloneable<T>
     {
-        private static Type[] _FixedCloneablePrimitive =
+        private static Type[] _CloneablePrimitives =
         {
             typeof(string),
             typeof(decimal),
@@ -47,11 +47,6 @@ namespace iSynaptic.Commons.Runtime.Serialization
             return currentType;
         }
 
-        private static IEnumerable<FieldInfo> GetFields(Type type)
-        {
-            return GetFields(type, null);
-        }
-
         private static IEnumerable<FieldInfo> GetFields(Type type, Predicate<FieldInfo> includeFilter)
         {
             Type currentType = type;
@@ -59,10 +54,10 @@ namespace iSynaptic.Commons.Runtime.Serialization
             {
                 foreach (FieldInfo info in currentType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
                 {
-                    if (includeFilter == null)
-                        yield return info;
-                    else if (includeFilter(info))
-                        yield return info;
+                    if (includeFilter != null && includeFilter(info) != true)
+                        continue;
+
+                    yield return info;
                 }
 
                 if (currentType.BaseType != null)
@@ -75,9 +70,6 @@ namespace iSynaptic.Commons.Runtime.Serialization
 
         private static bool IsNotCloneable(Type inputType)
         {
-            if (inputType.IsDefined(typeof(NonSerializedAttribute), true))
-                return true;
-
             if (typeof(Delegate).IsAssignableFrom(inputType))
                 return true;
 
@@ -89,11 +81,17 @@ namespace iSynaptic.Commons.Runtime.Serialization
 
         private static bool IsCloneablePrimitive(Type inputType)
         {
-            if (Array.Exists(_FixedCloneablePrimitive, x => x == inputType))
+            if (Array.Exists(_CloneablePrimitives, x => x == inputType))
                 return true;
 
             if (inputType.IsPrimitive)
                 return true;
+
+            if (inputType.IsGenericType && inputType.GetGenericTypeDefinition() == typeof(Nullable<>))
+            {
+                Type baseType = inputType.GetGenericArguments()[0];
+                return IsCloneablePrimitive(baseType);
+            }
 
             return false;
         }
@@ -102,21 +100,14 @@ namespace iSynaptic.Commons.Runtime.Serialization
         {
             BindingFlags bindingFlags = BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 
-            if (argumentTypes != null && argumentTypes.Length > 0 && argumentTypes[0] == typeof(void))
-            {
-                return type.GetMethod(methodName, bindingFlags);
-            }
-            else
-            {
-                return type.GetMethod
-                (
-                    methodName,
-                    bindingFlags,
-                    null,
-                    argumentTypes,
-                    null
-                );
-            }
+            return type.GetMethod
+            (
+                methodName,
+                bindingFlags,
+                null,
+                argumentTypes,
+                null
+            );
         }
 
         #endregion
@@ -146,21 +137,23 @@ namespace iSynaptic.Commons.Runtime.Serialization
 
             foreach (FieldInfo field in GetFields(type, includeFilter))
             {
-                if (IsNotCloneable(field.FieldType))
+                Type fieldType = field.FieldType;
+
+                if (IsNotCloneable(fieldType))
                     return false;
 
-                if (IsCloneablePrimitive(field.FieldType))
+                if (IsCloneablePrimitive(fieldType))
                     continue;
 
-                if (type.IsArray)
+                if (fieldType.IsArray)
                 {
-                    if (CanClone(GetUnderlyingArrayType(field.FieldType)))
+                    if (CanClone(GetUnderlyingArrayType(fieldType)))
                         continue;
                     else
                         return false;
                 }
 
-                Type fieldClonableType = typeof(Cloneable<>).MakeGenericType(field.FieldType);
+                Type fieldClonableType = typeof(Cloneable<>).MakeGenericType(fieldType);
                 MethodInfo canCloneMethod = GetMethod(fieldClonableType, "CanClone");
                 var canClone = canCloneMethod.ToFunc<bool>();
 
@@ -208,18 +201,11 @@ namespace iSynaptic.Commons.Runtime.Serialization
         public static T Clone(T source)
         {
             Dictionary<object, object> map = new Dictionary<object, object>();
-
             return Clone(source, map);
         }
 
         private static T Clone(T source, IDictionary<object, object> map)
         {
-            if (source == null)
-                return default(T);
-
-            if (typeof(T).IsValueType != true && map.ContainsKey(source))
-                return (T)map[source];
-
             if (_CloneHandler == null)
             {
                 if (CanClone())
@@ -272,9 +258,6 @@ namespace iSynaptic.Commons.Runtime.Serialization
 
         public static T ShallowClone(T source)
         {
-            if (source == null)
-                return default(T);
-
             if (_ShallowCloneHandler == null)
             {
                 if (CanShallowClone())
@@ -283,6 +266,9 @@ namespace iSynaptic.Commons.Runtime.Serialization
                         _ShallowCloneHandler = s => s;
                     else if (_TargetType.IsArray)
                     {
+                        if (source == null)
+                            return default(T);
+
                         Array sourceArray = source as Array;
                         return (T)(object)sourceArray.Clone();
                     }
@@ -302,25 +288,45 @@ namespace iSynaptic.Commons.Runtime.Serialization
 
         private static Func<T, IDictionary<object, object>, T> BuildCloneHandler(Type type)
         {
-            MethodInfo getTypeFromHandlerMethod = GetMethod(typeof(Type), "GetTypeFromHandle", typeof(RuntimeTypeHandle));
-            MethodInfo getSafeUninitializedObjectMethod = GetMethod(typeof(FormatterServices), "GetSafeUninitializedObject", typeof(Type));
-
+            bool isValueType = type.IsValueType;
+            
             Type dictionaryType = typeof(IDictionary<,>).MakeGenericType(typeof(object), typeof(object));
 
+            MethodInfo mapContainsKeyMethod = GetMethod(dictionaryType, "ContainsKey", typeof(object));
+            MethodInfo mapGetItemMethod = GetMethod(dictionaryType, "get_Item", typeof(object));
             MethodInfo mapAddMethod = GetMethod(dictionaryType, "Add", typeof(object), typeof(object));
-                
+           
             DynamicMethod cloneMethod = new DynamicMethod(string.Format("Cloneable<{0}>_Clone", type.Name), type, new Type[] { type, dictionaryType }, type, true);
             ILGenerator gen = cloneMethod.GetILGenerator();
 
+            Label checkMapLabel = gen.DefineLabel();
+            Label beginCloningLabel = gen.DefineLabel();
+
             gen.DeclareLocal(type);
 
-            gen.Emit(OpCodes.Ldtoken, type);
-            gen.Emit(OpCodes.Call, getTypeFromHandlerMethod);
-            gen.Emit(OpCodes.Call, getSafeUninitializedObjectMethod);
-            gen.Emit(OpCodes.Castclass, type);
-            gen.Emit(OpCodes.Stloc_0);
+            if (isValueType != true)
+            {
+                gen.Emit(OpCodes.Ldarg_0);
+                gen.Emit(OpCodes.Brtrue_S, checkMapLabel);
+                gen.Emit(OpCodes.Ldnull);
+                gen.Emit(OpCodes.Ret);
 
-            if (!type.IsValueType)
+                gen.MarkLabel(checkMapLabel);
+                gen.Emit(OpCodes.Ldarg_1);
+                gen.Emit(OpCodes.Ldarg_0);
+                gen.Emit(OpCodes.Call, mapContainsKeyMethod);
+                gen.Emit(OpCodes.Brfalse_S, beginCloningLabel);
+                gen.Emit(OpCodes.Ldarg_1);
+                gen.Emit(OpCodes.Ldarg_0);
+                gen.Emit(OpCodes.Call, mapGetItemMethod);
+                gen.Emit(OpCodes.Ret);
+            }
+
+            gen.MarkLabel(beginCloningLabel);
+
+            EmitInitializeObject(type, isValueType, gen);
+
+            if(isValueType != true)
             {
                 gen.Emit(OpCodes.Ldarg_1);
                 gen.Emit(OpCodes.Ldarg_0);
@@ -334,19 +340,25 @@ namespace iSynaptic.Commons.Runtime.Serialization
                 if (IsCloneablePrimitive(field.FieldType) || 
                     (field.FieldType.IsValueType != true && field.IsDefined(typeof(CloneReferenceOnlyAttribute), true)))
                 {
-                    gen.Emit(OpCodes.Ldloc_0);
-                    gen.Emit(OpCodes.Ldarg_0);
-                    gen.Emit(OpCodes.Ldfld, field);
-                    gen.Emit(OpCodes.Stfld, field);
+                    EmitCopyField(isValueType, gen, field);
                 }
                 else
                 {
-                    gen.Emit(OpCodes.Ldloc_0);
-                    gen.Emit(OpCodes.Ldarg_0);
+                    if (isValueType)
+                    {
+                        gen.Emit(OpCodes.Ldloca_S, (byte)0);
+                        gen.Emit(OpCodes.Ldarga_S, (byte)0);
+                    }
+                    else
+                    {
+                        gen.Emit(OpCodes.Ldloc_0);
+                        gen.Emit(OpCodes.Ldarg_0);
+                    }
+
                     gen.Emit(OpCodes.Ldfld, field);
                     gen.Emit(OpCodes.Ldarg_1);
 
-                    Type fieldClonableType =typeof(Cloneable<>).MakeGenericType(field.FieldType);
+                    Type fieldClonableType = typeof(Cloneable<>).MakeGenericType(field.FieldType);
 
                     MethodInfo childCloneMethod = GetMethod(fieldClonableType, "Clone", field.FieldType, dictionaryType);
 
@@ -373,32 +385,95 @@ namespace iSynaptic.Commons.Runtime.Serialization
 
         private static Func<T, T> BuildShallowCloneHandler(Type type)
         {
+            bool isValueType = type.IsValueType;
+
             MethodInfo getTypeFromHandlerMethod = GetMethod(typeof(Type), "GetTypeFromHandle", typeof(RuntimeTypeHandle));
             MethodInfo getSafeUninitializedObjectMethod = GetMethod(typeof(FormatterServices), "GetSafeUninitializedObject", typeof(Type));
+            MethodInfo referenceEquals = GetMethod(typeof(object), "ReferenceEquals", typeof(object), typeof(object));
 
-            DynamicMethod cloneMethod = new DynamicMethod(string.Format("Cloneable<{0}>_Clone", type.Name), type, new Type[] { type }, type, true);
+            DynamicMethod cloneMethod = new DynamicMethod(string.Format("Cloneable<{0}>_ShallowClone", type.Name), type, new Type[] { type }, type, true);
             ILGenerator gen = cloneMethod.GetILGenerator();
 
             gen.DeclareLocal(type);
 
-            gen.Emit(OpCodes.Ldtoken, type);
-            gen.Emit(OpCodes.Call, getTypeFromHandlerMethod);
-            gen.Emit(OpCodes.Call, getSafeUninitializedObjectMethod);
-            gen.Emit(OpCodes.Castclass, type);
-            gen.Emit(OpCodes.Stloc_0);
+            if (isValueType != true)
+            {
+                Label continueLabel = gen.DefineLabel();
+                gen.Emit(OpCodes.Ldarg_0);
+                gen.Emit(OpCodes.Brtrue_S, continueLabel);
+                gen.Emit(OpCodes.Ldnull);
+                gen.Emit(OpCodes.Ret);
+                gen.MarkLabel(continueLabel);
+            }
+            
+            EmitInitializeObject(type, isValueType, gen);
 
             foreach (FieldInfo field in GetFields(type, _FieldIncludeFilter))
             {
-                gen.Emit(OpCodes.Ldloc_0);
-                gen.Emit(OpCodes.Ldarg_0);
-                gen.Emit(OpCodes.Ldfld, field);
-                gen.Emit(OpCodes.Stfld, field);
+                if (isValueType != true && field.FieldType == type)
+                {
+                    Label copyField = gen.DefineLabel();
+                    Label doneWithField = gen.DefineLabel();
+
+                    gen.Emit(OpCodes.Ldarg_0);
+                    gen.Emit(OpCodes.Ldarg_0);
+                    gen.Emit(OpCodes.Ldfld, field);
+                    gen.Emit(OpCodes.Call, referenceEquals);
+                    gen.Emit(OpCodes.Brfalse, copyField);
+                    gen.Emit(OpCodes.Ldloc_0);
+                    gen.Emit(OpCodes.Ldloc_0);
+                    gen.Emit(OpCodes.Stfld, field);
+                    gen.Emit(OpCodes.Br, doneWithField);
+
+                    gen.MarkLabel(copyField);
+                    EmitCopyField(isValueType, gen, field);
+                    gen.MarkLabel(doneWithField);
+                }
+                else
+                    EmitCopyField(isValueType, gen, field);
             }
 
             gen.Emit(OpCodes.Ldloc_0);
             gen.Emit(OpCodes.Ret);
 
             return cloneMethod.ToFunc<T, T>();
+        }
+
+        private static void EmitInitializeObject(Type type, bool isValueType, ILGenerator gen)
+        {
+            MethodInfo getTypeFromHandlerMethod = GetMethod(typeof(Type), "GetTypeFromHandle", typeof(RuntimeTypeHandle));
+            MethodInfo getSafeUninitializedObjectMethod = GetMethod(typeof(FormatterServices), "GetSafeUninitializedObject", typeof(Type));
+
+            if (isValueType)
+            {
+                gen.Emit(OpCodes.Ldloca_S, (byte)0);
+                gen.Emit(OpCodes.Initobj, type);
+            }
+            else
+            {
+                gen.Emit(OpCodes.Ldtoken, type);
+                gen.Emit(OpCodes.Call, getTypeFromHandlerMethod);
+                gen.Emit(OpCodes.Call, getSafeUninitializedObjectMethod);
+                gen.Emit(OpCodes.Castclass, type);
+                gen.Emit(OpCodes.Stloc_0);
+            }
+        }
+
+        private static void EmitCopyField(bool isValueType, ILGenerator gen, FieldInfo field)
+        {
+            if (isValueType)
+            {
+                gen.Emit(OpCodes.Ldloca_S, (byte)0);
+                gen.Emit(OpCodes.Ldarga_S, (byte)0);
+            }
+            else
+            {
+                gen.Emit(OpCodes.Ldloc_0);
+                gen.Emit(OpCodes.Ldarg_0);
+            }
+
+            gen.Emit(OpCodes.Ldfld, field);
+            gen.Emit(OpCodes.Stfld, field);
         }
 
         #endregion

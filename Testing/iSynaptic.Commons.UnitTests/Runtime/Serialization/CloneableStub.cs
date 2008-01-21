@@ -14,6 +14,7 @@ namespace iSynaptic.Commons.UnitTests.Runtime.Serialization
         public int YearsOfService { get; set; }
         public double BigNumber { get; set; }
         public decimal ADecimal { get; set; }
+        public int[] Ints { get; set; }
 
         public CloneableStub FirstChild { get; set; }
         public CloneableStub SecondChild { get; set; }
