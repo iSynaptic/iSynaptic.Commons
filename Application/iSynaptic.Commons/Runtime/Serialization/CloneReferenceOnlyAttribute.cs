@@ -7,8 +7,5 @@ namespace iSynaptic.Commons.Runtime.Serialization
     [AttributeUsage(AttributeTargets.Field, Inherited = true, AllowMultiple = false)]
     public class CloneReferenceOnlyAttribute : Attribute
     {
-        public CloneReferenceOnlyAttribute()
-        {
-        }
     }
 }

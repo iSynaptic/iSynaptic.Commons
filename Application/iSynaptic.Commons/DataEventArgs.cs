@@ -10,9 +10,6 @@ namespace iSynaptic.Commons
 
         public DataEventArgs(T data)
         {
-            if (data == null)
-                throw new ArgumentNullException("data");
-
             _Data = data;
         }
 

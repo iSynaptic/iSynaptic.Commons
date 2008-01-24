@@ -47,6 +47,14 @@ namespace iSynaptic.Commons.Runtime.Serialization
             return currentType;
         }
 
+        private static Type GetNullableUnderlyingType(Type type)
+        {
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+                return type.GetGenericArguments()[0];
+
+            return null;
+        }
+
         private static IEnumerable<FieldInfo> GetFields(Type type, Predicate<FieldInfo> includeFilter)
         {
             Type currentType = type;
@@ -87,11 +95,10 @@ namespace iSynaptic.Commons.Runtime.Serialization
             if (inputType.IsPrimitive)
                 return true;
 
-            if (inputType.IsGenericType && inputType.GetGenericTypeDefinition() == typeof(Nullable<>))
-            {
-                Type baseType = inputType.GetGenericArguments()[0];
-                return IsCloneablePrimitive(baseType);
-            }
+            Type nullableUnderlying = GetNullableUnderlyingType(inputType);
+            
+            if (nullableUnderlying != null)
+                return IsCloneablePrimitive(nullableUnderlying);
 
             return false;
         }
@@ -124,20 +131,22 @@ namespace iSynaptic.Commons.Runtime.Serialization
 
         private static bool CanClone(Type type)
         {
-            if (IsNotCloneable(type))
+            Type typeToCheck = GetNullableUnderlyingType(type) ?? type;
+
+            if (IsNotCloneable(typeToCheck))
                 return false;
 
-            if (IsCloneablePrimitive(type))
+            if (IsCloneablePrimitive(typeToCheck))
                 return true;
 
-            if (type.IsArray)
-                return CanClone(GetUnderlyingArrayType(type));
+            if (typeToCheck.IsArray)
+                return CanClone(GetUnderlyingArrayType(typeToCheck));
 
-            Predicate<FieldInfo> includeFilter = _FieldIncludeFilter.And(f => f.FieldType != type);
+            Predicate<FieldInfo> includeFilter = _FieldIncludeFilter.And(f => f.FieldType != typeToCheck);
 
-            foreach (FieldInfo field in GetFields(type, includeFilter))
+            foreach (FieldInfo field in GetFields(typeToCheck, includeFilter))
             {
-                Type fieldType = field.FieldType;
+                Type fieldType = GetNullableUnderlyingType(field.FieldType) ?? field.FieldType;
 
                 if (IsNotCloneable(fieldType))
                     return false;
@@ -180,15 +189,28 @@ namespace iSynaptic.Commons.Runtime.Serialization
 
         private static bool CanShallowClone(Type type)
         {
-            if (IsNotCloneable(type))
+            Type typeToCheck = GetNullableUnderlyingType(type) ?? type;
+
+            if (IsNotCloneable(typeToCheck))
                 return false;
 
-            Predicate<FieldInfo> includeFilter = _FieldIncludeFilter.And(f => f.FieldType != type);
+            Predicate<FieldInfo> includeFilter = _FieldIncludeFilter.And(f => f.FieldType != typeToCheck);
 
-            foreach (FieldInfo field in GetFields(type, includeFilter))
+            foreach (FieldInfo field in GetFields(typeToCheck, includeFilter))
             {
-                if (IsNotCloneable(field.FieldType))
+                Type fieldType = GetNullableUnderlyingType(field.FieldType) ?? field.FieldType;
+
+                if (IsNotCloneable(fieldType))
                     return false;
+
+                if (fieldType.IsArray)
+                {
+                    if (CanClone(GetUnderlyingArrayType(fieldType)))
+                        continue;
+                    else
+                        return false;
+                }
+
             }
 
             return true;
@@ -324,7 +346,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
 
             gen.MarkLabel(beginCloningLabel);
 
-            EmitInitializeObject(type, isValueType, gen);
+            EmitInitializeObject(type, gen);
 
             if(isValueType != true)
             {
@@ -406,7 +428,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
                 gen.MarkLabel(continueLabel);
             }
             
-            EmitInitializeObject(type, isValueType, gen);
+            EmitInitializeObject(type, gen);
 
             foreach (FieldInfo field in GetFields(type, _FieldIncludeFilter))
             {
@@ -439,8 +461,10 @@ namespace iSynaptic.Commons.Runtime.Serialization
             return cloneMethod.ToFunc<T, T>();
         }
 
-        private static void EmitInitializeObject(Type type, bool isValueType, ILGenerator gen)
+        private static void EmitInitializeObject(Type type, ILGenerator gen)
         {
+            bool isValueType = type.IsValueType;
+
             MethodInfo getTypeFromHandlerMethod = GetMethod(typeof(Type), "GetTypeFromHandle", typeof(RuntimeTypeHandle));
             MethodInfo getSafeUninitializedObjectMethod = GetMethod(typeof(FormatterServices), "GetSafeUninitializedObject", typeof(Type));
 
