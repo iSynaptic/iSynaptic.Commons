@@ -36,19 +36,18 @@ namespace iSynaptic.Commons.Transactions
 
             public void InDoubt(Enlistment enlistment)
             {
+                _Transactional.Values.Remove(_Id);
                 enlistment.Done();
             }
 
             public void Prepare(PreparingEnlistment preparingEnlistment)
             {
-                //ValueEqualityComparer<T> valueComparer = new ValueEqualityComparer<T>();
-
                 _Transactional._Lock.Enter();
                 
                 var value = _Transactional.Values[_Id];
                 var originalValue = _Transactional._CurrentValue;
                 
-                if (value.Key != originalValue.Key)// && valueComparer.Equals(originalValue.Value, value.Value) != true)
+                if (value.Key != originalValue.Key)
                 {
                     _Transactional._Lock.Exit();
                     throw new TransactionalConcurrencyException();
@@ -74,9 +73,6 @@ namespace iSynaptic.Commons.Transactions
         {
             if (Cloneable<T>.CanClone() != true)
                 throw new InvalidOperationException("Underlying type cannot be cloned.");
-
-            //if (ValueEqualityComparer<T>.CanCompare() != true)
-            //    throw new InvalidOperationException("Underlying type cannot be compared via ValueEqualityComparer.");
         }
 
         public Transactional() : this(default(T))

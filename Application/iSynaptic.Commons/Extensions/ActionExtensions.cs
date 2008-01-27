@@ -111,5 +111,29 @@ namespace iSynaptic.Commons.Extensions
         }
 
         #endregion
+
+        public static Action<T> CatchExceptions<T>(this Action<T> self)
+        {
+            return CatchExceptions<T>(self, null);
+        }
+
+        public static Action<T> CatchExceptions<T>(this Action<T> self, ICollection<Exception> exceptions)
+        {
+            if (self == null)
+                throw new ArgumentNullException("self");
+
+            return item =>
+            {
+                try
+                {
+                    self(item);
+                }
+                catch (Exception ex)
+                {
+                    if (exceptions != null)
+                        exceptions.Add(ex);
+                }
+            };
+        }
     }
 }

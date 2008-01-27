@@ -5,6 +5,7 @@ using System.Reflection.Emit;
 using System.Runtime.Serialization;
 
 using iSynaptic.Commons.Extensions;
+using System.Security.Permissions;
 
 namespace iSynaptic.Commons.Runtime.Serialization
 {
@@ -220,6 +221,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
 
         #region Clone Methods
 
+        [ReflectionPermission(SecurityAction.Demand, ReflectionEmit = true)]
         public static T Clone(T source)
         {
             Dictionary<object, object> map = new Dictionary<object, object>();

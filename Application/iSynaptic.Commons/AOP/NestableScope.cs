@@ -33,7 +33,7 @@ namespace iSynaptic.Commons.AOP
 
         protected override void Dispose(bool disposing)
         {
-            if(Parent != null)
+            if (Parent != null)
                 SetCurrentScope(_Parent);
 
             base.Dispose(disposing);

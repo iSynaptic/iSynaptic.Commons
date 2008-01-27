@@ -41,17 +41,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Action.cs" />
-    <Compile Include="AOP\IoC.cs" />
     <Compile Include="AOP\NestableScope.cs" />
     <Compile Include="AOP\Scope.cs" />
     <Compile Include="AOP\ScopeBounds.cs" />
     <Compile Include="AOP\UnitOfWork.cs" />
     <Compile Include="ArrayIndex.cs" />
     <Compile Include="Collections\Generic\ReadOnlyDictionary.cs" />
-    <Compile Include="Collections\Generic\ValueEqualityComparer.cs" />
+    <Compile Include="ContainerException.cs" />
     <Compile Include="DataEventArgs.cs" />
     <Compile Include="ExtensionAttribute.cs" />
     <Compile Include="Extensions\ActionExtensions.cs" />
+    <Compile Include="Extensions\DictionaryExtensions.cs" />
     <Compile Include="Extensions\DynamicMethodExtensions.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Extensions\EnumExtensions.cs" />

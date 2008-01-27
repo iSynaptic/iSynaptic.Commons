@@ -12,7 +12,7 @@ using Rhino.Mocks;
 namespace iSynaptic.Commons.UnitTests.Transactions
 {
     [TestFixture]
-    public class TransactionalTests
+    public class TransactionalTests : BaseTestFixture
     {
         [Test]
         public void NullOnCreation()
@@ -512,6 +512,12 @@ namespace iSynaptic.Commons.UnitTests.Transactions
 
             Assert.IsNotNull(tso.Value);
             Assert.IsTrue(object.ReferenceEquals(state2, tso.Value));
+        }
+
+        [Test]
+        public void NonCloneableType()
+        {
+            AssertThrows<TypeInitializationException>(() => new Transactional<IntPtr>());
         }
 
         //[Test]
