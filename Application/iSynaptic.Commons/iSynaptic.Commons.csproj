@@ -63,10 +63,10 @@
     <Compile Include="Extensions\LookAheadEnumerator.cs" />
     <Compile Include="Extensions\MethodInfoExtensions.cs" />
     <Compile Include="Extensions\ObjectExtensions\MethodReflectionObjectExtensions.cs" />
+    <Compile Include="Extensions\PipelinedEnumerable.cs" />
     <Compile Include="Extensions\PredicateExtensions.cs" />
     <Compile Include="Func.cs" />
     <Compile Include="Linq\Enumerable.cs" />
-    <Compile Include="Linq\SimpleArray.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReadableQualifier.cs" />
     <Compile Include="ReadWriteQualifier.cs" />

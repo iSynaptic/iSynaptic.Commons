@@ -125,7 +125,7 @@ namespace iSynaptic.Commons.Text.Parsing
             return CreateToken(kind, 0, reader);
         }
 
-        private static Token<TokenKind> CreateToken(TokenKind kind, int lenth, ScanningTextReader reader)
+        private static Token<TokenKind> CreateToken(TokenKind kind, int length, ScanningTextReader reader)
         {
             Token<TokenKind> token = new Token<TokenKind>();
             token.Kind = kind;

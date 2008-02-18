@@ -92,7 +92,23 @@ namespace iSynaptic.Commons.AOP
             }
         }
 
-        public abstract void Complete();
+        protected virtual IEnumerable<T> PreProcess(IEnumerable<T> items)
+        {
+            if (items == null)
+                return null;
+
+            return items;
+        }
+
+        protected abstract void Process(T item);
+
+        public void Complete()
+        {
+            Items
+                .Pipeline(PreProcess)
+                .ForEach(Process)
+            .Process();
+        }
 
         protected List<T> Items
         {

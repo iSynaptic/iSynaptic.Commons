@@ -8,7 +8,7 @@ namespace iSynaptic.Commons.UnitTests.AOP
 {
     public class UnitOfWorkStub : UnitOfWork<UnitOfWorkStub, object>
     {
-        public override void Complete()
+        protected override void Process(object item)
         {
         }
 

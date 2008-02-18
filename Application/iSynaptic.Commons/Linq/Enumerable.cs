@@ -70,8 +70,52 @@ namespace System.Linq
             if (source == null)
                 throw new ArgumentNullException("source");
 
-            SimpleArray<TSource> array = new SimpleArray<TSource>(source);
-            return array.ToArray();
+            if(source is TSource[])
+                return source as TSource[];
+
+            int count = 0;
+            TSource[] items = null;
+
+            ICollection<TSource> col = source as ICollection<TSource>;
+            if (col != null)
+            {
+                count = col.Count;
+                if (count > 0)
+                {
+                    items = new TSource[count];
+                    col.CopyTo(items, 0);
+                }
+            }
+            else
+            {
+                foreach (TSource item in source)
+                {
+                    if (items == null)
+                    {
+                        items = new TSource[4];
+                    }
+                    else if (items.Length == count)
+                    {
+                        TSource[] newItems = new TSource[count * 2];
+                        Array.Copy(items, 0, newItems, 0, count);
+                        items = newItems;
+                    }
+
+                    items[count] = item;
+                    count++;
+                }
+            }
+
+            if (count == 0)
+                return new TSource[0];
+
+            if (items.Length == count)
+                return items;
+
+            TSource[] results = new TSource[count];
+            Array.Copy(items, 0, results, 0, count);
+
+            return results;
         }
 
         public static List<TSource> ToList<TSource>(this IEnumerable<TSource> source)

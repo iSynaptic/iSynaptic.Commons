@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 
+using System.Linq;
+
 namespace iSynaptic.Commons.Extensions
 {
     public static class EnumerableExtensions
@@ -20,6 +22,14 @@ namespace iSynaptic.Commons.Extensions
                 throw new ArgumentNullException("self");
 
             return new LookAheadEnumerable<T>(self);
+        }
+
+        public static IEnumerable<T> Buffer<T>(this IEnumerable<T> self)
+        {
+            if (self == null)
+                throw new ArgumentNullException("self");
+
+            return self.ToArray();
         }
 
         public static string Delimit<T>(this IEnumerable<T> self, string delimiter)
@@ -52,6 +62,45 @@ namespace iSynaptic.Commons.Extensions
             }
 
             return builder.ToString();
+        }
+
+        public static IEnumerable<T> ForEach<T>(this IEnumerable<T> self, Action<T> action)
+        {
+            if (self == null)
+                yield break;
+
+            if (action == null)
+                throw new ArgumentNullException("action");
+
+            foreach (T item in self)
+            {
+                action(item);
+                yield return item;
+            }
+        }
+
+        public static IEnumerable<T> Pipeline<T>(this IEnumerable<T> self, Func<IEnumerable<T>, IEnumerable<T>> processor)
+        {
+            if (self == null)
+                return null;
+
+            return new PipelinedEnumerable<T>(self, processor);
+        }
+        public static IEnumerable<T> Pipeline<T>(this IEnumerable<T> self, Func<T, T> processor)
+        {
+            if (self == null)
+                return null;
+
+            return new PipelinedEnumerable<T>(self, processor);
+        }
+
+        public static void Process<T>(this IEnumerable<T> self)
+        {
+            if (self == null)
+                return;
+
+            foreach (T item in self)
+                continue;
         }
     }
 }
