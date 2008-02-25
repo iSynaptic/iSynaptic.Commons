@@ -94,7 +94,7 @@ namespace iSynaptic.Commons.Extensions
             return new PipelinedEnumerable<T>(self, processor);
         }
 
-        public static void Process<T>(this IEnumerable<T> self)
+        public static void ForceEnumeration<T>(this IEnumerable<T> self)
         {
             if (self == null)
                 return;

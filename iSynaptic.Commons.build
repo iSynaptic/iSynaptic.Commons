@@ -2,7 +2,6 @@
 <Project DefaultTargets="BuildComplete" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <SolutionName>iSynaptic.Commons</SolutionName>
-    <SatisfactoryCodeCoverage>40</SatisfactoryCodeCoverage> <!-- This will be removed -->
     <TestingFramework>MbUnit</TestingFramework>
   </PropertyGroup>
 

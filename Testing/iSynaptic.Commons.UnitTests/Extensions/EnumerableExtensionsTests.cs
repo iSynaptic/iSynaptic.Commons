@@ -11,7 +11,7 @@ namespace iSynaptic.Commons.UnitTests.Extensions
     public class EnumerableExtensionsTests
     {
         [Test]
-        public void SimpleTest()
+        public void WithIndex()
         {
             int[] items = { 1, 3, 5, 7, 9 };
 

@@ -169,12 +169,33 @@ namespace iSynaptic.Commons.UnitTests.AOP
                     uow.Enlist(dispose.ToDisposable());
                 }
             }
-            catch (ContainerException ex)
+            catch (CompoundException ex)
             {
                 Assert.IsTrue(disposed);
                 Assert.AreEqual(1, ex.Exceptions.Count);
                 Assert.IsInstanceOfType(typeof(InvalidOperationException), ex.Exceptions[0]);
             }
+        }
+
+        [Test]
+        public void ProcessCalled()
+        {
+            bool processCalled = false;
+
+            object obj = new object();
+            Action<object> process = item =>
+            {
+                Assert.IsTrue(object.ReferenceEquals(obj, item));
+                processCalled = true;
+            };
+
+            using (UnitOfWorkStub uow = new UnitOfWorkStub(process))
+            {
+                uow.Enlist(obj);
+                uow.Complete();
+            }
+
+            Assert.IsTrue(processCalled);
         }
     }
 }

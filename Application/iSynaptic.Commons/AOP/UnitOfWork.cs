@@ -83,7 +83,7 @@ namespace iSynaptic.Commons.AOP
                     Items.Clear();
 
                     if (exceptions.Count > 0)
-                        throw new ContainerException("Exception(s) occured during disposal.", exceptions);
+                        throw new CompoundException("Exception(s) occured during disposal.", exceptions);
                 }
             }
             finally
@@ -94,9 +94,6 @@ namespace iSynaptic.Commons.AOP
 
         protected virtual IEnumerable<T> PreProcess(IEnumerable<T> items)
         {
-            if (items == null)
-                return null;
-
             return items;
         }
 
@@ -107,7 +104,7 @@ namespace iSynaptic.Commons.AOP
             Items
                 .Pipeline(PreProcess)
                 .ForEach(Process)
-            .Process();
+            .ForceEnumeration();
         }
 
         protected List<T> Items

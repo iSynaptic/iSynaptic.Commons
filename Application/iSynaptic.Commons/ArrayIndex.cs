@@ -29,25 +29,36 @@ namespace iSynaptic.Commons
                 if (currentRankIndex < upperBound)
                 {
                     _Index[currentRank] = currentRankIndex + 1;
-                    return;
+                    break;
                 }
                 else
                 {
+                    if(currentRank == 0)
+                        throw new IndexOutOfRangeException();
+
                     _Index[currentRank] = 0;
                     currentRank--;
                 }
             }
-
-            throw new IndexOutOfRangeException();
         }
 
         public void Increment(int number)
         {
-            int count = 0;
-            while (count < number)
+            int[] currentIndex = _Index.Clone() as int[];
+
+            try
             {
-                Increment();
-                count++;
+                int count = 0;
+                while (count < number)
+                {
+                    Increment();
+                    count++;
+                }
+            }
+            catch
+            {
+                _Index = currentIndex;
+                throw;
             }
         }
 
@@ -58,7 +69,7 @@ namespace iSynaptic.Commons
 
         public static implicit operator int[](ArrayIndex index)
         {
-            return index._Index;
+            return index.Index;
         }
 
         public bool CanIncrement()
@@ -78,6 +89,14 @@ namespace iSynaptic.Commons
             }
 
             return false;
+        }
+
+        public int[] Index
+        {
+            get
+            {
+                return _Index;
+            }
         }
     }
 }
