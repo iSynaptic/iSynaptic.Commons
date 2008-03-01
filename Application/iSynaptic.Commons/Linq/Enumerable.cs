@@ -9,6 +9,31 @@ namespace System.Linq
 {
     public static class Enumerable
     {
+        public static IEnumerable<TSource> Distinct<TSource>(this IEnumerable<TSource> source)
+        {
+            return Distinct<TSource>(source, EqualityComparer<TSource>.Default);
+        }
+
+        public static IEnumerable<TSource> Distinct<TSource>(this IEnumerable<TSource> source, IEqualityComparer<TSource> comparer)
+        {
+            if (source == null)
+                throw new ArgumentNullException("source");
+
+            if (comparer == null)
+                throw new ArgumentNullException("comparer");
+
+            List<TSource> list = new List<TSource>();
+            
+            foreach (TSource item in source)
+            {
+                if (list.Exists(val => comparer.Equals(val, item)) != true)
+                {
+                    list.Add(item);
+                    yield return item;
+                }
+            }
+        }
+
         public static IEnumerable<int> Range(int start, int count)
         {
             long num = (start + count) - 1L;
@@ -29,6 +54,19 @@ namespace System.Linq
 
             foreach (TSource item in source)
                 yield return selector(item);
+        }
+
+        public static IEnumerable<TResult> SelectMany<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, IEnumerable<TResult>> selector)
+        {
+            if (source == null)
+                throw new ArgumentNullException("source");
+
+            if (selector == null)
+                throw new ArgumentNullException("selector");
+
+            foreach (TSource item in source)
+                foreach (TResult child in selector(item))
+                    yield return child;
         }
 
         public static bool SequenceEqual<TSource>(this IEnumerable<TSource> self, IEnumerable<TSource> second)

@@ -64,6 +64,23 @@ namespace iSynaptic.Commons.Extensions
             return builder.ToString();
         }
 
+        public static bool TrueForAll<T>(this IEnumerable<T> self, Predicate<T> predicate)
+        {
+            if (self == null)
+                throw new ArgumentNullException("self");
+
+            if (predicate == null)
+                throw new ArgumentNullException("predicate");
+
+            foreach (T item in self)
+            {
+                if (predicate(item) != true)
+                    return false;
+            }
+
+            return true;
+        }
+
         public static IEnumerable<T> ForEach<T>(this IEnumerable<T> self, Action<T> action)
         {
             if (self == null)
@@ -86,6 +103,7 @@ namespace iSynaptic.Commons.Extensions
 
             return new PipelinedEnumerable<T>(self, processor);
         }
+
         public static IEnumerable<T> Pipeline<T>(this IEnumerable<T> self, Func<T, T> processor)
         {
             if (self == null)
