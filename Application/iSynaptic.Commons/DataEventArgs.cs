@@ -6,16 +6,11 @@ namespace iSynaptic.Commons
 {
     public class DataEventArgs<T> : EventArgs
     {
-        private T _Data = default(T);
-
         public DataEventArgs(T data)
         {
-            _Data = data;
+            Data = data;
         }
 
-        public T Data
-        {
-            get { return _Data; }
-        }
+        public T Data { get; private set; }
     }
 }

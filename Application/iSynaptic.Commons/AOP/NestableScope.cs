@@ -6,8 +6,6 @@ namespace iSynaptic.Commons.AOP
 {
     public abstract class NestableScope<T> : Scope<T> where T : NestableScope<T>
     {
-        private T _Parent = null;
-
         public NestableScope() : this(ScopeBounds.Thread)
         {
         }
@@ -26,7 +24,7 @@ namespace iSynaptic.Commons.AOP
                 ThrowCannotNestAppDomainScopeInThreadScope();
 
             if(current != null && current.Bounds == this.Bounds)
-                _Parent = current;
+                Parent = current;
 
             SetCurrentScope(this as T);
         }
@@ -34,7 +32,7 @@ namespace iSynaptic.Commons.AOP
         protected override void Dispose(bool disposing)
         {
             if (Parent != null)
-                SetCurrentScope(_Parent);
+                SetCurrentScope(Parent);
 
             base.Dispose(disposing);
         }
@@ -44,9 +42,6 @@ namespace iSynaptic.Commons.AOP
             throw new ApplicationException("You cannot nest a AppDomain level scope under a thread level scope.");
         }
 
-        protected T Parent
-        {
-            get { return _Parent; }
-        }
+        protected T Parent { get; private set; }
     }
 }

@@ -6,7 +6,6 @@ namespace iSynaptic.Commons
 {
     public class ArrayIndex
     {
-        private int[] _Index = null;
         private Array _Target = null;
 
         public ArrayIndex(Array target)
@@ -14,37 +13,38 @@ namespace iSynaptic.Commons
             if (target == null)
                 throw new ArgumentNullException("target");
 
-            _Index = new int[target.Rank];
+            Index = new int[target.Rank];
             _Target = target;
         }
 
         public void Increment()
         {
             int currentRank = _Target.Rank - 1;
+            int currentRankIndex = Index[currentRank];
+
             while (currentRank >= 0)
             {
                 int upperBound = _Target.GetUpperBound(currentRank);
-                int currentRankIndex = _Index[currentRank];
+                currentRankIndex = Index[currentRank];
 
-                if (currentRankIndex < upperBound)
-                {
-                    _Index[currentRank] = currentRankIndex + 1;
-                    break;
-                }
-                else
+                if (currentRankIndex >= upperBound)
                 {
                     if(currentRank == 0)
                         throw new IndexOutOfRangeException();
 
-                    _Index[currentRank] = 0;
+                    Index[currentRank] = 0;
                     currentRank--;
                 }
+                else
+                    break;
             }
+
+            Index[currentRank] = currentRankIndex + 1;
         }
 
         public void Increment(int number)
         {
-            int[] currentIndex = _Index.Clone() as int[];
+            int[] currentIndex = Index.Clone() as int[];
 
             try
             {
@@ -57,14 +57,14 @@ namespace iSynaptic.Commons
             }
             catch
             {
-                _Index = currentIndex;
+                Index = currentIndex;
                 throw;
             }
         }
 
         public void Reset()
         {
-            _Index = new int[_Target.Rank];
+            Index = new int[_Target.Rank];
         }
 
         public static implicit operator int[](ArrayIndex index)
@@ -78,7 +78,7 @@ namespace iSynaptic.Commons
             while (currentRank >= 0)
             {
                 int upperBound = _Target.GetUpperBound(currentRank);
-                int currentRankIndex = _Index[currentRank];
+                int currentRankIndex = Index[currentRank];
 
                 if (currentRankIndex < upperBound)
                     return true;
@@ -91,12 +91,6 @@ namespace iSynaptic.Commons
             return false;
         }
 
-        public int[] Index
-        {
-            get
-            {
-                return _Index;
-            }
-        }
+        public int[] Index { get; private set; }
     }
 }

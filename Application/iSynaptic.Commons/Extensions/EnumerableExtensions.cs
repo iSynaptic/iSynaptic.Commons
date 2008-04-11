@@ -83,11 +83,16 @@ namespace iSynaptic.Commons.Extensions
 
         public static IEnumerable<T> ForEach<T>(this IEnumerable<T> self, Action<T> action)
         {
-            if (self == null)
-                yield break;
-
             if (action == null)
                 throw new ArgumentNullException("action");
+
+            return ForEachHelper<T>(self, action);
+        }
+
+        private static IEnumerable<T> ForEachHelper<T>(IEnumerable<T> self, Action<T> action)
+        {
+            if (self == null)
+                yield break;
 
             foreach (T item in self)
             {

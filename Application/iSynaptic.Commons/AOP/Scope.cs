@@ -8,9 +8,6 @@ namespace iSynaptic.Commons.AOP
 {
     public abstract class Scope<T> : IDisposable where T : Scope<T>
     {
-        private bool _Disposed = false;
-        private ScopeBounds _Bounds = ScopeBounds.Thread;
-
         private static T _CurrentAppDomainScope = null;
 
         [ThreadStatic]
@@ -29,7 +26,7 @@ namespace iSynaptic.Commons.AOP
             if (bounds.IsDefined() != true)
                 throw new ArgumentOutOfRangeException("bounds");
 
-            _Bounds = bounds;
+            Bounds = bounds;
 
             if (shouldInitialize)
                 Initialize();
@@ -81,15 +78,7 @@ namespace iSynaptic.Commons.AOP
                 _CurrentThreadScope = null;
         }
 
-        protected bool Disposed
-        {
-            get { return _Disposed; }
-            private set { _Disposed = value; }
-        }
-
-        protected ScopeBounds Bounds
-        {
-            get { return _Bounds; }
-        }
+        protected bool Disposed { get; private set; }
+        protected ScopeBounds Bounds { get; private set; }
     }
 }

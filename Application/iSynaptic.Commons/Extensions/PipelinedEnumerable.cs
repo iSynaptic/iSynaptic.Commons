@@ -24,6 +24,7 @@ namespace iSynaptic.Commons.Extensions
             if (processor == null)
                 throw new ArgumentNullException("processor");
 
+            _InnerEnumerable = innerEnumerable;
             _Processor = Wrap(processor);
         }
 

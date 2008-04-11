@@ -9,9 +9,6 @@ namespace iSynaptic.Commons.Xml
 {
     public class ProcessingInstruction
     {
-        private string _Name = null;
-        private ReadOnlyDictionary<string, string> _Attributes = null;
-
         internal ProcessingInstruction(string name, IEnumerable<KeyValuePair<string, string>> attributes)
         {
             if (string.IsNullOrEmpty(name))
@@ -20,8 +17,8 @@ namespace iSynaptic.Commons.Xml
             if (attributes == null)
                 throw new ArgumentNullException("attributes");
 
-            _Name = name;
-            _Attributes = BuildAttributeDictionary(attributes);
+            Name = name;
+            Attributes = BuildAttributeDictionary(attributes);
         }
 
         private static ReadOnlyDictionary<string, string> BuildAttributeDictionary(IEnumerable<KeyValuePair<string, string>> attributes)
@@ -34,10 +31,8 @@ namespace iSynaptic.Commons.Xml
             return new ReadOnlyDictionary<string, string>(attributeDictionary);
         }
 
-        public string Name
-        {
-            get { return _Name; }
-        }
+        public string Name { get; private set; }
+        public ReadOnlyDictionary<string, string> Attributes { get; private set; }
 
         public string this[string key]
         {
@@ -47,11 +42,6 @@ namespace iSynaptic.Commons.Xml
         public bool ContainsKey(string key)
         {
             return Attributes.ContainsKey(key);
-        }
-
-        public ReadOnlyDictionary<string, string> Attributes
-        {
-            get { return _Attributes; }
         }
     }
 }

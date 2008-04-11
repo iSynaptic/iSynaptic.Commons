@@ -4,11 +4,13 @@ using System.Text;
 using MbUnit.Framework;
 
 using iSynaptic.Commons.Extensions;
+using System.Linq;
+using System.Collections;
 
 namespace iSynaptic.Commons.UnitTests.Extensions
 {
     [TestFixture]
-    public class EnumerableExtensionsTests
+    public class EnumerableExtensionsTests : BaseTestFixture
     {
         [Test]
         public void WithIndex()
@@ -46,6 +48,127 @@ namespace iSynaptic.Commons.UnitTests.Extensions
                 Assert.AreEqual(3, enumerator.Current.Value);
                 Assert.AreEqual(4, enumerator.Current.LookAhead(0));
             }
+
+            IEnumerable<int> nullEnumerable = null;
+            AssertThrows<ArgumentNullException>(() => { nullEnumerable.AsLookAheadable(); });
+        }
+
+        [Test]
+        public void Buffer()
+        {
+            bool enumerationComplete = false;
+            IEnumerable<int> numbers = GetRange(1, 10, () => { enumerationComplete = true; });
+
+            Assert.IsFalse(enumerationComplete);
+
+            numbers = numbers.Buffer();
+            Assert.IsTrue(enumerationComplete);
+
+            Assert.IsTrue(numbers.SequenceEqual(Enumerable.Range(1, 10)));
+
+            IEnumerable<int> nullEnumerable = null;
+            AssertThrows<ArgumentNullException>(() => { nullEnumerable.Buffer(); });
+        }
+
+        [Test]
+        public void ForceEnumeration()
+        {
+            bool enumerationComplete = false;
+            IEnumerable<int> numbers = GetRange(1, 10, () => { enumerationComplete = true; });
+
+            Assert.IsFalse(enumerationComplete);
+
+            numbers.ForceEnumeration();
+            Assert.IsTrue(enumerationComplete);
+
+            IEnumerable<int> nullEnumerable = null;
+            nullEnumerable.ForceEnumeration();
+        }
+
+        [Test]
+        public void Delimit()
+        {
+            IEnumerable<int> range = Enumerable.Range(1, 9);
+            Assert.AreEqual("1, 2, 3, 4, 5, 6, 7, 8, 9", range.Delimit(", "));
+
+            IEnumerable<int> nullEnumerable = null;
+
+            AssertThrows<ArgumentNullException>(() => { nullEnumerable.Delimit(""); });
+            AssertThrows<ArgumentNullException>(() => { range.Delimit(null); });
+            AssertThrows<ArgumentNullException>(() => { range.Delimit("", null); });
+        }
+
+        [Test]
+        public void TrueForAll()
+        {
+            IEnumerable<int> range = Enumerable.Range(1, 9);
+
+            Assert.IsTrue(range.TrueForAll(i => i < 10));
+            Assert.IsFalse(range.TrueForAll(i => i < 5));
+
+            IEnumerable<int> nullEnumerable = null;
+            AssertThrows<ArgumentNullException>(() => { nullEnumerable.TrueForAll(i => i < 10); });
+            AssertThrows<ArgumentNullException>(() => { range.TrueForAll(null); });
+        }
+
+        [Test]
+        public void PipelineAndForEach()
+        {
+            var multiplyBy5 = ((Func<int, IEnumerable<int>, IEnumerable<int>>)Multiply).Curry(5);
+
+            List<int> items = new List<int>();
+
+            bool enumerationComplete = false;
+            IEnumerable<int> numbers = GetRange(1, 9, () => { enumerationComplete = true; });
+
+            var pipeline = numbers
+                .Pipeline(i => i * 2)
+                .ForEach(i => items.Add(i))
+                .Pipeline(multiplyBy5);
+
+            Assert.IsFalse(enumerationComplete);
+
+            Assert.IsTrue(pipeline.SequenceEqual(new int[] { 10, 20, 30, 40, 50, 60, 70, 80, 90 }));
+            Assert.IsTrue(enumerationComplete);
+
+            Assert.IsTrue(items.SequenceEqual(new int[] { 2, 4, 6, 8, 10, 12, 14, 16, 18 }));
+
+            items.Clear();
+            enumerationComplete = false;
+
+            Assert.IsFalse(enumerationComplete);
+
+            Assert.IsTrue(((IEnumerable)pipeline).OfType<int>().SequenceEqual(new int[] { 10, 20, 30, 40, 50, 60, 70, 80, 90 }));
+            Assert.IsTrue(enumerationComplete);
+
+            Assert.IsTrue(items.SequenceEqual(new int[] { 2, 4, 6, 8, 10, 12, 14, 16, 18 }));
+
+
+            IEnumerable<int> nullEnumerable = null;
+            
+            nullEnumerable.Pipeline(i => i * 2);
+            AssertThrows<ArgumentNullException>(() => { items.Pipeline((Func<int, int>)null); });
+
+            nullEnumerable.Pipeline(multiplyBy5);
+            AssertThrows<ArgumentNullException>(() => { items.Pipeline((Func<IEnumerable<int>, IEnumerable<int>>)null); });
+
+            nullEnumerable.ForEach(i => Console.WriteLine(i));
+            AssertThrows<ArgumentNullException>(() => { Enumerable.Range(1, 10).ForEach(null); });
+        }
+
+        private IEnumerable<int> Multiply(int multiplier, IEnumerable<int> source)
+        {
+            foreach (int i in source)
+                yield return i * multiplier;
+        }
+
+        private IEnumerable<int> GetRange(int start, int end, Action after)
+        {
+            foreach (int i in Enumerable.Range(start, end))
+                yield return i;
+
+            if (after != null)
+                after();
         }
     }
 }

@@ -57,6 +57,7 @@
     <Compile Include="ArrayIndexTests.cs" />
     <Compile Include="BaseTestFixture.cs" />
     <Compile Include="Collections\Generic\ReadOnlyDictionaryTests.cs" />
+    <Compile Include="CompoundExceptionTests.cs" />
     <Compile Include="DataEventArgsTests.cs" />
     <Compile Include="Extensions\ActionExtensionsTests.cs" />
     <Compile Include="Extensions\CollectionExtensionsTests.cs" />
