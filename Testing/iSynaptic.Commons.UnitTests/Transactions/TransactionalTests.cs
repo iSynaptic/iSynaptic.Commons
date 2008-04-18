@@ -520,6 +520,45 @@ namespace iSynaptic.Commons.UnitTests.Transactions
             AssertThrows<TypeInitializationException>(() => new Transactional<IntPtr>());
         }
 
+        [Test]
+        [ExpectedException(typeof(TransactionInDoubtException))]
+        public void InDoubt()
+        {
+            var tso = new Transactional<SimpleObject>();
+
+            SimpleObject obj = new SimpleObject
+            {
+                TestInt = 7,
+                TestGuid = Guid.NewGuid(),
+                TestString = "Testing"
+            };
+
+            MockRepository mocks = new MockRepository();
+            
+            ISinglePhaseNotification badResource = mocks.CreateMock<ISinglePhaseNotification>();
+            badResource.SinglePhaseCommit(null);
+
+            Action<SinglePhaseEnlistment> onCommit = (SinglePhaseEnlistment spe) => spe.InDoubt();
+            LastCall.IgnoreArguments().Do(onCommit);
+
+            mocks.ReplayAll();
+
+            try
+            {
+                using (TransactionScope scope = new TransactionScope())
+                {
+                    tso.Value = obj;
+                    Transaction.Current.EnlistDurable(Guid.NewGuid(), badResource, EnlistmentOptions.None);
+
+                    scope.Complete();
+                }
+            }
+            finally
+            {
+                Assert.IsNull(tso.Value);
+            }
+        }
+
         //[Test]
         //public void CommitingOverlappingTransactionsWithNoValueChange()
         //{

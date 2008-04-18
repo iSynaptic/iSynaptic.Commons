@@ -12,7 +12,7 @@ namespace iSynaptic.Commons.Text.Parsing
             if (string.IsNullOrEmpty(input))
                 throw new ArgumentOutOfRangeException("input");
 
-            return ScanText(new StringReader(input));
+            return ScanTextCore(new StringReader(input));
         }
 
         public static IEnumerable<Token<TokenKind>> ScanText(TextReader inputReader)
@@ -20,6 +20,11 @@ namespace iSynaptic.Commons.Text.Parsing
             if (inputReader == null)
                 throw new ArgumentNullException("inputReader");
 
+            return ScanTextCore(inputReader);
+        }
+
+        private static IEnumerable<Token<TokenKind>> ScanTextCore(TextReader inputReader)
+        {
             ScanningTextReader reader = inputReader as ScanningTextReader ?? new ScanningTextReader(inputReader);
 
             int ch = reader.Read();

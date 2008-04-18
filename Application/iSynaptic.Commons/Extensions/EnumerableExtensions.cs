@@ -81,15 +81,15 @@ namespace iSynaptic.Commons.Extensions
             return true;
         }
 
-        public static IEnumerable<T> ForEach<T>(this IEnumerable<T> self, Action<T> action)
+        public static IEnumerable<T> WithEach<T>(this IEnumerable<T> self, Action<T> action)
         {
             if (action == null)
                 throw new ArgumentNullException("action");
 
-            return ForEachHelper<T>(self, action);
+            return WithEachCore<T>(self, action);
         }
 
-        private static IEnumerable<T> ForEachHelper<T>(IEnumerable<T> self, Action<T> action)
+        private static IEnumerable<T> WithEachCore<T>(IEnumerable<T> self, Action<T> action)
         {
             if (self == null)
                 yield break;

@@ -62,8 +62,11 @@
     <Compile Include="Extensions\ActionExtensionsTests.cs" />
     <Compile Include="Extensions\CollectionExtensionsTests.cs" />
     <Compile Include="Extensions\DictionaryExtensionsTests.cs" />
+    <Compile Include="Extensions\DynamicMethodExtensionsTests.cs" />
     <Compile Include="Extensions\EnumerableExtensionsTests.cs" />
     <Compile Include="Extensions\EnumExtensionsTests.cs" />
+    <Compile Include="Extensions\FuncExtensionsTests.cs" />
+    <Compile Include="Extensions\PredicateExtensionsTests.cs" />
     <Compile Include="Linq\EnumerableTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReadableQualifierTests.cs" />
@@ -74,6 +77,7 @@
     <Compile Include="Text\Parsing\SimpleScannerTests.cs" />
     <Compile Include="Transactions\SimpleObject.cs" />
     <Compile Include="Transactions\TransactionalTests.cs" />
+    <Compile Include="Xml\ProcessingInstructionParserTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Application\iSynaptic.Commons\iSynaptic.Commons.csproj">

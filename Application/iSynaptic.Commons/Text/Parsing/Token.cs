@@ -10,16 +10,6 @@ namespace iSynaptic.Commons.Text.Parsing
         {
         }
 
-        public Token(T kind, int position, int column, int line, int length, string value)
-        {
-            Kind = kind;
-            Position = position;
-            Column = column;
-            Line = line;
-            Length = length;
-            Value = value;
-        }
-
         public T Kind { get; set; }
         public int Position { get; set; }
         public int Column { get; set; }

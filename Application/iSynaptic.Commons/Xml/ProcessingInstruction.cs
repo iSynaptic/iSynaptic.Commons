@@ -11,12 +11,6 @@ namespace iSynaptic.Commons.Xml
     {
         internal ProcessingInstruction(string name, IEnumerable<KeyValuePair<string, string>> attributes)
         {
-            if (string.IsNullOrEmpty(name))
-                throw new ArgumentOutOfRangeException("name");
-
-            if (attributes == null)
-                throw new ArgumentNullException("attributes");
-
             Name = name;
             Attributes = BuildAttributeDictionary(attributes);
         }

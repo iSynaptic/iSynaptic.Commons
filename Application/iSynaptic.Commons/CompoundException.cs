@@ -5,7 +5,6 @@ using System.Runtime.Serialization;
 
 namespace iSynaptic.Commons
 {
-    [Serializable]
     public class CompoundException : Exception
     {
         private List<Exception> _Exceptions = null;
@@ -18,11 +17,6 @@ namespace iSynaptic.Commons
         {
             if(exceptions != null)
                 Exceptions.AddRange(exceptions);
-        }
-
-        protected CompoundException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
         }
 
         public List<Exception> Exceptions

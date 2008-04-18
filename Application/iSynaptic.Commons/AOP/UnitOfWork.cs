@@ -103,7 +103,7 @@ namespace iSynaptic.Commons.AOP
         {
             Items
                 .Pipeline(PreProcess)
-                .ForEach(Process)
+                .WithEach(Process)
             .ForceEnumeration();
         }
 

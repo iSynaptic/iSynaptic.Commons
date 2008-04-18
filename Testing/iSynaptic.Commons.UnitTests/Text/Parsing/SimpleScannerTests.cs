@@ -10,8 +10,15 @@ using iSynaptic.Commons.Text.Parsing;
 namespace iSynaptic.Commons.UnitTests.Text.Parsing
 {
     [TestFixture]
-    public class SimpleScannerTests
+    public class SimpleScannerTests : BaseTestFixture
     {
+        [Test]
+        public void ScanNullInput()
+        {
+            AssertThrows<ArgumentOutOfRangeException>(() => SimpleScanner.ScanText((string)null));
+            AssertThrows<ArgumentNullException>(() => SimpleScanner.ScanText((TextReader)null));
+        }
+
         [Test]
         public void ScanIdentifier()
         {

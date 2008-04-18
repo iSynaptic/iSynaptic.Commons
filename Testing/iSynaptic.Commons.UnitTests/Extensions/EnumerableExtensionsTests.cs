@@ -6,6 +6,7 @@ using MbUnit.Framework;
 using iSynaptic.Commons.Extensions;
 using System.Linq;
 using System.Collections;
+using Rhino.Mocks;
 
 namespace iSynaptic.Commons.UnitTests.Extensions
 {
@@ -51,6 +52,45 @@ namespace iSynaptic.Commons.UnitTests.Extensions
 
             IEnumerable<int> nullEnumerable = null;
             AssertThrows<ArgumentNullException>(() => { nullEnumerable.AsLookAheadable(); });
+        }
+
+        [Test]
+        public void LookAheadEnumerableViaNonGenericGetEnumerator()
+        {
+            int[] items = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+            var enumerable = items.AsLookAheadable();
+            IEnumerator nonGenericEnumerator = null;
+
+            using ((IDisposable)(nonGenericEnumerator = ((IEnumerable)enumerable).GetEnumerator()))
+            {
+                Assert.IsTrue(nonGenericEnumerator.MoveNext());
+                Assert.AreEqual(1, ((LookAheadableValue<int>)nonGenericEnumerator.Current).Value);
+                Assert.AreEqual(2, ((LookAheadableValue<int>)nonGenericEnumerator.Current).LookAhead(0));
+
+                Assert.IsTrue(nonGenericEnumerator.MoveNext());
+                Assert.AreEqual(2, ((LookAheadableValue<int>)nonGenericEnumerator.Current).Value);
+                Assert.AreEqual(3, ((LookAheadableValue<int>)nonGenericEnumerator.Current).LookAhead(0));
+                Assert.AreEqual(5, ((LookAheadableValue<int>)nonGenericEnumerator.Current).LookAhead(2));
+                Assert.AreEqual(4, ((LookAheadableValue<int>)nonGenericEnumerator.Current).LookAhead(1));
+
+                Assert.IsTrue(nonGenericEnumerator.MoveNext());
+                Assert.AreEqual(3, ((LookAheadableValue<int>)nonGenericEnumerator.Current).Value);
+                Assert.AreEqual(4, ((LookAheadableValue<int>)nonGenericEnumerator.Current).LookAhead(0));
+            }
+        }
+
+        [Test]
+        public void LookAheadWithNullEnumerator()
+        {
+            MockRepository mocks = new MockRepository();
+
+            IEnumerable<int> enumerable = mocks.CreateMock<IEnumerable<int>>();
+            Expect.Call(enumerable.GetEnumerator()).Return(null);
+
+            mocks.ReplayAll();
+
+            var lookAheadable = enumerable.AsLookAheadable();
+            Assert.IsNull(lookAheadable.GetEnumerator());
         }
 
         [Test]
@@ -112,7 +152,7 @@ namespace iSynaptic.Commons.UnitTests.Extensions
         }
 
         [Test]
-        public void PipelineAndForEach()
+        public void PipelineAndWithEach()
         {
             var multiplyBy5 = ((Func<int, IEnumerable<int>, IEnumerable<int>>)Multiply).Curry(5);
 
@@ -123,7 +163,7 @@ namespace iSynaptic.Commons.UnitTests.Extensions
 
             var pipeline = numbers
                 .Pipeline(i => i * 2)
-                .ForEach(i => items.Add(i))
+                .WithEach(i => items.Add(i))
                 .Pipeline(multiplyBy5);
 
             Assert.IsFalse(enumerationComplete);
@@ -152,8 +192,8 @@ namespace iSynaptic.Commons.UnitTests.Extensions
             nullEnumerable.Pipeline(multiplyBy5);
             AssertThrows<ArgumentNullException>(() => { items.Pipeline((Func<IEnumerable<int>, IEnumerable<int>>)null); });
 
-            nullEnumerable.ForEach(i => Console.WriteLine(i));
-            AssertThrows<ArgumentNullException>(() => { Enumerable.Range(1, 10).ForEach(null); });
+            nullEnumerable.WithEach(i => Console.WriteLine(i));
+            AssertThrows<ArgumentNullException>(() => { Enumerable.Range(1, 10).WithEach(null); });
         }
 
         private IEnumerable<int> Multiply(int multiplier, IEnumerable<int> source)
