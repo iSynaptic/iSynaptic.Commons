@@ -12,7 +12,7 @@ namespace iSynaptic.Commons.Extensions
         {
             int index = 0;
 
-            foreach(T item in self)
+            foreach (T item in self)
                 yield return new IndexedValue<T>(index++, item);
         }
 
@@ -81,27 +81,23 @@ namespace iSynaptic.Commons.Extensions
             return true;
         }
 
-        public static IEnumerable<T> WithEach<T>(this IEnumerable<T> self, Action<T> action)
+        public static IPipelinedEnumerable<T> Pipeline<T>(this IEnumerable<T> self, Action<T> processor)
         {
-            if (action == null)
-                throw new ArgumentNullException("action");
+            if (processor == null)
+                throw new ArgumentNullException("processor");
 
-            return WithEachCore<T>(self, action);
+            return Pipeline(self, o => { processor(o); return o; });
         }
 
-        private static IEnumerable<T> WithEachCore<T>(IEnumerable<T> self, Action<T> action)
+        public static IPipelinedEnumerable<T> Pipeline<T>(this IEnumerable<T> self, PipelineAction<T> processor)
         {
-            if (self == null)
-                yield break;
+            if (processor == null)
+                throw new ArgumentNullException("processor");
 
-            foreach (T item in self)
-            {
-                action(item);
-                yield return item;
-            }
+            return Pipeline(self, o => { var result = o; processor(ref o); return result; });
         }
 
-        public static IEnumerable<T> Pipeline<T>(this IEnumerable<T> self, Func<IEnumerable<T>, IEnumerable<T>> processor)
+        public static IPipelinedEnumerable<T> Pipeline<T>(this IEnumerable<T> self, Func<IEnumerable<T>, IEnumerable<T>> processor)
         {
             if (self == null)
                 return null;
@@ -109,12 +105,20 @@ namespace iSynaptic.Commons.Extensions
             return new PipelinedEnumerable<T>(self, processor);
         }
 
-        public static IEnumerable<T> Pipeline<T>(this IEnumerable<T> self, Func<T, T> processor)
+        public static IPipelinedEnumerable<T> Pipeline<T>(this IEnumerable<T> self, Func<T, T> processor)
         {
             if (self == null)
                 return null;
 
+            if (processor == null)
+                throw new ArgumentNullException("processor");
+
             return new PipelinedEnumerable<T>(self, processor);
+        }
+
+        public static void ProcessPipeline<T>(this IPipelinedEnumerable<T> self)
+        {
+            self.ForceEnumeration();
         }
 
         public static void ForceEnumeration<T>(this IEnumerable<T> self)

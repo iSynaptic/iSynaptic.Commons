@@ -5,7 +5,7 @@ using System.Collections;
 
 namespace iSynaptic.Commons.Extensions
 {
-    internal class PipelinedEnumerable<T> : IEnumerable<T>
+    internal class PipelinedEnumerable<T> : IPipelinedEnumerable<T>
     {
         private IEnumerable<T> _InnerEnumerable = null;
         private Func<IEnumerable<T>, IEnumerable<T>> _Processor = null;

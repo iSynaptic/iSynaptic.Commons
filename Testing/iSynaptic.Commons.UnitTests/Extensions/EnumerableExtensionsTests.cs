@@ -152,7 +152,7 @@ namespace iSynaptic.Commons.UnitTests.Extensions
         }
 
         [Test]
-        public void PipelineAndWithEach()
+        public void Pipeline()
         {
             var multiplyBy5 = ((Func<int, IEnumerable<int>, IEnumerable<int>>)Multiply).Curry(5);
 
@@ -163,7 +163,7 @@ namespace iSynaptic.Commons.UnitTests.Extensions
 
             var pipeline = numbers
                 .Pipeline(i => i * 2)
-                .WithEach(i => items.Add(i))
+                .Pipeline(i => items.Add(i))
                 .Pipeline(multiplyBy5);
 
             Assert.IsFalse(enumerationComplete);
@@ -192,8 +192,8 @@ namespace iSynaptic.Commons.UnitTests.Extensions
             nullEnumerable.Pipeline(multiplyBy5);
             AssertThrows<ArgumentNullException>(() => { items.Pipeline((Func<IEnumerable<int>, IEnumerable<int>>)null); });
 
-            nullEnumerable.WithEach(i => Console.WriteLine(i));
-            AssertThrows<ArgumentNullException>(() => { Enumerable.Range(1, 10).WithEach(null); });
+            nullEnumerable.Pipeline(i => Console.WriteLine(i));
+            AssertThrows<ArgumentNullException>(() => { Enumerable.Range(1, 10).Pipeline((Action<int>)null); });
         }
 
         private IEnumerable<int> Multiply(int multiplier, IEnumerable<int> source)

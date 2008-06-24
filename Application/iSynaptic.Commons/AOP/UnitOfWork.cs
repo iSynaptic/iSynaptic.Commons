@@ -97,14 +97,14 @@ namespace iSynaptic.Commons.AOP
             return items;
         }
 
-        protected abstract void Process(T item);
+        protected abstract void Process(ref T item);
 
         public void Complete()
         {
             Items
                 .Pipeline(PreProcess)
-                .WithEach(Process)
-            .ForceEnumeration();
+                .Pipeline(Process)
+            .ProcessPipeline();
         }
 
         protected List<T> Items

@@ -19,7 +19,7 @@ namespace iSynaptic.Commons.UnitTests.AOP
             _ProcessHandler = processHandler;
         }
 
-        protected override void Process(object item)
+        protected override void Process(ref object item)
         {
             if (_ProcessHandler != null)
                 _ProcessHandler(item);
