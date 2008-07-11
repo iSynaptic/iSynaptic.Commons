@@ -37,6 +37,8 @@ namespace iSynaptic.Commons.Transactions
             public void InDoubt(Enlistment enlistment)
             {
                 _Transactional.Values.Remove(_Id);
+                _Transactional._Lock.Exit();
+
                 enlistment.Done();
             }
 
@@ -50,7 +52,8 @@ namespace iSynaptic.Commons.Transactions
                 if (value.Key != originalValue.Key)
                 {
                     _Transactional._Lock.Exit();
-                    throw new TransactionalConcurrencyException();
+                    preparingEnlistment.ForceRollback(new TransactionalConcurrencyException());
+                    return;
                 }
 
                 preparingEnlistment.Prepared();
@@ -59,6 +62,8 @@ namespace iSynaptic.Commons.Transactions
             public void Rollback(Enlistment enlistment)
             {
                 _Transactional.Values.Remove(_Id);
+                _Transactional._Lock.Exit();
+
                 enlistment.Done();
             }
         }

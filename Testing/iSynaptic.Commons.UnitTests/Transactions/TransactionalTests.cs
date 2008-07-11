@@ -153,7 +153,7 @@ namespace iSynaptic.Commons.UnitTests.Transactions
         }
 
         [Test]
-        [ExpectedException(typeof(TransactionalConcurrencyException))]
+        [ExpectedException(typeof(TransactionAbortedException))]
         public void ConcurrencyCollision()
         {
             SimpleObject so = new SimpleObject();
@@ -244,7 +244,7 @@ namespace iSynaptic.Commons.UnitTests.Transactions
         }
 
         [Test]
-        [ExpectedException(typeof(TransactionalConcurrencyException))]
+        [ExpectedException(typeof(TransactionAbortedException))]
         public void ConcurrencyCollisionAcrossThreads()
         {
             Transactional<SimpleObject> tso = new Transactional<SimpleObject>(new SimpleObject());
