@@ -69,6 +69,7 @@
     <Compile Include="Extensions\PipelinedEnumerable.cs" />
     <Compile Include="Extensions\PredicateExtensions.cs" />
     <Compile Include="Func.cs" />
+    <Compile Include="IIdentifiable.cs" />
     <Compile Include="Linq\Enumerable.cs" />
     <Compile Include="PipelineAction.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

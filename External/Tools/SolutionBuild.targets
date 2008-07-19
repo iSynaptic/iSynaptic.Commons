@@ -80,7 +80,8 @@
 			CoverageFile="$(RootBuildPath)\$(Configuration)\CodeCoverage.xml"
 			LogFile="$(RootBuildPath)\$(Configuration)\CodeCoverage.log"
 			WorkingDirectory="$(BinariesPath)"
-			Assemblies="@(ApplicationAssembly)" />
+			Assemblies="@(ApplicationAssembly)"
+      FailOnError="false"/>
 
     <NCover
       Condition="$(TestingFramework) == 'MbUnit'"
@@ -90,7 +91,8 @@
 			CoverageFile="$(RootBuildPath)\$(Configuration)\CodeCoverage.xml"
 			LogFile="$(RootBuildPath)\$(Configuration)\CodeCoverage.log"
 			WorkingDirectory="$(BinariesPath)"
-			Assemblies="@(ApplicationAssembly)" />
+			Assemblies="@(ApplicationAssembly)"
+      FailOnError="false"/>
 
     <CreateItem Include="$(TestingOutputFileName).xml">
       <Output TaskParameter="Include" ItemName="ReportingFile" />
@@ -108,7 +110,7 @@
       ShowExcluded="true"
       SatisfactoryCoverage="$(SatisfactoryCodeCoverage)"
       MinimumCoverage="$(SatisfactoryCodeCoverage)"
-      FailCombinedMinimum="true"
+      FailCombinedMinimum="false"
       CoverageFiles="$(RootBuildPath)\$(Configuration)\CodeCoverage.xml"
       Exclusions="@(ExcludeCoverageReporting -> '&lt;CoverageExclusion&gt;&lt;ExclusionType&gt;%(Identity)&lt;/ExclusionType&gt;&lt;Pattern&gt;%(FilterExpression)&lt;/Pattern&gt;&lt;IsRegex&gt;true&lt;/IsRegex&gt;&lt;/CoverageExclusion&gt;', '')" />
   </Target>
