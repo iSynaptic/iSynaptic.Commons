@@ -1,0 +1,4 @@
+- Refactor SimpleScanner to a class that inherits from abstract TextScanner<T>, where T is the Token type
+	* Use character map tool to identify common character tokens
+- Add IDeferable<T> interface and basic Deferable<T> implementation (if TPL suggestion is implemented, this will be removed)
+- Integrate iSynaptic.SolutionBuild...
