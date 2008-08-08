@@ -54,6 +54,7 @@
     <Compile Include="AOP\StubScope.cs" />
     <Compile Include="AOP\UnitOfWorkStub.cs" />
     <Compile Include="AOP\UnitOfWorkTests.cs" />
+    <Compile Include="ApiExtensionsTests.cs" />
     <Compile Include="ArrayIndexTests.cs" />
     <Compile Include="BaseTestFixture.cs" />
     <Compile Include="Collections\Generic\ReadOnlyDictionaryTests.cs" />

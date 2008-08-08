@@ -47,6 +47,7 @@
     <Compile Include="AOP\Scope.cs" />
     <Compile Include="AOP\ScopeBounds.cs" />
     <Compile Include="AOP\UnitOfWork.cs" />
+    <Compile Include="ApiExtensions.cs" />
     <Compile Include="ArrayIndex.cs" />
     <Compile Include="Collections\Generic\ReadOnlyDictionary.cs" />
     <Compile Include="CompoundException.cs" />
@@ -69,6 +70,7 @@
     <Compile Include="Extensions\PipelinedEnumerable.cs" />
     <Compile Include="Extensions\PredicateExtensions.cs" />
     <Compile Include="Func.cs" />
+    <Compile Include="IDependencyResolver.cs" />
     <Compile Include="IIdentifiable.cs" />
     <Compile Include="Linq\Enumerable.cs" />
     <Compile Include="PipelineAction.cs" />
