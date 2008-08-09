@@ -4,11 +4,11 @@ using System.Text;
 
 namespace iSynaptic.Commons
 {
-    public abstract partial class Specification<T>
+    public abstract class Specification<T>
     {
         #region Nested Members
 
-        private sealed partial class NotSpecification : Specification<T>
+        private sealed class NotSpecification : Specification<T>
         {
             private Specification<T> _InnerSpecification = null;
             public NotSpecification(Specification<T> specification)
@@ -27,7 +27,7 @@ namespace iSynaptic.Commons
             }
         }
 
-        private sealed partial class LogicalSpecification : Specification<T>
+        private sealed class LogicalSpecification : Specification<T>
         {
             private Specification<T> _Left = null;
             private Specification<T> _Right = null;
@@ -49,7 +49,7 @@ namespace iSynaptic.Commons
             }
         }
 
-        private sealed partial class PredicateSpecification : Specification<T>
+        private sealed class PredicateSpecification : Specification<T>
         {
             private Predicate<T> _Predicate = null;
 
@@ -63,10 +63,24 @@ namespace iSynaptic.Commons
                 return Predicate(subject);
             }
 
-            internal Predicate<T> Predicate
+            internal Predicate<T> Predicate { get { return _Predicate; } }
+        }
+
+        private sealed class FuncSpecification : Specification<T>
+        {
+            private Func<T, bool> _Func = null;
+
+            public FuncSpecification(Func<T, bool> func)
             {
-                get { return _Predicate; }
+                _Func = func;
             }
+
+            public override bool IsSatisfiedBy(T subject)
+            {
+                return Func(subject);
+            }
+
+            internal Func<T, bool> Func { get { return _Func; } }
         }
 
         #endregion
@@ -213,6 +227,31 @@ namespace iSynaptic.Commons
                 return predicate.Target as Specification<T>;
             else
                 return new PredicateSpecification(predicate);
+        }
+
+        public static implicit operator Func<T, bool>(Specification<T> specification)
+        {
+            if (specification == null)
+                return null;
+
+            if (specification is FuncSpecification)
+            {
+                FuncSpecification funcSpecification = specification as FuncSpecification;
+                return funcSpecification.Func;
+            }
+            else
+                return specification.IsSatisfiedBy;
+        }
+
+        public static implicit operator Specification<T>(Func<T, bool> func)
+        {
+            if (func == null)
+                return null;
+
+            if (func.Target != null && func.Target is Specification<T>)
+                return func.Target as Specification<T>;
+            else
+                return new FuncSpecification(func);
         }
 
         #endregion

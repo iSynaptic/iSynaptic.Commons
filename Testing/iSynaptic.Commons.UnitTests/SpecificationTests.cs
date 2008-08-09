@@ -15,6 +15,20 @@ namespace iSynaptic.Commons.UnitTests
     public class SpecificationTests : BaseTestFixture
     {
         [Test]
+        public void ImplicitConversionFromFunc()
+        {
+            Func<int, bool> func = i => i > 5;
+
+            Specification<int> spec = func;
+
+            Assert.IsTrue(spec.IsSatisfiedBy(6));
+            Assert.IsFalse(spec.IsSatisfiedBy(4));
+
+            spec = (Func<int, bool>)null;
+            Assert.IsNull(spec);
+        }
+
+        [Test]
         public void ImplicitConversionFromPredicate()
         {
             Predicate<int> predicate = i => i > 5;
@@ -26,6 +40,20 @@ namespace iSynaptic.Commons.UnitTests
 
             spec = (Predicate<int>)null;
             Assert.IsNull(spec);
+        }
+
+        [Test]
+        public void ImplicitConversionToFunc()
+        {
+            var spec = new GreaterThanFiveSpecification();
+
+            Func<int, bool> func = spec;
+
+            Assert.IsTrue(func(6));
+            Assert.IsFalse(func(4));
+
+            func = (Specification<int>)null;
+            Assert.IsNull(func);
         }
 
         [Test]
