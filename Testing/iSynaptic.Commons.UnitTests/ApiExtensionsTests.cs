@@ -38,5 +38,23 @@ namespace iSynaptic.Commons.UnitTests
 
             mocks.Verify(resolver);
         }
+
+        [Test]
+        [ExpectedArgumentNullException]
+        public void ResolveOnNullResolver()
+        {
+            IDependencyResolver resolver = null;
+            resolver.Resolve<int>();
+        }
+
+        [Test]
+        [ExpectedArgumentNullException]
+        public void ResolveOnNullResolverWithContext()
+        {
+            object context = new object();
+
+            IDependencyResolver resolver = null;
+            resolver.Resolve<int>(context);
+        }
     }
 }

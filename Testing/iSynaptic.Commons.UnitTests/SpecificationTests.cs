@@ -57,6 +57,28 @@ namespace iSynaptic.Commons.UnitTests
         }
 
         [Test]
+        public void ImplicitRoundtripFromFuncToSpecificationAndBack()
+        {
+            Func<int, bool> func = x => x > 5;
+            Specification<int> spec = func;
+
+            Func<int, bool> roundTripFunc = spec;
+
+            Assert.IsTrue(object.ReferenceEquals(func, roundTripFunc));
+        }
+
+        [Test]
+        public void ImplicitRoundtripFromSpecificationToFuncAndBack()
+        {
+            var spec = new GreaterThanFiveSpecification();
+            Func<int, bool> func = spec;
+
+            Specification<int> roundTripSpec = func;
+
+            Assert.IsTrue(object.ReferenceEquals(spec, roundTripSpec));
+        }
+
+        [Test]
         public void ImplicitConversionToPredicate()
         {
             var spec = new GreaterThanFiveSpecification();

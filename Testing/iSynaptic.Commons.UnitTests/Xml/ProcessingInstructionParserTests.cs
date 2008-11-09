@@ -91,5 +91,33 @@ namespace iSynaptic.Commons.UnitTests.Xml
 <test />";
             ProcessingInstructionParser.ParseAll(BuildReader(xml)).ForceEnumeration();
         }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void ParseWithNullName()
+        {
+            ProcessingInstructionParser.Parse(null, @"version=""1.0""");
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void ParseWithEmpryName()
+        {
+            ProcessingInstructionParser.Parse("", @"version=""1.0""");
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void ParseWithNullAttributes()
+        {
+            ProcessingInstructionParser.Parse("xml", null);
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void ParseWithEmpryAttributes()
+        {
+            ProcessingInstructionParser.Parse("xml", "");
+        }
     }
 }

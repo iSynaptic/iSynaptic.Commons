@@ -99,5 +99,35 @@ namespace iSynaptic.Commons.UnitTests.Extensions
 
             Assert.AreEqual(30, curried());
         }
+
+        [Test]
+        public void ToAction()
+        {
+            int val = 0;
+
+            Func<int, int> funcOne = x => { val = x; return val; };
+            var actionOne = funcOne.ToAction();
+
+            actionOne(3);
+            Assert.AreEqual(3, val);
+
+            Func<int, int, int> funcTwo = (x, y) => { val = x * y; return val; };
+            var actionTwo = funcTwo.ToAction();
+
+            actionTwo(2, 4);
+            Assert.AreEqual(8, val);
+
+            Func<int, int, int, int> funcThree = (x, y, z) => { val = x * y * z; return val; };
+            var actionThree = funcThree.ToAction();
+
+            actionThree(2, 4, 2);
+            Assert.AreEqual(16, val);
+
+            Func<int, int, int, int, int> funcFour = (w, x, y, z) => { val = w + x + y + z; return val; };
+            var actionFour = funcFour.ToAction();
+
+            actionFour(1, 2, 3, 4);
+            Assert.AreEqual(10, val);
+        }
     }
 }

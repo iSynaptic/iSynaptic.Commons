@@ -59,10 +59,7 @@ namespace iSynaptic.Commons.Xml
                 }
                 else
                 {
-                    if (inAssignement)
-                        throw new ApplicationException("Expected string.");
-                    else
-                        throw new ApplicationException("Expected '='.");
+                    throw new ApplicationException("Expected string.");
                 }
             }
         }

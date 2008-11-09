@@ -152,6 +152,29 @@ namespace iSynaptic.Commons.UnitTests.Extensions
         }
 
         [Test]
+        public void MakeConditional()
+        {
+            Func<int, int> func = null;
+
+            AssertThrows<ArgumentNullException>(() => { func.MakeConditional(x => x < 3); });
+
+            func = x => x;
+            AssertThrows<ArgumentNullException>(() => { func.MakeConditional(null); });
+
+            var simpleConditionalFunc = func.MakeConditional(x => x > 5);
+            Assert.AreEqual(0, simpleConditionalFunc(1));
+            Assert.AreEqual(6, simpleConditionalFunc(6));
+
+            var withDefaultValueFunc = func.MakeConditional(x => x > 5, -1);
+            Assert.AreEqual(-1, withDefaultValueFunc(1));
+            Assert.AreEqual(6, withDefaultValueFunc(6));
+
+            var withFalseFunc = func.MakeConditional(x => x > 5, x => x * 2);
+            Assert.AreEqual(2, withFalseFunc(1));
+            Assert.AreEqual(6, withFalseFunc(6));
+        }
+
+        [Test]
         public void Pipeline()
         {
             var multiplyBy5 = ((Func<int, IEnumerable<int>, IEnumerable<int>>)Multiply).Curry(5);
@@ -185,7 +208,7 @@ namespace iSynaptic.Commons.UnitTests.Extensions
 
 
             IEnumerable<int> nullEnumerable = null;
-            
+
             nullEnumerable.Pipeline(i => i * 2);
             AssertThrows<ArgumentNullException>(() => { items.Pipeline((Func<int, int>)null); });
 
@@ -194,6 +217,8 @@ namespace iSynaptic.Commons.UnitTests.Extensions
 
             nullEnumerable.Pipeline(i => Console.WriteLine(i));
             AssertThrows<ArgumentNullException>(() => { Enumerable.Range(1, 10).Pipeline((Action<int>)null); });
+
+            AssertThrows<ArgumentNullException>(() => { items.Pipeline((PipelineAction<int>)null); });
         }
 
         private IEnumerable<int> Multiply(int multiplier, IEnumerable<int> source)
