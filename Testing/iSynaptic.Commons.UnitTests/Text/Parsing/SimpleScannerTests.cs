@@ -15,8 +15,8 @@ namespace iSynaptic.Commons.UnitTests.Text.Parsing
         [Test]
         public void ScanNullInput()
         {
-            AssertThrows<ArgumentOutOfRangeException>(() => SimpleScanner.ScanText((string)null));
-            AssertThrows<ArgumentNullException>(() => SimpleScanner.ScanText((TextReader)null));
+            Assert.Throws<ArgumentOutOfRangeException>(() => SimpleScanner.ScanText((string)null));
+            Assert.Throws<ArgumentNullException>(() => SimpleScanner.ScanText((TextReader)null));
         }
 
         [Test]

@@ -17,7 +17,7 @@ namespace iSynaptic.Commons.UnitTests.Collections.Generic
         [Test]
         public void NullInnerDictionary()
         {
-            AssertThrows<ArgumentNullException>(() => new ReadOnlyDictionary<string, string>(null));
+            Assert.Throws<ArgumentNullException>(() => new ReadOnlyDictionary<string, string>(null));
         }
 
         [Test]
@@ -26,7 +26,7 @@ namespace iSynaptic.Commons.UnitTests.Collections.Generic
             IDictionary<string, string> dict = new Dictionary<string, string>();
             dict = dict.ToReadOnlyDictionary();
 
-            AssertThrows<NotSupportedException>(() => dict.Add("", ""));
+            Assert.Throws<NotSupportedException>(() => dict.Add("", ""));
         }
 
         [Test]
@@ -61,7 +61,7 @@ namespace iSynaptic.Commons.UnitTests.Collections.Generic
 
             dict = dict.ToReadOnlyDictionary();
 
-            AssertThrows<NotSupportedException>(() => dict.Remove("Key"));
+            Assert.Throws<NotSupportedException>(() => dict.Remove("Key"));
         }
 
         [Test]
@@ -105,7 +105,7 @@ namespace iSynaptic.Commons.UnitTests.Collections.Generic
             Assert.AreEqual("Value", dict["Key"]);
             Assert.AreEqual("OtherValue", dict["OtherKey"]);
 
-            AssertThrows<KeyNotFoundException>(() => { string val = dict["NonExistentValue"]; });
+            Assert.Throws<KeyNotFoundException>(() => { string val = dict["NonExistentValue"]; });
         }
 
         [Test]
@@ -114,7 +114,7 @@ namespace iSynaptic.Commons.UnitTests.Collections.Generic
             IDictionary<string, string> dict = new Dictionary<string, string>();
             dict = dict.ToReadOnlyDictionary();
 
-            AssertThrows<NotSupportedException>(() => dict["Key"] = "Value");
+            Assert.Throws<NotSupportedException>(() => dict["Key"] = "Value");
         }
 
         [Test]
@@ -123,7 +123,7 @@ namespace iSynaptic.Commons.UnitTests.Collections.Generic
             IDictionary<string, string> dict = new Dictionary<string, string>();
             dict = dict.ToReadOnlyDictionary();
 
-            AssertThrows<NotSupportedException>(() => dict.Add(new KeyValuePair<string,string>("Key", "Value")));
+            Assert.Throws<NotSupportedException>(() => dict.Add(new KeyValuePair<string,string>("Key", "Value")));
         }
 
         [Test]
@@ -132,7 +132,7 @@ namespace iSynaptic.Commons.UnitTests.Collections.Generic
             IDictionary<string, string> dict = new Dictionary<string, string>();
             dict = dict.ToReadOnlyDictionary();
 
-            AssertThrows<NotSupportedException>(() => dict.Clear());
+            Assert.Throws<NotSupportedException>(() => dict.Clear());
         }
 
         [Test]
@@ -208,7 +208,7 @@ namespace iSynaptic.Commons.UnitTests.Collections.Generic
 
             dict = dict.ToReadOnlyDictionary();
 
-            AssertThrows<NotSupportedException>(() => dict.Remove(new KeyValuePair<string, string>("Key", "Value")));
+            Assert.Throws<NotSupportedException>(() => dict.Remove(new KeyValuePair<string, string>("Key", "Value")));
         }
 
         [Test]

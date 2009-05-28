@@ -51,7 +51,7 @@ namespace iSynaptic.Commons.UnitTests.Extensions
             }
 
             IEnumerable<int> nullEnumerable = null;
-            AssertThrows<ArgumentNullException>(() => { nullEnumerable.AsLookAheadable(); });
+            Assert.Throws<ArgumentNullException>(() => { nullEnumerable.AsLookAheadable(); });
         }
 
         [Test]
@@ -107,7 +107,7 @@ namespace iSynaptic.Commons.UnitTests.Extensions
             Assert.IsTrue(numbers.SequenceEqual(Enumerable.Range(1, 10)));
 
             IEnumerable<int> nullEnumerable = null;
-            AssertThrows<ArgumentNullException>(() => { nullEnumerable.Buffer(); });
+            Assert.Throws<ArgumentNullException>(() => { nullEnumerable.Buffer(); });
         }
 
         [Test]
@@ -133,9 +133,9 @@ namespace iSynaptic.Commons.UnitTests.Extensions
 
             IEnumerable<int> nullEnumerable = null;
 
-            AssertThrows<ArgumentNullException>(() => { nullEnumerable.Delimit(""); });
-            AssertThrows<ArgumentNullException>(() => { range.Delimit(null); });
-            AssertThrows<ArgumentNullException>(() => { range.Delimit("", null); });
+            Assert.Throws<ArgumentNullException>(() => { nullEnumerable.Delimit(""); });
+            Assert.Throws<ArgumentNullException>(() => { range.Delimit(null); });
+            Assert.Throws<ArgumentNullException>(() => { range.Delimit("", null); });
         }
 
         [Test]
@@ -147,8 +147,8 @@ namespace iSynaptic.Commons.UnitTests.Extensions
             Assert.IsFalse(range.TrueForAll(i => i < 5));
 
             IEnumerable<int> nullEnumerable = null;
-            AssertThrows<ArgumentNullException>(() => { nullEnumerable.TrueForAll(i => i < 10); });
-            AssertThrows<ArgumentNullException>(() => { range.TrueForAll(null); });
+            Assert.Throws<ArgumentNullException>(() => { nullEnumerable.TrueForAll(i => i < 10); });
+            Assert.Throws<ArgumentNullException>(() => { range.TrueForAll(null); });
         }
 
         [Test]
@@ -156,10 +156,10 @@ namespace iSynaptic.Commons.UnitTests.Extensions
         {
             Func<int, int> func = null;
 
-            AssertThrows<ArgumentNullException>(() => { func.MakeConditional(x => x < 3); });
+            Assert.Throws<ArgumentNullException>(() => { func.MakeConditional(x => x < 3); });
 
             func = x => x;
-            AssertThrows<ArgumentNullException>(() => { func.MakeConditional(null); });
+            Assert.Throws<ArgumentNullException>(() => { func.MakeConditional(null); });
 
             var simpleConditionalFunc = func.MakeConditional(x => x > 5);
             Assert.AreEqual(0, simpleConditionalFunc(1));
@@ -210,15 +210,15 @@ namespace iSynaptic.Commons.UnitTests.Extensions
             IEnumerable<int> nullEnumerable = null;
 
             nullEnumerable.Pipeline(i => i * 2);
-            AssertThrows<ArgumentNullException>(() => { items.Pipeline((Func<int, int>)null); });
+            Assert.Throws<ArgumentNullException>(() => { items.Pipeline((Func<int, int>)null); });
 
             nullEnumerable.Pipeline(multiplyBy5);
-            AssertThrows<ArgumentNullException>(() => { items.Pipeline((Func<IEnumerable<int>, IEnumerable<int>>)null); });
+            Assert.Throws<ArgumentNullException>(() => { items.Pipeline((Func<IEnumerable<int>, IEnumerable<int>>)null); });
 
             nullEnumerable.Pipeline(i => Console.WriteLine(i));
-            AssertThrows<ArgumentNullException>(() => { Enumerable.Range(1, 10).Pipeline((Action<int>)null); });
+            Assert.Throws<ArgumentNullException>(() => { Enumerable.Range(1, 10).Pipeline((Action<int>)null); });
 
-            AssertThrows<ArgumentNullException>(() => { items.Pipeline((PipelineAction<int>)null); });
+            Assert.Throws<ArgumentNullException>(() => { items.Pipeline((PipelineAction<int>)null); });
         }
 
         private IEnumerable<int> Multiply(int multiplier, IEnumerable<int> source)

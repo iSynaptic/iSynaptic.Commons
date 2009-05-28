@@ -16,7 +16,7 @@ namespace iSynaptic.Commons.UnitTests.Extensions
         {
             IDictionary<int, int> dict = null;
 
-            AssertThrows<ArgumentNullException>(() => dict.ToReadOnlyDictionary());
+            Assert.Throws<ArgumentNullException>(() => dict.ToReadOnlyDictionary());
         }
 
         [Test]

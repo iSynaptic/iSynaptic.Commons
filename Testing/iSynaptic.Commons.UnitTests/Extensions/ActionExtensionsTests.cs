@@ -226,7 +226,7 @@ namespace iSynaptic.Commons.UnitTests.Extensions
         public void ToDisposableWithNull()
         {
             Action action = null;
-            AssertThrows<ArgumentNullException>(() => action.ToDisposable());
+            Assert.Throws<ArgumentNullException>(() => action.ToDisposable());
         }
 
         [Test]
@@ -247,14 +247,14 @@ namespace iSynaptic.Commons.UnitTests.Extensions
         public void MakeConditionalWithNull()
         {
             Action<int> action = null;
-            AssertThrows<ArgumentNullException>(() => { action = action.MakeConditional(i => i >= 5); });
+            Assert.Throws<ArgumentNullException>(() => { action = action.MakeConditional(i => i >= 5); });
         }
 
         [Test]
         public void MakeConditionalWithNullCondition()
         {
             Action<int> action = i => { };
-            AssertThrows<ArgumentNullException>(() => { action = action.MakeConditional(null); });
+            Assert.Throws<ArgumentNullException>(() => { action = action.MakeConditional(null); });
         }
 
         [Test]
@@ -300,7 +300,7 @@ namespace iSynaptic.Commons.UnitTests.Extensions
         public void CatchExceptionsWithNullAction()
         {
             Action<int> action = null;
-            AssertThrows<ArgumentNullException>(() => action.CatchExceptions());
+            Assert.Throws<ArgumentNullException>(() => action.CatchExceptions());
         }
 
         [Test]

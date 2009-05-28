@@ -11,7 +11,7 @@ namespace iSynaptic.Commons.UnitTests
         [Test]
         public void NullGetHandler()
         {
-            AssertThrows<ArgumentNullException>(() => new ReadableQualifier<int, int>(null));
+            Assert.Throws<ArgumentNullException>(() => new ReadableQualifier<int, int>(null));
         }
 
         [Test]

@@ -407,13 +407,13 @@ namespace iSynaptic.Commons.UnitTests.Runtime.Serialization
             Assert.IsFalse(Cloneable<IntPtr?>.CanClone());
             Assert.IsFalse(Cloneable<IntPtr?>.CanShallowClone());
 
-            AssertThrows<InvalidOperationException>(() => Cloneable<IntPtr>.Clone(IntPtr.Zero));
-            AssertThrows<InvalidOperationException>(() => Cloneable<IntPtr>.ShallowClone(IntPtr.Zero));
+            Assert.Throws<InvalidOperationException>(() => Cloneable<IntPtr>.Clone(IntPtr.Zero));
+            Assert.Throws<InvalidOperationException>(() => Cloneable<IntPtr>.ShallowClone(IntPtr.Zero));
 
-            AssertThrows<InvalidOperationException>(() => Cloneable<IntPtr?>.Clone(IntPtr.Zero));
-            AssertThrows<InvalidOperationException>(() => Cloneable<IntPtr?>.ShallowClone(IntPtr.Zero));
-            AssertThrows<InvalidOperationException>(() => Cloneable<IntPtr?>.Clone(null));
-            AssertThrows<InvalidOperationException>(() => Cloneable<IntPtr?>.ShallowClone(null));
+            Assert.Throws<InvalidOperationException>(() => Cloneable<IntPtr?>.Clone(IntPtr.Zero));
+            Assert.Throws<InvalidOperationException>(() => Cloneable<IntPtr?>.ShallowClone(IntPtr.Zero));
+            Assert.Throws<InvalidOperationException>(() => Cloneable<IntPtr?>.Clone(null));
+            Assert.Throws<InvalidOperationException>(() => Cloneable<IntPtr?>.ShallowClone(null));
         }
 
         [Test]
@@ -422,8 +422,8 @@ namespace iSynaptic.Commons.UnitTests.Runtime.Serialization
             Assert.IsFalse(Cloneable<Action>.CanClone());
             Assert.IsFalse(Cloneable<Action>.CanShallowClone());
 
-            AssertThrows<InvalidOperationException>(() => Cloneable<Action>.Clone(null));
-            AssertThrows<InvalidOperationException>(() => Cloneable<Action>.ShallowClone(null));
+            Assert.Throws<InvalidOperationException>(() => Cloneable<Action>.Clone(null));
+            Assert.Throws<InvalidOperationException>(() => Cloneable<Action>.ShallowClone(null));
         }
 
         [Test]
@@ -801,11 +801,11 @@ namespace iSynaptic.Commons.UnitTests.Runtime.Serialization
             Assert.IsFalse(Cloneable<ClassWithIntPtrField>.CanClone());
             Assert.IsFalse(Cloneable<ClassWithIntPtrField>.CanShallowClone());
 
-            AssertThrows<InvalidOperationException>(() => Cloneable<ClassWithIntPtrField>.Clone(null));
-            AssertThrows<InvalidOperationException>(() => Cloneable<ClassWithIntPtrField>.ShallowClone(null));
+            Assert.Throws<InvalidOperationException>(() => Cloneable<ClassWithIntPtrField>.Clone(null));
+            Assert.Throws<InvalidOperationException>(() => Cloneable<ClassWithIntPtrField>.ShallowClone(null));
 
-            AssertThrows<InvalidOperationException>(() => Cloneable<ClassWithIntPtrField>.Clone(new ClassWithIntPtrField()));
-            AssertThrows<InvalidOperationException>(() => Cloneable<ClassWithIntPtrField>.ShallowClone(new ClassWithIntPtrField()));
+            Assert.Throws<InvalidOperationException>(() => Cloneable<ClassWithIntPtrField>.Clone(new ClassWithIntPtrField()));
+            Assert.Throws<InvalidOperationException>(() => Cloneable<ClassWithIntPtrField>.ShallowClone(new ClassWithIntPtrField()));
         }
 
         [Test]
@@ -814,11 +814,11 @@ namespace iSynaptic.Commons.UnitTests.Runtime.Serialization
             Assert.IsFalse(Cloneable<DerivedClassWithIntPtrField>.CanClone());
             Assert.IsFalse(Cloneable<DerivedClassWithIntPtrField>.CanShallowClone());
 
-            AssertThrows<InvalidOperationException>(() => Cloneable<DerivedClassWithIntPtrField>.Clone(null));
-            AssertThrows<InvalidOperationException>(() => Cloneable<DerivedClassWithIntPtrField>.ShallowClone(null));
+            Assert.Throws<InvalidOperationException>(() => Cloneable<DerivedClassWithIntPtrField>.Clone(null));
+            Assert.Throws<InvalidOperationException>(() => Cloneable<DerivedClassWithIntPtrField>.ShallowClone(null));
 
-            AssertThrows<InvalidOperationException>(() => Cloneable<DerivedClassWithIntPtrField>.Clone(new DerivedClassWithIntPtrField()));
-            AssertThrows<InvalidOperationException>(() => Cloneable<DerivedClassWithIntPtrField>.ShallowClone(new DerivedClassWithIntPtrField()));
+            Assert.Throws<InvalidOperationException>(() => Cloneable<DerivedClassWithIntPtrField>.Clone(new DerivedClassWithIntPtrField()));
+            Assert.Throws<InvalidOperationException>(() => Cloneable<DerivedClassWithIntPtrField>.ShallowClone(new DerivedClassWithIntPtrField()));
         }
 
         [Test]
@@ -827,11 +827,11 @@ namespace iSynaptic.Commons.UnitTests.Runtime.Serialization
             Assert.IsFalse(Cloneable<ClassWithDelegateField>.CanClone());
             Assert.IsFalse(Cloneable<ClassWithDelegateField>.CanShallowClone());
 
-            AssertThrows<InvalidOperationException>(() => Cloneable<ClassWithDelegateField>.Clone(null));
-            AssertThrows<InvalidOperationException>(() => Cloneable<ClassWithDelegateField>.ShallowClone(null));
+            Assert.Throws<InvalidOperationException>(() => Cloneable<ClassWithDelegateField>.Clone(null));
+            Assert.Throws<InvalidOperationException>(() => Cloneable<ClassWithDelegateField>.ShallowClone(null));
 
-            AssertThrows<InvalidOperationException>(() => Cloneable<ClassWithDelegateField>.Clone(new ClassWithDelegateField()));
-            AssertThrows<InvalidOperationException>(() => Cloneable<ClassWithDelegateField>.ShallowClone(new ClassWithDelegateField()));
+            Assert.Throws<InvalidOperationException>(() => Cloneable<ClassWithDelegateField>.Clone(new ClassWithDelegateField()));
+            Assert.Throws<InvalidOperationException>(() => Cloneable<ClassWithDelegateField>.ShallowClone(new ClassWithDelegateField()));
         }
 
         [Test]
@@ -840,11 +840,11 @@ namespace iSynaptic.Commons.UnitTests.Runtime.Serialization
             Assert.IsFalse(Cloneable<DerivedClassWithDelegateField>.CanClone());
             Assert.IsFalse(Cloneable<DerivedClassWithDelegateField>.CanShallowClone());
 
-            AssertThrows<InvalidOperationException>(() => Cloneable<DerivedClassWithDelegateField>.Clone(null));
-            AssertThrows<InvalidOperationException>(() => Cloneable<DerivedClassWithDelegateField>.ShallowClone(null));
+            Assert.Throws<InvalidOperationException>(() => Cloneable<DerivedClassWithDelegateField>.Clone(null));
+            Assert.Throws<InvalidOperationException>(() => Cloneable<DerivedClassWithDelegateField>.ShallowClone(null));
 
-            AssertThrows<InvalidOperationException>(() => Cloneable<DerivedClassWithDelegateField>.Clone(new DerivedClassWithDelegateField()));
-            AssertThrows<InvalidOperationException>(() => Cloneable<DerivedClassWithDelegateField>.ShallowClone(new DerivedClassWithDelegateField()));
+            Assert.Throws<InvalidOperationException>(() => Cloneable<DerivedClassWithDelegateField>.Clone(new DerivedClassWithDelegateField()));
+            Assert.Throws<InvalidOperationException>(() => Cloneable<DerivedClassWithDelegateField>.ShallowClone(new DerivedClassWithDelegateField()));
         }
 
         [Test]
@@ -856,14 +856,14 @@ namespace iSynaptic.Commons.UnitTests.Runtime.Serialization
             Assert.IsFalse(Cloneable<StructWithIntPtrField?>.CanClone());
             Assert.IsFalse(Cloneable<StructWithIntPtrField?>.CanShallowClone());
 
-            AssertThrows<InvalidOperationException>(() => Cloneable<StructWithIntPtrField>.Clone(new StructWithIntPtrField()));
-            AssertThrows<InvalidOperationException>(() => Cloneable<StructWithIntPtrField>.ShallowClone(new StructWithIntPtrField()));
+            Assert.Throws<InvalidOperationException>(() => Cloneable<StructWithIntPtrField>.Clone(new StructWithIntPtrField()));
+            Assert.Throws<InvalidOperationException>(() => Cloneable<StructWithIntPtrField>.ShallowClone(new StructWithIntPtrField()));
             
-            AssertThrows<InvalidOperationException>(() => Cloneable<StructWithIntPtrField?>.Clone(null));
-            AssertThrows<InvalidOperationException>(() => Cloneable<StructWithIntPtrField?>.ShallowClone(null));
+            Assert.Throws<InvalidOperationException>(() => Cloneable<StructWithIntPtrField?>.Clone(null));
+            Assert.Throws<InvalidOperationException>(() => Cloneable<StructWithIntPtrField?>.ShallowClone(null));
 
-            AssertThrows<InvalidOperationException>(() => Cloneable<StructWithIntPtrField?>.Clone(new StructWithIntPtrField()));
-            AssertThrows<InvalidOperationException>(() => Cloneable<StructWithIntPtrField?>.ShallowClone(new StructWithIntPtrField()));
+            Assert.Throws<InvalidOperationException>(() => Cloneable<StructWithIntPtrField?>.Clone(new StructWithIntPtrField()));
+            Assert.Throws<InvalidOperationException>(() => Cloneable<StructWithIntPtrField?>.ShallowClone(new StructWithIntPtrField()));
         }
 
         [Test]
@@ -932,11 +932,11 @@ namespace iSynaptic.Commons.UnitTests.Runtime.Serialization
             Assert.IsFalse(Cloneable<ClassWithIntPtrArray>.CanClone());
             Assert.IsFalse(Cloneable<ClassWithIntPtrArray>.CanShallowClone());
 
-            AssertThrows<InvalidOperationException>(() => Cloneable<ClassWithIntPtrArray>.Clone(null));
-            AssertThrows<InvalidOperationException>(() => Cloneable<ClassWithIntPtrArray>.ShallowClone(null));
+            Assert.Throws<InvalidOperationException>(() => Cloneable<ClassWithIntPtrArray>.Clone(null));
+            Assert.Throws<InvalidOperationException>(() => Cloneable<ClassWithIntPtrArray>.ShallowClone(null));
 
-            AssertThrows<InvalidOperationException>(() => Cloneable<ClassWithIntPtrArray>.Clone(new ClassWithIntPtrArray()));
-            AssertThrows<InvalidOperationException>(() => Cloneable<ClassWithIntPtrArray>.ShallowClone(new ClassWithIntPtrArray()));
+            Assert.Throws<InvalidOperationException>(() => Cloneable<ClassWithIntPtrArray>.Clone(new ClassWithIntPtrArray()));
+            Assert.Throws<InvalidOperationException>(() => Cloneable<ClassWithIntPtrArray>.ShallowClone(new ClassWithIntPtrArray()));
         }
 
         [Test]
@@ -945,11 +945,11 @@ namespace iSynaptic.Commons.UnitTests.Runtime.Serialization
             Assert.IsFalse(Cloneable<ClassWithNullableIntPtr>.CanClone());
             Assert.IsFalse(Cloneable<ClassWithNullableIntPtr>.CanShallowClone());
 
-            AssertThrows<InvalidOperationException>(() => Cloneable<ClassWithNullableIntPtr>.Clone(null));
-            AssertThrows<InvalidOperationException>(() => Cloneable<ClassWithNullableIntPtr>.ShallowClone(null));
+            Assert.Throws<InvalidOperationException>(() => Cloneable<ClassWithNullableIntPtr>.Clone(null));
+            Assert.Throws<InvalidOperationException>(() => Cloneable<ClassWithNullableIntPtr>.ShallowClone(null));
 
-            AssertThrows<InvalidOperationException>(() => Cloneable<ClassWithNullableIntPtr>.Clone(new ClassWithNullableIntPtr()));
-            AssertThrows<InvalidOperationException>(() => Cloneable<ClassWithNullableIntPtr>.ShallowClone(new ClassWithNullableIntPtr()));
+            Assert.Throws<InvalidOperationException>(() => Cloneable<ClassWithNullableIntPtr>.Clone(new ClassWithNullableIntPtr()));
+            Assert.Throws<InvalidOperationException>(() => Cloneable<ClassWithNullableIntPtr>.ShallowClone(new ClassWithNullableIntPtr()));
         }
 
         [Test]
@@ -961,13 +961,13 @@ namespace iSynaptic.Commons.UnitTests.Runtime.Serialization
             Assert.IsFalse(Cloneable<StructWithNullableIntPtr?>.CanClone());
             Assert.IsFalse(Cloneable<StructWithNullableIntPtr?>.CanShallowClone());
 
-            AssertThrows<InvalidOperationException>(() => Cloneable<StructWithNullableIntPtr>.Clone(new StructWithNullableIntPtr()));
-            AssertThrows<InvalidOperationException>(() => Cloneable<StructWithNullableIntPtr>.ShallowClone(new StructWithNullableIntPtr()));
+            Assert.Throws<InvalidOperationException>(() => Cloneable<StructWithNullableIntPtr>.Clone(new StructWithNullableIntPtr()));
+            Assert.Throws<InvalidOperationException>(() => Cloneable<StructWithNullableIntPtr>.ShallowClone(new StructWithNullableIntPtr()));
 
-            AssertThrows<InvalidOperationException>(() => Cloneable<StructWithNullableIntPtr?>.Clone(null));
-            AssertThrows<InvalidOperationException>(() => Cloneable<StructWithNullableIntPtr?>.ShallowClone(null));
-            AssertThrows<InvalidOperationException>(() => Cloneable<StructWithNullableIntPtr?>.Clone(new StructWithNullableIntPtr()));
-            AssertThrows<InvalidOperationException>(() => Cloneable<StructWithNullableIntPtr?>.ShallowClone(new StructWithNullableIntPtr()));
+            Assert.Throws<InvalidOperationException>(() => Cloneable<StructWithNullableIntPtr?>.Clone(null));
+            Assert.Throws<InvalidOperationException>(() => Cloneable<StructWithNullableIntPtr?>.ShallowClone(null));
+            Assert.Throws<InvalidOperationException>(() => Cloneable<StructWithNullableIntPtr?>.Clone(new StructWithNullableIntPtr()));
+            Assert.Throws<InvalidOperationException>(() => Cloneable<StructWithNullableIntPtr?>.ShallowClone(new StructWithNullableIntPtr()));
 
         }
 
@@ -1014,8 +1014,8 @@ namespace iSynaptic.Commons.UnitTests.Runtime.Serialization
         {
             Assert.IsFalse(Cloneable<ParentClassWithNonCloneableChild>.CanClone());
 
-            AssertThrows<InvalidOperationException>(() => Cloneable<ParentClassWithNonCloneableChild>.Clone(null));
-            AssertThrows<InvalidOperationException>(() => Cloneable<ParentClassWithNonCloneableChild>.Clone(new ParentClassWithNonCloneableChild()));
+            Assert.Throws<InvalidOperationException>(() => Cloneable<ParentClassWithNonCloneableChild>.Clone(null));
+            Assert.Throws<InvalidOperationException>(() => Cloneable<ParentClassWithNonCloneableChild>.Clone(new ParentClassWithNonCloneableChild()));
         }
 
         [Test]

@@ -12,14 +12,16 @@ namespace iSynaptic.Commons.UnitTests.AOP
     public class NestableScopeTests
     {
         [Test]
-        [ExpectedException(typeof(ApplicationException))]
         public void NestingAppDomainWithinThread()
         {
-            using (new StubNestableScope(ScopeBounds.Thread))
-            using (new StubNestableScope(ScopeBounds.AppDomain))
+            Assert.Throws<ApplicationException>(() =>
             {
+                using (new StubNestableScope(ScopeBounds.Thread))
+                using (new StubNestableScope(ScopeBounds.AppDomain))
+                {
 
-            }
+                }
+            });
         }
 
         [Test]

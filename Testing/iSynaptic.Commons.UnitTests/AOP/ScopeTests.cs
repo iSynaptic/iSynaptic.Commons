@@ -12,43 +12,51 @@ namespace iSynaptic.Commons.UnitTests.AOP
     public class ScopeTests
     {
         [Test]
-        [ExpectedException(typeof(ApplicationException))]
         public void NestedAppDomainBoundScopesNotAllowed()
         {
-            using (new StubScope(ScopeBounds.AppDomain))
-            using (new StubScope(ScopeBounds.AppDomain))
+            Assert.Throws<ApplicationException>(() =>
             {
-            }
+                using (new StubScope(ScopeBounds.AppDomain))
+                using (new StubScope(ScopeBounds.AppDomain))
+                {
+                }
+            });
         }
 
         [Test]
-        [ExpectedException(typeof(ApplicationException))]
         public void NestedThreadBoundScopesNotAllowed()
         {
-            using (new StubScope(ScopeBounds.Thread))
-            using (new StubScope(ScopeBounds.Thread))
+            Assert.Throws<ApplicationException>(() =>
             {
-            }
+                using (new StubScope(ScopeBounds.Thread))
+                using (new StubScope(ScopeBounds.Thread))
+                {
+                }
+            });
         }
 
         [Test]
-        [ExpectedException(typeof(ApplicationException))]
         public void NestedThreadBoundInAppDomainBoundScopeNotAllowed()
         {
-            using (new StubScope(ScopeBounds.AppDomain))
-            using (new StubScope(ScopeBounds.Thread))
+            Assert.Throws<ApplicationException>(() =>
             {
-            }
+                using (new StubScope(ScopeBounds.AppDomain))
+                using (new StubScope(ScopeBounds.Thread))
+                {
+                }
+            });
         }
 
         [Test]
-        [ExpectedException(typeof(ApplicationException))]
         public void NestedAppDomainBoundInThreadBoundScopeNotAllowed()
         {
-            using (new StubScope(ScopeBounds.Thread))
-            using (new StubScope(ScopeBounds.AppDomain))
+            Assert.Throws<ApplicationException>(() =>
             {
-            }
+                using (new StubScope(ScopeBounds.Thread))
+                using (new StubScope(ScopeBounds.AppDomain))
+                {
+                }
+            });
         }
 
         [Test]
@@ -103,12 +111,14 @@ namespace iSynaptic.Commons.UnitTests.AOP
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void UndefinedBoundsValues()
         {
-            using (StubScope scope = new StubScope((ScopeBounds)73))
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
             {
-            }
+                using (StubScope scope = new StubScope((ScopeBounds)73))
+                {
+                }
+            });
         }
     }
 }

@@ -23,7 +23,7 @@ namespace iSynaptic.Commons.UnitTests
             Assert.IsTrue(idx.Index.SequenceEqual(new int[] { 0 }));
 
             Assert.IsFalse(idx.CanIncrement());
-            AssertThrows<IndexOutOfRangeException>(() => { idx.Increment(); });
+            Assert.Throws<IndexOutOfRangeException>(() => { idx.Increment(); });
 
             Assert.IsTrue(idx.Index.SequenceEqual(new int[] { 0 }));
         }
@@ -45,7 +45,7 @@ namespace iSynaptic.Commons.UnitTests
             Assert.IsTrue(idx.Index.SequenceEqual(new int[] { 3 }));
 
             idx.Increment();
-            AssertThrows<IndexOutOfRangeException>(() => { idx.Increment(); });
+            Assert.Throws<IndexOutOfRangeException>(() => { idx.Increment(); });
 
             Assert.IsTrue(idx.Index.SequenceEqual(new int[] { 4 }));
         }
@@ -67,7 +67,7 @@ namespace iSynaptic.Commons.UnitTests
             idx.Increment();
             Assert.IsTrue(idx.Index.SequenceEqual(new int[] { 1, 1 }));
 
-            AssertThrows<IndexOutOfRangeException>(() => { idx.Increment(10); });
+            Assert.Throws<IndexOutOfRangeException>(() => { idx.Increment(10); });
 
             Assert.IsTrue(idx.Index.SequenceEqual(new int[] { 1, 1 }));
         }
@@ -80,7 +80,7 @@ namespace iSynaptic.Commons.UnitTests
             idx.Increment(3);
             Assert.IsTrue(idx.Index.SequenceEqual(new int[] { 3 }));
 
-            AssertThrows<IndexOutOfRangeException>(() => { idx.Increment(5); });
+            Assert.Throws<IndexOutOfRangeException>(() => { idx.Increment(5); });
 
             Assert.IsTrue(idx.Index.SequenceEqual(new int[] { 3 }));
         }

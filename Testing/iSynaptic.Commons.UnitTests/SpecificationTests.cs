@@ -118,11 +118,11 @@ namespace iSynaptic.Commons.UnitTests
             Func<Specification<int>, Specification<int>, Specification<int>> staticFunc = Specification<int>.And;
             var operatorFunc = gtFive.GetFunc<Specification<int>, Specification<int>, Specification<int>>("op_BitwiseAnd");
 
-            AssertThrows<ArgumentNullException>(instanceFunc.Curry(null).ToAction());
-            AssertThrows<ArgumentNullException>(staticFunc.Curry(null, gtFive).ToAction());
-            AssertThrows<ArgumentNullException>(staticFunc.Curry(gtFive, null).ToAction());
-            AssertThrows<ArgumentNullException>(operatorFunc.Curry(null, gtFive).ToAction());
-            AssertThrows<ArgumentNullException>(operatorFunc.Curry(gtFive, null).ToAction());
+            Assert.Throws<ArgumentNullException>(instanceFunc.Curry(null).AsTestDelegate());
+            Assert.Throws<ArgumentNullException>(staticFunc.Curry(null, gtFive).AsTestDelegate());
+            Assert.Throws<ArgumentNullException>(staticFunc.Curry(gtFive, null).AsTestDelegate());
+            Assert.Throws<ArgumentNullException>(operatorFunc.Curry(null, gtFive).AsTestDelegate());
+            Assert.Throws<ArgumentNullException>(operatorFunc.Curry(gtFive, null).AsTestDelegate());
         }
 
         [Test]
@@ -151,11 +151,11 @@ namespace iSynaptic.Commons.UnitTests
             Func<Specification<int>, Specification<int>, Specification<int>> staticFunc = Specification<int>.Or;
             var operatorFunc = gtFive.GetFunc<Specification<int>, Specification<int>, Specification<int>>("op_BitwiseOr");
 
-            AssertThrows<ArgumentNullException>(instanceFunc.Curry(null).ToAction());
-            AssertThrows<ArgumentNullException>(staticFunc.Curry(null, gtFive).ToAction());
-            AssertThrows<ArgumentNullException>(staticFunc.Curry(gtFive, null).ToAction());
-            AssertThrows<ArgumentNullException>(operatorFunc.Curry(null, gtFive).ToAction());
-            AssertThrows<ArgumentNullException>(operatorFunc.Curry(gtFive, null).ToAction());
+            Assert.Throws<ArgumentNullException>(instanceFunc.Curry(null).AsTestDelegate());
+            Assert.Throws<ArgumentNullException>(staticFunc.Curry(null, gtFive).AsTestDelegate());
+            Assert.Throws<ArgumentNullException>(staticFunc.Curry(gtFive, null).AsTestDelegate());
+            Assert.Throws<ArgumentNullException>(operatorFunc.Curry(null, gtFive).AsTestDelegate());
+            Assert.Throws<ArgumentNullException>(operatorFunc.Curry(gtFive, null).AsTestDelegate());
         }
 
         [Test]
@@ -184,11 +184,11 @@ namespace iSynaptic.Commons.UnitTests
             Func<Specification<int>, Specification<int>, Specification<int>> staticFunc = Specification<int>.XOr;
             var operatorFunc = gtFive.GetFunc<Specification<int>, Specification<int>, Specification<int>>("op_ExclusiveOr");
 
-            AssertThrows<ArgumentNullException>(instanceFunc.Curry(null).ToAction());
-            AssertThrows<ArgumentNullException>(staticFunc.Curry(null, gtFive).ToAction());
-            AssertThrows<ArgumentNullException>(staticFunc.Curry(gtFive, null).ToAction());
-            AssertThrows<ArgumentNullException>(operatorFunc.Curry(null, gtFive).ToAction());
-            AssertThrows<ArgumentNullException>(operatorFunc.Curry(gtFive, null).ToAction());
+            Assert.Throws<ArgumentNullException>(instanceFunc.Curry(null).AsTestDelegate());
+            Assert.Throws<ArgumentNullException>(staticFunc.Curry(null, gtFive).AsTestDelegate());
+            Assert.Throws<ArgumentNullException>(staticFunc.Curry(gtFive, null).AsTestDelegate());
+            Assert.Throws<ArgumentNullException>(operatorFunc.Curry(null, gtFive).AsTestDelegate());
+            Assert.Throws<ArgumentNullException>(operatorFunc.Curry(gtFive, null).AsTestDelegate());
         }
 
         [Test]
@@ -205,7 +205,7 @@ namespace iSynaptic.Commons.UnitTests
 
             Func<Specification<int>, Specification<int>> notFunc = GreaterThanFiveSpecification.Not;
 
-            AssertThrows<ArgumentNullException>(notFunc.Curry(null).ToAction());
+            Assert.Throws<ArgumentNullException>(notFunc.Curry(null).AsTestDelegate());
         }
 
         [Test]

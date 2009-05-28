@@ -11,13 +11,13 @@ namespace iSynaptic.Commons.UnitTests
         [Test]
         public void NullGetHandler()
         {
-            AssertThrows<ArgumentNullException>(() => new ReadWriteQualifier<int, int>(null, (q, v) => { }));
+            Assert.Throws<ArgumentNullException>(() => new ReadWriteQualifier<int, int>(null, (q, v) => { }));
         }
 
         [Test]
         public void NullSetHandler()
         {
-            AssertThrows<ArgumentNullException>(() => new ReadWriteQualifier<int, int>(i => i, null));
+            Assert.Throws<ArgumentNullException>(() => new ReadWriteQualifier<int, int>(i => i, null));
         }
 
         [Test]

@@ -153,29 +153,31 @@ namespace iSynaptic.Commons.UnitTests.Transactions
         }
 
         [Test]
-        [ExpectedException(typeof(TransactionAbortedException))]
         public void ConcurrencyCollision()
         {
             SimpleObject so = new SimpleObject();
             Transactional<SimpleObject> tso = new Transactional<SimpleObject>(so);
 
-            using (TransactionScope scope = new TransactionScope())
+            Assert.Throws<TransactionAbortedException>(() =>
             {
-                tso.Value.TestInt = 7;
-                tso.Value.TestGuid = Guid.NewGuid();
-                tso.Value.TestString = "Testing";
-
-                using (TransactionScope scopeTwo = new TransactionScope(TransactionScopeOption.RequiresNew))
+                using (TransactionScope scope = new TransactionScope())
                 {
-                    tso.Value.TestInt = 9;
+                    tso.Value.TestInt = 7;
                     tso.Value.TestGuid = Guid.NewGuid();
-                    tso.Value.TestString = "Testing Two";
+                    tso.Value.TestString = "Testing";
 
-                    scopeTwo.Complete();
+                    using (TransactionScope scopeTwo = new TransactionScope(TransactionScopeOption.RequiresNew))
+                    {
+                        tso.Value.TestInt = 9;
+                        tso.Value.TestGuid = Guid.NewGuid();
+                        tso.Value.TestString = "Testing Two";
+
+                        scopeTwo.Complete();
+                    }
+
+                    scope.Complete();
                 }
-
-                scope.Complete();
-            }
+            });
         }
 
         [Test]
@@ -244,37 +246,39 @@ namespace iSynaptic.Commons.UnitTests.Transactions
         }
 
         [Test]
-        [ExpectedException(typeof(TransactionAbortedException))]
         public void ConcurrencyCollisionAcrossThreads()
         {
             Transactional<SimpleObject> tso = new Transactional<SimpleObject>(new SimpleObject());
             Guid id = Guid.NewGuid();
 
-            using (TransactionScope scope = new TransactionScope())
+            Assert.Throws<TransactionAbortedException>(() =>
             {
-                tso.Value.TestInt = 7;
-                tso.Value.TestGuid = id;
-                tso.Value.TestString = "Testing";
-
-                Action assertAction = delegate()
+                using (TransactionScope scope = new TransactionScope())
                 {
-                    using (TransactionScope scopeTwo = new TransactionScope())
+                    tso.Value.TestInt = 7;
+                    tso.Value.TestGuid = id;
+                    tso.Value.TestString = "Testing";
+
+                    Action assertAction = delegate()
                     {
-                        tso.Value.TestInt = 9;
-                        tso.Value.TestGuid = Guid.NewGuid();
-                        tso.Value.TestString = "Testing Two";
+                        using (TransactionScope scopeTwo = new TransactionScope())
+                        {
+                            tso.Value.TestInt = 9;
+                            tso.Value.TestGuid = Guid.NewGuid();
+                            tso.Value.TestString = "Testing Two";
 
-                        scopeTwo.Complete();
-                    }
-                };
+                            scopeTwo.Complete();
+                        }
+                    };
 
-                IAsyncResult ar = assertAction.BeginInvoke(null, null);
+                    IAsyncResult ar = assertAction.BeginInvoke(null, null);
 
-                ar.AsyncWaitHandle.WaitOne();
-                assertAction.EndInvoke(ar);
+                    ar.AsyncWaitHandle.WaitOne();
+                    assertAction.EndInvoke(ar);
 
-                scope.Complete();
-            }
+                    scope.Complete();
+                }
+            });
         }
 
         [Test]
@@ -391,7 +395,6 @@ namespace iSynaptic.Commons.UnitTests.Transactions
         }
 
         [Test]
-        [ExpectedException(typeof(TransactionalConcurrencyException))]
         public void ExceptionUponCompletionRollback()
         {
             MockRepository mocks = new MockRepository();
@@ -407,7 +410,7 @@ namespace iSynaptic.Commons.UnitTests.Transactions
             tso.Value.TestGuid = Guid.Empty;
             tso.Value.TestString = null;
 
-            try
+            Assert.Throws<TransactionalConcurrencyException>(() =>
             {
                 using (TransactionScope scope = new TransactionScope())
                 {
@@ -419,15 +422,11 @@ namespace iSynaptic.Commons.UnitTests.Transactions
 
                     scope.Complete();
                 }
-            }
-            catch (TransactionalConcurrencyException)
-            {
-                Assert.AreEqual(0, tso.Value.TestInt);
-                Assert.AreEqual(Guid.Empty, tso.Value.TestGuid);
-                Assert.AreEqual(null, tso.Value.TestString);
+            });
 
-                throw;
-            }
+            Assert.AreEqual(0, tso.Value.TestInt);
+            Assert.AreEqual(Guid.Empty, tso.Value.TestGuid);
+            Assert.AreEqual(null, tso.Value.TestString);
         }
 
         [Test]
@@ -517,11 +516,10 @@ namespace iSynaptic.Commons.UnitTests.Transactions
         [Test]
         public void NonCloneableType()
         {
-            AssertThrows<TypeInitializationException>(() => new Transactional<IntPtr>());
+            Assert.Throws<TypeInitializationException>(() => new Transactional<IntPtr>());
         }
 
         [Test]
-        [ExpectedException(typeof(TransactionInDoubtException))]
         public void InDoubt()
         {
             var tso = new Transactional<SimpleObject>();
@@ -543,7 +541,7 @@ namespace iSynaptic.Commons.UnitTests.Transactions
 
             mocks.ReplayAll();
 
-            try
+            Assert.Throws<TransactionInDoubtException>(() =>
             {
                 using (TransactionScope scope = new TransactionScope())
                 {
@@ -552,11 +550,9 @@ namespace iSynaptic.Commons.UnitTests.Transactions
 
                     scope.Complete();
                 }
-            }
-            finally
-            {
-                Assert.IsNull(tso.Value);
-            }
+            });
+
+            Assert.IsNull(tso.Value);
         }
 
         //[Test]

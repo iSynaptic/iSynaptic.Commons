@@ -16,7 +16,7 @@ namespace iSynaptic.Commons.UnitTests.Extensions
         public void RemoveWithNull()
         {
             ICollection<int> col = null;
-            AssertThrows<ArgumentNullException>(() => col.Remove(1, 2, 3));
+            Assert.Throws<ArgumentNullException>(() => col.Remove(1, 2, 3));
         }
 
         [Test]

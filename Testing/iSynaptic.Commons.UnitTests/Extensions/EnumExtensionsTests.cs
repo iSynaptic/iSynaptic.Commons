@@ -23,9 +23,9 @@ namespace iSynaptic.Commons.UnitTests.Extensions
             Assert.IsFalse(f.Contains(FlagsEnum.Flag4));
             Assert.IsTrue(f.Contains(FlagsEnum.Flag5));
 
-            AssertThrows<ArgumentException>(() => { f.Contains<FlagsEnum>(FlagsEnum.Flag1 | FlagsEnum.Flag5); });
-            AssertThrows<ArgumentException>(() => { f.Contains<int>(5); });
-            AssertThrows<ArgumentException>(() => { f.Contains<SpecialValue>(SpecialValue.Null); });
+            Assert.Throws<ArgumentException>(() => { f.Contains<FlagsEnum>(FlagsEnum.Flag1 | FlagsEnum.Flag5); });
+            Assert.Throws<ArgumentException>(() => { f.Contains<int>(5); });
+            Assert.Throws<ArgumentException>(() => { f.Contains<SpecialValue>(SpecialValue.Null); });
         }
 
         [Test]
@@ -43,8 +43,8 @@ namespace iSynaptic.Commons.UnitTests.Extensions
             Assert.IsTrue(f.ContainsAny(FlagsEnum.Flag1, FlagsEnum.Flag3, FlagsEnum.Flag4));
             Assert.IsTrue(f.ContainsAny(FlagsEnum.Flag1, FlagsEnum.Flag5, FlagsEnum.Flag4));
 
-            AssertThrows<ArgumentException>(() => { f.ContainsAny<int>(5); });
-            AssertThrows<ArgumentException>(() => { f.ContainsAny<SpecialValue>(SpecialValue.Null); });
+            Assert.Throws<ArgumentException>(() => { f.ContainsAny<int>(5); });
+            Assert.Throws<ArgumentException>(() => { f.ContainsAny<SpecialValue>(SpecialValue.Null); });
         }
 
         [Test]
@@ -63,8 +63,8 @@ namespace iSynaptic.Commons.UnitTests.Extensions
             Assert.IsFalse(f.ContainsAll(FlagsEnum.Flag1, FlagsEnum.Flag5, FlagsEnum.Flag4));
             Assert.IsTrue(f.ContainsAll(FlagsEnum.Flag3, FlagsEnum.Flag5));
 
-            AssertThrows<ArgumentException>(() => { f.ContainsAll<int>(5); });
-            AssertThrows<ArgumentException>(() => { f.ContainsAll<SpecialValue>(SpecialValue.Null); });
+            Assert.Throws<ArgumentException>(() => { f.ContainsAll<int>(5); });
+            Assert.Throws<ArgumentException>(() => { f.ContainsAll<SpecialValue>(SpecialValue.Null); });
         }
 
         [Test]
@@ -73,8 +73,8 @@ namespace iSynaptic.Commons.UnitTests.Extensions
             FlagsEnum f = FlagsEnum.Flag3 | FlagsEnum.Flag5;
             Assert.IsTrue(f.GetFlags<FlagsEnum>().SequenceEqual(new FlagsEnum[] { FlagsEnum.Flag3, FlagsEnum.Flag5 }));
 
-            AssertThrows<ArgumentException>(() => { f.GetFlags<int>().ForceEnumeration(); });
-            AssertThrows<ArgumentException>(() => { f.GetFlags<SpecialValue>().ForceEnumeration(); });
+            Assert.Throws<ArgumentException>(() => { f.GetFlags<int>().ForceEnumeration(); });
+            Assert.Throws<ArgumentException>(() => { f.GetFlags<SpecialValue>().ForceEnumeration(); });
         }
     }
 

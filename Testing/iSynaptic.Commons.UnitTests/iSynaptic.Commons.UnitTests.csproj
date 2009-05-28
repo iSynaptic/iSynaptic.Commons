@@ -72,7 +72,6 @@
     <Compile Include="Extensions\EnumExtensionsTests.cs" />
     <Compile Include="Extensions\FuncExtensionsTests.cs" />
     <Compile Include="Extensions\PredicateExtensionsTests.cs" />
-    <Compile Include="Linq\EnumerableTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReadableQualifierTests.cs" />
     <Compile Include="ReadWriteQualifierTests.cs" />
@@ -82,6 +81,7 @@
     <Compile Include="Text\Parsing\SimpleScannerTests.cs" />
     <Compile Include="Transactions\SimpleObject.cs" />
     <Compile Include="Transactions\TransactionalTests.cs" />
+    <Compile Include="UnitTestingExtensions.cs" />
     <Compile Include="Xml\ProcessingInstructionParserTests.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -89,9 +89,6 @@
       <Project>{8F6C6021-0517-4033-B7DA-A07DD0112FC6}</Project>
       <Name>iSynaptic.Commons</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Linq\Customers.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
