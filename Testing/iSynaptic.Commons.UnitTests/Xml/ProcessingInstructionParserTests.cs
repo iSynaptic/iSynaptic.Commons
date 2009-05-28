@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using MbUnit.Framework;
+using NUnit.Framework;
 using iSynaptic.Commons.Xml;
 using System.Xml;
 using System.IO;
@@ -53,71 +53,65 @@ namespace iSynaptic.Commons.UnitTests.Xml
         }
 
         [Test]
-        [ExpectedException(typeof(ApplicationException), "Expected identifier.")]
         public void ExpectedIdentifier()
         {
             string xml = @"<?xml version=""1.0"" encoding=""utf-8""?>
 <?test-instruction 999=""headlines.css"" ?>
 <test />";
-            ProcessingInstructionParser.ParseAll(BuildReader(xml)).ForceEnumeration();
+
+            Assert.Throws<ApplicationException>(() => ProcessingInstructionParser.ParseAll(BuildReader(xml)).ForceEnumeration(), "Expected identifier.");
         }
 
         [Test]
-        [ExpectedException(typeof(ApplicationException), "Expected '='.")]
         public void ExpectedAssignmentOperator()
         {
             string xml = @"<?xml version=""1.0"" encoding=""utf-8""?>
 <?test-instruction href-""headlines.css"" ?>
 <test />";
-            ProcessingInstructionParser.ParseAll(BuildReader(xml)).ForceEnumeration();
+
+            Assert.Throws<ApplicationException>(() => ProcessingInstructionParser.ParseAll(BuildReader(xml)).ForceEnumeration(), "Expected '='.");
         }
 
         [Test]
-        [ExpectedException(typeof(ApplicationException), "Expected '='.")]
         public void ExpectedAssignmentOperatorTwo()
         {
             string xml = @"<?xml version=""1.0"" encoding=""utf-8""?>
 <?test-instruction href""headlines.css"" ?>
 <test />";
-            ProcessingInstructionParser.ParseAll(BuildReader(xml)).ForceEnumeration();
+            Assert.Throws<ApplicationException>(() => ProcessingInstructionParser.ParseAll(BuildReader(xml)).ForceEnumeration(), "Expected '='.");
         }
 
         [Test]
-        [ExpectedException(typeof(ApplicationException), "Expected string.")]
         public void ExpectedString()
         {
             string xml = @"<?xml version=""1.0"" encoding=""utf-8""?>
 <?test-instruction href=bob ?>
 <test />";
-            ProcessingInstructionParser.ParseAll(BuildReader(xml)).ForceEnumeration();
+            Assert.Throws<ApplicationException>(() => ProcessingInstructionParser.ParseAll(BuildReader(xml)).ForceEnumeration(), "Expected string.");
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void ParseWithNullName()
         {
-            ProcessingInstructionParser.Parse(null, @"version=""1.0""");
+            Assert.Throws<ArgumentOutOfRangeException>(() => ProcessingInstructionParser.Parse(null, @"version=""1.0"""));
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void ParseWithEmpryName()
         {
-            ProcessingInstructionParser.Parse("", @"version=""1.0""");
+            Assert.Throws<ArgumentOutOfRangeException>(() => ProcessingInstructionParser.Parse("", @"version=""1.0"""));
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void ParseWithNullAttributes()
         {
-            ProcessingInstructionParser.Parse("xml", null);
+            Assert.Throws<ArgumentOutOfRangeException>(() => ProcessingInstructionParser.Parse("xml", null));
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void ParseWithEmpryAttributes()
         {
-            ProcessingInstructionParser.Parse("xml", "");
+            Assert.Throws<ArgumentOutOfRangeException>(() => ProcessingInstructionParser.Parse("xml", ""));
         }
     }
 }

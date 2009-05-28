@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using MbUnit.Framework;
+using NUnit.Framework;
 
 using iSynaptic.Commons.Runtime.Serialization;
 

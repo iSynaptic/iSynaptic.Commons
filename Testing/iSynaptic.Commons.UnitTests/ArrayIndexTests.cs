@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-using MbUnit.Framework;
+using NUnit.Framework;
 using System.Linq;
 
 namespace iSynaptic.Commons.UnitTests
@@ -11,10 +11,9 @@ namespace iSynaptic.Commons.UnitTests
     public class ArrayIndexTests : BaseTestFixture
     {
         [Test]
-        [ExpectedArgumentNullException]
         public void NullArray()
         {
-            new ArrayIndex(null);
+            Assert.Throws<ArgumentNullException>(() => new ArrayIndex(null));
         }
 
         [Test]

@@ -6,7 +6,7 @@ using System.Text;
 
 using iSynaptic.Commons.Extensions;
 
-using MbUnit.Framework;
+using NUnit.Framework;
 
 namespace iSynaptic.Commons.UnitTests.Extensions
 {

@@ -2,17 +2,15 @@
 <Project DefaultTargets="BuildComplete" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <SolutionName>iSynaptic.Commons</SolutionName>
-    <TestingFramework>MbUnit</TestingFramework>
+    <TestingFramework>NUnit</TestingFramework>
   </PropertyGroup>
 
   <Import Project="External\Tools\SolutionBuild.targets" />
   
   <ItemGroup>
     <ApplicationProject Include="Application\$(SolutionName)\$(SolutionName).csproj" />
-    <ApplicationProject Include="Application\$(SolutionName)\$(SolutionName).v3.5.csproj" />
 
     <TestingProject Include="Testing\$(SolutionName).UnitTests\$(SolutionName).UnitTests.csproj" />
-    <TestingProject Include="Testing\$(SolutionName).UnitTests\$(SolutionName).UnitTests.v3.5.csproj" />
   </ItemGroup>
 
   <ItemGroup>

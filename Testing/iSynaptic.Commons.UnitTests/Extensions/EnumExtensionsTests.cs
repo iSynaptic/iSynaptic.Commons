@@ -5,7 +5,7 @@ using System.Linq;
 
 using iSynaptic.Commons.Extensions;
 
-using MbUnit.Framework;
+using NUnit.Framework;
 
 namespace iSynaptic.Commons.UnitTests.Extensions
 {

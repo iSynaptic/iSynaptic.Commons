@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using MbUnit.Framework;
+using NUnit.Framework;
 using Rhino.Mocks;
 
 namespace iSynaptic.Commons.UnitTests
@@ -40,21 +40,20 @@ namespace iSynaptic.Commons.UnitTests
         }
 
         [Test]
-        [ExpectedArgumentNullException]
         public void ResolveOnNullResolver()
         {
             IDependencyResolver resolver = null;
-            resolver.Resolve<int>();
+            
+            Assert.Throws<ArgumentNullException>(() => resolver.Resolve<int>());
         }
 
         [Test]
-        [ExpectedArgumentNullException]
         public void ResolveOnNullResolverWithContext()
         {
             object context = new object();
-
             IDependencyResolver resolver = null;
-            resolver.Resolve<int>(context);
+            
+            Assert.Throws<ArgumentNullException>(() => resolver.Resolve<int>(context));
         }
     }
 }

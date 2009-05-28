@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-using MbUnit.Framework;
+using NUnit.Framework;
 using iSynaptic.Commons.Extensions;
 
 namespace iSynaptic.Commons.UnitTests.AOP
@@ -173,7 +173,8 @@ namespace iSynaptic.Commons.UnitTests.AOP
             {
                 Assert.IsTrue(disposed);
                 Assert.AreEqual(1, ex.Exceptions.Count);
-                Assert.IsInstanceOfType(typeof(InvalidOperationException), ex.Exceptions[0]);
+
+                Assert.IsAssignableFrom<InvalidOperationException>(ex.Exceptions[0]);
             }
         }
 

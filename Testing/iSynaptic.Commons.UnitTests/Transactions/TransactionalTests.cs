@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Transactions;
 
-using MbUnit.Framework;
+using NUnit.Framework;
 
 using iSynaptic.Commons.Transactions;
 using iSynaptic.Commons.Extensions.ObjectExtensions;

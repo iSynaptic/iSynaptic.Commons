@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-using MbUnit.Framework;
+using NUnit.Framework;
 
 using iSynaptic.Commons.Text.Parsing;
 
@@ -13,10 +13,9 @@ namespace iSynaptic.Commons.UnitTests.Text.Parsing
     public class ScanningTextReaderTests
     {
         [Test]
-        [ExpectedArgumentNullException]
         public void InnerReaderRequired()
         {
-            ScanningTextReader scanningReader = new ScanningTextReader(null);
+            Assert.Throws<ArgumentNullException>(() => new ScanningTextReader(null));
         }
 
         [Test]
