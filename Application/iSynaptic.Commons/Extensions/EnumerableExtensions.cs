@@ -64,23 +64,6 @@ namespace iSynaptic.Commons.Extensions
             return builder.ToString();
         }
 
-        public static bool TrueForAll<T>(this IEnumerable<T> self, Predicate<T> predicate)
-        {
-            if (self == null)
-                throw new ArgumentNullException("self");
-
-            if (predicate == null)
-                throw new ArgumentNullException("predicate");
-
-            foreach (T item in self)
-            {
-                if (predicate(item) != true)
-                    return false;
-            }
-
-            return true;
-        }
-
         public static IPipelinedEnumerable<T> Pipeline<T>(this IEnumerable<T> self, Action<T> processor)
         {
             if (processor == null)
@@ -128,6 +111,26 @@ namespace iSynaptic.Commons.Extensions
 
             foreach (T item in self)
                 continue;
+        }
+
+        public static IEnumerable<T> MeetsSpecifcation<T>(this IEnumerable<T> candidates, ISpecification<T> specification)
+        {
+            return candidates.Where(specification.IsSatisfiedBy);
+        }
+
+        public static IEnumerable<T> FailsSpecification<T>(this IEnumerable<T> candidates, ISpecification<T> specification)
+        {
+            return candidates.Where(x => specification.IsSatisfiedBy(x) != true);
+        }
+
+        public static bool Satisfies<T>(this T[] candidates, ISpecification<T> specification)
+        {
+            return candidates.All(specification.IsSatisfiedBy);
+        }
+
+        public static bool Satisfies<T>(this IEnumerable<T> candidates, ISpecification<T> specification)
+        {
+            return candidates.All(specification.IsSatisfiedBy);
         }
     }
 }

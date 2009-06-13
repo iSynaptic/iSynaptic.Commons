@@ -139,19 +139,6 @@ namespace iSynaptic.Commons.UnitTests.Extensions
         }
 
         [Test]
-        public void TrueForAll()
-        {
-            IEnumerable<int> range = Enumerable.Range(1, 9);
-
-            Assert.IsTrue(range.TrueForAll(i => i < 10));
-            Assert.IsFalse(range.TrueForAll(i => i < 5));
-
-            IEnumerable<int> nullEnumerable = null;
-            Assert.Throws<ArgumentNullException>(() => { nullEnumerable.TrueForAll(i => i < 10); });
-            Assert.Throws<ArgumentNullException>(() => { range.TrueForAll(null); });
-        }
-
-        [Test]
         public void MakeConditional()
         {
             Func<int, int> func = null;

@@ -15,80 +15,80 @@ namespace iSynaptic.Commons.UnitTests
     public class SpecificationTests : BaseTestFixture
     {
         [Test]
-        public void ImplicitConversionFromFunc()
+        public void ConversionFromFunc()
         {
             Func<int, bool> func = i => i > 5;
 
-            Specification<int> spec = func;
+            ISpecification<int> spec = func.ToSpecification();
 
             Assert.IsTrue(spec.IsSatisfiedBy(6));
             Assert.IsFalse(spec.IsSatisfiedBy(4));
 
-            spec = (Func<int, bool>)null;
+            spec = ((Func<int, bool>)null).ToSpecification();
             Assert.IsNull(spec);
         }
 
         [Test]
-        public void ImplicitConversionFromPredicate()
+        public void ConversionFromPredicate()
         {
             Predicate<int> predicate = i => i > 5;
 
-            Specification<int> spec = predicate;
+            ISpecification<int> spec = predicate.ToSpecification();
 
             Assert.IsTrue(spec.IsSatisfiedBy(6));
             Assert.IsFalse(spec.IsSatisfiedBy(4));
 
-            spec = (Predicate<int>)null;
+            spec = ((Predicate<int>)null).ToSpecification();
             Assert.IsNull(spec);
         }
 
         [Test]
-        public void ImplicitConversionToFunc()
+        public void ConversionToFunc()
         {
             var spec = new GreaterThanFiveSpecification();
 
-            Func<int, bool> func = spec;
+            Func<int, bool> func = spec.ToFunc();
 
             Assert.IsTrue(func(6));
             Assert.IsFalse(func(4));
 
-            func = (Specification<int>)null;
+            func = ((ISpecification<int>)null).ToFunc();
             Assert.IsNull(func);
         }
 
         [Test]
-        public void ImplicitRoundtripFromFuncToSpecificationAndBack()
+        public void RoundtripFromFuncToSpecificationAndBack()
         {
             Func<int, bool> func = x => x > 5;
-            Specification<int> spec = func;
+            ISpecification<int> spec = func.ToSpecification();
 
-            Func<int, bool> roundTripFunc = spec;
+            Func<int, bool> roundTripFunc = spec.ToFunc();
 
             Assert.IsTrue(object.ReferenceEquals(func, roundTripFunc));
         }
 
         [Test]
-        public void ImplicitRoundtripFromSpecificationToFuncAndBack()
+        public void RoundtripFromSpecificationToFuncAndBack()
         {
             var spec = new GreaterThanFiveSpecification();
-            Func<int, bool> func = spec;
+            Func<int, bool> func = spec.ToFunc();
 
-            Specification<int> roundTripSpec = func;
+            ISpecification<int> roundTripSpec = func.ToSpecification();
 
             Assert.IsTrue(object.ReferenceEquals(spec, roundTripSpec));
         }
 
         [Test]
-        public void ImplicitConversionToPredicate()
+        public void ConversionToPredicate()
         {
             var spec = new GreaterThanFiveSpecification();
 
-            Predicate<int> predicate = spec;
+            Predicate<int> predicate = spec.ToPredicate();
 
             Assert.IsTrue(predicate(6));
             Assert.IsFalse(predicate(4));
 
-            predicate = (Specification<int>)null;
+            predicate = ((ISpecification<int>)null).ToPredicate();
             Assert.IsNull(predicate);
         }
 
@@ -99,30 +99,13 @@ namespace iSynaptic.Commons.UnitTests
             var ltSeven = new LessThanSevenSpecification();
 
             var andSpec = gtFive.And(ltSeven);
-            var staticAndSpec = Specification<int>.And(gtFive, ltSeven);
-            var operatorSpec = gtFive && ltSeven;
 
             Assert.IsTrue(andSpec.IsSatisfiedBy(6));
-            Assert.IsTrue(staticAndSpec.IsSatisfiedBy(6));
-            Assert.IsTrue(operatorSpec.IsSatisfiedBy(6));
-
             Assert.IsFalse(andSpec.IsSatisfiedBy(4));
-            Assert.IsFalse(staticAndSpec.IsSatisfiedBy(4));
-            Assert.IsFalse(operatorSpec.IsSatisfiedBy(4));
-
             Assert.IsFalse(andSpec.IsSatisfiedBy(8));
-            Assert.IsFalse(staticAndSpec.IsSatisfiedBy(8));
-            Assert.IsFalse(operatorSpec.IsSatisfiedBy(8));
 
-            Func<Specification<int>, Specification<int>> instanceFunc = gtFive.And;
-            Func<Specification<int>, Specification<int>, Specification<int>> staticFunc = Specification<int>.And;
-            var operatorFunc = gtFive.GetFunc<Specification<int>, Specification<int>, Specification<int>>("op_BitwiseAnd");
-
-            Assert.Throws<ArgumentNullException>(instanceFunc.Curry(null).AsTestDelegate());
-            Assert.Throws<ArgumentNullException>(staticFunc.Curry(null, gtFive).AsTestDelegate());
-            Assert.Throws<ArgumentNullException>(staticFunc.Curry(gtFive, null).AsTestDelegate());
-            Assert.Throws<ArgumentNullException>(operatorFunc.Curry(null, gtFive).AsTestDelegate());
-            Assert.Throws<ArgumentNullException>(operatorFunc.Curry(gtFive, null).AsTestDelegate());
+            Assert.Throws<ArgumentNullException>(() => Specification.And<int>(null, gtFive));
+            Assert.Throws<ArgumentNullException>(() => Specification.And<int>(gtFive, null));
         }
 
         [Test]
@@ -132,30 +115,13 @@ namespace iSynaptic.Commons.UnitTests
             var ltSeven = new LessThanSevenSpecification();
 
             var orMethod = gtFive.Or(ltSeven);
-            var staticOrMethod = Specification<int>.Or(gtFive, ltSeven);
-            var operatorOr = gtFive || ltSeven;
 
             Assert.IsTrue(orMethod.IsSatisfiedBy(6));
-            Assert.IsTrue(staticOrMethod.IsSatisfiedBy(6));
-            Assert.IsTrue(operatorOr.IsSatisfiedBy(6));
-
             Assert.IsTrue(orMethod.IsSatisfiedBy(4));
-            Assert.IsTrue(staticOrMethod.IsSatisfiedBy(4));
-            Assert.IsTrue(operatorOr.IsSatisfiedBy(4));
-
             Assert.IsTrue(orMethod.IsSatisfiedBy(8));
-            Assert.IsTrue(staticOrMethod.IsSatisfiedBy(8));
-            Assert.IsTrue(operatorOr.IsSatisfiedBy(8));
 
-            Func<Specification<int>, Specification<int>> instanceFunc = gtFive.Or;
-            Func<Specification<int>, Specification<int>, Specification<int>> staticFunc = Specification<int>.Or;
-            var operatorFunc = gtFive.GetFunc<Specification<int>, Specification<int>, Specification<int>>("op_BitwiseOr");
-
-            Assert.Throws<ArgumentNullException>(instanceFunc.Curry(null).AsTestDelegate());
-            Assert.Throws<ArgumentNullException>(staticFunc.Curry(null, gtFive).AsTestDelegate());
-            Assert.Throws<ArgumentNullException>(staticFunc.Curry(gtFive, null).AsTestDelegate());
-            Assert.Throws<ArgumentNullException>(operatorFunc.Curry(null, gtFive).AsTestDelegate());
-            Assert.Throws<ArgumentNullException>(operatorFunc.Curry(gtFive, null).AsTestDelegate());
+            Assert.Throws<ArgumentNullException>(() => Specification.Or<int>(null, gtFive));
+            Assert.Throws<ArgumentNullException>(() => Specification.Or<int>(gtFive, null));
         }
 
         [Test]
@@ -165,30 +131,13 @@ namespace iSynaptic.Commons.UnitTests
             var ltSeven = new LessThanSevenSpecification();
 
             var xorMethod = gtFive.XOr(ltSeven);
-            var staticXOrMethod = Specification<int>.XOr(gtFive, ltSeven);
-            var operatorXOr = gtFive ^ ltSeven;
 
             Assert.IsFalse(xorMethod.IsSatisfiedBy(6));
-            Assert.IsFalse(staticXOrMethod.IsSatisfiedBy(6));
-            Assert.IsFalse(operatorXOr.IsSatisfiedBy(6));
-
             Assert.IsTrue(xorMethod.IsSatisfiedBy(4));
-            Assert.IsTrue(staticXOrMethod.IsSatisfiedBy(4));
-            Assert.IsTrue(operatorXOr.IsSatisfiedBy(4));
-
             Assert.IsTrue(xorMethod.IsSatisfiedBy(8));
-            Assert.IsTrue(staticXOrMethod.IsSatisfiedBy(8));
-            Assert.IsTrue(operatorXOr.IsSatisfiedBy(8));
 
-            Func<Specification<int>, Specification<int>> instanceFunc = gtFive.XOr;
-            Func<Specification<int>, Specification<int>, Specification<int>> staticFunc = Specification<int>.XOr;
-            var operatorFunc = gtFive.GetFunc<Specification<int>, Specification<int>, Specification<int>>("op_ExclusiveOr");
-
-            Assert.Throws<ArgumentNullException>(instanceFunc.Curry(null).AsTestDelegate());
-            Assert.Throws<ArgumentNullException>(staticFunc.Curry(null, gtFive).AsTestDelegate());
-            Assert.Throws<ArgumentNullException>(staticFunc.Curry(gtFive, null).AsTestDelegate());
-            Assert.Throws<ArgumentNullException>(operatorFunc.Curry(null, gtFive).AsTestDelegate());
-            Assert.Throws<ArgumentNullException>(operatorFunc.Curry(gtFive, null).AsTestDelegate());
+            Assert.Throws<ArgumentNullException>(() => Specification.XOr<int>(null, gtFive));
+            Assert.Throws<ArgumentNullException>(() => Specification.XOr<int>(gtFive, null));
         }
 
         [Test]
@@ -200,12 +149,10 @@ namespace iSynaptic.Commons.UnitTests
             Assert.IsTrue(notGtFive.IsSatisfiedBy(4));
             Assert.IsFalse(gtFive.IsSatisfiedBy(4));
 
-            Assert.IsFalse((!notGtFive).IsSatisfiedBy(4));
-            Assert.IsTrue((!gtFive).IsSatisfiedBy(4));
+            Assert.IsFalse(notGtFive.Not().IsSatisfiedBy(4));
+            Assert.IsTrue(gtFive.Not().IsSatisfiedBy(4));
 
-            Func<Specification<int>, Specification<int>> notFunc = GreaterThanFiveSpecification.Not;
-
-            Assert.Throws<ArgumentNullException>(notFunc.Curry(null).AsTestDelegate());
+            Assert.Throws<ArgumentNullException>(() => Specification.Not<int>(null));
         }
 
         [Test]
@@ -225,9 +172,10 @@ namespace iSynaptic.Commons.UnitTests
             var gtFive = new GreaterThanFiveSpecification();
             var ltSeven = new LessThanSevenSpecification();
 
-            Assert.IsTrue(gtFive.MeetsSpecifcation(values).SequenceEqual(new int[] { 6, 7, 8, 9 }));
-            Assert.IsTrue(ltSeven.MeetsSpecifcation(values).SequenceEqual(new int[] { 0, 1, 2, 3, 4, 5, 6, }));
-            Assert.IsTrue((gtFive && ltSeven).MeetsSpecifcation(values).SequenceEqual(new int[] { 6 }));
+
+            Assert.IsTrue(values.MeetsSpecifcation(gtFive).SequenceEqual(new int[] { 6, 7, 8, 9 }));
+            Assert.IsTrue(values.MeetsSpecifcation(ltSeven).SequenceEqual(new int[] { 0, 1, 2, 3, 4, 5, 6, }));
+            Assert.IsTrue(values.MeetsSpecifcation(gtFive.And(ltSeven)).SequenceEqual(new int[] { 6 }));
         }
 
         [Test]
@@ -238,9 +186,9 @@ namespace iSynaptic.Commons.UnitTests
             var gtFive = new GreaterThanFiveSpecification();
             var ltSeven = new LessThanSevenSpecification();
 
-            Assert.IsTrue(gtFive.FailsSpecification(values).SequenceEqual(new int[] { 0, 1, 2, 3, 4, 5 }));
-            Assert.IsTrue(ltSeven.FailsSpecification(values).SequenceEqual(new int[] { 7, 8, 9 }));
-            Assert.IsTrue((gtFive && ltSeven).FailsSpecification(values).SequenceEqual(new int[] { 0, 1, 2, 3, 4, 5, 7, 8, 9 }));
+            Assert.IsTrue(values.FailsSpecification(gtFive).SequenceEqual(new int[] { 0, 1, 2, 3, 4, 5 }));
+            Assert.IsTrue(values.FailsSpecification(ltSeven).SequenceEqual(new int[] { 7, 8, 9 }));
+            Assert.IsTrue(values.FailsSpecification(gtFive.And(ltSeven)).SequenceEqual(new int[] { 0, 1, 2, 3, 4, 5, 7, 8, 9 }));
         }
 
         [Test]
@@ -277,9 +225,9 @@ namespace iSynaptic.Commons.UnitTests
         public void UnwrapsPredicateSpecification()
         {
             Predicate<int> predicate = val => val > 5;
-            Specification<int> spec = predicate;
+            ISpecification<int> spec = predicate.ToSpecification();
 
-            Predicate<int> unwrapedPredicate = spec;
+            Predicate<int> unwrapedPredicate = spec.ToPredicate();
 
             Assert.IsTrue(object.ReferenceEquals(predicate, unwrapedPredicate));
         }
@@ -288,28 +236,28 @@ namespace iSynaptic.Commons.UnitTests
         public void UnwrapsSpecificationFromPredicate()
         {
             var gtFive = new GreaterThanFiveSpecification();
-            Predicate<int> predicate = gtFive;
+            Predicate<int> predicate = gtFive.ToPredicate();
 
-            Specification<int> unwrapped = predicate;
+            ISpecification<int> unwrapped = predicate.ToSpecification();
 
             Assert.IsAssignableFrom(typeof(GreaterThanFiveSpecification), unwrapped);
             Assert.IsTrue(object.ReferenceEquals(gtFive, unwrapped));
         }
     }
 
-    public class GreaterThanFiveSpecification : Specification<int>
+    public class GreaterThanFiveSpecification : ISpecification<int>
     {
-        public override bool IsSatisfiedBy(int subject)
+        public bool IsSatisfiedBy(int candidate)
         {
-            return subject > 5;
+            return candidate > 5;
         }
     }
 
-    public class LessThanSevenSpecification : Specification<int>
+    public class LessThanSevenSpecification : ISpecification<int>
     {
-        public override bool IsSatisfiedBy(int subject)
+        public bool IsSatisfiedBy(int candidate)
         {
-            return subject < 7;
+            return candidate < 7;
         }
     }
 }

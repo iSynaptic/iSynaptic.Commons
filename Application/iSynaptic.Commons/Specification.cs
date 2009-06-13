@@ -1,55 +1,56 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace iSynaptic.Commons
 {
-    public abstract class Specification<T>
+    public static class Specification
     {
         #region Nested Members
 
-        private sealed class NotSpecification : Specification<T>
+        private sealed class NotSpecification<T> : ISpecification<T>
         {
-            private Specification<T> _InnerSpecification = null;
-            public NotSpecification(Specification<T> specification)
+            private ISpecification<T> _InnerSpecification = null;
+            public NotSpecification(ISpecification<T> specification)
             {
                 _InnerSpecification = specification;
             }
 
-            public override bool IsSatisfiedBy(T subject)
+            public bool IsSatisfiedBy(T candidate)
             {
-                return !(_InnerSpecification.IsSatisfiedBy(subject));
+                return !(_InnerSpecification.IsSatisfiedBy(candidate));
             }
 
-            internal Specification<T> InnerSpecification
+            internal ISpecification<T> InnerSpecification
             {
                 get { return _InnerSpecification; }
             }
         }
 
-        private sealed class LogicalSpecification : Specification<T>
+        private sealed class LogicalSpecification<T> : ISpecification<T>
         {
-            private Specification<T> _Left = null;
-            private Specification<T> _Right = null;
+            private ISpecification<T> _Left = null;
+            private ISpecification<T> _Right = null;
             private Func<bool, bool, bool> _Operation = null;
 
-            public LogicalSpecification(Specification<T> left, Specification<T> right, Func<bool, bool, bool> operation)
+            public LogicalSpecification(ISpecification<T> left, ISpecification<T> right, Func<bool, bool, bool> operation)
             {
                 _Left = left;
                 _Right = right;
                 _Operation = operation;
             }
 
-            public override bool IsSatisfiedBy(T subject)
+            public bool IsSatisfiedBy(T candidate)
             {
-                bool leftResult = _Left.IsSatisfiedBy(subject);
-                bool rightResult = _Right.IsSatisfiedBy(subject);
+                bool leftResult = _Left.IsSatisfiedBy(candidate);
+                bool rightResult = _Right.IsSatisfiedBy(candidate);
 
                 return _Operation(leftResult, rightResult);
             }
         }
 
-        private sealed class PredicateSpecification : Specification<T>
+        private sealed class PredicateSpecification<T> : ISpecification<T>
         {
             private Predicate<T> _Predicate = null;
 
@@ -58,15 +59,15 @@ namespace iSynaptic.Commons
                 _Predicate = predicate;
             }
 
-            public override bool IsSatisfiedBy(T subject)
+            public bool IsSatisfiedBy(T candidate)
             {
-                return Predicate(subject);
+                return Predicate(candidate);
             }
 
             internal Predicate<T> Predicate { get { return _Predicate; } }
         }
 
-        private sealed class FuncSpecification : Specification<T>
+        private sealed class FuncSpecification<T> : ISpecification<T>
         {
             private Func<T, bool> _Func = null;
 
@@ -75,9 +76,9 @@ namespace iSynaptic.Commons
                 _Func = func;
             }
 
-            public override bool IsSatisfiedBy(T subject)
+            public bool IsSatisfiedBy(T candidate)
             {
-                return Func(subject);
+                return Func(candidate);
             }
 
             internal Func<T, bool> Func { get { return _Func; } }
@@ -85,83 +86,30 @@ namespace iSynaptic.Commons
 
         #endregion
 
-        public IEnumerable<T> MeetsSpecifcation(IEnumerable<T> subjects)
+        public static bool IsSatisfiedBy<T>(this ISpecification<T> specification, params T[] candidates)
         {
-            foreach (T subject in subjects)
-            {
-                if (IsSatisfiedBy(subject))
-                    yield return subject;
-            }
+            return candidates.All(specification.IsSatisfiedBy);
         }
 
-        public IEnumerable<T> FailsSpecification(IEnumerable<T> subjects)
+        public static bool IsSatisfiedBy<T>(this ISpecification<T> specification, IEnumerable<T> candidates)
         {
-            foreach (T subject in subjects)
-            {
-                if (IsSatisfiedBy(subject) != true)
-                    yield return subject;
-            }
+            return candidates.All(specification.IsSatisfiedBy);
         }
-
-        #region IsSatisfiedBy Methods
-
-        public abstract bool IsSatisfiedBy(T subject);
-
-        public bool IsSatisfiedBy(params T[] subjects)
-        {
-            return Array.TrueForAll<T>(subjects, IsSatisfiedBy);
-        }
-
-        public bool IsSatisfiedBy(IEnumerable<T> subjects)
-        {
-            return IsSatisfiedBy(new List<T>(subjects).ToArray());
-        }
-
-        #endregion
 
         #region Operator Implementation
 
-        public Specification<T> Not()
-        {
-            return Not(this);
-        }
-
-        public virtual Specification<T> And(Specification<T> specification)
+        public static ISpecification<T> Not<T>(this ISpecification<T> specification)
         {
             if (specification == null)
                 throw new ArgumentNullException("specification");
 
-            return And(this, specification);
+            if (specification.GetType() == typeof(NotSpecification<T>))
+                return ((NotSpecification<T>)specification).InnerSpecification;
+
+            return new NotSpecification<T>(specification);
         }
 
-        public virtual Specification<T> Or(Specification<T> specification)
-        {
-            if (specification == null)
-                throw new ArgumentNullException("specification");
-
-            return Or(this, specification);
-        }
-
-        public virtual Specification<T> XOr(Specification<T> specification)
-        {
-            if (specification == null)
-                throw new ArgumentNullException("specification");
-
-            return XOr(this, specification);
-        }
-
-        public static Specification<T> Not(Specification<T> specification)
-        {
-            if (specification == null)
-                throw new ArgumentNullException("specification");
-
-            if (specification.GetType() == typeof(NotSpecification))
-                return ((NotSpecification)specification).InnerSpecification;
-
-            return new NotSpecification(specification);
-        }
-
-        public static Specification<T> And(Specification<T> left, Specification<T> right)
+        public static ISpecification<T> And<T>(this ISpecification<T> left, ISpecification<T> right)
         {
             if (left == null)
                 throw new ArgumentNullException("left");
@@ -169,12 +117,12 @@ namespace iSynaptic.Commons
             if (right == null)
                 throw new ArgumentNullException("right");
 
-            return new LogicalSpecification(left,
+            return new LogicalSpecification<T>(left,
                 right,
                 (l, r) => l && r);
         }
 
-        public static Specification<T> Or(Specification<T> left, Specification<T> right)
+        public static ISpecification<T> Or<T>(this ISpecification<T> left, ISpecification<T> right)
         {
             if (left == null)
                 throw new ArgumentNullException("left");
@@ -182,12 +130,12 @@ namespace iSynaptic.Commons
             if (right == null)
                 throw new ArgumentNullException("right");
 
-            return new LogicalSpecification(left,
+            return new LogicalSpecification<T>(left,
                 right,
                 (l, r) => l || r);
         }
 
-        public static Specification<T> XOr(Specification<T> left, Specification<T> right)
+        public static ISpecification<T> XOr<T>(this ISpecification<T> left, ISpecification<T> right)
         {
             if (left == null)
                 throw new ArgumentNullException("left");
@@ -195,97 +143,63 @@ namespace iSynaptic.Commons
             if (right == null)
                 throw new ArgumentNullException("right");
 
-            return new LogicalSpecification(left,
+            return new LogicalSpecification<T>(left,
                 right,
                 (l, r) => l ^ r);
         }
 
         #endregion
 
-        #region Implicit Conversions
+        #region Conversions
 
-        public static implicit operator Predicate<T>(Specification<T> specification)
+        public static Predicate<T> ToPredicate<T>(this ISpecification<T> specification)
         {
             if (specification == null)
                 return null;
 
-            if (specification is PredicateSpecification)
+            if (specification is PredicateSpecification<T>)
             {
-                PredicateSpecification predicateSpecification = specification as PredicateSpecification;
+                PredicateSpecification<T> predicateSpecification = specification as PredicateSpecification<T>;
                 return predicateSpecification.Predicate;
             }
             else
                 return specification.IsSatisfiedBy;
         }
 
-        public static implicit operator Specification<T>(Predicate<T> predicate)
-        {
-            if (predicate == null)
-                return null;
-
-            if (predicate.Target != null && predicate.Target is Specification<T>)
-                return predicate.Target as Specification<T>;
-            else
-                return new PredicateSpecification(predicate);
-        }
-
-        public static implicit operator Func<T, bool>(Specification<T> specification)
+        public static Func<T, bool> ToFunc<T>(this ISpecification<T> specification)
         {
             if (specification == null)
                 return null;
 
-            if (specification is FuncSpecification)
+            if (specification is FuncSpecification<T>)
             {
-                FuncSpecification funcSpecification = specification as FuncSpecification;
+                FuncSpecification<T> funcSpecification = specification as FuncSpecification<T>;
                 return funcSpecification.Func;
             }
             else
                 return specification.IsSatisfiedBy;
         }
 
-        public static implicit operator Specification<T>(Func<T, bool> func)
+        public static ISpecification<T> ToSpecification<T>(this Predicate<T> predicate)
+        {
+            if (predicate == null)
+                return null;
+
+            if (predicate.Target != null && predicate.Target is ISpecification<T>)
+                return predicate.Target as ISpecification<T>;
+            else
+                return new PredicateSpecification<T>(predicate);
+        }
+
+        public static ISpecification<T> ToSpecification<T>(this Func<T, bool> func)
         {
             if (func == null)
                 return null;
 
-            if (func.Target != null && func.Target is Specification<T>)
-                return func.Target as Specification<T>;
+            if (func.Target != null && func.Target is ISpecification<T>)
+                return func.Target as ISpecification<T>;
             else
-                return new FuncSpecification(func);
-        }
-
-        #endregion
-
-        #region Operator Overloads
-
-        public static Specification<T> operator &(Specification<T> left, Specification<T> right)
-        {
-            return And(left, right);
-        }
-
-        public static Specification<T> operator |(Specification<T> left, Specification<T> right)
-        {
-            return Or(left, right);
-        }
-
-        public static Specification<T> operator ^(Specification<T> left, Specification<T> right)
-        {
-            return XOr(left, right);
-        }
-
-        public static Specification<T> operator !(Specification<T> specification)
-        {
-            return specification.Not();
-        }
-
-        public static bool operator true(Specification<T> specification)
-        {
-            return false;
-        }
-
-        public static bool operator false(Specification<T> specification)
-        {
-            return false;
+                return new FuncSpecification<T>(func);
         }
 
         #endregion
