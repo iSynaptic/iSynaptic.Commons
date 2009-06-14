@@ -399,6 +399,48 @@ namespace iSynaptic.Commons.UnitTests.Runtime.Serialization
         }
 
         [Test]
+        public void CloneListOfValueType()
+        {
+            List<int> source = new List<int> { 1, 2, 3, 4, 5 };
+
+            Assert.IsTrue(Cloneable<List<int>>.CanClone());
+            Assert.IsTrue(Cloneable<List<int>>.CanShallowClone());
+
+            List<int> clone = Cloneable<List<int>>.Clone(source);
+            List<int> shallowClone = Cloneable<List<int>>.ShallowClone(source);
+
+            Assert.IsFalse(object.ReferenceEquals(source, clone));
+            Assert.IsFalse(object.ReferenceEquals(source, shallowClone));
+
+            Assert.IsTrue(clone.SequenceEqual(new int[] { 1, 2, 3, 4, 5 }));
+            Assert.IsTrue(shallowClone.SequenceEqual(new int[] { 1, 2, 3, 4, 5 }));
+        }
+
+        [Test]
+        public void CloneListOfReferenceType()
+        {
+            List<CloneTestClass> source = new List<CloneTestClass> { new CloneTestClass { FirstName = "John", LastName = "Doe" } };
+
+            Assert.IsTrue(Cloneable<List<CloneTestClass>>.CanClone());
+            Assert.IsTrue(Cloneable<List<CloneTestClass>>.CanShallowClone());
+
+            List<CloneTestClass> clone = Cloneable<List<CloneTestClass>>.Clone(source);
+            List<CloneTestClass> shallowClone = Cloneable<List<CloneTestClass>>.ShallowClone(source);
+
+            Assert.IsFalse(object.ReferenceEquals(source, clone));
+            Assert.IsFalse(object.ReferenceEquals(source, shallowClone));
+
+            Assert.AreEqual(1, clone.Count);
+            Assert.AreEqual(1, shallowClone.Count);
+
+            Assert.IsFalse(object.ReferenceEquals(source[0], clone[0]));
+            Assert.IsTrue(object.ReferenceEquals(source[0], shallowClone[0]));
+
+            Assert.AreEqual("John", clone[0].FirstName);
+            Assert.AreEqual("Doe", clone[0].LastName);
+        }
+
+        [Test]
         public void CannotCloneIntPtr()
         {
             Assert.IsFalse(Cloneable<IntPtr>.CanClone());
