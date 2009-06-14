@@ -73,11 +73,12 @@
     <Compile Include="Extensions\PredicateExtensions.cs" />
     <Compile Include="IDependencyResolver.cs" />
     <Compile Include="IIdentifiable.cs" />
+    <Compile Include="IKnownQualifiers.cs" />
+    <Compile Include="IReadableQualifier.cs" />
+    <Compile Include="IReadWriteQualifier.cs" />
     <Compile Include="ISpecification.cs" />
     <Compile Include="PipelineAction.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ReadableQualifier.cs" />
-    <Compile Include="ReadWriteQualifier.cs" />
     <Compile Include="Runtime\Serialization\Cloneable.cs" />
     <Compile Include="Runtime\Serialization\CloneReferenceOnlyAttribute.cs" />
     <Compile Include="Specification.cs" />

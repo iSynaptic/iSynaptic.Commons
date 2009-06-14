@@ -73,8 +73,6 @@
     <Compile Include="Extensions\FuncExtensionsTests.cs" />
     <Compile Include="Extensions\PredicateExtensionsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ReadableQualifierTests.cs" />
-    <Compile Include="ReadWriteQualifierTests.cs" />
     <Compile Include="Runtime\Serialization\CloneableTests.cs" />
     <Compile Include="SpecificationTests.cs" />
     <Compile Include="Text\Parsing\ScanningTextReaderTests.cs" />
