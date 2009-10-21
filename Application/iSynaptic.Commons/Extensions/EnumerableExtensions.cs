@@ -64,6 +64,63 @@ namespace iSynaptic.Commons.Extensions
             return builder.ToString();
         }
 
+        public static IEnumerable<T[]> Zip<T>(this IEnumerable<IEnumerable<T>> iterables)
+        {
+            return ZipCore(iterables);
+        }
+
+        public static IEnumerable<T[]> Zip<T>(this IEnumerable<T>[] iterables)
+        {
+            return ZipCore(iterables);
+        }
+        
+        public static IEnumerable<T[]> Zip<T>(this IEnumerable<T> first, params IEnumerable<T>[] iterables)
+        {
+            if (first == null)
+                throw new ArgumentNullException("first");
+
+            if (iterables == null)
+                throw new ArgumentNullException("iterables");
+
+            return ZipCore(new[] { first }.Concat(iterables));
+        }
+
+        private static IEnumerable<T[]> ZipCore<T>(IEnumerable<IEnumerable<T>> iterables)
+        {
+            IEnumerator<T>[] enumerators = iterables
+                .Select(x => x != null ? x.GetEnumerator() : null)
+                .ToArray();
+
+            while (enumerators.Where(x => x != null).Count() > 0)
+            {
+                int index = 0;
+                T[] values = new T[enumerators.Length];
+
+                bool anyIsAvailable = false;
+                foreach (IEnumerator<T> enumerator in enumerators)
+                {
+                    if (enumerator == null)
+                        continue;
+
+                    bool isAvailable = enumerator.MoveNext();
+
+                    if (isAvailable != true)
+                    {
+                        enumerators[index] = null;
+                        index++;
+
+                        continue;
+                    }
+
+                    anyIsAvailable = true;
+                    values[index++] = enumerator.Current;
+                }
+
+                if (anyIsAvailable)
+                    yield return values;
+            }
+        }
+
         public static IPipelinedEnumerable<T> Pipeline<T>(this IEnumerable<T> self, Action<T> processor)
         {
             if (processor == null)

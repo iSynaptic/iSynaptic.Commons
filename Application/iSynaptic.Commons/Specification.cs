@@ -9,7 +9,7 @@ namespace iSynaptic.Commons
     {
         #region Nested Members
 
-        private sealed class NotSpecification<T> : ISpecification<T>
+        private sealed class NotSpecification<T> : Specification<T>
         {
             private ISpecification<T> _InnerSpecification = null;
             public NotSpecification(ISpecification<T> specification)
@@ -17,7 +17,7 @@ namespace iSynaptic.Commons
                 _InnerSpecification = specification;
             }
 
-            public bool IsSatisfiedBy(T candidate)
+            public override bool IsSatisfiedBy(T candidate)
             {
                 return !(_InnerSpecification.IsSatisfiedBy(candidate));
             }
@@ -28,7 +28,7 @@ namespace iSynaptic.Commons
             }
         }
 
-        private sealed class LogicalSpecification<T> : ISpecification<T>
+        private sealed class LogicalSpecification<T> : Specification<T>
         {
             private ISpecification<T> _Left = null;
             private ISpecification<T> _Right = null;
@@ -41,7 +41,7 @@ namespace iSynaptic.Commons
                 _Operation = operation;
             }
 
-            public bool IsSatisfiedBy(T candidate)
+            public override bool IsSatisfiedBy(T candidate)
             {
                 bool leftResult = _Left.IsSatisfiedBy(candidate);
                 bool rightResult = _Right.IsSatisfiedBy(candidate);
@@ -50,7 +50,7 @@ namespace iSynaptic.Commons
             }
         }
 
-        private sealed class PredicateSpecification<T> : ISpecification<T>
+        private sealed class PredicateSpecification<T> : Specification<T>
         {
             private Predicate<T> _Predicate = null;
 
@@ -59,7 +59,7 @@ namespace iSynaptic.Commons
                 _Predicate = predicate;
             }
 
-            public bool IsSatisfiedBy(T candidate)
+            public override bool IsSatisfiedBy(T candidate)
             {
                 return Predicate(candidate);
             }
@@ -67,7 +67,7 @@ namespace iSynaptic.Commons
             internal Predicate<T> Predicate { get { return _Predicate; } }
         }
 
-        private sealed class FuncSpecification<T> : ISpecification<T>
+        private sealed class FuncSpecification<T> : Specification<T>
         {
             private Func<T, bool> _Func = null;
 
@@ -76,7 +76,7 @@ namespace iSynaptic.Commons
                 _Func = func;
             }
 
-            public bool IsSatisfiedBy(T candidate)
+            public override bool IsSatisfiedBy(T candidate)
             {
                 return Func(candidate);
             }
@@ -200,6 +200,59 @@ namespace iSynaptic.Commons
                 return func.Target as ISpecification<T>;
             else
                 return new FuncSpecification<T>(func);
+        }
+
+        #endregion
+    }
+
+    public abstract class Specification<T> : ISpecification<T>
+    {
+        public abstract bool IsSatisfiedBy(T candidate);
+
+        #region Implicit Conversions
+
+        public static implicit operator Predicate<T>(Specification<T> specification)
+        {
+            return specification.ToPredicate();
+        }
+
+        public static implicit operator Func<T, bool>(Specification<T> specification)
+        {
+            return specification.ToFunc();
+        }
+
+        #endregion
+
+        #region Operator Overloads
+
+        public static ISpecification<T> operator &(Specification<T> left, Specification<T> right)
+        {
+            return left.And(right);
+        }
+
+        public static ISpecification<T> operator |(Specification<T> left, Specification<T> right)
+        {
+            return left.Or(right);
+        }
+
+        public static ISpecification<T> operator ^(Specification<T> left, Specification<T> right)
+        {
+            return left.XOr(right);
+        }
+
+        public static ISpecification<T> operator !(Specification<T> specification)
+        {
+            return specification.Not();
+        }
+
+        public static bool operator true(Specification<T> specification)
+        {
+            return false;
+        }
+
+        public static bool operator false(Specification<T> specification)
+        {
+            return false;
         }
 
         #endregion

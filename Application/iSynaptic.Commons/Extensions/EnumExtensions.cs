@@ -28,8 +28,8 @@ namespace iSynaptic.Commons.Extensions
             if(Enum.IsDefined(flagType, flag) != true)
                 throw new ArgumentException("Only defined values can be provided. Try using ContainsAny() or ContainsAll().", "flag");
 
-            long selfValue = Convert.ToInt64(self);
-            long flagValue = Convert.ToInt64(flag);
+            ulong selfValue = Convert.ToUInt64(self);
+            ulong flagValue = Convert.ToUInt64(flag);
 
             if ((selfValue & flagValue) == flagValue && selfValue != 0)
                 return true;
@@ -48,12 +48,12 @@ namespace iSynaptic.Commons.Extensions
             if (flagType != selfType)
                 throw new ArgumentException(string.Format("Parameter base type must be of type '{0}'.", flagType.Name), "flags");
 
-            long selfValue = Convert.ToInt64(self);
+            ulong selfValue = Convert.ToUInt64(self);
             var values = flags.OfType<Enum>().SelectMany<Enum, T>(source => GetFlagsCore<T>(source)).Distinct();
 
             foreach (T flag in values)
             {
-                long flagValue = Convert.ToInt64(flag);
+                ulong flagValue = Convert.ToUInt64(flag);
 
                 if ((selfValue & flagValue) == flagValue && selfValue != 0)
                     return true;
@@ -73,12 +73,12 @@ namespace iSynaptic.Commons.Extensions
             if (flagType != selfType)
                 throw new ArgumentException(string.Format("Parameter base type must be of type '{0}'.", flagType.Name), "flags");
 
-            long selfValue = Convert.ToInt64(self);
+            ulong selfValue = Convert.ToUInt64(self);
             var values = flags.OfType<Enum>().SelectMany<Enum, T>(source => GetFlagsCore<T>(source)).Distinct();
 
             foreach (T flag in values)
             {
-                long flagValue = Convert.ToInt64(flag);
+                ulong flagValue = Convert.ToUInt64(flag);
 
                 if (((selfValue & flagValue) == flagValue && selfValue != 0) != true)
                     return false;
@@ -105,12 +105,12 @@ namespace iSynaptic.Commons.Extensions
         {
             Type selfType = typeof(T);
 
-            long selfValue = Convert.ToInt64(self);
+            ulong selfValue = Convert.ToUInt64(self);
             var values = Enum.GetValues(selfType).OfType<T>();
 
             foreach (T flag in values)
             {
-                long flagValue = Convert.ToInt64(flag);
+                ulong flagValue = Convert.ToUInt64(flag);
 
                 if ((selfValue & flagValue) == flagValue && selfValue != 0)
                     yield return flag;
