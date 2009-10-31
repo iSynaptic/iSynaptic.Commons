@@ -10,24 +10,12 @@ namespace iSynaptic.Commons.AOP
         where U : UnitOfWork<U, T>
     {
         private List<T> _Items = null;
-        private List<IDisposable> _Disposables = null;
 
         public UnitOfWork() : base(ScopeBounds.Thread)
         {
         }
 
         #region Enlistment Methods
-
-        public bool IsEnlisted(IDisposable disposable)
-        {
-            if (Disposables.Contains(disposable))
-                return true;
-
-            if (Parent != null && Parent.IsEnlisted(disposable))
-                return true;
-
-            return false;
-        }
 
         public bool IsEnlisted(T item)
         {
@@ -38,16 +26,6 @@ namespace iSynaptic.Commons.AOP
                 return true;
 
             return false;
-        }
-
-        public void Enlist(params IDisposable[] disposables)
-        {
-            Enlist((IEnumerable<IDisposable>)disposables);
-        }
-
-        public virtual void Enlist(IEnumerable<IDisposable> disposables)
-        {
-            Disposables.AddRange(disposables);
         }
 
         public void Enlist(params T[] items)
@@ -66,25 +44,7 @@ namespace iSynaptic.Commons.AOP
         {
             try
             {
-                if (Parent != null)
-                {
-                    Parent.Enlist(Disposables);
-
-                    Disposables.Clear();
-                    Items.Clear();
-                }
-                else
-                {
-                    Action<IDisposable> dispose = d => d.Dispose();
-                    List<Exception> exceptions = new List<Exception>();
-
-                    Disposables.ForEach(dispose.CatchExceptions(exceptions));
-                    Disposables.Clear();
-                    Items.Clear();
-
-                    if (exceptions.Count > 0)
-                        throw new CompoundException("Exception(s) occured during disposal.", exceptions);
-                }
+                Items.Clear();
             }
             finally
             {
@@ -110,11 +70,6 @@ namespace iSynaptic.Commons.AOP
         protected List<T> Items
         {
             get { return _Items ?? (_Items = new List<T>()); }
-        }
-
-        protected List<IDisposable> Disposables
-        {
-            get { return _Disposables ?? (_Disposables = new List<IDisposable>()); }
         }
 
         public static U Current

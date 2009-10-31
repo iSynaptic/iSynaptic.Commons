@@ -52,6 +52,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AOP\DisposableContextTests.cs" />
     <Compile Include="AOP\NestableScopeTests.cs" />
     <Compile Include="AOP\ScopeTests.cs" />
     <Compile Include="AOP\StubNestableScope.cs" />
