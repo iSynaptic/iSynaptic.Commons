@@ -36,5 +36,18 @@ namespace iSynaptic.Commons.Extensions
             Assert.IsFalse(orPredicate(4));
             Assert.IsTrue(orPredicate(6));
         }
+
+        [Test]
+        public void XOr()
+        {
+            Predicate<int> lessThanThree = i => i < 3;
+            Predicate<int> greaterThanFive = i => i > 1;
+
+            var orPredicate = lessThanThree.XOr(greaterThanFive);
+
+            Assert.IsTrue(orPredicate(1));
+            Assert.IsFalse(orPredicate(2));
+            Assert.IsTrue(orPredicate(3));
+        }
     }
 }
