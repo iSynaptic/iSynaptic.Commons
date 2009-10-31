@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 using iSynaptic.Commons.AOP;
 
-namespace iSynaptic.Commons.UnitTests.AOP
+namespace iSynaptic.Commons.AOP
 {
     [TestFixture]
     public class NestableScopeTests

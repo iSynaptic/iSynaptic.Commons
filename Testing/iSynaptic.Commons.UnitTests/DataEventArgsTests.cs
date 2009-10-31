@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using NUnit.Framework;
 
-namespace iSynaptic.Commons.UnitTests
+namespace iSynaptic.Commons
 {
     [TestFixture]
     public class DataEventArgsTests

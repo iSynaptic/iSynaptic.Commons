@@ -9,7 +9,7 @@ using System.IO;
 
 using iSynaptic.Commons.Extensions;
 
-namespace iSynaptic.Commons.UnitTests.Xml
+namespace iSynaptic.Commons.Xml
 {
     [TestFixture]
     public class ProcessingInstructionParserTests

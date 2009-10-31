@@ -7,7 +7,7 @@
     <ProjectGuid>{9BC15142-0CFC-4BA3-9CAE-86F2D0CB777F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>iSynaptic.Commons.UnitTests</RootNamespace>
+    <RootNamespace>iSynaptic.Commons</RootNamespace>
     <AssemblyName>iSynaptic.Commons.UnitTests</AssemblyName>
     <FileUpgradeFlags>
     </FileUpgradeFlags>

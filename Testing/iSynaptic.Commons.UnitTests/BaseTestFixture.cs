@@ -6,7 +6,7 @@ using System.Text;
 
 using NUnit.Framework;
 
-namespace iSynaptic.Commons.UnitTests
+namespace iSynaptic.Commons
 {
     public abstract class BaseTestFixture
     {

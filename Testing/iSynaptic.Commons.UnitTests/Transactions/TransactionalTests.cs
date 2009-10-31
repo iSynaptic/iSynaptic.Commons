@@ -9,7 +9,7 @@ using iSynaptic.Commons.Transactions;
 using iSynaptic.Commons.Extensions.ObjectExtensions;
 using Rhino.Mocks;
 
-namespace iSynaptic.Commons.UnitTests.Transactions
+namespace iSynaptic.Commons.Transactions
 {
     [TestFixture]
     public class TransactionalTests : BaseTestFixture

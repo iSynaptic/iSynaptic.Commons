@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 using iSynaptic.Commons.Text.Parsing;
 
-namespace iSynaptic.Commons.UnitTests.Text.Parsing
+namespace iSynaptic.Commons.Text.Parsing
 {
     [TestFixture]
     public class ScanningTextReaderTests

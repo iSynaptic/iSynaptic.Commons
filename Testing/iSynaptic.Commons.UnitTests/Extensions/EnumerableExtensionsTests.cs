@@ -8,7 +8,7 @@ using System.Linq;
 using System.Collections;
 using Rhino.Mocks;
 
-namespace iSynaptic.Commons.UnitTests.Extensions
+namespace iSynaptic.Commons.Extensions
 {
     [TestFixture]
     public class EnumerableExtensionsTests : BaseTestFixture

@@ -9,7 +9,7 @@ using System.Linq;
 using iSynaptic.Commons.Extensions;
 using iSynaptic.Commons.Extensions.ObjectExtensions;
 
-namespace iSynaptic.Commons.UnitTests
+namespace iSynaptic.Commons
 {
     [TestFixture]
     public class SpecificationTests : BaseTestFixture

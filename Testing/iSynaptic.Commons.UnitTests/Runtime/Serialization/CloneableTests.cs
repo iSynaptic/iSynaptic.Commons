@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 using iSynaptic.Commons.Runtime.Serialization;
 
-namespace iSynaptic.Commons.UnitTests.Runtime.Serialization
+namespace iSynaptic.Commons.Runtime.Serialization
 {
     [TestFixture]
     public class CloneableTests : BaseTestFixture

@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 using iSynaptic.Commons.Extensions;
 
-namespace iSynaptic.Commons.UnitTests.Extensions
+namespace iSynaptic.Commons.Extensions
 {
     [TestFixture]
     public class CollectionExtensionsTests : BaseTestFixture

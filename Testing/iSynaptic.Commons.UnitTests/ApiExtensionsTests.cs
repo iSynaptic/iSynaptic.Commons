@@ -4,7 +4,7 @@ using System.Text;
 using NUnit.Framework;
 using Rhino.Mocks;
 
-namespace iSynaptic.Commons.UnitTests
+namespace iSynaptic.Commons
 {
     [TestFixture]
     public class ApiExtensionsTests

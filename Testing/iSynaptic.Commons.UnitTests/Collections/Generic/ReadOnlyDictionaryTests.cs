@@ -9,7 +9,7 @@ using iSynaptic.Commons.Extensions;
 using iSynaptic.Commons.Collections.Generic;
 using System.Collections;
 
-namespace iSynaptic.Commons.UnitTests.Collections.Generic
+namespace iSynaptic.Commons.Collections.Generic
 {
     [TestFixture]
     public class ReadOnlyDictionaryTests : BaseTestFixture

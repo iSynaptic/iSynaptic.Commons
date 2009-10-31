@@ -8,7 +8,7 @@ using iSynaptic.Commons.Extensions;
 
 using NUnit.Framework;
 
-namespace iSynaptic.Commons.UnitTests.Extensions
+namespace iSynaptic.Commons.Extensions
 {
     [TestFixture]
     public class DynamicMethodExtensionsTests

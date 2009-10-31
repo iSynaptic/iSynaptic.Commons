@@ -5,7 +5,7 @@ using System.Text;
 using NUnit.Framework;
 using iSynaptic.Commons.Extensions;
 
-namespace iSynaptic.Commons.UnitTests.AOP
+namespace iSynaptic.Commons.AOP
 {
     [TestFixture]
     public class UnitOfWorkTests

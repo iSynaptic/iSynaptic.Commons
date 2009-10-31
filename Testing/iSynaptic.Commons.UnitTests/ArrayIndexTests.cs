@@ -5,7 +5,7 @@ using System.Text;
 using NUnit.Framework;
 using System.Linq;
 
-namespace iSynaptic.Commons.UnitTests
+namespace iSynaptic.Commons
 {
     [TestFixture]
     public class ArrayIndexTests : BaseTestFixture

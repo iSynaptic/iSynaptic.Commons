@@ -8,7 +8,7 @@ using NUnit.Framework;
 using iSynaptic.Commons.AOP;
 using iSynaptic.Commons.Extensions;
 
-namespace iSynaptic.Commons.UnitTests.AOP
+namespace iSynaptic.Commons.AOP
 {
     [TestFixture]
     public class DisposableContextTests

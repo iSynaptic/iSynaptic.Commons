@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using iSynaptic.Commons.Transactions;
 
-namespace iSynaptic.Commons.UnitTests.Transactions
+namespace iSynaptic.Commons.Transactions
 {
     public class SimpleObject
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using NUnit.Framework;
 
-namespace iSynaptic.Commons.UnitTests
+namespace iSynaptic.Commons
 {
     public static class UnitTestingExtensions
     {

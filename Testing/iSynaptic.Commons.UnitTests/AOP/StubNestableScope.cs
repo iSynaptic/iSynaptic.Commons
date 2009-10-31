@@ -4,7 +4,7 @@ using System.Text;
 
 using iSynaptic.Commons.AOP;
 
-namespace iSynaptic.Commons.UnitTests.AOP
+namespace iSynaptic.Commons.AOP
 {
     public class StubNestableScope : NestableScope<StubNestableScope>
     {
