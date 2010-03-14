@@ -84,7 +84,7 @@ namespace iSynaptic.Commons.Extensions
         {
             MockRepository mocks = new MockRepository();
 
-            IEnumerable<int> enumerable = mocks.CreateMock<IEnumerable<int>>();
+            IEnumerable<int> enumerable = mocks.StrictMock<IEnumerable<int>>();
             Expect.Call(enumerable.GetEnumerator()).Return(null);
 
             mocks.ReplayAll();

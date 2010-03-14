@@ -14,7 +14,7 @@ namespace iSynaptic.Commons
         {
             MockRepository mocks = new MockRepository();
 
-            var resolver = mocks.CreateMock<IDependencyResolver>();
+            var resolver = mocks.StrictMock<IDependencyResolver>();
             Expect.Call(resolver.Resolve(typeof(int), null)).Return(1);
             mocks.Replay(resolver);
 
@@ -30,7 +30,7 @@ namespace iSynaptic.Commons
 
             MockRepository mocks = new MockRepository();
 
-            var resolver = mocks.CreateMock<IDependencyResolver>();
+            var resolver = mocks.StrictMock<IDependencyResolver>();
             Expect.Call(resolver.Resolve(typeof(int), context)).Return(1);
             mocks.Replay(resolver);
 

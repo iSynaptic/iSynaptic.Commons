@@ -65,6 +65,7 @@
     <Compile Include="Collections\Generic\ReadOnlyDictionaryTests.cs" />
     <Compile Include="CompoundExceptionTests.cs" />
     <Compile Include="DataEventArgsTests.cs" />
+    <Compile Include="Diagnostics\LoggerExtensionsTests.cs" />
     <Compile Include="Extensions\ActionExtensionsTests.cs" />
     <Compile Include="Extensions\CollectionExtensionsTests.cs" />
     <Compile Include="Extensions\DictionaryExtensionsTests.cs" />

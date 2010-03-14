@@ -398,8 +398,8 @@ namespace iSynaptic.Commons.Transactions
         public void ExceptionUponCompletionRollback()
         {
             MockRepository mocks = new MockRepository();
-            
-            IEnlistmentNotification concurrencyConflictResource = mocks.CreateMock<IEnlistmentNotification>();
+
+            IEnlistmentNotification concurrencyConflictResource = mocks.StrictMock<IEnlistmentNotification>();
             concurrencyConflictResource.Prepare(null);
             LastCall.IgnoreArguments().Throw(new TransactionalConcurrencyException());
 
@@ -532,8 +532,8 @@ namespace iSynaptic.Commons.Transactions
             };
 
             MockRepository mocks = new MockRepository();
-            
-            ISinglePhaseNotification badResource = mocks.CreateMock<ISinglePhaseNotification>();
+
+            ISinglePhaseNotification badResource = mocks.StrictMock<ISinglePhaseNotification>();
             badResource.SinglePhaseCommit(null);
 
             Action<SinglePhaseEnlistment> onCommit = (SinglePhaseEnlistment spe) => spe.InDoubt();

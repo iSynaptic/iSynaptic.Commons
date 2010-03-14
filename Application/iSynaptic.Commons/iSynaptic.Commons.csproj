@@ -56,6 +56,10 @@
     <Compile Include="Collections\Generic\ReadOnlyDictionary.cs" />
     <Compile Include="CompoundException.cs" />
     <Compile Include="DataEventArgs.cs" />
+    <Compile Include="Diagnostics\ILogger.cs" />
+    <Compile Include="Diagnostics\ILoggerContextSerializer.cs" />
+    <Compile Include="Diagnostics\LoggerExtensions.cs" />
+    <Compile Include="Diagnostics\LogLevel.cs" />
     <Compile Include="Extensions\ActionExtensions.cs" />
     <Compile Include="Extensions\DictionaryExtensions.cs" />
     <Compile Include="Extensions\DynamicMethodExtensions.cs" />
