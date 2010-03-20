@@ -6,11 +6,12 @@ using System.Linq;
 using iSynaptic.Commons.Extensions;
 
 using NUnit.Framework;
+using iSynaptic.Commons.Testing.NUnit;
 
 namespace iSynaptic.Commons.Extensions
 {
     [TestFixture]
-    public class EnumExtensionsTests : BaseTestFixture
+    public class EnumExtensionsTests : NUnitBaseTestFixture
     {
         [Test]
         public void Contains()

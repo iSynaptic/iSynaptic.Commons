@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
-
 using System.Runtime.CompilerServices;
 
 namespace iSynaptic.Commons.Extensions
@@ -93,7 +92,7 @@ namespace iSynaptic.Commons.Extensions
             Type expectedType = typeof(T);
 
             if (expectedType.IsEnum != true)
-                throw new ArgumentException("Type arameter must be an enumeration.", "T");
+                throw new ArgumentException("Type parameter must be an enumeration.", "T");
 
             if (expectedType != selfType)
                 throw new ArgumentException(string.Format("Type parameter must be of type '{0}'.", expectedType.Name), "T");

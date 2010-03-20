@@ -18,19 +18,19 @@ namespace iSynaptic.Commons.Diagnostics
             ILogger logger = null;
 
             logger.Debug("Message");
-            logger.Debug<string>("Message", "Context");
+            logger.Debug("Message", "Context");
 
             logger.Info("Message");
-            logger.Info<string>("Message", "Context");
+            logger.Info("Message", "Context");
 
             logger.Warn("Message");
-            logger.Warn<string>("Message", "Context");
+            logger.Warn("Message", "Context");
 
             logger.Error("Message");
-            logger.Error<string>("Message", "Context");
+            logger.Error("Message", "Context");
 
             logger.Fatal("Message");
-            logger.Fatal<string>("Message", "Context");
+            logger.Fatal("Message", "Context");
         }
 
         [Test]
@@ -41,8 +41,8 @@ namespace iSynaptic.Commons.Diagnostics
             logger.Info("Message");
             logger.Info("Message", "Context");
 
-            logger.AssertWasCalled(x => x.Log<object>(LogLevel.Info, "Message", null));
-            logger.AssertWasCalled(x => x.Log<string>(LogLevel.Info, "Message", "Context"));
+            logger.AssertWasCalled(x => x.Log(LogLevel.Info, "Message", null));
+            logger.AssertWasCalled(x => x.Log(LogLevel.Info, "Message", "Context"));
         }
     }
 }

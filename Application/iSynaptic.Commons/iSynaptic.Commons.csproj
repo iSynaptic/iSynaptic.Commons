@@ -51,7 +51,6 @@
     <Compile Include="AOP\Scope.cs" />
     <Compile Include="AOP\ScopeBounds.cs" />
     <Compile Include="AOP\UnitOfWork.cs" />
-    <Compile Include="ApiExtensions.cs" />
     <Compile Include="ArrayIndex.cs" />
     <Compile Include="Collections\Generic\ReadOnlyDictionary.cs" />
     <Compile Include="CompoundException.cs" />
@@ -79,6 +78,7 @@
     <Compile Include="IDependencyResolver.cs" />
     <Compile Include="IIdentifiable.cs" />
     <Compile Include="IKnownQualifiers.cs" />
+    <Compile Include="IoC.cs" />
     <Compile Include="IReadableQualifier.cs" />
     <Compile Include="IReadWriteQualifier.cs" />
     <Compile Include="ISpecification.cs" />

@@ -16,6 +16,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iSynaptic.Commons", "Applic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iSynaptic.Commons.UnitTests", "Testing\iSynaptic.Commons.UnitTests\iSynaptic.Commons.UnitTests.csproj", "{9BC15142-0CFC-4BA3-9CAE-86F2D0CB777F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iSynaptic.Commons.Ninject", "Application\iSynaptic.Commons.Ninject\iSynaptic.Commons.Ninject.csproj", "{A7C05520-1148-4A58-B9BF-A1C92803DBEA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iSynaptic.Commons.Testing", "Application\iSynaptic.Commons.Testing\iSynaptic.Commons.Testing.csproj", "{F16D5F6F-4CE4-4232-AEAB-76A4703B131E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,12 +34,22 @@ Global
 		{9BC15142-0CFC-4BA3-9CAE-86F2D0CB777F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9BC15142-0CFC-4BA3-9CAE-86F2D0CB777F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9BC15142-0CFC-4BA3-9CAE-86F2D0CB777F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A7C05520-1148-4A58-B9BF-A1C92803DBEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7C05520-1148-4A58-B9BF-A1C92803DBEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7C05520-1148-4A58-B9BF-A1C92803DBEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7C05520-1148-4A58-B9BF-A1C92803DBEA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F16D5F6F-4CE4-4232-AEAB-76A4703B131E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F16D5F6F-4CE4-4232-AEAB-76A4703B131E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F16D5F6F-4CE4-4232-AEAB-76A4703B131E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F16D5F6F-4CE4-4232-AEAB-76A4703B131E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{8F6C6021-0517-4033-B7DA-A07DD0112FC6} = {4E3600BD-5ADC-48AD-87A7-AEC0FA565E2C}
+		{A7C05520-1148-4A58-B9BF-A1C92803DBEA} = {4E3600BD-5ADC-48AD-87A7-AEC0FA565E2C}
+		{F16D5F6F-4CE4-4232-AEAB-76A4703B131E} = {4E3600BD-5ADC-48AD-87A7-AEC0FA565E2C}
 		{9BC15142-0CFC-4BA3-9CAE-86F2D0CB777F} = {E397EEB0-2166-4C1E-A169-F09076EF8D5C}
 	EndGlobalSection
 EndGlobal

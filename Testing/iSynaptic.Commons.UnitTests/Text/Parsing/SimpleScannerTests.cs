@@ -6,11 +6,12 @@ using System.Text;
 using NUnit.Framework;
 
 using iSynaptic.Commons.Text.Parsing;
+using iSynaptic.Commons.Testing.NUnit;
 
 namespace iSynaptic.Commons.Text.Parsing
 {
     [TestFixture]
-    public class SimpleScannerTests : BaseTestFixture
+    public class SimpleScannerTests : NUnitBaseTestFixture
     {
         [Test]
         public void ScanNullInput()

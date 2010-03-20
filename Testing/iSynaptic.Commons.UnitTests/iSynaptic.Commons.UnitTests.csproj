@@ -59,9 +59,7 @@
     <Compile Include="AOP\StubScope.cs" />
     <Compile Include="AOP\UnitOfWorkStub.cs" />
     <Compile Include="AOP\UnitOfWorkTests.cs" />
-    <Compile Include="ApiExtensionsTests.cs" />
     <Compile Include="ArrayIndexTests.cs" />
-    <Compile Include="BaseTestFixture.cs" />
     <Compile Include="Collections\Generic\ReadOnlyDictionaryTests.cs" />
     <Compile Include="CompoundExceptionTests.cs" />
     <Compile Include="DataEventArgsTests.cs" />
@@ -74,6 +72,7 @@
     <Compile Include="Extensions\EnumExtensionsTests.cs" />
     <Compile Include="Extensions\FuncExtensionsTests.cs" />
     <Compile Include="Extensions\PredicateExtensionsTests.cs" />
+    <Compile Include="IoCTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Runtime\Serialization\CloneableTests.cs" />
     <Compile Include="SpecificationTests.cs" />
@@ -85,6 +84,14 @@
     <Compile Include="Xml\ProcessingInstructionParserTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Application\iSynaptic.Commons.Ninject\iSynaptic.Commons.Ninject.csproj">
+      <Project>{A7C05520-1148-4A58-B9BF-A1C92803DBEA}</Project>
+      <Name>iSynaptic.Commons.Ninject</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Application\iSynaptic.Commons.Testing\iSynaptic.Commons.Testing.csproj">
+      <Project>{F16D5F6F-4CE4-4232-AEAB-76A4703B131E}</Project>
+      <Name>iSynaptic.Commons.Testing</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Application\iSynaptic.Commons\iSynaptic.Commons.csproj">
       <Project>{8F6C6021-0517-4033-B7DA-A07DD0112FC6}</Project>
       <Name>iSynaptic.Commons</Name>

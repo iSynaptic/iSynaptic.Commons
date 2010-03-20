@@ -6,11 +6,12 @@ using System.Linq;
 using NUnit.Framework;
 
 using iSynaptic.Commons.Extensions;
+using iSynaptic.Commons.Testing.NUnit;
 
 namespace iSynaptic.Commons.Extensions
 {
     [TestFixture]
-    public class CollectionExtensionsTests : BaseTestFixture
+    public class CollectionExtensionsTests : NUnitBaseTestFixture
     {
         [Test]
         public void RemoveWithNull()

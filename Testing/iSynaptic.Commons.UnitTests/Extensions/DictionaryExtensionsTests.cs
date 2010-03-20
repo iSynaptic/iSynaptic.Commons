@@ -5,11 +5,12 @@ using System.Text;
 using NUnit.Framework;
 
 using iSynaptic.Commons.Extensions;
+using iSynaptic.Commons.Testing.NUnit;
 
 namespace iSynaptic.Commons.Extensions
 {
     [TestFixture]
-    public class DictionaryExtensionsTests : BaseTestFixture
+    public class DictionaryExtensionsTests : NUnitBaseTestFixture
     {
         [Test]
         public void ToReadOnlyWithNull()

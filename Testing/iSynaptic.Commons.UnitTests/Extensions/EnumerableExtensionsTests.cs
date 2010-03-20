@@ -7,11 +7,12 @@ using iSynaptic.Commons.Extensions;
 using System.Linq;
 using System.Collections;
 using Rhino.Mocks;
+using iSynaptic.Commons.Testing.NUnit;
 
 namespace iSynaptic.Commons.Extensions
 {
     [TestFixture]
-    public class EnumerableExtensionsTests : BaseTestFixture
+    public class EnumerableExtensionsTests : NUnitBaseTestFixture
     {
         [Test]
         public void WithIndex()

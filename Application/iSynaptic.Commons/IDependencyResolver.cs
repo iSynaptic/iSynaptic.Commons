@@ -6,6 +6,6 @@ namespace iSynaptic.Commons
 {
     public interface IDependencyResolver
     {
-        object Resolve(Type dependencyType, object context);
+        object Resolve(string key, Type dependencyType, Type requestingType);
     }
 }

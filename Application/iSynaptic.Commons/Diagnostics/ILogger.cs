@@ -7,6 +7,6 @@ namespace iSynaptic.Commons.Diagnostics
 {
     public interface ILogger
     {
-        void Log<T>(LogLevel level, object message, T context);
+        void Log(LogLevel level, object message, object context);
     }
 }

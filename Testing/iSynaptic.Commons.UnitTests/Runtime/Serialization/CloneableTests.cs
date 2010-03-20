@@ -6,11 +6,12 @@ using System.Text;
 using NUnit.Framework;
 
 using iSynaptic.Commons.Runtime.Serialization;
+using iSynaptic.Commons.Testing.NUnit;
 
 namespace iSynaptic.Commons.Runtime.Serialization
 {
     [TestFixture]
-    public class CloneableTests : BaseTestFixture
+    public class CloneableTests : NUnitBaseTestFixture
     {
         #region Nested Test Classes and Structures
 

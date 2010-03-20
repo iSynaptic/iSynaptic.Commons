@@ -8,11 +8,12 @@ using NUnit.Framework;
 using iSynaptic.Commons.Extensions;
 using iSynaptic.Commons.Collections.Generic;
 using System.Collections;
+using iSynaptic.Commons.Testing.NUnit;
 
 namespace iSynaptic.Commons.Collections.Generic
 {
     [TestFixture]
-    public class ReadOnlyDictionaryTests : BaseTestFixture
+    public class ReadOnlyDictionaryTests : NUnitBaseTestFixture
     {
         [Test]
         public void NullInnerDictionary()

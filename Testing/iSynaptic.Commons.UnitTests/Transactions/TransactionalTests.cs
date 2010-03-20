@@ -8,11 +8,12 @@ using NUnit.Framework;
 using iSynaptic.Commons.Transactions;
 using iSynaptic.Commons.Extensions.ObjectExtensions;
 using Rhino.Mocks;
+using iSynaptic.Commons.Testing.NUnit;
 
 namespace iSynaptic.Commons.Transactions
 {
     [TestFixture]
-    public class TransactionalTests : BaseTestFixture
+    public class TransactionalTests : NUnitBaseTestFixture
     {
         [Test]
         public void NullOnCreation()

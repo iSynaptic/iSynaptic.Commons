@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
+using iSynaptic.Commons.Testing.NUnit;
 using NUnit.Framework;
-using System.Linq;
 
 namespace iSynaptic.Commons
 {
     [TestFixture]
-    public class ArrayIndexTests : BaseTestFixture
+    public class ArrayIndexTests : NUnitBaseTestFixture
     {
         [Test]
         public void NullArray()
