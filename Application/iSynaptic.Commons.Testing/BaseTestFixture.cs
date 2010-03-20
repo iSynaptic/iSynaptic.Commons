@@ -5,12 +5,13 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 
+using iSynaptic.Commons.Extensions;
+
 namespace iSynaptic.Commons.Testing
 {
     public abstract class BaseTestFixture
     {
         private IEnumerable<ITestFixtureBehavior> _FixtureBehaviors = null;
-        private IEnumerable<ITestBehavior> _TestBehaviors = null;
 
         protected Stream GetResource(string resourceName)
         {
@@ -20,7 +21,7 @@ namespace iSynaptic.Commons.Testing
 
         protected virtual void BeforeTestFixture()
         {
-            _FixtureBehaviors = GetTypeAttributes<ITestFixtureBehavior>()
+            _FixtureBehaviors = GetType().GetAttributesOfType<ITestFixtureBehavior>()
                 .ToArray();
 
             foreach (var behavior in _FixtureBehaviors)
@@ -33,27 +34,7 @@ namespace iSynaptic.Commons.Testing
                 behavior.AfterTestFixture(this);
         }
 
-        protected virtual void BeforeTest()
-        {
-            _TestBehaviors = GetTypeAttributes<ITestBehavior>()
-                .ToArray();
-
-            foreach (var behavior in _TestBehaviors)
-                behavior.BeforeTest(this);
-        }
-
-        protected virtual void AfterTest()
-        {
-            foreach (var behavior in _TestBehaviors)
-                behavior.AfterTest(this);
-        }
-
-        protected IEnumerable<T> GetTypeAttributes<T>()
-        {
-            Type fixtureType = GetType();
-            return fixtureType.GetCustomAttributes(true)
-                .Where(x => typeof(T).IsAssignableFrom(x.GetType()))
-                .Cast<T>();
-        }
+        protected virtual void BeforeTest() { }
+        protected virtual void AfterTest()  { }
     }
 }

@@ -14,7 +14,7 @@ namespace iSynaptic.Commons.AOP
     public class DisposableContextTests
     {
         [Test]
-        public void EnlistDisposable()
+        public void Dispose_WhenHasEnlistent_DisposesEnlistment()
         {
             bool disposed = false;
             Action dispose = () => disposed = true;
@@ -28,7 +28,7 @@ namespace iSynaptic.Commons.AOP
         }
 
         [Test]
-        public void EnlistDisposableWhenNested()
+        public void Dispose_WhenHasNestedEnlistment_DisposesEnlistmentOnOuterContextDispose()
         {
             bool disposed = false;
             Action dispose = () => disposed = true;

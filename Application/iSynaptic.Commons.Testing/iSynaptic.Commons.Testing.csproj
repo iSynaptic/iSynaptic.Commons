@@ -31,6 +31,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="nunit.core, Version=2.5.0.9122, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\External\References\nunit.core.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.core.interfaces, Version=2.5.0.9122, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\External\References\nunit.core.interfaces.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework, Version=2.5.3.9345, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\External\References\nunit.framework.dll</HintPath>
@@ -50,9 +58,17 @@
     <Compile Include="BaseTestFixture.cs" />
     <Compile Include="ITestBehavior.cs" />
     <Compile Include="ITestFixtureBehavior.cs" />
-    <Compile Include="Mocking\RequiresMockingAttribute.cs" />
+    <Compile Include="RhinoMocks\RequiresMockingAttribute.cs" />
+    <Compile Include="NUnit\Addins\BehavioralAttributeAddin.cs" />
+    <Compile Include="NUnit\Addins\BehavioralAttributeTestDecorator.cs" />
     <Compile Include="NUnit\NUnitBaseTestFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\iSynaptic.Commons\iSynaptic.Commons.csproj">
+      <Project>{8F6C6021-0517-4033-B7DA-A07DD0112FC6}</Project>
+      <Name>iSynaptic.Commons</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

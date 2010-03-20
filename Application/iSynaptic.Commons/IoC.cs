@@ -54,7 +54,8 @@ namespace iSynaptic.Commons
             if(_DependencyResolver == null)
                 return null;
 
-            return _DependencyResolver.Resolve(key, dependencyType, requestingType);
+            object result = _DependencyResolver.Resolve(key, dependencyType, requestingType);
+            return result;
         }
 
         public static void SetDependencyResolver(IDependencyResolver dependencyResolver)

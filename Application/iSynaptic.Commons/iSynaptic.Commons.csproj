@@ -75,6 +75,7 @@
     <Compile Include="Extensions\ObjectExtensions\MethodReflectionObjectExtensions.cs" />
     <Compile Include="Extensions\PipelinedEnumerable.cs" />
     <Compile Include="Extensions\PredicateExtensions.cs" />
+    <Compile Include="Extensions\ReflectionExtensions.cs" />
     <Compile Include="IDependencyResolver.cs" />
     <Compile Include="IIdentifiable.cs" />
     <Compile Include="IKnownQualifiers.cs" />

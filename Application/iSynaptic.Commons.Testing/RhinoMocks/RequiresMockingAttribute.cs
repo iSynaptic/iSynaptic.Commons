@@ -6,7 +6,7 @@ using System.Text;
 
 using Rhino.Mocks;
 
-namespace iSynaptic.Commons.Testing.Mocking
+namespace iSynaptic.Commons.Testing.RhinoMocks
 {
     public class RequiresMockingAttribute : Attribute, ITestBehavior
     {
@@ -23,7 +23,12 @@ namespace iSynaptic.Commons.Testing.Mocking
             var mocksProperty = GetMocksPropertyDescriptor(testFixture);
 
             if (mocksProperty != null)
+            {
+                var repo = (MockRepository)mocksProperty.GetValue(testFixture);
                 mocksProperty.SetValue(testFixture, null);
+
+                repo.VerifyAll();
+            }
         }
 
         private static PropertyDescriptor GetMocksPropertyDescriptor(object testFixture)
