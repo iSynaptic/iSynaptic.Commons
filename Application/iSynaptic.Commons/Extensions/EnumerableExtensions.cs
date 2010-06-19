@@ -121,46 +121,6 @@ namespace iSynaptic.Commons.Extensions
             }
         }
 
-        public static IPipelinedEnumerable<T> Pipeline<T>(this IEnumerable<T> self, Action<T> processor)
-        {
-            if (processor == null)
-                throw new ArgumentNullException("processor");
-
-            return Pipeline(self, o => { processor(o); return o; });
-        }
-
-        public static IPipelinedEnumerable<T> Pipeline<T>(this IEnumerable<T> self, PipelineAction<T> processor)
-        {
-            if (processor == null)
-                throw new ArgumentNullException("processor");
-
-            return Pipeline(self, o => { var result = o; processor(ref o); return result; });
-        }
-
-        public static IPipelinedEnumerable<T> Pipeline<T>(this IEnumerable<T> self, Func<IEnumerable<T>, IEnumerable<T>> processor)
-        {
-            if (self == null)
-                return null;
-
-            return new PipelinedEnumerable<T>(self, processor);
-        }
-
-        public static IPipelinedEnumerable<T> Pipeline<T>(this IEnumerable<T> self, Func<T, T> processor)
-        {
-            if (self == null)
-                return null;
-
-            if (processor == null)
-                throw new ArgumentNullException("processor");
-
-            return new PipelinedEnumerable<T>(self, processor);
-        }
-
-        public static void ProcessPipeline<T>(this IPipelinedEnumerable<T> self)
-        {
-            self.ForceEnumeration();
-        }
-
         public static void ForceEnumeration<T>(this IEnumerable<T> self)
         {
             if (self == null)

@@ -9,5 +9,7 @@ namespace iSynaptic.Commons.Testing
     {
         void BeforeTest(object testFixture);
         void AfterTest(object testFixture);
+
+        bool ShouldOverrideFixtureLevelTestBehavior(ITestBehavior behavior);
     }
 }

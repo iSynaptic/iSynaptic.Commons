@@ -19,15 +19,23 @@ namespace iSynaptic.Commons.AOP
             _ProcessHandler = processHandler;
         }
 
-        protected override void Process(ref object item)
+        protected override void Process(IEnumerable<object> items)
         {
-            if (_ProcessHandler != null)
-                _ProcessHandler(item);
+            foreach (var item in items)
+            {
+                if (_ProcessHandler != null)
+                    _ProcessHandler(item);
+            }
         }
 
         public List<object> GetItems()
         {
             return Items;
+        }
+
+        public static UnitOfWorkStub Current
+        {
+            get { return GetCurrentScope(); }
         }
     }
 }

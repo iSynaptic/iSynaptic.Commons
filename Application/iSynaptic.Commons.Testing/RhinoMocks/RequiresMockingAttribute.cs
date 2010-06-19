@@ -10,6 +10,11 @@ namespace iSynaptic.Commons.Testing.RhinoMocks
 {
     public class RequiresMockingAttribute : Attribute, ITestBehavior
     {
+        public RequiresMockingAttribute()
+        {
+            ShouldVerifyAllAfterTest = true;
+        }
+
         public void BeforeTest(object testFixture)
         {
             var mocksProperty = GetMocksPropertyDescriptor(testFixture);
@@ -27,8 +32,17 @@ namespace iSynaptic.Commons.Testing.RhinoMocks
                 var repo = (MockRepository)mocksProperty.GetValue(testFixture);
                 mocksProperty.SetValue(testFixture, null);
 
-                repo.VerifyAll();
+                if(ShouldVerifyAllAfterTest)
+                    repo.VerifyAll();
             }
+        }
+
+        public virtual bool ShouldOverrideFixtureLevelTestBehavior(ITestBehavior testBehavior)
+        {
+            if (typeof(RequiresMockingAttribute).IsAssignableFrom(testBehavior.GetType()))
+                return true;
+
+            return false;
         }
 
         private static PropertyDescriptor GetMocksPropertyDescriptor(object testFixture)
@@ -40,5 +54,7 @@ namespace iSynaptic.Commons.Testing.RhinoMocks
 
             return mocksProperty;
         }
+
+        public bool ShouldVerifyAllAfterTest { get; set; }
     }
 }

@@ -6,8 +6,8 @@ using iSynaptic.Commons.Extensions;
 
 namespace iSynaptic.Commons.AOP
 {
-    public abstract class UnitOfWork<U, T> : NestableScope<U>
-        where U : UnitOfWork<U, T>
+    public abstract class UnitOfWork<U, T> : NestableScope<U>, IUnitOfWork<T>
+        where U : NestableScope<U>, IUnitOfWork<T>
     {
         private List<T> _Items = null;
 
@@ -52,29 +52,16 @@ namespace iSynaptic.Commons.AOP
             }
         }
 
-        protected virtual IEnumerable<T> PreProcess(IEnumerable<T> items)
-        {
-            return items;
-        }
-
-        protected abstract void Process(ref T item);
+        protected abstract void Process(IEnumerable<T> items);
 
         public void Complete()
         {
-            Items
-                .Pipeline(PreProcess)
-                .Pipeline(Process)
-            .ProcessPipeline();
+            Process(Items);
         }
 
         protected List<T> Items
         {
             get { return _Items ?? (_Items = new List<T>()); }
-        }
-
-        public static U Current
-        {
-            get { return GetCurrentScope(); }
         }
     }
 }

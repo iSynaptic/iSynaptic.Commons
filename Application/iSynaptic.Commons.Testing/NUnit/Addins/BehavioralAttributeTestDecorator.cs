@@ -23,16 +23,22 @@ namespace iSynaptic.Commons.Testing.NUnit.Addins
             {
                 Type declaringType = Method.DeclaringType;
 
-                var behaviors = declaringType.GetAttributesOfType<ITestBehavior>()
-                    .Union(Method.GetAttributesOfType<ITestBehavior>())
+                var testBehaviors = Method.GetAttributesOfType<ITestBehavior>()
                     .ToArray();
+
+                var fixtureLevelTestBehaviors = declaringType.GetAttributesOfType<ITestBehavior>()
+                    .Where(x => testBehaviors.Any(y => y.ShouldOverrideFixtureLevelTestBehavior(x)) != true);
+
+                var behaviors = fixtureLevelTestBehaviors
+                    .Union(testBehaviors)
+                    .ToArray();                                
 
                 foreach (var behavior in behaviors)
                     behavior.BeforeTest(Fixture);
 
                 base.doRun(testResult);
 
-                foreach (var behavior in behaviors)
+                foreach (var behavior in behaviors.Reverse())
                     behavior.AfterTest(Fixture);
             }
         }

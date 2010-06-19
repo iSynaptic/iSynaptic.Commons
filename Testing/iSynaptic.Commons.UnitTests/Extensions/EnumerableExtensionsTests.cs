@@ -162,53 +162,6 @@ namespace iSynaptic.Commons.Extensions
             Assert.AreEqual(6, withFalseFunc(6));
         }
 
-        [Test]
-        public void Pipeline()
-        {
-            var multiplyBy5 = ((Func<int, IEnumerable<int>, IEnumerable<int>>)Multiply).Curry(5);
-
-            List<int> items = new List<int>();
-
-            bool enumerationComplete = false;
-            IEnumerable<int> numbers = GetRange(1, 9, () => { enumerationComplete = true; });
-
-            var pipeline = numbers
-                .Pipeline(i => i * 2)
-                .Pipeline(i => items.Add(i))
-                .Pipeline(multiplyBy5);
-
-            Assert.IsFalse(enumerationComplete);
-
-            Assert.IsTrue(pipeline.SequenceEqual(new int[] { 10, 20, 30, 40, 50, 60, 70, 80, 90 }));
-            Assert.IsTrue(enumerationComplete);
-
-            Assert.IsTrue(items.SequenceEqual(new int[] { 2, 4, 6, 8, 10, 12, 14, 16, 18 }));
-
-            items.Clear();
-            enumerationComplete = false;
-
-            Assert.IsFalse(enumerationComplete);
-
-            Assert.IsTrue(((IEnumerable)pipeline).OfType<int>().SequenceEqual(new int[] { 10, 20, 30, 40, 50, 60, 70, 80, 90 }));
-            Assert.IsTrue(enumerationComplete);
-
-            Assert.IsTrue(items.SequenceEqual(new int[] { 2, 4, 6, 8, 10, 12, 14, 16, 18 }));
-
-
-            IEnumerable<int> nullEnumerable = null;
-
-            nullEnumerable.Pipeline(i => i * 2);
-            Assert.Throws<ArgumentNullException>(() => { items.Pipeline((Func<int, int>)null); });
-
-            nullEnumerable.Pipeline(multiplyBy5);
-            Assert.Throws<ArgumentNullException>(() => { items.Pipeline((Func<IEnumerable<int>, IEnumerable<int>>)null); });
-
-            nullEnumerable.Pipeline(i => Console.WriteLine(i));
-            Assert.Throws<ArgumentNullException>(() => { Enumerable.Range(1, 10).Pipeline((Action<int>)null); });
-
-            Assert.Throws<ArgumentNullException>(() => { items.Pipeline((PipelineAction<int>)null); });
-        }
-
         private IEnumerable<int> Multiply(int multiplier, IEnumerable<int> source)
         {
             foreach (int i in source)
