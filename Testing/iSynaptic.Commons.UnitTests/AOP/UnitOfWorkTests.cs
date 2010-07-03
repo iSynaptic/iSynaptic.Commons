@@ -114,5 +114,43 @@ namespace iSynaptic.Commons.AOP
 
             Assert.IsTrue(processCalled);
         }
+
+        [Test]
+        public void Complete_WhenAlreadyDisposed_ThrowsObjectDisposedException()
+        {
+            UnitOfWorkStub uow = new UnitOfWorkStub();
+            uow.Dispose();
+
+            Assert.Throws<ObjectDisposedException>(uow.Complete);
+        }
+
+        [Test]
+        public void IsEnlisted_WhenAlreadyDisposed_ThrowsObjectDisposedException()
+        {
+            UnitOfWorkStub uow = new UnitOfWorkStub();
+            uow.Dispose();
+
+            Assert.Throws<ObjectDisposedException>(() => uow.IsEnlisted(null));
+        }
+
+        [Test]
+        public void EnlistParams_WhenAlreadyDisposed_ThrowsObjectDisposedException()
+        {
+            UnitOfWorkStub uow = new UnitOfWorkStub();
+            uow.Dispose();
+
+            Assert.Throws<ObjectDisposedException>(() => uow.Enlist(new object()));
+        }
+
+        [Test]
+        public void EnlistIEnumerable_WhenAlreadyDisposed_ThrowsObjectDisposedException()
+        {
+            UnitOfWorkStub uow = new UnitOfWorkStub();
+            uow.Dispose();
+
+            IEnumerable<object> items = new[] {new object()};
+
+            Assert.Throws<ObjectDisposedException>(() => uow.Enlist(items));
+        }
     }
 }

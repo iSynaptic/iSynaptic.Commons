@@ -19,6 +19,9 @@ namespace iSynaptic.Commons.AOP
 
         public bool IsEnlisted(T item)
         {
+            if(Disposed)
+                throw new ObjectDisposedException(GetType().Name);
+
             if (Items.Contains(item))
                 return true;
 
@@ -30,11 +33,17 @@ namespace iSynaptic.Commons.AOP
 
         public void Enlist(params T[] items)
         {
+            if (Disposed)
+                throw new ObjectDisposedException(GetType().Name);
+
             Enlist((IEnumerable<T>)items);
         }
 
         public virtual void Enlist(IEnumerable<T> items)
         {
+            if (Disposed)
+                throw new ObjectDisposedException(GetType().Name);
+
             Items.AddRange(items);
         } 
 
@@ -44,7 +53,8 @@ namespace iSynaptic.Commons.AOP
         {
             try
             {
-                Items.Clear();
+                if(Disposed != true)
+                    Items.Clear();
             }
             finally
             {
@@ -56,6 +66,9 @@ namespace iSynaptic.Commons.AOP
 
         public void Complete()
         {
+            if(Disposed)
+                throw new ObjectDisposedException(GetType().Name);
+
             Process(Items);
         }
 
