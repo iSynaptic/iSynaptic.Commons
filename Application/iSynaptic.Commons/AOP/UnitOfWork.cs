@@ -56,8 +56,14 @@ namespace iSynaptic.Commons.AOP
 
         public void Complete()
         {
+            if(Completed)
+                throw new InvalidOperationException("Unit of work has already been completed.");
+
+            Completed = true;
             Process(Items);
         }
+
+        protected bool Completed { get; private set; }
 
         protected List<T> Items
         {

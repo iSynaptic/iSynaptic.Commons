@@ -114,5 +114,15 @@ namespace iSynaptic.Commons.AOP
 
             Assert.IsTrue(processCalled);
         }
+
+        [Test]
+        public void CompletingTwiceIsNotPermitted()
+        {
+            using (UnitOfWorkStub uow = new UnitOfWorkStub())
+            {
+                uow.Complete();
+                Assert.Throws<InvalidOperationException>(uow.Complete);
+            }
+        }
     }
 }
