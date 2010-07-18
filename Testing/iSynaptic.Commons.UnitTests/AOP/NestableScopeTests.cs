@@ -94,6 +94,20 @@ namespace iSynaptic.Commons.AOP
             Assert.IsTrue(isAvailable);
         }
 
+        [Test]
+        public void Dispose_ViaDisposedNestedScope_DoesNotChangeCurrent()
+        {
+            using(var parent = new StubNestableScope(ScopeBounds.Thread))
+            using(var child = new StubNestableScope(ScopeBounds.Thread))
+            {
+                child.Dispose();
+                Assert.IsTrue(object.ReferenceEquals(parent, StubNestableScope.Current));
+
+                child.Dispose();
+                Assert.IsTrue(object.ReferenceEquals(parent, StubNestableScope.Current));
+            }
+        }
+
         private void AssertCurrentScopeIsNotNull()
         {
             Assert.IsNotNull(StubNestableScope.Current);
