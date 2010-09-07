@@ -308,6 +308,21 @@ namespace iSynaptic.Commons.Runtime.Serialization
 
         #endregion
 
+        public static bool CanCloneTo()
+        {
+            throw new NotImplementedException();
+        }
+
+        public static void CloneTo(T source, T destination)
+        {
+            throw new NotImplementedException();
+        }
+
+        public static void ShallowCloneTo(T source, T destination)
+        {
+            throw new NotImplementedException();
+        }
+
         #region Build Handler Methods
 
         private static Func<T, IDictionary<object, object>, T> BuildCloneHandler(Type type)
