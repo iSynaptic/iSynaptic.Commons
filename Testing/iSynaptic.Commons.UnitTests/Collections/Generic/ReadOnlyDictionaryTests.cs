@@ -4,8 +4,6 @@ using System.Text;
 using System.Linq;
 
 using NUnit.Framework;
-
-using iSynaptic.Commons.Extensions;
 using iSynaptic.Commons.Collections.Generic;
 using System.Collections;
 using iSynaptic.Commons.Testing.NUnit;

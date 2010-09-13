@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using NUnit.Framework;
-
-using iSynaptic.Commons.Extensions;
 using iSynaptic.Commons.Testing.NUnit;
 
-namespace iSynaptic.Commons.Extensions
+namespace iSynaptic.Commons
 {
     [TestFixture]
     public class ActionExtensionsTests : NUnitBaseTestFixture

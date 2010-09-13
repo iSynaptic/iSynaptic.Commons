@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Reflection;
 
-namespace iSynaptic.Commons.Extensions
+namespace iSynaptic.Commons.Reflection
 {
     public static class ReflectionExtensions
     {

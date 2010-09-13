@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using iSynaptic.Commons.Collections.Generic;
 using NUnit.Framework;
 using iSynaptic.Commons.Xml;
 using System.Xml;
 using System.IO;
-
-using iSynaptic.Commons.Extensions;
 
 namespace iSynaptic.Commons.Xml
 {

@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using NUnit.Framework;
 
-using iSynaptic.Commons.Extensions;
-
-namespace iSynaptic.Commons.Extensions
+namespace iSynaptic.Commons
 {
     [TestFixture]
     public class PredicateExtensionsTests

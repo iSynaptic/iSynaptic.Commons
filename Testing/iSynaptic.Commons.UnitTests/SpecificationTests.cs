@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-
+using iSynaptic.Commons.Collections.Generic;
 using NUnit.Framework;
 
 using System.Linq;
-
-using iSynaptic.Commons.Extensions;
-using iSynaptic.Commons.Extensions.ObjectExtensions;
 using iSynaptic.Commons.Testing.NUnit;
 
 namespace iSynaptic.Commons

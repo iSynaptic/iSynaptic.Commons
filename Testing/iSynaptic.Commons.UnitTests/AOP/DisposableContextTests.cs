@@ -6,7 +6,6 @@ using System.Text;
 using NUnit.Framework;
 
 using iSynaptic.Commons.AOP;
-using iSynaptic.Commons.Extensions;
 
 namespace iSynaptic.Commons.AOP
 {

@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection.Emit;
-using System.Text;
-
-using iSynaptic.Commons.Extensions;
-
 using NUnit.Framework;
 
-namespace iSynaptic.Commons.Extensions
+namespace iSynaptic.Commons.Reflection.Emit
 {
     [TestFixture]
     public class DynamicMethodExtensionsTests
@@ -22,7 +16,7 @@ namespace iSynaptic.Commons.Extensions
             il.Emit(OpCodes.Ldc_I4_1);
             il.Emit(OpCodes.Ret);
 
-            var func = method.ToFunc<int>();
+            var func = DynamicMethodExtensions.ToFunc<int>(method);
 
             Assert.AreEqual(1, func());
         }
@@ -36,7 +30,7 @@ namespace iSynaptic.Commons.Extensions
             il.Emit(OpCodes.Ldarg_0);
             il.Emit(OpCodes.Ret);
 
-            var func = method.ToFunc<int, int>();
+            var func = DynamicMethodExtensions.ToFunc<int, int>(method);
 
             Assert.AreEqual(5, func(5));
         }
@@ -52,7 +46,7 @@ namespace iSynaptic.Commons.Extensions
             il.Emit(OpCodes.Add);
             il.Emit(OpCodes.Ret);
 
-            var func = method.ToFunc<int, int, int>();
+            var func = DynamicMethodExtensions.ToFunc<int, int, int>(method);
 
             Assert.AreEqual(11, func(5, 6));
         }
@@ -71,7 +65,7 @@ namespace iSynaptic.Commons.Extensions
 
             il.Emit(OpCodes.Ret);
 
-            var func = method.ToFunc<int, int, int, int>();
+            var func = DynamicMethodExtensions.ToFunc<int, int, int, int>(method);
 
             Assert.AreEqual(18, func(5, 6, 7));
         }
@@ -92,7 +86,7 @@ namespace iSynaptic.Commons.Extensions
 
             il.Emit(OpCodes.Ret);
 
-            var func = method.ToFunc<int, int, int, int, int>();
+            var func = DynamicMethodExtensions.ToFunc<int, int, int, int, int>(method);
 
             Assert.AreEqual(26, func(5, 6, 7, 8));
         }

@@ -65,14 +65,14 @@
     <Compile Include="DataEventArgsTests.cs" />
     <Compile Include="DependencyResolverTests.cs" />
     <Compile Include="Diagnostics\LoggerExtensionsTests.cs" />
-    <Compile Include="Extensions\ActionExtensionsTests.cs" />
-    <Compile Include="Extensions\CollectionExtensionsTests.cs" />
-    <Compile Include="Extensions\DictionaryExtensionsTests.cs" />
-    <Compile Include="Extensions\DynamicMethodExtensionsTests.cs" />
-    <Compile Include="Extensions\EnumerableExtensionsTests.cs" />
-    <Compile Include="Extensions\EnumExtensionsTests.cs" />
-    <Compile Include="Extensions\FuncExtensionsTests.cs" />
-    <Compile Include="Extensions\PredicateExtensionsTests.cs" />
+    <Compile Include="ActionExtensionsTests.cs" />
+    <Compile Include="Collections\Generic\CollectionExtensionsTests.cs" />
+    <Compile Include="Collections\Generic\DictionaryExtensionsTests.cs" />
+    <Compile Include="Reflection\Emit\DynamicMethodExtensionsTests.cs" />
+    <Compile Include="Collections\Generic\EnumerableExtensionsTests.cs" />
+    <Compile Include="EnumExtensionsTests.cs" />
+    <Compile Include="FuncExtensionsTests.cs" />
+    <Compile Include="PredicateExtensionsTests.cs" />
     <Compile Include="IocTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Runtime\Serialization\CloneableTests.cs" />
@@ -99,6 +99,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Extensions\" />
     <Folder Include="Ninject\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

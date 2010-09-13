@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-
 using System.Linq;
 
-namespace iSynaptic.Commons.Extensions
+namespace iSynaptic.Commons.Collections.Generic
 {
     public static class EnumerableExtensions
     {

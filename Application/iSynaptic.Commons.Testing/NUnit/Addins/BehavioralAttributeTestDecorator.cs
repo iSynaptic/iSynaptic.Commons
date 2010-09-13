@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-
+using iSynaptic.Commons.Reflection;
 using NUnit.Core;
 using NUnit.Core.Extensibility;
-
-using iSynaptic.Commons.Extensions;
 
 namespace iSynaptic.Commons.Testing.NUnit.Addins
 {

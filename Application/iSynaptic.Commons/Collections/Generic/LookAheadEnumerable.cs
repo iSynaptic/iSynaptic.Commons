@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 
-namespace iSynaptic.Commons.Extensions
+namespace iSynaptic.Commons.Collections.Generic
 {
     internal class LookAheadEnumerable<T> : IEnumerable<LookAheadableValue<T>>
     {

@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
-using System.Runtime.CompilerServices;
 
-namespace iSynaptic.Commons.Extensions
+namespace iSynaptic.Commons
 {
     public static class EnumExtensions
     {

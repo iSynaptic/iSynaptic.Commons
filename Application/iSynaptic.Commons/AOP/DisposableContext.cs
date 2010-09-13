@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using iSynaptic.Commons.Extensions;
-
 namespace iSynaptic.Commons.AOP
 {
     public class DisposableContext : NestableScope<DisposableContext>

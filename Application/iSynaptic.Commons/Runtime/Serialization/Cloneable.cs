@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.Serialization;
-
-using iSynaptic.Commons.Extensions;
 using System.Security.Permissions;
+using iSynaptic.Commons.Reflection;
+using iSynaptic.Commons.Reflection.Emit;
 
 namespace iSynaptic.Commons.Runtime.Serialization
 {

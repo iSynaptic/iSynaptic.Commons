@@ -4,8 +4,7 @@ using System.Linq;
 using System.IO;
 using System.Reflection;
 using System.Text;
-
-using iSynaptic.Commons.Extensions;
+using iSynaptic.Commons.Reflection;
 
 namespace iSynaptic.Commons.Testing
 {

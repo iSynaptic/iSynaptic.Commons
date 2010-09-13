@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-using iSynaptic.Commons.Extensions;
-
 namespace iSynaptic.Commons.AOP
 {
     public abstract class UnitOfWork<U, T> : NestableScope<U>, IUnitOfWork<T>

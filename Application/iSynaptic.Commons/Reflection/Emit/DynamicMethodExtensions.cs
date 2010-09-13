@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Reflection.Emit;
 
-namespace iSynaptic.Commons.Extensions
+namespace iSynaptic.Commons.Reflection.Emit
 {
     public static class DynamicMethodExtensions
     {

@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace iSynaptic.Commons.Extensions
+namespace iSynaptic.Commons
 {
     public static class FuncExtensions
     {

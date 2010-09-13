@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Reflection;
 
-namespace iSynaptic.Commons.Extensions
+namespace iSynaptic.Commons.Reflection
 {
     public static class MethodInfoExtensions
     {

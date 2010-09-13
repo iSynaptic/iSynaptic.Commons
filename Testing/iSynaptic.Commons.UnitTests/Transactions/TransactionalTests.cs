@@ -6,7 +6,6 @@ using System.Transactions;
 using NUnit.Framework;
 
 using iSynaptic.Commons.Transactions;
-using iSynaptic.Commons.Extensions.ObjectExtensions;
 using Rhino.Mocks;
 using iSynaptic.Commons.Testing.NUnit;
 
