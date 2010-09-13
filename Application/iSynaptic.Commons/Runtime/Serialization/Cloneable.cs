@@ -9,6 +9,31 @@ using System.Security.Permissions;
 
 namespace iSynaptic.Commons.Runtime.Serialization
 {
+    public static class Cloneable
+    {
+        public static T Clone<T>(this T source)
+        {
+            return Cloneable<T>.Clone(source);
+        }
+
+        public static T ShallowClone<T>(this T source)
+        {
+            return Cloneable<T>.ShallowClone(source);
+        }
+
+        public static void CloneTo<T>(this T source, T destination)
+            where T : class
+        {
+            Cloneable<T>.CloneTo(source, destination);
+        }
+
+        public static void ShallowCloneTo<T>(this T source, T destination)
+            where T : class
+        {
+            Cloneable<T>.ShallowCloneTo(source, destination);
+        }
+    }
+
     public static class Cloneable<T>
     {
         private static Type[] _CloneablePrimitives =
@@ -20,13 +45,13 @@ namespace iSynaptic.Commons.Runtime.Serialization
             typeof(Guid)
         };
 
-        private static Type _TargetType = null;
+        private static readonly Type _TargetType = null;
+        private static readonly object _SyncLock = null;
 
         private static bool? _CanClone = null;
         private static bool? _CanShallowClone = null;
 
-        private static Func<T, IDictionary<object, object>, T> _CloneHandler = null;
-        private static Func<T, T> _ShallowCloneHandler = null;
+        private static Func<T, T, bool, IDictionary<object, object>, T> _Strategy = null;
 
         private static readonly Predicate<FieldInfo> _FieldIncludeFilter = f =>
             (f.IsDefined(typeof(NonSerializedAttribute), true) != true);
@@ -34,26 +59,64 @@ namespace iSynaptic.Commons.Runtime.Serialization
         static Cloneable()
         {
             _TargetType = typeof(T);
+            _SyncLock = new object();
         }
 
         #region Helper Methods
 
-        private static Type GetUnderlyingArrayType(Type type)
+        private static Func<T, T, bool, IDictionary<object, object>, T> BuildStrategy()
+        {
+            bool canShallowClone = CanShallowClone();
+            bool canClone = CanClone();
+
+            bool isTargetTypeArray = _TargetType.IsArray;
+
+            Func<T, T, bool, IDictionary<object, object>, T> dynamicStrategy = null;
+
+            return (s, d, isShallow, m) =>
+            {
+                if (canShallowClone != true || (isShallow != true && canClone != true))
+                    throw new InvalidOperationException("This type cannot be cloned.");
+
+                if (IsRootTypeCloneablePrimitive(_TargetType) && isTargetTypeArray != true)
+                    return s;
+
+                if (s == null)
+                    return default(T);
+
+                if (isTargetTypeArray && isShallow)
+                {
+                    if (s == null)
+                        return default(T);
+
+                    Array sourceArray = s as Array;
+                    return (T)sourceArray.Clone();
+                }
+
+                if (dynamicStrategy == null)
+                    dynamicStrategy = BuildDynamicStrategy();
+
+                return dynamicStrategy(s, d, isShallow, m ?? new Dictionary<object, object>());
+            };
+        }
+
+        private static Func<T, T, bool, IDictionary<object, object>, T> BuildDynamicStrategy()
+        {
+            throw new NotImplementedException();
+        }
+
+
+        private static Type GetRootType(Type type)
         {
             Type currentType = type;
 
             while (currentType.IsArray)
                 currentType = currentType.GetElementType();
 
+            if (currentType.IsGenericType && currentType.GetGenericTypeDefinition() == typeof(Nullable<>))
+                return currentType.GetGenericArguments()[0];
+
             return currentType;
-        }
-
-        private static Type GetNullableUnderlyingType(Type type)
-        {
-            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
-                return type.GetGenericArguments()[0];
-
-            return null;
         }
 
         private static IEnumerable<FieldInfo> GetFields(Type type, Predicate<FieldInfo> includeFilter)
@@ -76,7 +139,6 @@ namespace iSynaptic.Commons.Runtime.Serialization
             }
         }
 
-
         private static bool IsNotCloneable(Type inputType)
         {
             if (typeof(Delegate).IsAssignableFrom(inputType))
@@ -88,18 +150,15 @@ namespace iSynaptic.Commons.Runtime.Serialization
             return false;
         }
 
-        private static bool IsCloneablePrimitive(Type inputType)
+        private static bool IsRootTypeCloneablePrimitive(Type inputType)
         {
-            if (Array.Exists(_CloneablePrimitives, x => x == inputType))
+            Type rootType = GetRootType(inputType);
+
+            if (Array.Exists(_CloneablePrimitives, x => x == rootType))
                 return true;
 
-            if (inputType.IsPrimitive)
+            if (rootType.IsPrimitive)
                 return true;
-
-            Type nullableUnderlying = GetNullableUnderlyingType(inputType);
-            
-            if (nullableUnderlying != null)
-                return IsCloneablePrimitive(nullableUnderlying);
 
             return false;
         }
@@ -120,101 +179,58 @@ namespace iSynaptic.Commons.Runtime.Serialization
 
         #endregion
 
-        #region CanClone
+        #region Can Methods
+
+        private static bool CanClone(Type type, bool isShallow)
+        {
+            Type typeToCheck = GetRootType(type);
+
+            if (IsNotCloneable(typeToCheck))
+                return false;
+
+            if (IsRootTypeCloneablePrimitive(typeToCheck))
+                return true;
+
+            Predicate<FieldInfo> includeFilter = _FieldIncludeFilter.And(f => f.FieldType != typeToCheck);
+
+            foreach (FieldInfo field in GetFields(typeToCheck, includeFilter))
+            {
+                Type fieldType = GetRootType(field.FieldType);
+
+                if (IsNotCloneable(fieldType))
+                    return false;
+
+                if (IsRootTypeCloneablePrimitive(fieldType))
+                    continue;
+
+                if (isShallow != true)
+                {
+                    Type fieldClonableType = typeof(Cloneable<>).MakeGenericType(fieldType);
+                    MethodInfo canCloneMethod = GetMethod(fieldClonableType, "CanClone");
+                    var canClone = canCloneMethod.ToFunc<bool>();
+
+                    if (canClone() != true)
+                        return false;
+                }
+            }
+
+            return true;
+        }
 
         public static bool CanClone()
         {
             if (_CanClone.HasValue != true)
-                _CanClone = CanClone(_TargetType);
+                _CanClone = CanClone(_TargetType, false);
 
-            return _CanClone.Value;            
+            return _CanClone.Value;
         }
-
-        private static bool CanClone(Type type)
-        {
-            Type typeToCheck = GetNullableUnderlyingType(type) ?? type;
-
-            if (IsNotCloneable(typeToCheck))
-                return false;
-
-            if (IsCloneablePrimitive(typeToCheck))
-                return true;
-
-            if (typeToCheck.IsArray)
-                return CanClone(GetUnderlyingArrayType(typeToCheck));
-
-            Predicate<FieldInfo> includeFilter = _FieldIncludeFilter.And(f => f.FieldType != typeToCheck);
-
-            foreach (FieldInfo field in GetFields(typeToCheck, includeFilter))
-            {
-                Type fieldType = GetNullableUnderlyingType(field.FieldType) ?? field.FieldType;
-
-                if (IsNotCloneable(fieldType))
-                    return false;
-
-                if (IsCloneablePrimitive(fieldType))
-                    continue;
-
-                if (fieldType.IsArray)
-                {
-                    if (CanClone(GetUnderlyingArrayType(fieldType)))
-                        continue;
-                    else
-                        return false;
-                }
-
-                Type fieldClonableType = typeof(Cloneable<>).MakeGenericType(fieldType);
-                MethodInfo canCloneMethod = GetMethod(fieldClonableType, "CanClone");
-                var canClone = canCloneMethod.ToFunc<bool>();
-
-                if (canClone())
-                    continue;
-                else
-                    return false;
-            }
-
-            return true;
-        }
-
-        #endregion
-
-        #region CanShallowClone
 
         public static bool CanShallowClone()
         {
             if (_CanShallowClone.HasValue != true)
-                _CanShallowClone = CanShallowClone(_TargetType);
+                _CanShallowClone = CanClone(_TargetType, true);
 
-            return _CanShallowClone.Value;            
-        }
-
-        private static bool CanShallowClone(Type type)
-        {
-            Type typeToCheck = GetNullableUnderlyingType(type) ?? type;
-
-            if (IsNotCloneable(typeToCheck))
-                return false;
-
-            Predicate<FieldInfo> includeFilter = _FieldIncludeFilter.And(f => f.FieldType != typeToCheck);
-
-            foreach (FieldInfo field in GetFields(typeToCheck, includeFilter))
-            {
-                Type fieldType = GetNullableUnderlyingType(field.FieldType) ?? field.FieldType;
-
-                if (IsNotCloneable(fieldType))
-                    return false;
-
-                if (fieldType.IsArray)
-                {
-                    if (CanClone(GetUnderlyingArrayType(fieldType)))
-                        continue;
-                    else
-                        return false;
-                }
-
-            }
-
-            return true;
+            return _CanShallowClone.Value;
         }
 
         #endregion
@@ -224,52 +240,72 @@ namespace iSynaptic.Commons.Runtime.Serialization
         [ReflectionPermission(SecurityAction.Demand, ReflectionEmit = true)]
         public static T Clone(T source)
         {
-            Dictionary<object, object> map = new Dictionary<object, object>();
-            return Clone(source, map);
+            return Clone(source, null);
         }
 
         private static T Clone(T source, IDictionary<object, object> map)
         {
-            if (_CloneHandler == null)
-            {
-                if (CanClone())
-                {
-                    if (IsCloneablePrimitive(_TargetType))
-                        _CloneHandler = (s, m) => s;
-                    else if (_TargetType.IsArray)
-                        _CloneHandler = BuildArrayCloneHandler(_TargetType.GetElementType());
-                    else
-                        _CloneHandler = BuildCloneHandler(_TargetType);
-                }
-                else
-                    _CloneHandler = (s, m) => { throw new InvalidOperationException("This type cannot be cloned."); };
-            }
-
-            return _CloneHandler(source, map);
+            return Strategy(source, default(T), false, map);
         }
 
-        private static T ArrayClone<U>(T source, IDictionary<object, object> map)
+        public static T ShallowClone(T source)
         {
+            return Strategy(source, default(T), true, null);
+        }
+
+        public static void CloneTo(T source, T destination)
+        {
+            if(_TargetType.IsValueType)
+                throw new InvalidOperationException("CloneTo only works on reference types.");
+
+            if(source == null)
+                throw new ArgumentNullException("source");
+
+            if (destination == null)
+                throw new ArgumentNullException("destination");
+
+            if (ReferenceEquals(source, destination))
+                throw new InvalidOperationException("The destination object cannot be the same as the source.");
+
+            Dictionary<object, object> map = new Dictionary<object, object>();
+            Strategy(source, default(T), false, null);
+        }
+
+        public static void ShallowCloneTo(T source, T destination)
+        {
+            if (_TargetType.IsValueType)
+                throw new InvalidOperationException("ShallowCloneTo only works on reference types.");
+
             if (source == null)
-                return default(T);
+                throw new ArgumentNullException("source");
 
-            if (map.ContainsKey(source))
-                return (T)map[source];
+            if (destination == null)
+                throw new ArgumentNullException("destination");
 
+            if(ReferenceEquals(source, destination))
+                throw new InvalidOperationException("The destination object cannot be the same as the source.");
+
+            Dictionary<object, object> map = new Dictionary<object, object>();
+            Strategy(source, default(T), true, null);
+        }
+
+        private static T ArrayClone<U>(T source, T destination, IDictionary<object, object> map)
+        {
             Array sourceArray = (Array)(object)source;
             ArrayIndex index = new ArrayIndex(sourceArray);
 
-            Array destArray = (Array)sourceArray.Clone();
-
-            map.Add(source, (T)(object)destArray);
+            Array destArray = (Array)(object)destination;
 
             if (sourceArray.Length <= 0)
-                return (T)(object)destArray;
+                return destination;
 
             while (true)
             {
-                U item = (U)sourceArray.GetValue(index);
-                destArray.SetValue(Cloneable<U>.Clone(item, map), index);
+                U sourceItem = (U)sourceArray.GetValue(index);
+                if (sourceItem == null)
+                    destArray.SetValue(null, index);
+                else
+                    destArray.SetValue(Cloneable<U>.Clone(sourceItem, map), index);
 
                 if (index.CanIncrement())
                     index.Increment();
@@ -277,64 +313,24 @@ namespace iSynaptic.Commons.Runtime.Serialization
                     break;
             }
 
-            return (T)(object)destArray;
+            return destination;
         }
 
-        public static T ShallowClone(T source)
-        {
-            if (_ShallowCloneHandler == null)
-            {
-                if (CanShallowClone())
-                {
-                    if (IsCloneablePrimitive(_TargetType))
-                        _ShallowCloneHandler = s => s;
-                    else if (_TargetType.IsArray)
-                    {
-                        if (source == null)
-                            return default(T);
-
-                        Array sourceArray = source as Array;
-                        return (T)(object)sourceArray.Clone();
-                    }
-                    else
-                        _ShallowCloneHandler = BuildShallowCloneHandler(_TargetType);
-                }
-                else
-                    _ShallowCloneHandler = s => { throw new InvalidOperationException("This type cannot be cloned."); };
-            }
-
-            return _ShallowCloneHandler(source);
-        }
 
         #endregion
-
-        public static bool CanCloneTo()
-        {
-            throw new NotImplementedException();
-        }
-
-        public static void CloneTo(T source, T destination)
-        {
-            throw new NotImplementedException();
-        }
-
-        public static void ShallowCloneTo(T source, T destination)
-        {
-            throw new NotImplementedException();
-        }
 
         #region Build Handler Methods
 
         private static Func<T, IDictionary<object, object>, T> BuildCloneHandler(Type type)
         {
             bool isValueType = type.IsValueType;
-            
+
             Type dictionaryType = typeof(IDictionary<,>).MakeGenericType(typeof(object), typeof(object));
 
             MethodInfo mapContainsKeyMethod = GetMethod(dictionaryType, "ContainsKey", typeof(object));
             MethodInfo mapGetItemMethod = GetMethod(dictionaryType, "get_Item", typeof(object));
             MethodInfo mapAddMethod = GetMethod(dictionaryType, "Add", typeof(object), typeof(object));
-           
+
             DynamicMethod cloneMethod = new DynamicMethod(string.Format("Cloneable<{0}>_Clone", type.Name), type, new Type[] { type, dictionaryType }, type, true);
             ILGenerator gen = cloneMethod.GetILGenerator();
 
@@ -365,7 +361,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
 
             EmitInitializeObject(type, gen);
 
-            if(isValueType != true)
+            if (isValueType != true)
             {
                 gen.Emit(OpCodes.Ldarg_1);
                 gen.Emit(OpCodes.Ldarg_0);
@@ -376,7 +372,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
 
             foreach (FieldInfo field in GetFields(type, _FieldIncludeFilter))
             {
-                if (IsCloneablePrimitive(field.FieldType) || 
+                if (IsRootTypeCloneablePrimitive(field.FieldType) ||
                     (field.FieldType.IsValueType != true && field.IsDefined(typeof(CloneReferenceOnlyAttribute), true)))
                 {
                     EmitCopyField(isValueType, gen, field);
@@ -444,7 +440,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
                 gen.Emit(OpCodes.Ret);
                 gen.MarkLabel(continueLabel);
             }
-            
+
             EmitInitializeObject(type, gen);
 
             foreach (FieldInfo field in GetFields(type, _FieldIncludeFilter))
@@ -518,5 +514,24 @@ namespace iSynaptic.Commons.Runtime.Serialization
         }
 
         #endregion
+
+        private static Func<T, T, bool, IDictionary<object, object>, T> Strategy
+        {
+            get
+            {
+                if (_Strategy == null)
+                {
+                    lock (_SyncLock)
+                    {
+                        if (_Strategy == null)
+                        {
+                            _Strategy = BuildStrategy();
+                        }
+                    }
+                }
+
+                return _Strategy;
+            }
+        }
     }
 }
