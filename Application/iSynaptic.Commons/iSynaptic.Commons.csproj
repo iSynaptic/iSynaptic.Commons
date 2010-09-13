@@ -69,7 +69,6 @@
     <Compile Include="FuncExtensions.cs" />
     <Compile Include="Collections\Generic\IndexedValue.cs" />
     <Compile Include="Collections\Generic\CollectionExtensions.cs" />
-    <Compile Include="Collections\Generic\IPipelinedEnumerable.cs" />
     <Compile Include="Collections\Generic\LookAheadableValue.cs" />
     <Compile Include="Collections\Generic\LookAheadEnumerable.cs" />
     <Compile Include="Collections\Generic\LookAheadEnumerator.cs" />
