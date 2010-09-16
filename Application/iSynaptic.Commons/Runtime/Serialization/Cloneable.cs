@@ -34,6 +34,13 @@ namespace iSynaptic.Commons.Runtime.Serialization
         }
     }
 
+    internal class CloneContext
+    {
+        public bool IsShallowClone { get; set; }
+        public bool ShouldUseExistingObjects { get; set; }
+        public IDictionary<object, object> CloneMap { get; set; }
+    }
+
     public static class Cloneable<T>
     {
         private static Type[] _CloneablePrimitives =
@@ -51,7 +58,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
         private static bool? _CanClone = null;
         private static bool? _CanShallowClone = null;
 
-        private static Func<T, T, bool, IDictionary<object, object>, T> _Strategy = null;
+        private static Func<T, T, CloneContext, T> _Strategy = null;
 
         private static readonly Predicate<FieldInfo> _FieldIncludeFilter = f =>
             (f.IsDefined(typeof(NonSerializedAttribute), true) != true);
@@ -64,18 +71,19 @@ namespace iSynaptic.Commons.Runtime.Serialization
 
         #region Helper Methods
 
-        private static Func<T, T, bool, IDictionary<object, object>, T> BuildStrategy()
+        private static Func<T, T, CloneContext, T> BuildStrategy()
         {
             bool canShallowClone = CanShallowClone();
             bool canClone = CanClone();
 
             bool isTargetTypeArray = _TargetType.IsArray;
 
-            Func<T, T, bool, IDictionary<object, object>, T> dynamicStrategy = null;
+            Func<T, T, CloneContext, T> dynamicStrategy = null;
+            Func<Array, Array, CloneContext, T> arrayCloneStrategy = null;
 
-            return (s, d, isShallow, m) =>
+            return (s, d, c) =>
             {
-                if (canShallowClone != true || (isShallow != true && canClone != true))
+                if (canShallowClone != true || (c.IsShallowClone != true && canClone != true))
                     throw new InvalidOperationException("This type cannot be cloned.");
 
                 if (IsRootTypeCloneablePrimitive(_TargetType) && isTargetTypeArray != true)
@@ -84,23 +92,27 @@ namespace iSynaptic.Commons.Runtime.Serialization
                 if (s == null)
                     return default(T);
 
-                if (isTargetTypeArray && isShallow)
+                if (isTargetTypeArray)
                 {
-                    if (s == null)
-                        return default(T);
+                    if(arrayCloneStrategy == null)
+                    {
+                        var arrayCloneMethod = GetMethod(typeof(Cloneable<T>), "ArrayClone", typeof (Array), typeof (Array),
+                                                         typeof (CloneContext));
 
-                    Array sourceArray = s as Array;
-                    return (T)sourceArray.Clone();
+                        arrayCloneStrategy = arrayCloneMethod.ToFunc<Array, Array, CloneContext, T>();
+                    }
+
+                    return arrayCloneStrategy(s as Array, d as Array, c);
                 }
 
                 if (dynamicStrategy == null)
                     dynamicStrategy = BuildDynamicStrategy();
 
-                return dynamicStrategy(s, d, isShallow, m ?? new Dictionary<object, object>());
+                return dynamicStrategy(s, d, c);
             };
         }
 
-        private static Func<T, T, bool, IDictionary<object, object>, T> BuildDynamicStrategy()
+        private static Func<T, T, CloneContext, T> BuildDynamicStrategy()
         {
             throw new NotImplementedException();
         }
@@ -237,20 +249,16 @@ namespace iSynaptic.Commons.Runtime.Serialization
 
         #region Clone Methods
 
-        [ReflectionPermission(SecurityAction.Demand, ReflectionEmit = true)]
         public static T Clone(T source)
         {
-            return Clone(source, null);
-        }
-
-        private static T Clone(T source, IDictionary<object, object> map)
-        {
-            return Strategy(source, default(T), false, map);
+            var context = new CloneContext {IsShallowClone = false, ShouldUseExistingObjects = false};
+            return Strategy(source, default(T), context);
         }
 
         public static T ShallowClone(T source)
         {
-            return Strategy(source, default(T), true, null);
+            var context = new CloneContext {IsShallowClone = true, ShouldUseExistingObjects = false};
+            return Strategy(source, default(T), context);
         }
 
         public static void CloneTo(T source, T destination)
@@ -267,8 +275,8 @@ namespace iSynaptic.Commons.Runtime.Serialization
             if (ReferenceEquals(source, destination))
                 throw new InvalidOperationException("The destination object cannot be the same as the source.");
 
-            Dictionary<object, object> map = new Dictionary<object, object>();
-            Strategy(source, default(T), false, null);
+            var context = new CloneContext { IsShallowClone = false, ShouldUseExistingObjects = true };
+            Strategy(source, destination, context);
         }
 
         public static void ShallowCloneTo(T source, T destination)
@@ -285,35 +293,38 @@ namespace iSynaptic.Commons.Runtime.Serialization
             if(ReferenceEquals(source, destination))
                 throw new InvalidOperationException("The destination object cannot be the same as the source.");
 
-            Dictionary<object, object> map = new Dictionary<object, object>();
-            Strategy(source, default(T), true, null);
+            var context = new CloneContext { IsShallowClone = true, ShouldUseExistingObjects = true };
+            Strategy(source, destination, context);
         }
 
-        private static T ArrayClone<U>(T source, T destination, IDictionary<object, object> map)
+        private static T ArrayClone<U>(Array sourceArray, Array destArray, CloneContext context)
         {
-            Array sourceArray = (Array)(object)source;
-            ArrayIndex index = new ArrayIndex(sourceArray);
+            if (destArray == null || destArray.LongLength != sourceArray.LongLength)
+                destArray = (Array)sourceArray.Clone();
 
-            Array destArray = (Array)(object)destination;
+            Type itemType = typeof (U);
 
-            if (sourceArray.Length <= 0)
-                return destination;
-
-            while (true)
+            if (context.IsShallowClone != true)
             {
-                U sourceItem = (U)sourceArray.GetValue(index);
-                if (sourceItem == null)
-                    destArray.SetValue(null, index);
-                else
-                    destArray.SetValue(Cloneable<U>.Clone(sourceItem, map), index);
+                //ArrayIndex index = new ArrayIndex(sourceArray);
+                //while (true)
+                //{
+                //    object sourceItem = sourceArray.GetValue(index);
+                //    object destItem = null;
 
-                if (index.CanIncrement())
-                    index.Increment();
-                else
-                    break;
+                //    if (sourceItem == null)
+                //        destArray.SetValue(null, index);
+                //    else
+                //        destArray.SetValue(Cloneable<U>.Strategy((U) sourceItem, (U) destItem, context), index);
+
+                //    if (index.CanIncrement())
+                //        index.Increment();
+                //    else
+                //        break;
+                //}
             }
 
-            return destination;
+            return (T)(object)destArray;
         }
 
 
@@ -515,8 +526,9 @@ namespace iSynaptic.Commons.Runtime.Serialization
 
         #endregion
 
-        private static Func<T, T, bool, IDictionary<object, object>, T> Strategy
+        private static Func<T, T, CloneContext, T> Strategy
         {
+            [ReflectionPermission(SecurityAction.Demand, ReflectionEmit = true)]
             get
             {
                 if (_Strategy == null)
