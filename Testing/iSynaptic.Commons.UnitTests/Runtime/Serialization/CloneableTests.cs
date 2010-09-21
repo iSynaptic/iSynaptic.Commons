@@ -1155,7 +1155,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
         }
 
         [Test]
-        public void CloneToArray()
+        public void CloneToClassArray()
         {
             var destinationClass = new CloneTestClass();
 
@@ -1171,7 +1171,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
 
 
         [Test]
-        public void ShallowCloneToArray()
+        public void ShallowCloneToClassArray()
         {
             var destinationClass = new CloneTestClass();
 
@@ -1184,7 +1184,114 @@ namespace iSynaptic.Commons.Runtime.Serialization
         }
 
         [Test]
-        public void CloneToArrayOfDifferingLengthsWillNotWork()
+        public void CloneToStructArray()
+        {
+            var source = new[] {new CloneTestStruct {FirstName = "John", LastName = "Doe"}};
+            var destination = new CloneTestStruct[1];
+
+            source.CloneTo(destination);
+
+            Assert.AreEqual("John", destination[0].FirstName);
+            Assert.AreEqual("Doe", destination[0].LastName);
+        }
+
+        [Test]
+        public void ShallowCloneToStructArray()
+        {
+            var source = new[] { new CloneTestStruct { FirstName = "John", LastName = "Doe" } };
+            var destination = new CloneTestStruct[1];
+
+            source.ShallowCloneTo(destination);
+
+            Assert.AreEqual("John", destination[0].FirstName);
+            Assert.AreEqual("Doe", destination[0].LastName);
+        }
+
+        [Test]
+        public void CloneToMultidimentionalClassArray()
+        {
+            CloneTestClass[,] source = new [,]
+            {
+                {
+                    new CloneTestClass { FirstName = "John", LastName = "Doe" },
+                    new CloneTestClass { FirstName = "Jane", LastName = "Smith"}
+                }
+            };
+
+            var dest1 = new CloneTestClass();
+            var dest2 = new CloneTestClass();
+
+            var destination = new [,]
+            {
+                {
+                    dest1,
+                    dest2
+                }
+            };
+
+            source.CloneTo(destination);
+
+            Assert.IsTrue(ReferenceEquals(dest1, destination[0, 0]));
+            Assert.IsTrue(ReferenceEquals(dest2, destination[0, 1]));
+
+            Assert.AreEqual("John", destination[0, 0].FirstName);
+            Assert.AreEqual("Doe", destination[0, 0].LastName);
+
+            Assert.AreEqual("Jane", destination[0, 1].FirstName);
+            Assert.AreEqual("Smith", destination[0, 1].LastName);
+        }
+
+        [Test]
+        [Ignore]
+        public void ShallowCloneToMultidimentionalClassArray()
+        {
+            throw new NotImplementedException();
+        }
+
+        [Test]
+        [Ignore]
+        public void CloneToMultidimentionalStructArray()
+        {
+            throw new NotImplementedException();
+        }
+
+        [Test]
+        [Ignore]
+        public void ShallowCloneToMultidimentionalStructArray()
+        {
+            throw new NotImplementedException();
+        }
+
+        [Test]
+        [Ignore]
+        public void CloneToJaggedClassArray()
+        {
+            throw new NotImplementedException();
+        }
+
+        [Test]
+        [Ignore]
+        public void ShallowCloneToJaggedClassArray()
+        {
+            throw new NotImplementedException();
+        }
+
+        [Test]
+        [Ignore]
+        public void CloneToJaggedStructArray()
+        {
+            throw new NotImplementedException();
+        }
+
+        [Test]
+        [Ignore]
+        public void ShallowCloneToJaggedStructArray()
+        {
+            throw new NotImplementedException();
+        }
+
+        [Test]
+        public void CloneToClassArrayOfDifferingLengthsWillNotWork()
         {
             var source = new CloneTestClass[2];
             var destination = new CloneTestClass[3];
@@ -1193,12 +1300,30 @@ namespace iSynaptic.Commons.Runtime.Serialization
         }
 
         [Test]
-        public void ShallowCloneToArrayOfDifferingLengthsWillNotWork()
+        public void ShallowCloneToClassArrayOfDifferingLengthsWillNotWork()
         {
             var source = new CloneTestClass[2];
             var destination = new CloneTestClass[3];
 
             Assert.Throws<InvalidOperationException>(() => Cloneable<CloneTestClass[]>.ShallowCloneTo(source, destination));
+        }
+
+        [Test]
+        public void CloneToStructArrayOfDifferingLengthsWillNotWork()
+        {
+            var source = new CloneTestStruct[2];
+            var destination = new CloneTestStruct[3];
+
+            Assert.Throws<InvalidOperationException>(() => Cloneable<CloneTestStruct[]>.CloneTo(source, destination));
+        }
+
+        [Test]
+        public void ShallowCloneToStructArrayOfDifferingLengthsWillNotWork()
+        {
+            var source = new CloneTestStruct[2];
+            var destination = new CloneTestStruct[3];
+
+            Assert.Throws<InvalidOperationException>(() => Cloneable<CloneTestStruct[]>.ShallowCloneTo(source, destination));
         }
         
         [Test]
@@ -1294,61 +1419,6 @@ namespace iSynaptic.Commons.Runtime.Serialization
             Cloneable<ParentClass>.ShallowCloneTo(source, destination);
 
             Assert.IsNull(destination.Child);
-        }
-
-        private void Clone(ParentClass[] source, ParentClass[] destination, bool isShallow, IDictionary<object, object> map)
-        {
-            if(destination.Length != source.Length)
-                throw new ArgumentException("Destination array must be the same length as the source array.", "destination");
-
-            if(isShallow != true)
-            {
-                ParentClass[] clone = (ParentClass[]) source.Clone();
-                for (int i = 0; i < source.Length; i++)
-                {
-                    if (map.ContainsKey(source[i]))
-                        clone[i] = (ParentClass) map[source[i]];
-                    else
-                    {
-                        var newParent = new ParentClass();
-                        map.Add(source[i], newParent);
-
-                        Clone(source[i], newParent, false, map);
-                    }
-                }
-
-                Array.Copy(clone, destination, clone.Length);
-            }
-            else
-                Array.Copy(source, destination, source.Length);
-        }
-
-        private void Clone(ParentClass source, ParentClass destination, bool isShallow, IDictionary<object, object> map)
-        {
-            if (isShallow != true)
-            {
-                if (source.Child == null)
-                    destination.Child = null;
-                else
-                {
-                    if (map.ContainsKey(source.Child))
-                        destination.Child = (ChildClass) map[source.Child];
-                    else
-                    {
-                        var newChild = new ChildClass();
-                        map.Add(source.Child, newChild);
-                        destination.Child = newChild;
-
-                        Clone(source.Child, newChild, false, map);
-                    }
-                }
-            }
-            else
-                destination.Child = source.Child;
-        }
-
-        private void Clone(ChildClass source, ChildClass destination, bool isShallow, IDictionary<object, object> map)
-        {
         }
     }
 }
