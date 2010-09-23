@@ -1086,5 +1086,339 @@ namespace iSynaptic.Commons.Runtime.Serialization
             clone = Cloneable<ClassWithNonSerializedIllegalField>.ShallowClone(source);
             Assert.IsNotNull(clone);
         }
+
+        [Test]
+        public void CloneToWillNotWorkOnAValueType()
+        {
+            Assert.Throws<InvalidOperationException>(() => Cloneable<int>.CloneTo(1, 1));
+            Assert.Throws<InvalidOperationException>(() => Cloneable<CloneTestStruct>.CloneTo(new CloneTestStruct(), new CloneTestStruct()));
+        }
+
+        [Test]
+        public void ShallowCloneToWillNotWorkOnAValueType()
+        {
+            Assert.Throws<InvalidOperationException>(() => Cloneable<int>.ShallowCloneTo(1, 1));
+            Assert.Throws<InvalidOperationException>(() => Cloneable<CloneTestStruct>.ShallowCloneTo(new CloneTestStruct(), new CloneTestStruct()));
+        }
+
+        [Test]
+        public void CloneToWillNotWorkWithNullReferences()
+        {
+            Assert.Throws<ArgumentNullException>(() => Cloneable<ParentClass>.CloneTo(new ParentClass(), null));
+            Assert.Throws<ArgumentNullException>(() => Cloneable<ParentClass>.CloneTo(null, new ParentClass()));
+        }
+
+        [Test]
+        public void ShallowCloneToWillNotWorkWithNullReferences()
+        {
+            Assert.Throws<ArgumentNullException>(() => Cloneable<ParentClass>.ShallowCloneTo(new ParentClass(), null));
+            Assert.Throws<ArgumentNullException>(() => Cloneable<ParentClass>.ShallowCloneTo(null, new ParentClass()));
+        }
+
+        [Test]
+        public void CloneToWithSameDestinationAsSourceWillNotWork()
+        {
+            var testClass = new ParentClass();
+            Assert.Throws<InvalidOperationException>(() => Cloneable<ParentClass>.CloneTo(testClass, testClass));
+        }
+
+        [Test]
+        public void ShallowCloneToWithSameDestinationAsSourceWillNotWork()
+        {
+            var testClass = new ParentClass();
+            Assert.Throws<InvalidOperationException>(() => Cloneable<ParentClass>.ShallowCloneTo(testClass, testClass));
+        }
+
+
+        [Test]
+        public void CloneToClass()
+        {
+            var source = new CloneTestClass { FirstName = "John", LastName = "Doe" };
+            var destination = new CloneTestClass();
+
+            Cloneable<CloneTestClass>.CloneTo(source, destination);
+
+            Assert.AreEqual(source.FirstName, destination.FirstName);
+            Assert.AreEqual(source.LastName, destination.LastName);
+        }
+
+        [Test]
+        public void ShallowCloneToClass()
+        {
+            var source = new CloneTestClass { FirstName = "John", LastName = "Doe" };
+            var destination = new CloneTestClass();
+
+            Cloneable<CloneTestClass>.ShallowCloneTo(source, destination);
+
+            Assert.AreEqual(source.FirstName, destination.FirstName);
+            Assert.AreEqual(source.LastName, destination.LastName);
+        }
+
+        [Test]
+        public void CloneToClassArray()
+        {
+            var destinationClass = new CloneTestClass();
+
+            var source = new[] {new CloneTestClass {FirstName = "John", LastName = "Doe"}};
+            var destination = new[] { destinationClass };
+
+            Cloneable<CloneTestClass[]>.CloneTo(source, destination);
+            
+            Assert.IsTrue(ReferenceEquals(destinationClass, destination[0]));
+            Assert.AreEqual("John", destinationClass.FirstName);
+            Assert.AreEqual("Doe", destinationClass.LastName);
+        }
+
+
+        [Test]
+        public void ShallowCloneToClassArray()
+        {
+            var destinationClass = new CloneTestClass();
+
+            var source = new[] { new CloneTestClass { FirstName = "John", LastName = "Doe" } };
+            var destination = new[] { destinationClass };
+
+            Cloneable<CloneTestClass[]>.ShallowCloneTo(source, destination);
+
+            Assert.IsTrue(ReferenceEquals(source[0], destination[0]));
+        }
+
+        [Test]
+        public void CloneToStructArray()
+        {
+            var source = new[] {new CloneTestStruct {FirstName = "John", LastName = "Doe"}};
+            var destination = new CloneTestStruct[1];
+
+            source.CloneTo(destination);
+
+            Assert.AreEqual("John", destination[0].FirstName);
+            Assert.AreEqual("Doe", destination[0].LastName);
+        }
+
+        [Test]
+        public void ShallowCloneToStructArray()
+        {
+            var source = new[] { new CloneTestStruct { FirstName = "John", LastName = "Doe" } };
+            var destination = new CloneTestStruct[1];
+
+            source.ShallowCloneTo(destination);
+
+            Assert.AreEqual("John", destination[0].FirstName);
+            Assert.AreEqual("Doe", destination[0].LastName);
+        }
+
+        [Test]
+        public void CloneToMultidimentionalClassArray()
+        {
+            CloneTestClass[,] source = new [,]
+            {
+                {
+                    new CloneTestClass { FirstName = "John", LastName = "Doe" },
+                    new CloneTestClass { FirstName = "Jane", LastName = "Smith"}
+                }
+            };
+
+            var dest1 = new CloneTestClass();
+            var dest2 = new CloneTestClass();
+
+            var destination = new [,]
+            {
+                {
+                    dest1,
+                    dest2
+                }
+            };
+
+            source.CloneTo(destination);
+
+            Assert.IsTrue(ReferenceEquals(dest1, destination[0, 0]));
+            Assert.IsTrue(ReferenceEquals(dest2, destination[0, 1]));
+
+            Assert.AreEqual("John", destination[0, 0].FirstName);
+            Assert.AreEqual("Doe", destination[0, 0].LastName);
+
+            Assert.AreEqual("Jane", destination[0, 1].FirstName);
+            Assert.AreEqual("Smith", destination[0, 1].LastName);
+        }
+
+        [Test]
+        [Ignore]
+        public void ShallowCloneToMultidimentionalClassArray()
+        {
+            throw new NotImplementedException();
+        }
+
+        [Test]
+        [Ignore]
+        public void CloneToMultidimentionalStructArray()
+        {
+            throw new NotImplementedException();
+        }
+
+        [Test]
+        [Ignore]
+        public void ShallowCloneToMultidimentionalStructArray()
+        {
+            throw new NotImplementedException();
+        }
+
+        [Test]
+        [Ignore]
+        public void CloneToJaggedClassArray()
+        {
+            throw new NotImplementedException();
+        }
+
+        [Test]
+        [Ignore]
+        public void ShallowCloneToJaggedClassArray()
+        {
+            throw new NotImplementedException();
+        }
+
+        [Test]
+        [Ignore]
+        public void CloneToJaggedStructArray()
+        {
+            throw new NotImplementedException();
+        }
+
+        [Test]
+        [Ignore]
+        public void ShallowCloneToJaggedStructArray()
+        {
+            throw new NotImplementedException();
+        }
+
+        [Test]
+        public void CloneToClassArrayOfDifferingLengthsWillNotWork()
+        {
+            var source = new CloneTestClass[2];
+            var destination = new CloneTestClass[3];
+
+            Assert.Throws<InvalidOperationException>(() => Cloneable<CloneTestClass[]>.CloneTo(source, destination));
+        }
+
+        [Test]
+        public void ShallowCloneToClassArrayOfDifferingLengthsWillNotWork()
+        {
+            var source = new CloneTestClass[2];
+            var destination = new CloneTestClass[3];
+
+            Assert.Throws<InvalidOperationException>(() => Cloneable<CloneTestClass[]>.ShallowCloneTo(source, destination));
+        }
+
+        [Test]
+        public void CloneToStructArrayOfDifferingLengthsWillNotWork()
+        {
+            var source = new CloneTestStruct[2];
+            var destination = new CloneTestStruct[3];
+
+            Assert.Throws<InvalidOperationException>(() => Cloneable<CloneTestStruct[]>.CloneTo(source, destination));
+        }
+
+        [Test]
+        public void ShallowCloneToStructArrayOfDifferingLengthsWillNotWork()
+        {
+            var source = new CloneTestStruct[2];
+            var destination = new CloneTestStruct[3];
+
+            Assert.Throws<InvalidOperationException>(() => Cloneable<CloneTestStruct[]>.ShallowCloneTo(source, destination));
+        }
+        
+        [Test]
+        public void CloneToObjectHierarchy()
+        {
+            var source = new ParentClass();
+            var sourceChild = new ChildClass { Name = "John Doe" };
+
+            source.Child = sourceChild;
+
+            var destination = new ParentClass();
+            var destinationChild = new ChildClass();
+
+            destination.Child = destinationChild;
+
+            Cloneable<ParentClass>.CloneTo(source, destination);
+
+            Assert.IsTrue(object.ReferenceEquals(destinationChild, destination.Child));
+            Assert.AreEqual(sourceChild.Name, destinationChild.Name);
+        }
+
+        [Test]
+        public void CloneToObjectHierarchyWithNullDestinationChild()
+        {
+            var source = new ParentClass();
+            var sourceChild = new ChildClass { Name = "John Doe" };
+
+            source.Child = sourceChild;
+
+            var destination = new ParentClass();
+
+            Cloneable<ParentClass>.CloneTo(source, destination);
+
+            Assert.IsFalse(object.ReferenceEquals(sourceChild, destination.Child));
+            Assert.AreEqual(sourceChild.Name, destination.Child.Name);
+        }
+
+        [Test]
+        public void CloneToObjectHierarchyWithNullSourceChild()
+        {
+            var source = new ParentClass();
+
+            var destination = new ParentClass();
+            var destinationChild = new ChildClass {Name = "Jim Cox"};
+
+            Cloneable<ParentClass>.CloneTo(source, destination);
+
+            Assert.IsNull(destination.Child);
+        }
+
+        [Test]
+        public void ShallowCloneToObjectHierarchy()
+        {
+            var source = new ParentClass();
+            var sourceChild = new ChildClass { Name = "John Doe" };
+
+            source.Child = sourceChild;
+
+            var destination = new ParentClass();
+            var destinationChild = new ChildClass();
+
+            destination.Child = destinationChild;
+
+            Cloneable<ParentClass>.ShallowCloneTo(source, destination);
+
+            Assert.IsTrue(object.ReferenceEquals(sourceChild, destination.Child));
+        }
+
+        [Test]
+        public void ShallowCloneToObjectHierarchyWithNullDestinationChild()
+        {
+            var source = new ParentClass();
+            var sourceChild = new ChildClass { Name = "John Doe" };
+
+            source.Child = sourceChild;
+
+            var destination = new ParentClass();
+
+            Cloneable<ParentClass>.ShallowCloneTo(source, destination);
+
+            Assert.IsTrue(object.ReferenceEquals(sourceChild, destination.Child));
+            Assert.AreEqual(sourceChild.Name, destination.Child.Name);
+        }
+
+        [Test]
+        public void ShallowCloneToObjectHierarchyWithNullSourceChild()
+        {
+            var source = new ParentClass();
+
+            var destination = new ParentClass();
+            var destinationChild = new ChildClass { Name = "Jim Cox" };
+
+            Cloneable<ParentClass>.ShallowCloneTo(source, destination);
+
+            Assert.IsNull(destination.Child);
+        }
     }
 }
