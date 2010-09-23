@@ -21,16 +21,14 @@ namespace iSynaptic.Commons.Runtime.Serialization
             return Cloneable<T>.ShallowClone(source);
         }
 
-        public static void CloneTo<T>(this T source, T destination)
-            where T : class
+        public static T CloneTo<T>(this T source, T destination)
         {
-            Cloneable<T>.CloneTo(source, destination);
+            return Cloneable<T>.CloneTo(source, destination);
         }
 
-        public static void ShallowCloneTo<T>(this T source, T destination)
-            where T : class
+        public static T ShallowCloneTo<T>(this T source, T destination)
         {
-            Cloneable<T>.ShallowCloneTo(source, destination);
+            return Cloneable<T>.ShallowCloneTo(source, destination);
         }
     }
 
@@ -498,18 +496,15 @@ namespace iSynaptic.Commons.Runtime.Serialization
             return Strategy(source, default(T), context);
         }
 
-        public static void CloneTo(T source, T destination)
+        public static T CloneTo(T source, T destination)
         {
-            if(_TargetType.IsValueType)
-                throw new InvalidOperationException("CloneTo only works on reference types.");
-
             if(source == null)
                 throw new ArgumentNullException("source");
 
             if (destination == null)
                 throw new ArgumentNullException("destination");
 
-            if (ReferenceEquals(source, destination))
+            if (_TargetType.IsValueType != true && ReferenceEquals(source, destination))
                 throw new InvalidOperationException("The destination object cannot be the same as the source.");
 
             var sourceArray = source as Array;
@@ -519,21 +514,18 @@ namespace iSynaptic.Commons.Runtime.Serialization
                 throw new InvalidOperationException("The destination array must be the same size (length) as the source array.");
 
             var context = new CloneContext(false, true);
-            Strategy(source, destination, context);
+            return Strategy(source, destination, context);
         }
 
-        public static void ShallowCloneTo(T source, T destination)
+        public static T ShallowCloneTo(T source, T destination)
         {
-            if (_TargetType.IsValueType)
-                throw new InvalidOperationException("ShallowCloneTo only works on reference types.");
-
             if (source == null)
                 throw new ArgumentNullException("source");
 
             if (destination == null)
                 throw new ArgumentNullException("destination");
 
-            if(ReferenceEquals(source, destination))
+            if(_TargetType.IsValueType != true && ReferenceEquals(source, destination))
                 throw new InvalidOperationException("The destination object cannot be the same as the source.");
 
             var sourceArray = source as Array;
@@ -543,7 +535,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
                 throw new InvalidOperationException("The destination array must be the same size (length) as the source array.");
 
             var context = new CloneContext(true, true);
-            Strategy(source, destination, context);
+            return Strategy(source, destination, context);
         }
 
         private static T ArrayClone<U>(Array sourceArray, Array destArray, CloneContext context)

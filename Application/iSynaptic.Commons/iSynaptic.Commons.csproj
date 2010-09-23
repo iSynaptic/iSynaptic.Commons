@@ -92,8 +92,11 @@
     <Compile Include="Text\Parsing\Token.cs" />
     <Compile Include="Text\Parsing\TokenKind.cs" />
     <Compile Include="Threading\SpinLock.cs" />
+    <Compile Include="Transactions\ITransactional.cs" />
     <Compile Include="Transactions\Transactional.cs" />
+    <Compile Include="Transactions\TransactionalBase.cs" />
     <Compile Include="Transactions\TransactionalConcurrencyException.cs" />
+    <Compile Include="Transactions\TransactionalGateway.cs" />
     <Compile Include="Xml\ProcessingInstruction.cs" />
     <Compile Include="Xml\ProcessingInstructionParser.cs" />
   </ItemGroup>

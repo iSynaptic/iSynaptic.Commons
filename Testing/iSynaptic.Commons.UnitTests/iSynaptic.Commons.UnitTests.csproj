@@ -80,6 +80,7 @@
     <Compile Include="Text\Parsing\ScanningTextReaderTests.cs" />
     <Compile Include="Text\Parsing\SimpleScannerTests.cs" />
     <Compile Include="Transactions\SimpleObject.cs" />
+    <Compile Include="Transactions\TransactionalGatewayTests.cs" />
     <Compile Include="Transactions\TransactionalTests.cs" />
     <Compile Include="UnitTestingExtensions.cs" />
     <Compile Include="Xml\ProcessingInstructionParserTests.cs" />

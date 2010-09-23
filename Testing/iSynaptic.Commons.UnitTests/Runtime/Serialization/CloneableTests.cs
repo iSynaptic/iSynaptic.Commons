@@ -29,6 +29,11 @@ namespace iSynaptic.Commons.Runtime.Serialization
             public string LastName { get; set; }
         }
 
+        private struct CloneTestStructWithClonableClassField
+        {
+            public CloneTestClass TestClass { get; set; }
+        }
+
         private class ClassWithIntPtrField
         {
             public IntPtr CannotCloneThis { get; set; }
@@ -1088,17 +1093,31 @@ namespace iSynaptic.Commons.Runtime.Serialization
         }
 
         [Test]
-        public void CloneToWillNotWorkOnAValueType()
+        public void CloneToWillOnAValueType()
         {
-            Assert.Throws<InvalidOperationException>(() => Cloneable<int>.CloneTo(1, 1));
-            Assert.Throws<InvalidOperationException>(() => Cloneable<CloneTestStruct>.CloneTo(new CloneTestStruct(), new CloneTestStruct()));
+            var testClass = new CloneTestClass();
+
+            var source = new CloneTestStructWithClonableClassField {TestClass = new CloneTestClass {FirstName = "John", LastName = "Doe"}};
+            var dest = new CloneTestStructWithClonableClassField {TestClass = testClass};
+
+            var clone = source.CloneTo(dest);
+
+            Assert.IsTrue(ReferenceEquals(testClass, clone.TestClass));
+            Assert.AreEqual("John", clone.TestClass.FirstName);
+            Assert.AreEqual("Doe", clone.TestClass.LastName);
         }
 
         [Test]
-        public void ShallowCloneToWillNotWorkOnAValueType()
+        public void ShallowCloneToWillAValueType()
         {
-            Assert.Throws<InvalidOperationException>(() => Cloneable<int>.ShallowCloneTo(1, 1));
-            Assert.Throws<InvalidOperationException>(() => Cloneable<CloneTestStruct>.ShallowCloneTo(new CloneTestStruct(), new CloneTestStruct()));
+            var testClass = new CloneTestClass {FirstName = "John", LastName = "Doe"};
+
+            var source = new CloneTestStructWithClonableClassField { TestClass = testClass };
+            var dest = new CloneTestStructWithClonableClassField {TestClass = new CloneTestClass()};
+
+            var clone = source.ShallowCloneTo(dest);
+
+            Assert.IsTrue(ReferenceEquals(testClass, clone.TestClass));
         }
 
         [Test]
