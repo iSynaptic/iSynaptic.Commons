@@ -15,6 +15,32 @@ namespace iSynaptic.Commons.Runtime.Serialization
     {
         #region Nested Test Classes and Structures
 
+        private class ClassWithReferenceToTypeThatHasCloneReferenceOnlyAttribute
+        {
+            public CloneOnlyByReferenceClass Reference { get; set; }
+        }
+
+        [CloneReferenceOnly]
+        public interface ICloneByReferenceOnly
+        {
+        }
+
+        [CloneReferenceOnly]
+        private class CloneOnlyByReferenceClass
+        {
+            public string Name { get; set; }
+        }
+
+        public class WithInterfaceReferenceClass
+        {
+            public ICloneByReferenceOnly Reference;
+        }
+
+        public class WithInterfaceClass : ICloneByReferenceOnly
+        {
+            public string Name { get; set; }
+        }
+
         private class CloneTestClass
         {
             public string FirstName { get; set; }
@@ -1438,6 +1464,27 @@ namespace iSynaptic.Commons.Runtime.Serialization
             Cloneable<ParentClass>.ShallowCloneTo(source, destination);
 
             Assert.IsNull(destination.Child);
+        }
+
+        [Test]
+        public void CloneClassWithReferenceToTypeThatHasCloneReferenceOnlyAttribute()
+        {
+            var ro = new CloneOnlyByReferenceClass();
+            var source = new ClassWithReferenceToTypeThatHasCloneReferenceOnlyAttribute {Reference = ro};
+
+            var clone = source.Clone();
+            Assert.IsTrue(ReferenceEquals(ro, clone.Reference));
+        }
+
+        [Test]
+        public void CloneClassWithClassReferenceViaInterfaceMarkedByCloneReferenceOnlyAttribute()
+        {
+            var wic = new WithInterfaceClass {Name = "John Doe"};
+            var source = new WithInterfaceReferenceClass {Reference = wic};
+
+            var clone = source.Clone();
+
+            Assert.IsTrue(ReferenceEquals(clone.Reference, wic));
         }
     }
 }

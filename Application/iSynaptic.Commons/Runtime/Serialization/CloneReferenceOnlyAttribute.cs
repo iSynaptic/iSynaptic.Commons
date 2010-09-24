@@ -4,7 +4,7 @@ using System.Text;
 
 namespace iSynaptic.Commons.Runtime.Serialization
 {
-    [AttributeUsage(AttributeTargets.Field, Inherited = true, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Class | AttributeTargets.Interface, Inherited = true, AllowMultiple = false)]
     public class CloneReferenceOnlyAttribute : Attribute
     {
     }

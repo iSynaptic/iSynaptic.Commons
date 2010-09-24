@@ -196,10 +196,16 @@ namespace iSynaptic.Commons.Runtime.Serialization
 
             foreach (FieldInfo field in GetFields(_TargetType, _FieldIncludeFilter))
             {
-                if (field.IsDefined(typeof(CloneReferenceOnlyAttribute), true) || IsTypeCloneablePrimative(field.FieldType))
+                if (field.IsDefined(typeof(CloneReferenceOnlyAttribute), true) ||
+                    field.FieldType.IsDefined(typeof(CloneReferenceOnlyAttribute), true) ||
+                    IsTypeCloneablePrimative(field.FieldType))
+                {
                     EmitCopyField(gen, field);
+                }
                 else
+                {
                     EmitCloneFieldWithShallowCheck(gen, field);
+                }
             }
 
             gen.Emit(OpCodes.Ldloc_0);
@@ -432,6 +438,9 @@ namespace iSynaptic.Commons.Runtime.Serialization
         {
             Type typeToCheck = GetRootType(type);
 
+            if (typeToCheck.IsInterface && typeToCheck.IsDefined(typeof(CloneReferenceOnlyAttribute), true) != true)
+                return false;
+
             if (IsNotCloneable(typeToCheck))
                 return false;
 
@@ -449,6 +458,15 @@ namespace iSynaptic.Commons.Runtime.Serialization
 
                 if (IsRootTypeCloneablePrimitive(fieldType))
                     continue;
+
+                if (fieldType.IsInterface)
+                {
+                    if (field.IsDefined(typeof(CloneReferenceOnlyAttribute), true) != true &&
+                        fieldType.IsDefined(typeof(CloneReferenceOnlyAttribute), true) != true)
+                         return false;
+                     else
+                         continue;
+                }
 
                 if (isShallow != true)
                 {

@@ -8,6 +8,7 @@ using iSynaptic.Commons.Threading;
 
 namespace iSynaptic.Commons.Transactions
 {
+    [CloneReferenceOnly]
     public abstract class TransactionalBase<T> : ITransactional<T>
     {
         #region EnlistmentManager
