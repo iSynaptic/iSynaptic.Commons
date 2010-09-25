@@ -95,7 +95,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
             _SyncLock = new object();
         }
 
-        private class InterfaceClonable<TConcrete>
+        private class InterfaceStrategy<TConcrete>
         {
             private Func<T, T, CloneContext, T> _NextStrategy = null;
             private Func<TConcrete, TConcrete, CloneContext, TConcrete> _DynamicStrategy = null;
@@ -115,10 +115,10 @@ namespace iSynaptic.Commons.Runtime.Serialization
 
                 if(_NextStrategy == null)
                 {
-                    var interfaceCloneableType = typeof (InterfaceClonable<>).MakeGenericType(source.GetType());
-                    var interfaceCloneable = Activator.CreateInstance(interfaceCloneableType);
+                    var interfaceStrategyType = typeof (InterfaceStrategy<>).MakeGenericType(_TargetType, source.GetType());
+                    var interfaceStrategy = Activator.CreateInstance(interfaceStrategyType);
 
-                    _NextStrategy = interfaceCloneable.GetFunc<T, T, CloneContext, T>("Strategy");
+                    _NextStrategy = interfaceStrategy.GetFunc<T, T, CloneContext, T>("Strategy");
                 }
 
                 return _NextStrategy(source, destination, cloneContext);
@@ -154,10 +154,12 @@ namespace iSynaptic.Commons.Runtime.Serialization
                 if (s == null)
                     return default(T);
 
+                var actualType = s.GetType();
+
                 if (isReferenceType && c.CloneMap.ContainsKey(s))
                     return (T) c.CloneMap[s];
 
-                if (isTargetTypeArray)
+                if (isTargetTypeArray || (isInterfaceType && actualType.IsArray))
                 {
                     Array destArray = (Array) (object) d;
                     Array sourceArray = (Array) (object) s;
@@ -184,7 +186,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
                                                          typeof (Array),
                                                          typeof (CloneContext));
 
-                        arrayCloneMethod = arrayCloneMethod.MakeGenericMethod(_TargetType.GetElementType());
+                        arrayCloneMethod = arrayCloneMethod.MakeGenericMethod(actualType.GetElementType());
                         arrayCloneStrategy = arrayCloneMethod.ToFunc<Array, Array, CloneContext, T>();
                     }
 
@@ -201,7 +203,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
                 {
                     if (isInterfaceType)
                     {
-                        var interfaceCloneableType = typeof(InterfaceClonable<>).MakeGenericType(_TargetType, s.GetType());
+                        var interfaceCloneableType = typeof(InterfaceStrategy<>).MakeGenericType(_TargetType, s.GetType());
                         var interfaceCloneable = Activator.CreateInstance(interfaceCloneableType);
 
                         completionStrategy = interfaceCloneable.GetFunc<T, T, CloneContext, T>("Strategy");
