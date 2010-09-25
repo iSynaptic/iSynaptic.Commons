@@ -10,6 +10,5 @@ namespace iSynaptic.Commons.AOP
         void Enlist(IEnumerable<T> items);
 
         void Complete();
-
     }
 }

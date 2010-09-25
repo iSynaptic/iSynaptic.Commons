@@ -1287,52 +1287,195 @@ namespace iSynaptic.Commons.Runtime.Serialization
         }
 
         [Test]
-        [Ignore]
         public void ShallowCloneToMultidimentionalClassArray()
         {
-            throw new NotImplementedException();
+            var source1 = new CloneTestClass {FirstName = "John", LastName = "Doe"};
+            var source2 = new CloneTestClass {FirstName = "Jane", LastName = "Smith"};
+            
+            CloneTestClass[,] source = new[,]
+            {
+                {
+                    source1,
+                    source2
+                }
+            };
+
+            var destination = new[,]
+            {
+                {
+                    new CloneTestClass(),
+                    new CloneTestClass()
+                }
+            };
+
+            source.ShallowCloneTo(destination);
+
+            Assert.IsTrue(ReferenceEquals(source1, destination[0, 0]));
+            Assert.IsTrue(ReferenceEquals(source2, destination[0, 1]));
         }
 
         [Test]
-        [Ignore]
         public void CloneToMultidimentionalStructArray()
         {
-            throw new NotImplementedException();
+            var dest1 = new CloneTestStructWithClonableClassField { TestClass = new CloneTestClass() };
+            var dest2 = new CloneTestStructWithClonableClassField { TestClass = new CloneTestClass() };
+
+            var source = new[,]
+            {
+                {
+                    new CloneTestStructWithClonableClassField { TestClass = new CloneTestClass { FirstName = "John", LastName = "Doe" } },
+                    new CloneTestStructWithClonableClassField { TestClass = new CloneTestClass { FirstName = "Jane", LastName = "Smith" } }
+                }
+            };
+
+            var dest = new[,]
+            {
+                {
+                    dest1,
+                    dest2
+                }
+            };
+            
+            var clone = source.CloneTo(dest);
+
+            Assert.IsTrue(ReferenceEquals(clone[0, 0].TestClass, dest1.TestClass));
+            Assert.IsTrue(ReferenceEquals(clone[0, 1].TestClass, dest2.TestClass));
+
+            Assert.AreEqual("John", clone[0, 0].TestClass.FirstName);
+            Assert.AreEqual("Doe", clone[0, 0].TestClass.LastName);
+
+            Assert.AreEqual("Jane", clone[0, 1].TestClass.FirstName);
+            Assert.AreEqual("Smith", clone[0, 1].TestClass.LastName);
         }
 
         [Test]
-        [Ignore]
         public void ShallowCloneToMultidimentionalStructArray()
         {
-            throw new NotImplementedException();
+            var source1 = new CloneTestStructWithClonableClassField { TestClass = new CloneTestClass { FirstName = "John", LastName = "Doe" } };
+            var source2 = new CloneTestStructWithClonableClassField { TestClass = new CloneTestClass { FirstName = "Jane", LastName = "Smith" } };
+
+            var source = new[,]
+            {
+                {
+                    source1,
+                    source2
+                }
+            };
+
+            var dest = new CloneTestStructWithClonableClassField[1,2];
+
+            var clone = source.ShallowCloneTo(dest);
+
+            Assert.IsTrue(ReferenceEquals(clone[0, 0].TestClass, source1.TestClass));
+            Assert.IsTrue(ReferenceEquals(clone[0, 1].TestClass, source2.TestClass));
         }
 
         [Test]
-        [Ignore]
         public void CloneToJaggedClassArray()
         {
-            throw new NotImplementedException();
+            var source = new[]
+            {
+                new[] {new CloneTestClass { FirstName = "John", LastName = "Doe" }},
+                new[] {new CloneTestClass { FirstName = "Jane", LastName = "Smith"}}
+            };
+
+            var dest1 = new CloneTestClass();
+            var dest2 = new CloneTestClass();
+
+            var destination = new[]
+            {
+                new[] {dest1}, 
+                new[] {dest2}
+            };
+
+            source.CloneTo(destination);
+
+            Assert.IsTrue(ReferenceEquals(dest1, destination[0][0]));
+            Assert.IsTrue(ReferenceEquals(dest2, destination[1][0]));
+
+            Assert.AreEqual("John", destination[0][0].FirstName);
+            Assert.AreEqual("Doe", destination[0][0].LastName);
+
+            Assert.AreEqual("Jane", destination[1][0].FirstName);
+            Assert.AreEqual("Smith", destination[1][0].LastName);
         }
 
         [Test]
-        [Ignore]
         public void ShallowCloneToJaggedClassArray()
         {
-            throw new NotImplementedException();
+            var source1 = new CloneTestClass {FirstName = "John", LastName = "Doe"};
+            var source2 = new CloneTestClass {FirstName = "Jane", LastName = "Smith"};
+
+            var source = new[]
+            {
+                new[] {source1},
+                new[] {source2}
+            };
+
+            var destination = new[]
+            {
+                new[] {new CloneTestClass()}, 
+                new[] {new CloneTestClass()}
+            };
+
+            source.ShallowCloneTo(destination);
+
+            Assert.IsTrue(ReferenceEquals(source1, destination[0][0]));
+            Assert.IsTrue(ReferenceEquals(source2, destination[1][0]));
         }
 
         [Test]
-        [Ignore]
         public void CloneToJaggedStructArray()
         {
-            throw new NotImplementedException();
+            var source = new[]
+            {
+                new[] {new CloneTestStructWithClonableClassField { TestClass = new CloneTestClass { FirstName = "John", LastName = "Doe" }}},
+                new[] {new CloneTestStructWithClonableClassField { TestClass = new CloneTestClass { FirstName = "Jane", LastName = "Smith"}}}
+            };
+
+            var dest1 = new CloneTestClass();
+            var dest2 = new CloneTestClass();
+
+            var destination = new[]
+            {
+                new[] {new CloneTestStructWithClonableClassField { TestClass = dest1}}, 
+                new[] {new CloneTestStructWithClonableClassField { TestClass = dest2}}
+            };
+
+            var clone = source.CloneTo(destination);
+
+            Assert.IsTrue(ReferenceEquals(dest1, clone[0][0].TestClass));
+            Assert.IsTrue(ReferenceEquals(dest2, clone[1][0].TestClass));
+
+            Assert.AreEqual("John", clone[0][0].TestClass.FirstName);
+            Assert.AreEqual("Doe", clone[0][0].TestClass.LastName);
+
+            Assert.AreEqual("Jane", clone[1][0].TestClass.FirstName);
+            Assert.AreEqual("Smith", clone[1][0].TestClass.LastName);
         }
 
         [Test]
-        [Ignore]
         public void ShallowCloneToJaggedStructArray()
         {
-            throw new NotImplementedException();
+            var source1 = new CloneTestClass { FirstName = "John", LastName = "Doe" };
+            var source2 = new CloneTestClass { FirstName = "Jane", LastName = "Smith" };
+
+            var source = new[]
+            {
+                new[] {new CloneTestStructWithClonableClassField { TestClass = source1}},
+                new[] {new CloneTestStructWithClonableClassField { TestClass = source2}}
+            };
+
+            var destination = new[]
+            {
+                new[] {new CloneTestStructWithClonableClassField()}, 
+                new[] {new CloneTestStructWithClonableClassField()}
+            };
+
+            var clone = source.ShallowCloneTo(destination);
+
+            Assert.IsTrue(ReferenceEquals(source1, destination[0][0].TestClass));
+            Assert.IsTrue(ReferenceEquals(source2, destination[1][0].TestClass));
         }
 
         [Test]
