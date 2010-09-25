@@ -75,6 +75,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
         private static bool? _CanShallowClone = null;
 
         private static Func<T, T, CloneContext, T> _Strategy = null;
+        private static Func<T, T, CloneContext, T> _DynamicStrategy = null;
 
         private static readonly Predicate<FieldInfo> _FieldIncludeFilter = f =>
             (f.IsDefined(typeof(NonSerializedAttribute), true) != true);
@@ -94,6 +95,36 @@ namespace iSynaptic.Commons.Runtime.Serialization
             _SyncLock = new object();
         }
 
+        private class InterfaceClonable<TConcrete>
+        {
+            private Func<T, T, CloneContext, T> _NextStrategy = null;
+            private Func<TConcrete, TConcrete, CloneContext, TConcrete> _DynamicStrategy = null;
+
+            public T Strategy(T source, T destination, CloneContext cloneContext)
+            {
+                if(source is TConcrete)
+                {
+                    var s = (TConcrete)(object)source;
+                    var d = destination is TConcrete ? (TConcrete) (object) destination : default(TConcrete);
+
+                    if (_DynamicStrategy == null)
+                        _DynamicStrategy = Cloneable<TConcrete>.BuildDynamicStrategy();
+
+                    return (T)(object)_DynamicStrategy(s, d, cloneContext);
+                }
+
+                if(_NextStrategy == null)
+                {
+                    var interfaceCloneableType = typeof (InterfaceClonable<>).MakeGenericType(source.GetType());
+                    var interfaceCloneable = Activator.CreateInstance(interfaceCloneableType);
+
+                    _NextStrategy = interfaceCloneable.GetFunc<T, T, CloneContext, T>("Strategy");
+                }
+
+                return _NextStrategy(source, destination, cloneContext);
+            }
+        }
+
         #region Build Methods
 
         private static Func<T, T, CloneContext, T> BuildStrategy()
@@ -101,6 +132,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
             bool canShallowClone = CanShallowClone();
             bool canClone = CanClone();
 
+            bool isInterfaceType = _TargetType.IsInterface;
             bool isTargetTypeArray = _TargetType.IsArray;
             bool isReferenceType = !_TargetType.IsValueType;
             bool isNullableType = _TargetType.IsGenericType &&
@@ -108,7 +140,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
 
             bool canReturnSourceAsClone = IsRootTypeCloneablePrimitive(_TargetType) && isTargetTypeArray != true;
 
-            Func<T, T, CloneContext, T> dynamicStrategy = null;
+            Func<T, T, CloneContext, T> completionStrategy = null;
             Func<Array, Array, CloneContext, T> arrayCloneStrategy = null;
 
             return (s, d, c) =>
@@ -163,55 +195,71 @@ namespace iSynaptic.Commons.Runtime.Serialization
                 }
 
                 if(d == null && (isReferenceType || isNullableType))
-                    d = (T)FormatterServices.GetSafeUninitializedObject(_TargetType);
+                    d = (T)FormatterServices.GetSafeUninitializedObject(s.GetType());
 
-                if (dynamicStrategy == null)
-                    dynamicStrategy = BuildDynamicStrategy();
+                if (completionStrategy == null)
+                {
+                    if (isInterfaceType)
+                    {
+                        var interfaceCloneableType = typeof(InterfaceClonable<>).MakeGenericType(_TargetType, s.GetType());
+                        var interfaceCloneable = Activator.CreateInstance(interfaceCloneableType);
+
+                        completionStrategy = interfaceCloneable.GetFunc<T, T, CloneContext, T>("Strategy");
+                    }
+                    else
+                        completionStrategy = BuildDynamicStrategy();
+                }
 
                 if(isReferenceType)
                     c.CloneMap.Add(s, d);
 
-                return dynamicStrategy(s, d, c);
+                return completionStrategy(s, d, c);
             };
         }
 
         private static Func<T, T, CloneContext, T> BuildDynamicStrategy()
         {
-            string dynamicMethodName = string.Format("Cloneable<{0}>_CloneDynamicStrategy", _TargetType.Name);
-            DynamicMethod dynamicStrategyMethod = new DynamicMethod(dynamicMethodName,
-                                                          _TargetType,
-                                                          new []
-                                                          {
-                                                              _TargetType, _TargetType, typeof(CloneContext)
-                                                          },
-                                                          _TargetType, true);
-
-
-            ILGenerator gen = dynamicStrategyMethod.GetILGenerator();
-
-            gen.DeclareLocal(_TargetType);
-
-            gen.Emit(OpCodes.Ldarg_1);
-            gen.Emit(OpCodes.Stloc_0);
-
-            foreach (FieldInfo field in GetFields(_TargetType, _FieldIncludeFilter))
+            if (_DynamicStrategy == null)
             {
-                if (field.IsDefined(typeof(CloneReferenceOnlyAttribute), true) ||
-                    field.FieldType.IsDefined(typeof(CloneReferenceOnlyAttribute), true) ||
-                    IsTypeCloneablePrimative(field.FieldType))
+                string dynamicMethodName = string.Format("Cloneable<{0}>_CloneDynamicStrategy", _TargetType.Name);
+                DynamicMethod dynamicStrategyMethod = new DynamicMethod(dynamicMethodName,
+                                                                        _TargetType,
+                                                                        new[]
+                                                                            {
+                                                                                _TargetType, _TargetType,
+                                                                                typeof (CloneContext)
+                                                                            },
+                                                                        _TargetType, true);
+
+
+                ILGenerator gen = dynamicStrategyMethod.GetILGenerator();
+
+                gen.DeclareLocal(_TargetType);
+
+                gen.Emit(OpCodes.Ldarg_1);
+                gen.Emit(OpCodes.Stloc_0);
+
+                foreach (FieldInfo field in GetFields(_TargetType, _FieldIncludeFilter))
                 {
-                    EmitCopyField(gen, field);
+                    if (field.IsDefined(typeof (CloneReferenceOnlyAttribute), true) ||
+                        field.FieldType.IsDefined(typeof (CloneReferenceOnlyAttribute), true) ||
+                        IsTypeCloneablePrimative(field.FieldType))
+                    {
+                        EmitCopyField(gen, field);
+                    }
+                    else
+                    {
+                        EmitCloneFieldWithShallowCheck(gen, field);
+                    }
                 }
-                else
-                {
-                    EmitCloneFieldWithShallowCheck(gen, field);
-                }
+
+                gen.Emit(OpCodes.Ldloc_0);
+                gen.Emit(OpCodes.Ret);
+
+                _DynamicStrategy = dynamicStrategyMethod.ToFunc<T, T, CloneContext, T>();
             }
 
-            gen.Emit(OpCodes.Ldloc_0);
-            gen.Emit(OpCodes.Ret);
-
-            return dynamicStrategyMethod.ToFunc<T, T, CloneContext, T>();
+            return _DynamicStrategy;
         }
 
         #endregion
@@ -438,8 +486,8 @@ namespace iSynaptic.Commons.Runtime.Serialization
         {
             Type typeToCheck = GetRootType(type);
 
-            if (typeToCheck.IsInterface && typeToCheck.IsDefined(typeof(CloneReferenceOnlyAttribute), true) != true)
-                return false;
+            if (typeToCheck.IsInterface)
+                return true;
 
             if (IsNotCloneable(typeToCheck))
                 return false;
@@ -460,13 +508,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
                     continue;
 
                 if (fieldType.IsInterface)
-                {
-                    if (field.IsDefined(typeof(CloneReferenceOnlyAttribute), true) != true &&
-                        fieldType.IsDefined(typeof(CloneReferenceOnlyAttribute), true) != true)
-                         return false;
-                     else
                          continue;
-                }
 
                 if (isShallow != true)
                 {

@@ -20,7 +20,6 @@ namespace iSynaptic.Commons.Runtime.Serialization
             public CloneOnlyByReferenceClass Reference { get; set; }
         }
 
-        [CloneReferenceOnly]
         public interface ICloneByReferenceOnly
         {
         }
@@ -33,7 +32,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
 
         public class WithInterfaceReferenceClass
         {
-            public ICloneByReferenceOnly Reference;
+            public ICloneByReferenceOnly Reference { get; set; }
         }
 
         public class WithInterfaceClass : ICloneByReferenceOnly
@@ -1620,14 +1619,16 @@ namespace iSynaptic.Commons.Runtime.Serialization
         }
 
         [Test]
-        public void CloneClassWithClassReferenceViaInterfaceMarkedByCloneReferenceOnlyAttribute()
+        public void CloneClassWithClassReferenceViaInterface()
         {
             var wic = new WithInterfaceClass {Name = "John Doe"};
             var source = new WithInterfaceReferenceClass {Reference = wic};
 
             var clone = source.Clone();
 
-            Assert.IsTrue(ReferenceEquals(clone.Reference, wic));
+            Assert.IsFalse(ReferenceEquals(clone.Reference, wic));
+            Assert.IsAssignableFrom(typeof (WithInterfaceClass), clone.Reference);
+            Assert.AreEqual("John Doe", ((WithInterfaceClass)clone.Reference).Name);
         }
     }
 }
