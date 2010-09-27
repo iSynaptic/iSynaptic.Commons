@@ -6,7 +6,7 @@ namespace iSynaptic.Commons
 {
     public static class ActionExtensions
     {
-        #region Curry Methods
+        #region Curry
 
         public static Action Curry<T1>(this Action<T1> f, T1 arg1)
         {
@@ -60,7 +60,7 @@ namespace iSynaptic.Commons
 
         #endregion
 
-        #region MakeConditional Methods
+        #region MakeConditional
 
         public static Action<T> MakeConditional<T>(this Action<T> self, Predicate<T> condition)
         {
@@ -112,6 +112,8 @@ namespace iSynaptic.Commons
 
         #endregion
 
+        #region CatchExceptions
+
         public static Action<T> CatchExceptions<T>(this Action<T> self)
         {
             return CatchExceptions<T>(self, null);
@@ -135,5 +137,7 @@ namespace iSynaptic.Commons
                 }
             };
         }
+
+        #endregion
     }
 }

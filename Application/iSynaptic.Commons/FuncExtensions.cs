@@ -118,5 +118,24 @@ namespace iSynaptic.Commons
             };
         } 
         #endregion
+
+        #region Logic Composition Methods
+
+        public static Func<T, bool> And<T>(this Func<T, bool> self, Func<T, bool> right)
+        {
+            return input => self(input) && right(input);
+        }
+
+        public static Func<T, bool> Or<T>(this Func<T, bool> self, Func<T, bool> right)
+        {
+            return input => self(input) || right(input);
+        }
+
+        public static Func<T, bool> XOr<T>(this Func<T, bool> self, Func<T, bool> right)
+        {
+            return input => self(input) ^ right(input);
+        }
+
+        #endregion
     }
 }

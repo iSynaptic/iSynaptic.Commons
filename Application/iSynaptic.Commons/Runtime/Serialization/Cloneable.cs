@@ -77,7 +77,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
         private static Func<T, T, CloneContext, T> _Strategy = null;
         private static Func<T, T, CloneContext, T> _DynamicStrategy = null;
 
-        private static readonly Predicate<FieldInfo> _FieldIncludeFilter = f =>
+        private static readonly Func<FieldInfo, bool> _FieldIncludeFilter = f =>
             (f.IsDefined(typeof(NonSerializedAttribute), true) != true);
 
         static Cloneable()
@@ -241,7 +241,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
                 gen.Emit(OpCodes.Ldarg_1);
                 gen.Emit(OpCodes.Stloc_0);
 
-                foreach (FieldInfo field in GetFields(_TargetType, _FieldIncludeFilter))
+                foreach (FieldInfo field in _TargetType.GetFieldsDeeply(_FieldIncludeFilter))
                 {
                     if (field.IsDefined(typeof (CloneReferenceOnlyAttribute), true) ||
                         field.FieldType.IsDefined(typeof (CloneReferenceOnlyAttribute), true) ||
@@ -460,26 +460,6 @@ namespace iSynaptic.Commons.Runtime.Serialization
             );
         }
 
-        private static IEnumerable<FieldInfo> GetFields(Type type, Predicate<FieldInfo> includeFilter)
-        {
-            Type currentType = type;
-            while (currentType != null)
-            {
-                foreach (FieldInfo info in currentType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
-                {
-                    if (includeFilter != null && includeFilter(info) != true)
-                        continue;
-
-                    yield return info;
-                }
-
-                if (currentType.BaseType != null)
-                    currentType = currentType.BaseType;
-                else
-                    currentType = null;
-            }
-        }
-
         #endregion
 
         #region Can Methods
@@ -497,9 +477,9 @@ namespace iSynaptic.Commons.Runtime.Serialization
             if (IsRootTypeCloneablePrimitive(typeToCheck))
                 return true;
 
-            Predicate<FieldInfo> includeFilter = _FieldIncludeFilter.And(f => f.FieldType != typeToCheck);
+            Func<FieldInfo, bool> includeFilter = _FieldIncludeFilter.And(f => f.FieldType != typeToCheck);
 
-            foreach (FieldInfo field in GetFields(typeToCheck, includeFilter))
+            foreach (FieldInfo field in typeToCheck.GetFieldsDeeply(includeFilter))
             {
                 Type fieldType = GetRootType(field.FieldType);
 

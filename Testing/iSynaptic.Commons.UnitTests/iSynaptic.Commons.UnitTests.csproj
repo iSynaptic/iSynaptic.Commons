@@ -61,7 +61,7 @@
     <Compile Include="AOP\UnitOfWorkTests.cs" />
     <Compile Include="ArrayIndexTests.cs" />
     <Compile Include="Collections\Generic\ReadOnlyDictionaryTests.cs" />
-    <Compile Include="CompoundExceptionTests.cs" />
+    <Compile Include="AggregateExceptionTests.cs" />
     <Compile Include="DataEventArgsTests.cs" />
     <Compile Include="DependencyResolverTests.cs" />
     <Compile Include="Diagnostics\LoggerExtensionsTests.cs" />
@@ -101,6 +101,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EquatableTests.cs" />
     <Compile Include="Runtime\Serialization\Cloneable.CollectionTests.cs" />
     <Compile Include="Runtime\Serialization\Cloneable.TestClasses.cs" />
   </ItemGroup>

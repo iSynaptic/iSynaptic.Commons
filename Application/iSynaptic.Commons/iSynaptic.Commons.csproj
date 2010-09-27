@@ -54,7 +54,7 @@
     <Compile Include="AOP\UnitOfWork.cs" />
     <Compile Include="ArrayIndex.cs" />
     <Compile Include="Collections\Generic\ReadOnlyDictionary.cs" />
-    <Compile Include="CompoundException.cs" />
+    <Compile Include="AggregateException.cs" />
     <Compile Include="DataEventArgs.cs" />
     <Compile Include="DependencyResolver.cs" />
     <Compile Include="Diagnostics\ILogger.cs" />
@@ -63,6 +63,7 @@
     <Compile Include="Diagnostics\LogLevel.cs" />
     <Compile Include="ActionExtensions.cs" />
     <Compile Include="Collections\Generic\DictionaryExtensions.cs" />
+    <Compile Include="Equatable.cs" />
     <Compile Include="Reflection\Emit\DynamicMethodExtensions.cs" />
     <Compile Include="Collections\Generic\EnumerableExtensions.cs" />
     <Compile Include="EnumExtensions.cs" />

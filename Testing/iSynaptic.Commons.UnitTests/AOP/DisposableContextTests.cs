@@ -87,12 +87,12 @@ namespace iSynaptic.Commons.AOP
                     dc.Enlist(dispose.ToDisposable());
                 }
             }
-            catch (CompoundException ex)
+            catch (AggregateException ex)
             {
                 Assert.IsTrue(disposed);
-                Assert.AreEqual(1, ex.Exceptions.Count);
+                Assert.AreEqual(1, ex.Exceptions.Count());
 
-                Assert.IsAssignableFrom<InvalidOperationException>(ex.Exceptions[0]);
+                Assert.IsAssignableFrom<InvalidOperationException>(ex.Exceptions.ElementAt(0));
             }
         }
 

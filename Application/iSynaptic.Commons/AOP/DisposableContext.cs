@@ -48,7 +48,7 @@ namespace iSynaptic.Commons.AOP
                     Disposables.Clear();
 
                     if (exceptions.Count > 0)
-                        throw new CompoundException("Exception(s) occured during disposal.", exceptions);
+                        throw new AggregateException("Exception(s) occured during disposal.", exceptions);
                 }
             }
             finally
