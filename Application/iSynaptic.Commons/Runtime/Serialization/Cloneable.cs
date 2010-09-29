@@ -613,9 +613,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
                     lock (_SyncLock)
                     {
                         if (_Strategy == null)
-                        {
                             _Strategy = BuildStrategy();
-                        }
                     }
                 }
 
