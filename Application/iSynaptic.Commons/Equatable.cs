@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
 using System.Security.Permissions;
 using System.Text;
+using iSynaptic.Commons.Reflection;
+using iSynaptic.Commons.Reflection.Emit;
 
 namespace iSynaptic.Commons
 {
@@ -44,6 +48,9 @@ namespace iSynaptic.Commons
             if(ReferenceEquals(other, null))
                 return false;
 
+            if(source.GetType() != other.GetType())
+                return false;
+
             return IsEqualToStrategy(source, other);
         }
 
@@ -57,7 +64,20 @@ namespace iSynaptic.Commons
 
         private static Func<T, T, bool> BuildIsEqualToStrategy()
         {
-            return (x, y) => { throw new NotImplementedException(); };
+            string dynamicMethodName = string.Format("Equatable<{0}>_IsEqualToDynamicStrategy", _TargetType.Name);
+            DynamicMethod dynamicStrategyMethod = new DynamicMethod(dynamicMethodName,
+                                                                    _TargetType,
+                                                                    new[]
+                                                                            {
+                                                                                _TargetType,
+                                                                                _TargetType,
+                                                                            },
+                                                                    _TargetType, true);
+
+
+            ILGenerator gen = dynamicStrategyMethod.GetILGenerator();
+
+            return dynamicStrategyMethod.ToFunc<T, T, bool>();
         }
 
         private static Func<T, T, bool> IsEqualToStrategy

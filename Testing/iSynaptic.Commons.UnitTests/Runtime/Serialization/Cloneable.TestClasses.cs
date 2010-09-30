@@ -127,5 +127,20 @@ namespace iSynaptic.Commons.Runtime.Serialization
 
             public string Name { get; set; }
         }
+
+        private class BaseClass
+        {
+            public string BaseClassName { get; set; }
+        }
+
+        private class DerivedClass : BaseClass
+        {
+            public string DerivedClassName { get; set; }
+        }
+
+        private class ClassWithReferenceToBaseClass
+        {
+            public BaseClass Reference { get; set; }
+        }
 	}
 }

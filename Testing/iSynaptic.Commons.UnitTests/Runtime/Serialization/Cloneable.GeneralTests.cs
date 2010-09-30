@@ -517,5 +517,23 @@ namespace iSynaptic.Commons.Runtime.Serialization
             Assert.AreEqual(clone.Collection.GetType(), typeof(List<string>));
             Assert.IsTrue(clone.Collection.SequenceEqual(new[] { "Hello", "World!" }));
         }
+
+        [Test]
+        public void CloneDerivedClassThroughBaseClassReference()
+        {
+            var source = new ClassWithReferenceToBaseClass {Reference = new BaseClass {BaseClassName = "Foo"}};
+            var clone = source.Clone();
+
+            Assert.AreEqual("Foo", clone.Reference.BaseClassName);
+
+            source.Reference = new DerivedClass {BaseClassName = "Bar", DerivedClassName = "Baz"};
+
+            clone = source.Clone();
+            var derivedClone = clone.Reference as DerivedClass;
+
+            Assert.IsNotNull(derivedClone);
+            Assert.AreEqual("Bar", derivedClone.BaseClassName);
+            Assert.AreEqual("Baz", derivedClone.DerivedClassName);
+        }
     }
 }
