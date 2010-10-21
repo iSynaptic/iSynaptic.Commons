@@ -53,7 +53,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
 
     public static class Cloneable<T>
     {
-        private static Type[] _CloneablePrimitives =
+        private static readonly Type[] _CloneablePrimitives =
         {
             typeof(string),
             typeof(decimal),
