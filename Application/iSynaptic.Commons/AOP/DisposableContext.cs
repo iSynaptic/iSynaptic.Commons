@@ -57,6 +57,11 @@ namespace iSynaptic.Commons.AOP
             }
         }
 
+        public static DisposableContext Current
+        {
+            get { return GetCurrentScope(); }
+        }
+
         protected List<IDisposable> Disposables
         {
             get { return _Disposables ?? (_Disposables = new List<IDisposable>()); }

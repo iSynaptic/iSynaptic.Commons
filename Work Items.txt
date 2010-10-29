@@ -3,6 +3,9 @@
 - Ensure thread safety in Cloneable<T>/Equatable<T>...
 - Move to .NET 4.0
 -- Replace thread safety in Cloneable<T>/Equatable<T> with Lazy<T>
+-- Remove SpinLock class
+-- Add support for new Func/Action types that take more arguments
+-- Scan all types for co/contra-variant posibilities
 - Refactor SimpleScanner to a class that inherits from abstract TextScanner<T>, where T is the Token type
 	* Use character map tool to identify common character tokens
 - Create generic Visitor implementation (similar to one used in RegularExpressionPipeline)...
@@ -17,3 +20,11 @@
 - Fix CodeCoverage reporting...
 - Implement support for attaching unit test behaviors to interfaces (test fixtures that implement the interface inherit behavior)
     * Possible submit support back to NUnit project
+- Add support for Dependant Scopes (e.g. System.Transactions.Transaction.DependantClone(...))
+- Change LookAheadValue from class to struct
+- Create JSON LoggerContextSerializer
+- Add ObjectDumper to Serialization namespace + create ObjectDumper LoggerContextSerializer
+- Collapse all Func/Action Curry extension methods into a methods that takes in a delegate that dispatches to underlying delegate
+- Evaluate changing Action's CatchExceptions extension method from Action<T> to Action
+- Scan types for Command-Query Seperation opportunities
+- Enhance GetDelegate extension method to work with generic methods
