@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 
 namespace iSynaptic.Commons.Threading
 {
-    public struct SpinLock
+    internal struct SpinLock
     {
         [DllImport("kernel32", ExactSpelling = true)]
         private static extern void SwitchToThread();
