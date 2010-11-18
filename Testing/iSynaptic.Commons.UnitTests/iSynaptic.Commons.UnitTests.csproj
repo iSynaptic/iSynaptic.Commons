@@ -85,6 +85,7 @@
     <Compile Include="ActionExtensionsTests.cs" />
     <Compile Include="Collections\Generic\CollectionExtensionsTests.cs" />
     <Compile Include="Collections\Generic\DictionaryExtensionsTests.cs" />
+    <Compile Include="MaybeTests.cs" />
     <Compile Include="Reflection\Emit\DynamicMethodExtensionsTests.cs" />
     <Compile Include="Collections\Generic\EnumerableExtensionsTests.cs" />
     <Compile Include="EnumExtensionsTests.cs" />
