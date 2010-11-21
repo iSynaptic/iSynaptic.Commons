@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using iSynaptic.Commons.Reflection;
 using NUnit.Core;
 using NUnit.Core.Extensibility;
 
@@ -21,10 +20,10 @@ namespace iSynaptic.Commons.Testing.NUnit.Addins
             {
                 Type declaringType = Method.DeclaringType;
 
-                var testBehaviors = Method.GetAttributesOfType<ITestBehavior>()
+                var testBehaviors = GetAttributesOfType<ITestBehavior>(Method)
                     .ToArray();
 
-                var fixtureLevelTestBehaviors = declaringType.GetAttributesOfType<ITestBehavior>()
+                var fixtureLevelTestBehaviors = GetAttributesOfType<ITestBehavior>(declaringType)
                     .Where(x => testBehaviors.Any(y => y.ShouldOverrideFixtureLevelTestBehavior(x)) != true);
 
                 var behaviors = fixtureLevelTestBehaviors
@@ -40,6 +39,16 @@ namespace iSynaptic.Commons.Testing.NUnit.Addins
                     behavior.AfterTest(Fixture ?? Parent.Fixture);
 
                 return results;
+            }
+
+            private IEnumerable<T> GetAttributesOfType<T>(ICustomAttributeProvider provider)
+            {
+                if (provider == null)
+                    throw new ArgumentNullException("provider");
+
+                return provider.GetCustomAttributes(true)
+                    .Where(x => typeof(T).IsAssignableFrom(x.GetType()))
+                    .Cast<T>();
             }
         }
 

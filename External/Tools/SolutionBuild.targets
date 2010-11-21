@@ -108,8 +108,8 @@
       ShowExcluded="true"
       SatisfactoryCoverage="$(SatisfactoryCodeCoverage)"
       MinimumCoverage="$(SatisfactoryCodeCoverage)"
-      FailMinimum="false"
-      FailCombinedMinimum="false"
+      FailMinimum="true"
+      FailCombinedMinimum="true"
       CoverageFiles="$(RootBuildPath)\$(Configuration)\CodeCoverage.xml"
       Exclusions="@(ExcludeCoverageReporting -> '&lt;CoverageExclusion&gt;&lt;ExclusionType&gt;%(Identity)&lt;/ExclusionType&gt;&lt;Pattern&gt;%(FilterExpression)&lt;/Pattern&gt;&lt;IsRegex&gt;true&lt;/IsRegex&gt;&lt;/CoverageExclusion&gt;', '')" />
   </Target>
