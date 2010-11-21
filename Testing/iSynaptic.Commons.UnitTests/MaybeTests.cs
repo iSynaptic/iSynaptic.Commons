@@ -33,5 +33,25 @@ namespace iSynaptic.Commons
             Assert.IsNull(new Maybe<string>(null).Value);
             Assert.AreEqual("Hello, World!", new Maybe<string>("Hello, World!").Value);
         }
+
+        [Test]
+        public void DefaultValueHasNoValue()
+        {
+            Maybe<int> val = default(Maybe<int>);
+            Assert.IsFalse(val.HasValue);
+        }
+
+        [Test]
+        public void DefaultValueEqualsNoValue()
+        {
+            Maybe<int> val = default(Maybe<int>);
+            Assert.IsTrue(val == Maybe<int>.NoValue);
+        }
+
+        [Test]
+        public void NullValueDoesNotEqualNoValue()
+        {
+            Assert.IsTrue(new Maybe<string>(null) != Maybe<string>.NoValue);
+        }
     }
 }
