@@ -297,17 +297,25 @@ namespace iSynaptic.Commons
         [Test]
         public void CatchExceptionsWithNullAction()
         {
-            Action<int> action = null;
+            Action<int> actionT1 = null;
+            Assert.Throws<ArgumentNullException>(() => actionT1.CatchExceptions());
+
+            Action action = null;
             Assert.Throws<ArgumentNullException>(() => action.CatchExceptions());
         }
 
         [Test]
         public void CatchExceptions()
         {
-            Action<int> action = (i) => { throw new ArgumentOutOfRangeException(); };
+            Action<int> actionT1 = (i) => { throw new InvalidOperationException(); };
+            actionT1 = actionT1.CatchExceptions();
+
+            actionT1(1);
+
+            Action action = () => { throw new InvalidOperationException(); };
             action = action.CatchExceptions();
 
-            action(1);
+            action();
         }
 
         [Test]
@@ -315,13 +323,23 @@ namespace iSynaptic.Commons
         {
             List<Exception> exceptions = new List<Exception>();
 
-            Action<int> action = (i) => { throw new ArgumentOutOfRangeException(); };
-            action = action.CatchExceptions(exceptions);
+            Action<int> actionT1 = (i) => { throw new InvalidOperationException(); };
+            actionT1 = actionT1.CatchExceptions(exceptions);
 
-            action(1);
+            actionT1(1);
             
             Assert.AreEqual(1, exceptions.Count);
-            Assert.IsTrue(exceptions[0].GetType() == typeof(ArgumentOutOfRangeException));
+            Assert.IsTrue(exceptions[0].GetType() == typeof(InvalidOperationException));
+
+            exceptions.Clear();
+
+            Action action = () => { throw new InvalidOperationException(); };
+            action = action.CatchExceptions(exceptions);
+
+            action();
+
+            Assert.AreEqual(1, exceptions.Count);
+            Assert.IsTrue(exceptions[0].GetType() == typeof(InvalidOperationException));
         }
     }
 }

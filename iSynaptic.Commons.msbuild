@@ -15,7 +15,7 @@
 
   <ItemGroup>
     <!--ExcludeCoverageReporting Include="Assembly|Namespace|Class">
-			<FilterExpression>{Regular Expression}</FilterExpression>
-		</ExcludeCoverageReporting-->
+            <FilterExpression>{Regular Expression}</FilterExpression>
+        </ExcludeCoverageReporting-->
   </ItemGroup>
 </Project>

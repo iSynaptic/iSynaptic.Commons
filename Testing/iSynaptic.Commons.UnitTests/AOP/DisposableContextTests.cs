@@ -96,5 +96,25 @@ namespace iSynaptic.Commons.AOP
             }
         }
 
+        [Test]
+        public void Current_WithoutNested_ReturnsCorrectInstance()
+        {
+            using(DisposableContext dc = new DisposableContext())
+            {
+                Assert.IsTrue(ReferenceEquals(dc, DisposableContext.Current));
+            }
+        }
+
+        [Test]
+        public void Current_WithNested_ReturnsCorrectInstance()
+        {
+            using (DisposableContext dc = new DisposableContext())
+            {
+                using(DisposableContext dc2 = new DisposableContext())
+                    Assert.IsTrue(ReferenceEquals(dc2, DisposableContext.Current));
+
+                Assert.IsTrue(ReferenceEquals(dc, DisposableContext.Current));
+            }
+        }
     }
 }

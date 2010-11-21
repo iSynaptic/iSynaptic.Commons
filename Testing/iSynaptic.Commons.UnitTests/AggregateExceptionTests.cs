@@ -20,5 +20,17 @@ namespace iSynaptic.Commons
             Assert.AreEqual("Simple Message", ex.Message);
             Assert.AreEqual(1, ex.Exceptions.Count());
         }
+
+        [Test]
+        public void Constructor_WithNullExceptions_ThrowsArgumentNullException()
+        {
+            Assert.Throws<ArgumentNullException>(() => new AggregateException("Message", null));
+        }
+
+        [Test]
+        public void Constructor_WithEmptyExceptions_ThrowsArgumentException()
+        {
+            Assert.Throws<ArgumentException>(() => new AggregateException("Message", new Exception[] { }));
+        }
     }
 }

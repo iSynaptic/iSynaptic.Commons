@@ -102,6 +102,12 @@ namespace iSynaptic.Commons
         {
             int val = 0;
 
+            Func<int> funcZero = () => { val = 7; return 7; };
+            var actionZero = funcZero.ToAction();
+
+            actionZero();
+            Assert.AreEqual(7, val);
+
             Func<int, int> funcOne = x => { val = x; return val; };
             var actionOne = funcOne.ToAction();
 
@@ -125,6 +131,75 @@ namespace iSynaptic.Commons
 
             actionFour(1, 2, 3, 4);
             Assert.AreEqual(10, val);
+        }
+
+        [Test]
+        public void And_WithNullFuncs_ThrowsArgumentNullException()
+        {
+            Func<int, bool> nullFunc = null;
+            Func<int, bool> notNullFunc = x => true;
+
+            Assert.Throws<ArgumentNullException>(() => nullFunc.And(notNullFunc));
+            Assert.Throws<ArgumentNullException>(() => notNullFunc.And(nullFunc));
+        }
+
+        [Test]
+        public void And_WithValidFuncs_ComposesCorrectly()
+        {
+            Func<int, bool> isEven = x => x%2 == 0;
+            Func<int, bool> isGreaterThanEight = x => x > 8;
+
+            var andFunc = isEven.And(isGreaterThanEight);
+
+            Assert.IsTrue(andFunc(10));
+            Assert.IsFalse(andFunc(8));
+            Assert.IsFalse(andFunc(11));
+        }
+
+        [Test]
+        public void Or_WithNullFuncs_ThrowsArgumentNullException()
+        {
+            Func<int, bool> nullFunc = null;
+            Func<int, bool> notNullFunc = x => true;
+
+            Assert.Throws<ArgumentNullException>(() => nullFunc.Or(notNullFunc));
+            Assert.Throws<ArgumentNullException>(() => notNullFunc.Or(nullFunc));
+        }
+
+        [Test]
+        public void Or_WithValidFuncs_ComposesCorrectly()
+        {
+            Func<int, bool> isEven = x => x % 2 == 0;
+            Func<int, bool> isGreaterThanEight = x => x > 8;
+
+            var andFunc = isEven.Or(isGreaterThanEight);
+
+            Assert.IsTrue(andFunc(10));
+            Assert.IsTrue(andFunc(8));
+            Assert.IsTrue(andFunc(11));
+        }
+
+        [Test]
+        public void XOr_WithNullFuncs_ThrowsArgumentNullException()
+        {
+            Func<int, bool> nullFunc = null;
+            Func<int, bool> notNullFunc = x => true;
+
+            Assert.Throws<ArgumentNullException>(() => nullFunc.XOr(notNullFunc));
+            Assert.Throws<ArgumentNullException>(() => notNullFunc.XOr(nullFunc));
+        }
+
+        [Test]
+        public void XOr_WithValidFuncs_ComposesCorrectly()
+        {
+            Func<int, bool> isEven = x => x % 2 == 0;
+            Func<int, bool> isGreaterThanEight = x => x > 8;
+
+            var andFunc = isEven.XOr(isGreaterThanEight);
+
+            Assert.IsFalse(andFunc(10));
+            Assert.IsTrue(andFunc(8));
+            Assert.IsTrue(andFunc(11));
         }
     }
 }

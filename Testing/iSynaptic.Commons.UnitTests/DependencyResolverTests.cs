@@ -31,7 +31,8 @@ namespace iSynaptic.Commons
                                                     return null;
                                                 };
 
-            strategy("Foo", typeof (IDisposable), typeof (string));
+            var resolver = new DependencyResolver(strategy);
+            resolver.Resolve("Foo", typeof (IDisposable), typeof (string));
 
             Assert.AreEqual("Foo", key);
             Assert.AreEqual(typeof(IDisposable), dependencyType);
@@ -44,7 +45,8 @@ namespace iSynaptic.Commons
         {
             Func<string, Type, Type, object> strategy = (k, d, r) => "Baz";
 
-            var result = strategy("Foo", typeof(IDisposable), typeof(string));
+            var resolver = new DependencyResolver(strategy);
+            var result = resolver.Resolve("Foo", typeof(IDisposable), typeof(string));
 
             Assert.AreEqual("Baz", result);
         }

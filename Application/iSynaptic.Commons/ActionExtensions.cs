@@ -116,7 +116,10 @@ namespace iSynaptic.Commons
 
         public static Action<T> CatchExceptions<T>(this Action<T> self)
         {
-            return CatchExceptions<T>(self, null);
+            if (self == null)
+                throw new ArgumentNullException("self");
+
+            return x => self.Curry(x).CatchExceptions()();
         }
 
         public static Action<T> CatchExceptions<T>(this Action<T> self, ICollection<Exception> exceptions)
@@ -124,11 +127,24 @@ namespace iSynaptic.Commons
             if (self == null)
                 throw new ArgumentNullException("self");
 
-            return item =>
+            return x => self.Curry(x).CatchExceptions(exceptions)();
+        }
+
+        public static Action CatchExceptions(this Action self)
+        {
+            return CatchExceptions(self, null);
+        }
+
+        public static Action CatchExceptions(this Action self, ICollection<Exception> exceptions)
+        {
+            if (self == null)
+                throw new ArgumentNullException("self");
+
+            return () =>
             {
                 try
                 {
-                    self(item);
+                    self();
                 }
                 catch (Exception ex)
                 {

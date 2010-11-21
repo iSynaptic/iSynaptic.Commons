@@ -123,16 +123,34 @@ namespace iSynaptic.Commons
 
         public static Func<T, bool> And<T>(this Func<T, bool> self, Func<T, bool> right)
         {
+            if(self == null)
+                throw new ArgumentNullException("self");
+
+            if(right == null)
+                throw new ArgumentNullException("right");
+
             return input => self(input) && right(input);
         }
 
         public static Func<T, bool> Or<T>(this Func<T, bool> self, Func<T, bool> right)
         {
+            if (self == null)
+                throw new ArgumentNullException("self");
+
+            if (right == null)
+                throw new ArgumentNullException("right");
+            
             return input => self(input) || right(input);
         }
 
         public static Func<T, bool> XOr<T>(this Func<T, bool> self, Func<T, bool> right)
         {
+            if (self == null)
+                throw new ArgumentNullException("self");
+
+            if (right == null)
+                throw new ArgumentNullException("right");
+            
             return input => self(input) ^ right(input);
         }
 

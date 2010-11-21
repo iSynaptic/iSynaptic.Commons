@@ -124,6 +124,7 @@ namespace iSynaptic.Commons.AOP
             }
         }
 
+        [Test]
         public void Complete_WhenAlreadyDisposed_ThrowsObjectDisposedException()
         {
             UnitOfWorkStub uow = new UnitOfWorkStub();

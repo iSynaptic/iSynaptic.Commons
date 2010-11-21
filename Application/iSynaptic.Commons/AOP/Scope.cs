@@ -43,7 +43,7 @@ namespace iSynaptic.Commons.AOP
             throw new ApplicationException("Nested scopes are not allowed.");
         }
 
-        public static T GetCurrentScope()
+        protected static T GetCurrentScope()
         {
             if (_CurrentAppDomainScope != null)
                 return _CurrentAppDomainScope;
