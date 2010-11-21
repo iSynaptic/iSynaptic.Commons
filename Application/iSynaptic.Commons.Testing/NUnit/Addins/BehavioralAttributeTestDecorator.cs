@@ -17,7 +17,7 @@ namespace iSynaptic.Commons.Testing.NUnit.Addins
             {
             }
 
-            public override void doRun(TestResult testResult)
+            public override TestResult Run(EventListener listener, ITestFilter filter)
             {
                 Type declaringType = Method.DeclaringType;
 
@@ -29,15 +29,17 @@ namespace iSynaptic.Commons.Testing.NUnit.Addins
 
                 var behaviors = fixtureLevelTestBehaviors
                     .Union(testBehaviors)
-                    .ToArray();                                
+                    .ToArray();
 
                 foreach (var behavior in behaviors)
-                    behavior.BeforeTest(Fixture);
+                    behavior.BeforeTest(Fixture ?? Parent.Fixture);
 
-                base.doRun(testResult);
+                var results = base.Run(listener, filter);
 
                 foreach (var behavior in behaviors.Reverse())
-                    behavior.AfterTest(Fixture);
+                    behavior.AfterTest(Fixture ?? Parent.Fixture);
+
+                return results;
             }
         }
 

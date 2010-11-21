@@ -1,1 +1,1 @@
-%SYSTEMROOT%\Microsoft.NET\Framework\v3.5\msbuild.exe iSynaptic.Commons.msbuild %*
+%SYSTEMROOT%\Microsoft.NET\Framework\v4.0.30319\msbuild.exe iSynaptic.Commons.msbuild %*
