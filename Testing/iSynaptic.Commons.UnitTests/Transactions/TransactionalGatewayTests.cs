@@ -17,6 +17,24 @@ namespace iSynaptic.Commons.Transactions
         }
 
         [Test]
+        public void CannotSetValueToNull_OutsideTransaction()
+        {
+            var value = new TransactionalGateway<SimpleObject>(new SimpleObject());
+            Assert.Throws<ArgumentNullException>(() => value.Value = null);
+        }
+
+        [Test]
+        public void CannotSetValueToNull_WithinTransaction()
+        {
+            var value = new TransactionalGateway<SimpleObject>(new SimpleObject());
+
+            using (var ts = new TransactionScope())
+            {
+                Assert.Throws<ArgumentNullException>(() => value.Value = null);
+            }
+        }
+
+        [Test]
         public void ChangesAreFlushedIntoOriginalObjectOnTransactionCompletion()
         {
             var so = new SimpleObject();

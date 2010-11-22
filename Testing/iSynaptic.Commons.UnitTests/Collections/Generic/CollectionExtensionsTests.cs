@@ -33,5 +33,14 @@ namespace iSynaptic.Commons.Collections.Generic
             col.Remove(new int[] { });
             Assert.IsTrue(col.SequenceEqual(new int[] { 1, 2, 3 }));
         }
+
+        [Test]
+        public void RemoveItems()
+        {
+            var col = new List<int> { 1, 2, 3, 4, 5 };
+
+            col.Remove(new int[] { 2, 4 });
+            Assert.IsTrue(col.SequenceEqual(new int[] { 1, 3, 5 }));
+        }
     }
 }

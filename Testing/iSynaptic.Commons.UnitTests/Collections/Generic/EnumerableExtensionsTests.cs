@@ -53,6 +53,23 @@ namespace iSynaptic.Commons.Collections.Generic
         }
 
         [Test]
+        public void LookAheadEnumeratorPassesOnReset()
+        {
+            var enumerable = MockRepository.GenerateStub<IEnumerable<int>>();
+            var enumerator = MockRepository.GenerateMock<IEnumerator<int>>();
+
+            enumerable.Stub(x => x.GetEnumerator()).Return(enumerator);
+            enumerator.Expect(x => x.Reset());
+
+            var la = enumerable.AsLookAheadable();
+            var lar = la.GetEnumerator();
+
+            lar.Reset();
+
+            enumerator.VerifyAllExpectations();
+        }
+
+        [Test]
         public void LookAheadEnumerableViaNonGenericGetEnumerator()
         {
             int[] items = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -137,26 +154,26 @@ namespace iSynaptic.Commons.Collections.Generic
         }
 
         [Test]
-        public void MakeConditional()
+        public void Zip_WithNullIterables_ThrowsArgumentNullException()
         {
-            Func<int, int> func = null;
+            IEnumerable<int> first = null;
+            IEnumerable<int> other = Enumerable.Range(1, 10);
 
-            Assert.Throws<ArgumentNullException>(() => { func.MakeConditional(x => x < 3); });
+            Assert.Throws<ArgumentNullException>(() => first.Zip(other));
+            Assert.Throws<ArgumentNullException>(() => other.Zip(null));
+        }
 
-            func = x => x;
-            Assert.Throws<ArgumentNullException>(() => { func.MakeConditional(null); });
+        [Test]
+        public void Zip()
+        {
+            var rangeOne = Enumerable.Range(1, 10);
+            var rangeTwo = Enumerable.Range(10, 10);
 
-            var simpleConditionalFunc = func.MakeConditional(x => x > 5);
-            Assert.AreEqual(0, simpleConditionalFunc(1));
-            Assert.AreEqual(6, simpleConditionalFunc(6));
+            var zipped = rangeOne.Zip(rangeTwo);
 
-            var withDefaultValueFunc = func.MakeConditional(x => x > 5, -1);
-            Assert.AreEqual(-1, withDefaultValueFunc(1));
-            Assert.AreEqual(6, withDefaultValueFunc(6));
+            var expected = new[] {1, 10, 2, 11, 3, 12, 4, 13, 5, 14, 6, 15, 7, 16, 8, 17, 9, 18, 10, 19};
 
-            var withFalseFunc = func.MakeConditional(x => x > 5, x => x * 2);
-            Assert.AreEqual(2, withFalseFunc(1));
-            Assert.AreEqual(6, withFalseFunc(6));
+            Assert.IsTrue(zipped.SelectMany(x => x).SequenceEqual(expected));
         }
 
         private IEnumerable<int> Multiply(int multiplier, IEnumerable<int> source)

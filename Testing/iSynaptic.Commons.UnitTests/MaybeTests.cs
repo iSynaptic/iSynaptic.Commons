@@ -53,5 +53,47 @@ namespace iSynaptic.Commons
         {
             Assert.IsTrue(new Maybe<string>(null) != Maybe<string>.NoValue);
         }
+
+        [Test]
+        public void TwoMaybesWithSameValueAreEqual()
+        {
+            var left = new Maybe<int>(7);
+            var right = new Maybe<int>(7);
+
+            Assert.IsTrue(left == right);
+        }
+
+        [Test]
+        public void EqualsUsesNonGenericEqualsOfUnderlyingValueIfGenericIsNotAvailable()
+        {
+            var left = new Maybe<DayOfWeek>(DayOfWeek.Friday);
+            var right = new Maybe<DayOfWeek>(DayOfWeek.Friday);
+
+            Assert.IsTrue(left == right);
+        }
+
+        [Test]
+        public void BoxedMaybeEqualsBehavesCorrectly()
+        {
+            object left = new Maybe<int>(7);
+            object right = new Maybe<int>(7);
+
+            Assert.IsTrue(left.Equals(right));
+            Assert.IsFalse(left.Equals(null));
+            Assert.IsFalse(left.Equals(7));
+        }
+        
+        [Test]
+        public void GetHashCodeReturnsZeroForNoValue()
+        {
+            Assert.AreEqual(0, Maybe<int>.NoValue.GetHashCode());
+        }
+
+        [Test]
+        public void GetHashCodeReturnsUnderlyingHashCodeWhenHasValue()
+        {
+            int val = 42;
+            Assert.AreEqual(val.GetHashCode(), new Maybe<int>(val).GetHashCode());
+        }
     }
 }

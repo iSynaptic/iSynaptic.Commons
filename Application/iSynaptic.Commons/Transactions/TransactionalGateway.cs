@@ -9,10 +9,8 @@ namespace iSynaptic.Commons.Transactions
 {
     public class TransactionalGateway<T> : TransactionalBase<T> where T : class
     {
-        public TransactionalGateway(T underlying) : base(underlying)
+        public TransactionalGateway(T value) : base(value)
         {
-            if (underlying == null)
-                throw new ArgumentNullException("underlying");
         }
 
         protected override void SetCurrentValue(T value)
@@ -32,7 +30,7 @@ namespace iSynaptic.Commons.Transactions
 
         protected override void SetTransactionValue(T value)
         {
-            if (value == null)
+            if(value == null)
                 throw new ArgumentNullException("value");
 
             var currentValue = GetTransactionValue();

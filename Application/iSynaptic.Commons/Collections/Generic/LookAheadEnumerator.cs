@@ -28,30 +28,20 @@ namespace iSynaptic.Commons.Collections.Generic
             if (_Disposed)
                 throw new ObjectDisposedException("IEnumerator<T>");
 
-            try
+            if (LookAheadList.Count <= 0)
             {
-                if (LookAheadList.Count <= 0)
-                {
-                    bool results = _InnerEnumerator.MoveNext();
+                bool results = _InnerEnumerator.MoveNext();
 
-                    _Current = _InnerEnumerator.Current;
-                    return results;
-                }
-                else
-                {
-                    _Current = LookAheadList[0];
-                    LookAheadList.RemoveAt(0);
+                _Current = _InnerEnumerator.Current;
+                return results;
+            }
 
-                    return true;
-                }
-            }
-            catch
-            {
-                Dispose();
-                throw;
-            }
+            _Current = LookAheadList[0];
+            LookAheadList.RemoveAt(0);
+
+            return true;
         }
-        
+
         public void Reset()
         {
             if (_Disposed)

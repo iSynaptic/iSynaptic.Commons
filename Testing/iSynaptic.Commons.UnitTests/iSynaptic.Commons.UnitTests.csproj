@@ -93,6 +93,7 @@
     <Compile Include="PredicateExtensionsTests.cs" />
     <Compile Include="IocTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Reflection\ReflectionExtensionsTests.cs" />
     <Compile Include="Runtime\Serialization\Cloneable.ClrPrimitiveTests.cs" />
     <Compile Include="Runtime\Serialization\Cloneable.GeneralTests.cs" />
     <Compile Include="SpecificationTests.cs" />

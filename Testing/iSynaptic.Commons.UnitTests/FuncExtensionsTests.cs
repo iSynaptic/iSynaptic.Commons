@@ -8,6 +8,29 @@ namespace iSynaptic.Commons
     public class FuncExtensionsTests : NUnitBaseTestFixture
     {
         [Test]
+        public void MakeConditional()
+        {
+            Func<int, int> func = null;
+
+            Assert.Throws<ArgumentNullException>(() => { func.MakeConditional(x => x < 3); });
+
+            func = x => x;
+            Assert.Throws<ArgumentNullException>(() => { func.MakeConditional(null); });
+
+            var simpleConditionalFunc = func.MakeConditional(x => x > 5);
+            Assert.AreEqual(0, simpleConditionalFunc(1));
+            Assert.AreEqual(6, simpleConditionalFunc(6));
+
+            var withDefaultValueFunc = func.MakeConditional(x => x > 5, -1);
+            Assert.AreEqual(-1, withDefaultValueFunc(1));
+            Assert.AreEqual(6, withDefaultValueFunc(6));
+
+            var withFalseFunc = func.MakeConditional(x => x > 5, x => x * 2);
+            Assert.AreEqual(2, withFalseFunc(1));
+            Assert.AreEqual(6, withFalseFunc(6));
+        }
+
+        [Test]
         public void CurryOneOfOneArgument()
         {
             Func<int, int> func = i => i;

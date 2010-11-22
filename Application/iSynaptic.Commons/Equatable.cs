@@ -62,37 +62,37 @@ namespace iSynaptic.Commons
             throw new NotImplementedException();
         }
 
-        private static Func<T, T, bool> BuildIsEqualToStrategy()
-        {
-            string dynamicMethodName = string.Format("Equatable<{0}>_IsEqualToDynamicStrategy", _TargetType.Name);
-            DynamicMethod dynamicStrategyMethod = new DynamicMethod(dynamicMethodName,
-                                                                    _TargetType,
-                                                                    new[]
-                                                                            {
-                                                                                _TargetType,
-                                                                                _TargetType,
-                                                                            },
-                                                                    _TargetType, true);
+        //private static Func<T, T, bool> BuildIsEqualToStrategy()
+        //{
+        //    string dynamicMethodName = string.Format("Equatable<{0}>_IsEqualToDynamicStrategy", _TargetType.Name);
+        //    DynamicMethod dynamicStrategyMethod = new DynamicMethod(dynamicMethodName,
+        //                                                            _TargetType,
+        //                                                            new[]
+        //                                                                    {
+        //                                                                        _TargetType,
+        //                                                                        _TargetType,
+        //                                                                    },
+        //                                                            _TargetType, true);
 
 
-            ILGenerator gen = dynamicStrategyMethod.GetILGenerator();
+        //    ILGenerator gen = dynamicStrategyMethod.GetILGenerator();
 
-            return dynamicStrategyMethod.ToFunc<T, T, bool>();
-        }
+        //    return dynamicStrategyMethod.ToFunc<T, T, bool>();
+        //}
 
         private static Func<T, T, bool> IsEqualToStrategy
         {
             [ReflectionPermission(SecurityAction.Demand, ReflectionEmit = true)]
             get
             {
-                if (_IsEqualToStrategy == null)
-                {
-                    lock (_SyncLock)
-                    {
-                        if (_IsEqualToStrategy == null)
-                            _IsEqualToStrategy = BuildIsEqualToStrategy();
-                    }
-                }
+                //if (_IsEqualToStrategy == null)
+                //{
+                //    lock (_SyncLock)
+                //    {
+                //        if (_IsEqualToStrategy == null)
+                //            _IsEqualToStrategy = BuildIsEqualToStrategy();
+                //    }
+                //}
 
                 return _IsEqualToStrategy;
             }

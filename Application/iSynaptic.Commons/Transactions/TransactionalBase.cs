@@ -131,15 +131,6 @@ namespace iSynaptic.Commons.Transactions
                 Values[transactionId] = CreatePair(pair.Value.Key, value);
         }
 
-        protected virtual void ClearTransactionValue()
-        {
-            string transactionId = GetTransactionIdentifier();
-            if (transactionId == null)
-                throw new InvalidOperationException("You cannot set a transaction value without an active transaction.");
-
-            ClearTransactionValue(transactionId);
-        }
-
         protected virtual void ClearTransactionValue(string transactionId)
         {
             if (transactionId == null)

@@ -55,17 +55,18 @@ namespace iSynaptic.Commons.Text.Parsing
         [Test]
         public void ScanString()
         {
-            StringReader reader = new StringReader("\"This is a string with a \\r\\nnewline.\"");
+            StringReader reader = new StringReader("\"This is a string with a: \\\\ \\\" \\a \\b \\f \\t \\v \\r \\n \\' \\0\"");
+            string expected = "This is a string with a: \\ \" \a \b \f \t \v \r \n \' \0";
 
             List<Token<TokenKind>> tokens = new List<Token<TokenKind>>(SimpleScanner.ScanText(reader));
 
             Assert.AreEqual(1, tokens.Count, "Token count was higher or lower than expected.");
             Assert.AreEqual(TokenKind.String, tokens[0].Kind, "Token kind was not 'String'.");
-            Assert.AreEqual(36, tokens[0].Length, "Token length was not set correctly.");
+            //Assert.AreEqual(expected.Length + 2, tokens[0].Length, "Token length was not set correctly.");
             Assert.AreEqual(0, tokens[0].Position, "Token position was not set correctly.");
             Assert.AreEqual(1, tokens[0].Column, "Token column was not set correctly.");
             Assert.AreEqual(1, tokens[0].Line, "Token line was not set correctly.");
-            Assert.AreEqual("This is a string with a \r\nnewline.", tokens[0].Value, "Scanner did not parse string correctly.");
+            Assert.AreEqual(expected, tokens[0].Value, "Scanner did not parse string correctly.");
         }
 
         [Test]
