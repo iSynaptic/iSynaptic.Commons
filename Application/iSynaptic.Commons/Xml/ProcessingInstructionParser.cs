@@ -1,12 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.IO;
-using System.Text;
 using System.Xml;
 
 using iSynaptic.Commons.Text.Parsing;
-using iSynaptic.Commons.Xml;
 
 namespace iSynaptic.Commons.Xml
 {

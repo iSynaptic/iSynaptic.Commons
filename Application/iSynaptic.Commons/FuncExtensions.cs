@@ -91,7 +91,7 @@ namespace iSynaptic.Commons
 
         public static Func<T, TRet> MakeConditional<T, TRet>(this Func<T, TRet> self, Predicate<T> condition)
         {
-            return MakeConditional(self, condition, (Func<T, TRet>)null);
+            return MakeConditional(self, condition, null);
         }
 
         public static Func<T, TRet> MakeConditional<T, TRet>(this Func<T, TRet> self, Predicate<T> condition, TRet defaultValue)
@@ -111,10 +111,11 @@ namespace iSynaptic.Commons
             {
                 if (condition(item))
                     return self(item);
-                else if (falseFunc != null)
+
+                if (falseFunc != null)
                     return falseFunc(item);
-                else
-                    return default(TRet);
+                
+                return default(TRet);
             };
         } 
         #endregion

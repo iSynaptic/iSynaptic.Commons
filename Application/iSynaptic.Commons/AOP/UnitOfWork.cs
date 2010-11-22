@@ -1,21 +1,20 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace iSynaptic.Commons.AOP
 {
-    public abstract class UnitOfWork<T, U> : EnlistmentScope<T, U>, IUnitOfWork<T>
-        where U : EnlistmentScope<T, U>, IUnitOfWork<T>
+    public abstract class UnitOfWork<TItem, TUnitOfWork> : EnlistmentScope<TItem, TUnitOfWork>, IUnitOfWork<TItem>
+        where TUnitOfWork : EnlistmentScope<TItem, TUnitOfWork>, IUnitOfWork<TItem>
     {
-        public UnitOfWork() : this(ScopeNesting.Allowed)
+        protected UnitOfWork() : this(ScopeNesting.Allowed)
         {
         }
 
-        public UnitOfWork(ScopeNesting nesting) : base(ScopeBounds.Thread, nesting)
+        protected UnitOfWork(ScopeNesting nesting) : base(ScopeBounds.Thread, nesting)
         {
         }
 
-        protected abstract void Process(IEnumerable<T> items);
+        protected abstract void Process(IEnumerable<TItem> items);
 
         public void Complete()
         {

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace iSynaptic.Commons
 {
@@ -11,7 +10,7 @@ namespace iSynaptic.Commons
 
         private sealed class NotSpecification<T> : Specification<T>
         {
-            private ISpecification<T> _InnerSpecification = null;
+            private readonly ISpecification<T> _InnerSpecification = null;
             public NotSpecification(ISpecification<T> specification)
             {
                 _InnerSpecification = specification;
@@ -30,9 +29,9 @@ namespace iSynaptic.Commons
 
         private sealed class LogicalSpecification<T> : Specification<T>
         {
-            private ISpecification<T> _Left = null;
-            private ISpecification<T> _Right = null;
-            private Func<bool, bool, bool> _Operation = null;
+            private readonly ISpecification<T> _Left = null;
+            private readonly ISpecification<T> _Right = null;
+            private readonly Func<bool, bool, bool> _Operation = null;
 
             public LogicalSpecification(ISpecification<T> left, ISpecification<T> right, Func<bool, bool, bool> operation)
             {
@@ -52,7 +51,7 @@ namespace iSynaptic.Commons
 
         private sealed class PredicateSpecification<T> : Specification<T>
         {
-            private Predicate<T> _Predicate = null;
+            private readonly Predicate<T> _Predicate = null;
 
             public PredicateSpecification(Predicate<T> predicate)
             {
@@ -69,7 +68,7 @@ namespace iSynaptic.Commons
 
         private sealed class FuncSpecification<T> : Specification<T>
         {
-            private Func<T, bool> _Func = null;
+            private readonly Func<T, bool> _Func = null;
 
             public FuncSpecification(Func<T, bool> func)
             {
@@ -157,13 +156,12 @@ namespace iSynaptic.Commons
             if (specification == null)
                 return null;
 
-            if (specification is PredicateSpecification<T>)
-            {
-                PredicateSpecification<T> predicateSpecification = specification as PredicateSpecification<T>;
+            var predicateSpecification = specification as PredicateSpecification<T>;
+
+            if (predicateSpecification != null)
                 return predicateSpecification.Predicate;
-            }
-            else
-                return specification.IsSatisfiedBy;
+
+            return specification.IsSatisfiedBy;
         }
 
         public static Func<T, bool> ToFunc<T>(this ISpecification<T> specification)
@@ -171,13 +169,12 @@ namespace iSynaptic.Commons
             if (specification == null)
                 return null;
 
-            if (specification is FuncSpecification<T>)
-            {
-                FuncSpecification<T> funcSpecification = specification as FuncSpecification<T>;
+            var funcSpecification = specification as FuncSpecification<T>;
+
+            if (funcSpecification != null)
                 return funcSpecification.Func;
-            }
-            else
-                return specification.IsSatisfiedBy;
+
+            return specification.IsSatisfiedBy;
         }
 
         public static ISpecification<T> ToSpecification<T>(this Predicate<T> predicate)
@@ -187,8 +184,8 @@ namespace iSynaptic.Commons
 
             if (predicate.Target != null && predicate.Target is ISpecification<T>)
                 return predicate.Target as ISpecification<T>;
-            else
-                return new PredicateSpecification<T>(predicate);
+
+            return new PredicateSpecification<T>(predicate);
         }
 
         public static ISpecification<T> ToSpecification<T>(this Func<T, bool> func)
@@ -198,8 +195,8 @@ namespace iSynaptic.Commons
 
             if (func.Target != null && func.Target is ISpecification<T>)
                 return func.Target as ISpecification<T>;
-            else
-                return new FuncSpecification<T>(func);
+
+            return new FuncSpecification<T>(func);
         }
 
         #endregion

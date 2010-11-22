@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Runtime.InteropServices;
 
@@ -13,8 +11,8 @@ namespace iSynaptic.Commons.Threading
 
         private static readonly Boolean IsSingleCpuMachine = (Environment.ProcessorCount == 1);
 
-        private const Int32 FREE = 0;
-        private const Int32 OWNED = 1;
+        private const Int32 Free = 0;
+        private const Int32 Owned = 1;
         private Int32 _LockState;
 
         public void Enter()
@@ -22,10 +20,10 @@ namespace iSynaptic.Commons.Threading
             Thread.BeginCriticalRegion();
             while (true)
             {
-                if (Interlocked.Exchange(ref _LockState, OWNED) == FREE)
+                if (Interlocked.Exchange(ref _LockState, Owned) == Free)
                     return;
 
-                while (Thread.VolatileRead(ref _LockState) == OWNED)
+                while (Thread.VolatileRead(ref _LockState) == Owned)
                 {
                     StallThread();
                 }
@@ -34,7 +32,7 @@ namespace iSynaptic.Commons.Threading
 
         public void Exit()
         {
-            Interlocked.Exchange(ref _LockState, FREE);
+            Interlocked.Exchange(ref _LockState, Free);
             Thread.EndCriticalRegion();
         }
 

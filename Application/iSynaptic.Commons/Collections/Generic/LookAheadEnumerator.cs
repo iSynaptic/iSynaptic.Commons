@@ -6,7 +6,7 @@ namespace iSynaptic.Commons.Collections.Generic
 {
     internal class LookAheadEnumerator<T> : IEnumerator<LookAheadableValue<T>>
     {
-        private IEnumerator<T> _InnerEnumerator = null;
+        private readonly IEnumerator<T> _InnerEnumerator = null;
         private List<T> _LookAheadList = null;
 
         private T _Current = default(T);
@@ -61,8 +61,6 @@ namespace iSynaptic.Commons.Collections.Generic
 
             int itemsToEnumerate = (index + 1) - LookAheadList.Count;
 
-            T[] buffer = new T[itemsToEnumerate];
-
             for (int itemsEnumerated = 0; itemsEnumerated < itemsToEnumerate; itemsEnumerated++)
             {
                 bool results = _InnerEnumerator.MoveNext();
@@ -89,13 +87,7 @@ namespace iSynaptic.Commons.Collections.Generic
 
         protected List<T> LookAheadList
         {
-            get
-            {
-                if (_LookAheadList == null)
-                    _LookAheadList = new List<T>();
-
-                return _LookAheadList;
-            }
+            get { return _LookAheadList ?? (_LookAheadList = new List<T>()); }
         }
     }
 }

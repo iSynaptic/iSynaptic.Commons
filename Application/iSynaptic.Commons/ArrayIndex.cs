@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace iSynaptic.Commons
 {
     public class ArrayIndex
     {
-        private Array _Target = null;
+        private readonly Array _Target = null;
 
         public ArrayIndex(Array target)
         {
@@ -44,7 +42,7 @@ namespace iSynaptic.Commons
 
         public void Increment(int number)
         {
-            int[] currentIndex = Index.Clone() as int[];
+            var currentIndex = Index.Clone() as int[];
 
             try
             {
@@ -82,10 +80,8 @@ namespace iSynaptic.Commons
 
                 if (currentRankIndex < upperBound)
                     return true;
-                else
-                {
-                    currentRank--;
-                }
+
+                currentRank--;
             }
 
             return false;

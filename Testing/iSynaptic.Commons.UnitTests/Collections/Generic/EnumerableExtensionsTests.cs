@@ -137,7 +137,7 @@ namespace iSynaptic.Commons.Collections.Generic
             Assert.IsTrue(enumerationComplete);
 
             IEnumerable<int> nullEnumerable = null;
-            nullEnumerable.ForceEnumeration();
+            Assert.Throws<ArgumentNullException>(() => nullEnumerable.ForceEnumeration());
         }
 
         [Test]
@@ -176,13 +176,46 @@ namespace iSynaptic.Commons.Collections.Generic
             Assert.IsTrue(zipped.SelectMany(x => x).SequenceEqual(expected));
         }
 
-        private IEnumerable<int> Multiply(int multiplier, IEnumerable<int> source)
+        [Test]
+        public void Zip_ArrayOfEnumerables()
         {
-            foreach (int i in source)
-                yield return i * multiplier;
+            var array = new[] {Enumerable.Range(1, 10), Enumerable.Range(10, 10)};
+            var zipped = array.Zip();
+
+            var expected = new[] { 1, 10, 2, 11, 3, 12, 4, 13, 5, 14, 6, 15, 7, 16, 8, 17, 9, 18, 10, 19 };
+
+            Assert.IsTrue(zipped.SelectMany(x => x).SequenceEqual(expected));
         }
 
-        private IEnumerable<int> GetRange(int start, int end, Action after)
+        [Test]
+        public void Zip_EnumerableOfEnumerables()
+        {
+            var array = new[] { Enumerable.Range(1, 10), Enumerable.Range(10, 10) };
+            var zipped = array.AsEnumerable().Zip();
+
+            var expected = new[] { 1, 10, 2, 11, 3, 12, 4, 13, 5, 14, 6, 15, 7, 16, 8, 17, 9, 18, 10, 19 };
+
+            Assert.IsTrue(zipped.SelectMany(x => x).SequenceEqual(expected));
+        }
+
+        [Test]
+        public void AllSatisfy()
+        {
+            Func<int, bool> isEven = x => x%2 == 0;
+            var spec = isEven.ToSpecification();
+
+            var numbers = new[] {2, 4, 6, 8, 10};
+            Assert.IsTrue(numbers.AllSatisfy(spec));
+        }
+
+        [Test]
+        public void ToDictionary_WithNull_ThrowsArgumentNullException()
+        {
+            IEnumerable<KeyValuePair<string, string>> pairs = null;
+            Assert.Throws<ArgumentNullException>(() => pairs.ToDictionary());
+        }
+
+        private static IEnumerable<int> GetRange(int start, int end, Action after)
         {
             foreach (int i in Enumerable.Range(start, end))
                 yield return i;

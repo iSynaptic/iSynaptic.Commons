@@ -1,21 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
 
 namespace iSynaptic.Commons.AOP
 {
-    public abstract class EnlistmentScope<T, S> : Scope<S>, IEnlistmentScope<T>
-        where S : EnlistmentScope<T, S>
+    public abstract class EnlistmentScope<TItem, TScope> : Scope<TScope>, IEnlistmentScope<TItem>
+        where TScope : EnlistmentScope<TItem, TScope>
     {
-        private List<T> _Items = new List<T>();
+        private readonly List<TItem> _Items = new List<TItem>();
 
-        public EnlistmentScope(ScopeBounds bounds, ScopeNesting nesting) : base(bounds, nesting)
+        protected EnlistmentScope(ScopeBounds bounds, ScopeNesting nesting) : base(bounds, nesting)
         {
         }
 
-        public bool IsEnlisted(T item)
+        public bool IsEnlisted(TItem item)
         {
             if (Disposed)
                 throw new ObjectDisposedException(GetType().Name);
@@ -26,15 +23,15 @@ namespace iSynaptic.Commons.AOP
             return false;
         }
 
-        public void Enlist(params T[] items)
+        public void Enlist(params TItem[] items)
         {
             if (Disposed)
                 throw new ObjectDisposedException(GetType().Name);
 
-            Enlist((IEnumerable<T>)items);
+            Enlist((IEnumerable<TItem>)items);
         }
 
-        public virtual void Enlist(IEnumerable<T> items)
+        public virtual void Enlist(IEnumerable<TItem> items)
         {
             if (Disposed)
                 throw new ObjectDisposedException(GetType().Name);
@@ -55,7 +52,7 @@ namespace iSynaptic.Commons.AOP
             }
         }
 
-        protected ICollection<T> Items
+        protected ICollection<TItem> Items
         {
             get { return _Items; }
         }

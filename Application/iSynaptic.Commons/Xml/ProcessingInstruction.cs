@@ -1,8 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Collections.ObjectModel;
-
 using iSynaptic.Commons.Collections.Generic;
 
 namespace iSynaptic.Commons.Xml
@@ -12,17 +8,7 @@ namespace iSynaptic.Commons.Xml
         internal ProcessingInstruction(string name, IEnumerable<KeyValuePair<string, string>> attributes)
         {
             Name = name;
-            Attributes = BuildAttributeDictionary(attributes);
-        }
-
-        private static ReadOnlyDictionary<string, string> BuildAttributeDictionary(IEnumerable<KeyValuePair<string, string>> attributes)
-        {
-            Dictionary<string, string> attributeDictionary = new Dictionary<string, string>();
-
-            foreach (KeyValuePair<string, string> attribute in attributes)
-                attributeDictionary.Add(attribute.Key, attribute.Value);
-
-            return new ReadOnlyDictionary<string, string>(attributeDictionary);
+            Attributes = attributes.ToReadOnlyDictionary();
         }
 
         public string Name { get; private set; }

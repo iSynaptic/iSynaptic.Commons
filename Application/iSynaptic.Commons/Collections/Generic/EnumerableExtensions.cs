@@ -31,6 +31,21 @@ namespace iSynaptic.Commons.Collections.Generic
             return self.ToArray();
         }
 
+        public static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> self)
+        {
+            if(self == null)
+                throw new ArgumentNullException("self");
+
+            return self.ToDictionary(x => x.Key, x => x.Value);
+        }
+
+        public static ReadOnlyDictionary<TKey, TValue> ToReadOnlyDictionary<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> self)
+        {
+            return self
+                .ToDictionary()
+                .ToReadOnlyDictionary();
+        }
+
         public static string Delimit<T>(this IEnumerable<T> self, string delimiter)
         {
             return Delimit(self, delimiter, item => item.ToString());
@@ -42,12 +57,12 @@ namespace iSynaptic.Commons.Collections.Generic
                 throw new ArgumentNullException("self");
 
             if (delimiter == null)
-                throw new ArgumentNullException("delimeter");
+                throw new ArgumentNullException("delimiter");
 
             if (selector == null)
                 throw new ArgumentNullException("selector");
 
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
             bool isFirst = true;
 
             foreach (T item in self)
@@ -123,10 +138,9 @@ namespace iSynaptic.Commons.Collections.Generic
         public static void ForceEnumeration<T>(this IEnumerable<T> self)
         {
             if (self == null)
-                return;
+                throw new ArgumentNullException("self");
 
-            foreach (T item in self)
-                continue;
+            self.All(x => true);
         }
 
         public static IEnumerable<T> MeetsSpecifcation<T>(this IEnumerable<T> candidates, ISpecification<T> specification)
@@ -139,12 +153,7 @@ namespace iSynaptic.Commons.Collections.Generic
             return candidates.Where(x => specification.IsSatisfiedBy(x) != true);
         }
 
-        public static bool Satisfies<T>(this T[] candidates, ISpecification<T> specification)
-        {
-            return candidates.All(specification.IsSatisfiedBy);
-        }
-
-        public static bool Satisfies<T>(this IEnumerable<T> candidates, ISpecification<T> specification)
+        public static bool AllSatisfy<T>(this IEnumerable<T> candidates, ISpecification<T> specification)
         {
             return candidates.All(specification.IsSatisfiedBy);
         }

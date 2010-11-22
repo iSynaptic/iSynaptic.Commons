@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace iSynaptic.Commons
+﻿namespace iSynaptic.Commons
 {
-    public interface IReadableQualifier<Q, T>
+    public interface IReadableQualifier<TItem, TQualifier>
     {
-        T this[Q qualifier] { get; }
+        TItem this[TQualifier qualifier] { get; }
     }
 }

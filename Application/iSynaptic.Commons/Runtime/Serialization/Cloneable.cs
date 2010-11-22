@@ -53,7 +53,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
 
     public static class Cloneable<T>
     {
-        private static readonly Type[] _CloneablePrimitives =
+        private static readonly Type[] CloneablePrimitives =
         {
             typeof(string),
             typeof(decimal),
@@ -62,14 +62,14 @@ namespace iSynaptic.Commons.Runtime.Serialization
             typeof(Guid)
         };
 
-        private static readonly Type _TargetType = null;
-        private static readonly MethodInfo _CloneContextGetShouldUseExistingObjectsMethod = null;
-        private static readonly MethodInfo _CloneContextGetIsShallowCloneMethod = null;
-        private static readonly MethodInfo _CloneContextGetCloneMapMethod = null;
-        private static readonly MethodInfo _DictionaryContainsKeyMethod = null;
-        private static readonly MethodInfo _DictionaryGetItemMethod = null;
+        private static readonly Type TargetType = null;
+        private static readonly MethodInfo CloneContextGetShouldUseExistingObjectsMethod = null;
+        private static readonly MethodInfo CloneContextGetIsShallowCloneMethod = null;
+        private static readonly MethodInfo CloneContextGetCloneMapMethod = null;
+        private static readonly MethodInfo DictionaryContainsKeyMethod = null;
+        private static readonly MethodInfo DictionaryGetItemMethod = null;
 
-        private static readonly object _SyncLock = null;
+        private static readonly object SyncLock = new object();
 
         private static bool? _CanClone = null;
         private static bool? _CanShallowClone = null;
@@ -77,28 +77,26 @@ namespace iSynaptic.Commons.Runtime.Serialization
         private static Func<T, T, CloneContext, T> _Strategy = null;
         private static Func<T, T, CloneContext, T> _DynamicStrategy = null;
 
-        private static readonly Func<FieldInfo, bool> _FieldIncludeFilter = f =>
+        private static readonly Func<FieldInfo, bool> FieldIncludeFilter = f =>
             (f.IsDefined(typeof(NonSerializedAttribute), true) != true);
 
         static Cloneable()
         {
-            _TargetType = typeof(T);
-            _CloneContextGetShouldUseExistingObjectsMethod = GetMethod(typeof(CloneContext), "get_ShouldUseExistingObjects");
-            _CloneContextGetIsShallowCloneMethod = GetMethod(typeof(CloneContext), "get_IsShallowClone");
-            _CloneContextGetCloneMapMethod = GetMethod(typeof (CloneContext), "get_CloneMap");
+            TargetType = typeof(T);
+            CloneContextGetShouldUseExistingObjectsMethod = GetMethod(typeof(CloneContext), "get_ShouldUseExistingObjects");
+            CloneContextGetIsShallowCloneMethod = GetMethod(typeof(CloneContext), "get_IsShallowClone");
+            CloneContextGetCloneMapMethod = GetMethod(typeof (CloneContext), "get_CloneMap");
 
             Type dictionaryType = typeof(IDictionary<,>).MakeGenericType(typeof(object), typeof(object));
 
-            _DictionaryContainsKeyMethod = GetMethod(dictionaryType, "ContainsKey", typeof(object));
-            _DictionaryGetItemMethod = GetMethod(dictionaryType, "get_Item", typeof(object));
-
-            _SyncLock = new object();
+            DictionaryContainsKeyMethod = GetMethod(dictionaryType, "ContainsKey", typeof(object));
+            DictionaryGetItemMethod = GetMethod(dictionaryType, "get_Item", typeof(object));
         }
 
         private class ReferenceTypeStrategy<TConcrete>
         {
             private Func<T, T, CloneContext, T> _NextStrategy = null;
-            private Func<TConcrete, TConcrete, CloneContext, TConcrete> _DynamicStrategy = null;
+            private Func<TConcrete, TConcrete, CloneContext, TConcrete> _ReferenceTypeDynamicStrategy = null;
 
             public T Strategy(T source, T destination, CloneContext cloneContext)
             {
@@ -109,18 +107,18 @@ namespace iSynaptic.Commons.Runtime.Serialization
                     var s = (TConcrete)(object)source;
                     var d = destination is TConcrete ? (TConcrete) (object) destination : default(TConcrete);
 
-                    if (_DynamicStrategy == null)
-                        _DynamicStrategy = Cloneable<TConcrete>.BuildDynamicStrategy();
+                    if (_ReferenceTypeDynamicStrategy == null)
+                        _ReferenceTypeDynamicStrategy = Cloneable<TConcrete>.BuildDynamicStrategy();
 
-                    return (T)(object)_DynamicStrategy(s, d, cloneContext);
+                    return (T)(object)_ReferenceTypeDynamicStrategy(s, d, cloneContext);
                 }
 
                 if(_NextStrategy == null)
                 {
-                    var interfaceStrategyType = typeof(ReferenceTypeStrategy<>).MakeGenericType(_TargetType, sourceType);
+                    var interfaceStrategyType = typeof(ReferenceTypeStrategy<>).MakeGenericType(TargetType, sourceType);
                     var interfaceStrategy = Activator.CreateInstance(interfaceStrategyType);
 
-                    _NextStrategy = interfaceStrategy.GetFunc<T, T, CloneContext, T>("Strategy");
+                    _NextStrategy = interfaceStrategy.GetDelegate<Func<T, T, CloneContext, T>>("Strategy");
                 }
 
                 return _NextStrategy(source, destination, cloneContext);
@@ -134,13 +132,13 @@ namespace iSynaptic.Commons.Runtime.Serialization
             bool canShallowClone = CanShallowClone();
             bool canClone = CanClone();
 
-            bool isSealedType = _TargetType.IsSealed;
-            bool isTargetTypeArray = _TargetType.IsArray;
-            bool isReferenceType = !_TargetType.IsValueType;
-            bool isNullableType = _TargetType.IsGenericType &&
-                                  _TargetType.GetGenericTypeDefinition() == typeof (Nullable<>);
+            bool isSealedType = TargetType.IsSealed;
+            bool isTargetTypeArray = TargetType.IsArray;
+            bool isReferenceType = !TargetType.IsValueType;
+            bool isNullableType = TargetType.IsGenericType &&
+                                  TargetType.GetGenericTypeDefinition() == typeof (Nullable<>);
 
-            bool canReturnSourceAsClone = IsRootTypeCloneablePrimitive(_TargetType) && isTargetTypeArray != true;
+            bool canReturnSourceAsClone = IsRootTypeCloneablePrimitive(TargetType) && isTargetTypeArray != true;
 
             Func<T, T, CloneContext, T> completionStrategy = null;
             Func<Array, Array, CloneContext, T> arrayCloneStrategy = null;
@@ -189,7 +187,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
                                                          typeof (CloneContext));
 
                         arrayCloneMethod = arrayCloneMethod.MakeGenericMethod(actualType.GetElementType());
-                        arrayCloneStrategy = arrayCloneMethod.ToFunc<Array, Array, CloneContext, T>();
+                        arrayCloneStrategy = arrayCloneMethod.ToDelegate<Func<Array, Array, CloneContext, T>>();
                     }
 
                     d = arrayCloneStrategy(sourceArray, destArray, c);
@@ -205,10 +203,10 @@ namespace iSynaptic.Commons.Runtime.Serialization
                 {
                     if (isReferenceType && isSealedType != true)
                     {
-                        var referenceTypeCloneableType = typeof(ReferenceTypeStrategy<>).MakeGenericType(_TargetType, s.GetType());
+                        var referenceTypeCloneableType = typeof(ReferenceTypeStrategy<>).MakeGenericType(TargetType, s.GetType());
                         var referenceTypeCloneable = Activator.CreateInstance(referenceTypeCloneableType);
 
-                        completionStrategy = referenceTypeCloneable.GetFunc<T, T, CloneContext, T>("Strategy");
+                        completionStrategy = referenceTypeCloneable.GetDelegate<Func<T, T, CloneContext, T>>("Strategy");
                     }
                     else
                         completionStrategy = BuildDynamicStrategy();
@@ -225,40 +223,42 @@ namespace iSynaptic.Commons.Runtime.Serialization
         {
             if (_DynamicStrategy == null)
             {
-                string dynamicMethodName = string.Format("Cloneable<{0}>_CloneDynamicStrategy", _TargetType.Name);
-                DynamicMethod dynamicStrategyMethod = new DynamicMethod(dynamicMethodName,
-                                                                        _TargetType,
-                                                                        new[]
-                                                                            {
-                                                                                _TargetType, _TargetType,
-                                                                                typeof (CloneContext)
-                                                                            },
-                                                                        _TargetType, true);
+                string dynamicMethodName = string.Format("Cloneable<{0}>_CloneDynamicStrategy", TargetType.Name);
+                var dynamicStrategyMethod = new DynamicMethod(dynamicMethodName,
+                                                              TargetType,
+                                                              new[]
+                                                              {
+                                                                  TargetType,
+                                                                  TargetType,
+                                                                  typeof (CloneContext)
+                                                              },
+                                                              TargetType,
+                                                              true);
 
 
-                ILGenerator gen = dynamicStrategyMethod.GetILGenerator();
+                var il = dynamicStrategyMethod.GetILGenerator();
 
-                gen.DeclareLocal(_TargetType);
+                il.DeclareLocal(TargetType);
 
-                gen.Emit(OpCodes.Ldarg_1);
-                gen.Emit(OpCodes.Stloc_0);
+                il.Emit(OpCodes.Ldarg_1);
+                il.Emit(OpCodes.Stloc_0);
 
-                foreach (FieldInfo field in _TargetType.GetFieldsDeeply(_FieldIncludeFilter))
+                foreach (FieldInfo field in TargetType.GetFieldsDeeply(FieldIncludeFilter))
                 {
                     if (field.IsDefined(typeof (CloneReferenceOnlyAttribute), true) ||
                         field.FieldType.IsDefined(typeof (CloneReferenceOnlyAttribute), true) ||
                         IsTypeCloneablePrimative(field.FieldType))
                     {
-                        EmitCopyField(gen, field);
+                        EmitCopyField(il, field);
                     }
                     else
                     {
-                        EmitCloneFieldWithShallowCheck(gen, field);
+                        EmitCloneFieldWithShallowCheck(il, field);
                     }
                 }
 
-                gen.Emit(OpCodes.Ldloc_0);
-                gen.Emit(OpCodes.Ret);
+                il.Emit(OpCodes.Ldloc_0);
+                il.Emit(OpCodes.Ret);
 
                 _DynamicStrategy = dynamicStrategyMethod.ToFunc<T, T, CloneContext, T>();
             }
@@ -276,7 +276,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
             var storeFieldLabel = gen.DefineLabel();
 
             // handles self-referencing fields
-            if (field.FieldType.IsValueType != true && field.FieldType.IsAssignableFrom(_TargetType))
+            if (field.FieldType.IsValueType != true && field.FieldType.IsAssignableFrom(TargetType))
             {
                 // check clone map
                 gen.Emit(OpCodes.Ldarg_0);
@@ -284,21 +284,21 @@ namespace iSynaptic.Commons.Runtime.Serialization
                 gen.Emit(OpCodes.Brfalse_S, copyFieldLabel);
 
                 gen.Emit(OpCodes.Ldarg_2);
-                gen.Emit(OpCodes.Call, _CloneContextGetCloneMapMethod);
+                gen.Emit(OpCodes.Call, CloneContextGetCloneMapMethod);
 
                 gen.Emit(OpCodes.Ldarg_0);
                 gen.Emit(OpCodes.Ldfld, field);
 
-                gen.Emit(OpCodes.Callvirt, _DictionaryContainsKeyMethod);
+                gen.Emit(OpCodes.Callvirt, DictionaryContainsKeyMethod);
                 gen.Emit(OpCodes.Brfalse_S, copyFieldLabel);
 
                 gen.Emit(OpCodes.Ldarg_2);
-                gen.Emit(OpCodes.Call, _CloneContextGetCloneMapMethod);
+                gen.Emit(OpCodes.Call, CloneContextGetCloneMapMethod);
 
                 gen.Emit(OpCodes.Ldarg_0);
                 gen.Emit(OpCodes.Ldfld, field);
 
-                gen.Emit(OpCodes.Call, _DictionaryGetItemMethod);
+                gen.Emit(OpCodes.Call, DictionaryGetItemMethod);
 
                 if (field.DeclaringType.IsValueType)
                     gen.Emit(OpCodes.Ldloca_S, (byte)0);
@@ -333,7 +333,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
             var afterDestinationCopied = gen.DefineLabel();
 
             gen.Emit(OpCodes.Ldarg_2);
-            gen.Emit(OpCodes.Call, _CloneContextGetIsShallowCloneMethod);
+            gen.Emit(OpCodes.Call, CloneContextGetIsShallowCloneMethod);
             gen.Emit(OpCodes.Brfalse_S, ifNotShallowCloneLabel);
 
             EmitCopyField(gen, field);
@@ -386,7 +386,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
                 var afterLoadingDestinationLabel = gen.DefineLabel();
 
                 gen.Emit(OpCodes.Ldarg_2);
-                gen.Emit(OpCodes.Call, _CloneContextGetShouldUseExistingObjectsMethod);
+                gen.Emit(OpCodes.Call, CloneContextGetShouldUseExistingObjectsMethod);
                 gen.Emit(OpCodes.Brtrue_S, ifShouldUseExistingLabel);
 
                 gen.Emit(OpCodes.Ldnull);
@@ -423,7 +423,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
 
         private static bool IsTypeCloneablePrimative(Type inputType)
         {
-            if (Array.Exists(_CloneablePrimitives, x => x == inputType))
+            if (Array.Exists(CloneablePrimitives, x => x == inputType))
                 return true;
 
             if (inputType.IsPrimitive)
@@ -437,20 +437,18 @@ namespace iSynaptic.Commons.Runtime.Serialization
             if(type == null)
                 throw new ArgumentNullException("type");
 
-            Type currentType = type;
+            while (type.IsArray)
+                type = type.GetElementType();
 
-            while (currentType.IsArray)
-                currentType = currentType.GetElementType();
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+                return type.GetGenericArguments()[0];
 
-            if (currentType.IsGenericType && currentType.GetGenericTypeDefinition() == typeof(Nullable<>))
-                return currentType.GetGenericArguments()[0];
-
-            return currentType;
+            return type;
         }
 
         private static MethodInfo GetMethod(Type type, string methodName, params Type[] argumentTypes)
         {
-            BindingFlags bindingFlags = BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+            const BindingFlags bindingFlags = BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 
             return type.GetMethod
             (
@@ -479,7 +477,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
             if (IsRootTypeCloneablePrimitive(typeToCheck))
                 return true;
 
-            Func<FieldInfo, bool> includeFilter = _FieldIncludeFilter.And(f => f.FieldType != typeToCheck);
+            Func<FieldInfo, bool> includeFilter = FieldIncludeFilter.And(f => f.FieldType != typeToCheck);
 
             foreach (FieldInfo field in typeToCheck.GetFieldsDeeply(includeFilter))
             {
@@ -498,7 +496,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
                 {
                     Type fieldClonableType = typeof(Cloneable<>).MakeGenericType(fieldType);
                     MethodInfo canCloneMethod = GetMethod(fieldClonableType, "CanClone");
-                    var canClone = canCloneMethod.ToFunc<bool>();
+                    var canClone = canCloneMethod.ToDelegate<Func<bool>>();
 
                     if (canClone() != true)
                         return false;
@@ -511,7 +509,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
         public static bool CanClone()
         {
             if (_CanClone.HasValue != true)
-                _CanClone = CanClone(_TargetType, false);
+                _CanClone = CanClone(TargetType, false);
 
             return _CanClone.Value;
         }
@@ -519,7 +517,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
         public static bool CanShallowClone()
         {
             if (_CanShallowClone.HasValue != true)
-                _CanShallowClone = CanClone(_TargetType, true);
+                _CanShallowClone = CanClone(TargetType, true);
 
             return _CanShallowClone.Value;
         }
@@ -548,7 +546,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
             if (destination == null)
                 throw new ArgumentNullException("destination");
 
-            if (_TargetType.IsValueType != true && ReferenceEquals(source, destination))
+            if (TargetType.IsValueType != true && ReferenceEquals(source, destination))
                 throw new InvalidOperationException("The destination object cannot be the same as the source.");
 
             var sourceArray = source as Array;
@@ -569,7 +567,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
             if (destination == null)
                 throw new ArgumentNullException("destination");
 
-            if(_TargetType.IsValueType != true && ReferenceEquals(source, destination))
+            if(TargetType.IsValueType != true && ReferenceEquals(source, destination))
                 throw new InvalidOperationException("The destination object cannot be the same as the source.");
 
             var sourceArray = source as Array;
@@ -582,15 +580,15 @@ namespace iSynaptic.Commons.Runtime.Serialization
             return Strategy(source, destination, context);
         }
 
-        private static T ArrayClone<U>(Array sourceArray, Array destArray, CloneContext context)
+        private static T ArrayClone<TItem>(Array sourceArray, Array destArray, CloneContext context)
         {
             var i = new ArrayIndex(sourceArray);
             while(true)
             {
-                U sourceValue = (U)sourceArray.GetValue(i);
-                U currentValue = context.ShouldUseExistingObjects ? (U)destArray.GetValue(i) : default(U);
+                TItem sourceValue = (TItem)sourceArray.GetValue(i);
+                TItem currentValue = context.ShouldUseExistingObjects ? (TItem)destArray.GetValue(i) : default(TItem);
 
-                U value = Cloneable<U>.Strategy(sourceValue, currentValue, context);
+                TItem value = Cloneable<TItem>.Strategy(sourceValue, currentValue, context);
                 destArray.SetValue(value, i);
 
                 if(i.CanIncrement())
@@ -612,7 +610,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
             {
                 if (_Strategy == null)
                 {
-                    lock (_SyncLock)
+                    lock (SyncLock)
                     {
                         if (_Strategy == null)
                             _Strategy = BuildStrategy();

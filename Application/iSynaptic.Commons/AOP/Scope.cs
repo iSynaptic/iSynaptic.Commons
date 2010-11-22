@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace iSynaptic.Commons.AOP
 {
@@ -34,7 +32,7 @@ namespace iSynaptic.Commons.AOP
                 if (current != null && current.Bounds == ScopeBounds.Thread && Bounds == ScopeBounds.AppDomain)
                     OnThrowCannotNestAppDomainScopeInThreadScope();
 
-                if (current != null && current.Bounds == this.Bounds)
+                if (current != null && current.Bounds == Bounds)
                     Parent = current;
             }
             else if (GetCurrentScope() != null)
@@ -45,10 +43,10 @@ namespace iSynaptic.Commons.AOP
 
         protected static T GetCurrentScope()
         {
-            if (_CurrentAppDomainScope != null)
-                return _CurrentAppDomainScope;
-            else
+            if (_CurrentThreadScope != null)
                 return _CurrentThreadScope;
+
+            return _CurrentAppDomainScope;
         }
 
         protected void SetCurrentScope(T scope)

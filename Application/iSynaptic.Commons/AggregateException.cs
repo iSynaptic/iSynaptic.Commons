@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Runtime.Serialization;
 
 namespace iSynaptic.Commons
 {
     public class AggregateException : Exception
     {
-        private IEnumerable<Exception> _Exceptions = null;
+        private readonly IEnumerable<Exception> _Exceptions = null;
 
         public AggregateException(string message, IEnumerable<Exception> exceptions) : base(message)
         {

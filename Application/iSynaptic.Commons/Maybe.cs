@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace iSynaptic.Commons
 {
@@ -9,7 +6,7 @@ namespace iSynaptic.Commons
     {
         public static readonly Maybe<T> NoValue = new Maybe<T>(default(T)) { _HasValue = false };
 
-        private T _Value;
+        private readonly T _Value;
         private bool _HasValue;
 
         public Maybe(T value)

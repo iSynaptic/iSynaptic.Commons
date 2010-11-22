@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Collections;
-using System.Text;
 
 namespace iSynaptic.Commons.Collections.Generic
 {
     public class ReadOnlyDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {
-        private IDictionary<TKey, TValue> _InnerDictionary = null;
+        private readonly IDictionary<TKey, TValue> _InnerDictionary = null;
 
         public ReadOnlyDictionary(IDictionary<TKey, TValue> innerDictionary)
         {
@@ -107,7 +106,7 @@ namespace iSynaptic.Commons.Collections.Generic
 
         #region IEnumerable Members
 
-        IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        IEnumerator IEnumerable.GetEnumerator()
         {
             return ((IEnumerable)_InnerDictionary).GetEnumerator();
         }

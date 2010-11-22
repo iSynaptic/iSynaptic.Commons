@@ -12,8 +12,10 @@ namespace iSynaptic.Commons.Reflection
             if (provider == null)
                 throw new ArgumentNullException("provider");
 
+            Type desiredType = typeof (T);
+
             return provider.GetCustomAttributes(true)
-                .Where(x => typeof(T).IsAssignableFrom(x.GetType()))
+                .Where(x => desiredType.IsAssignableFrom(x.GetType()))
                 .Cast<T>();
         }
 
@@ -35,12 +37,12 @@ namespace iSynaptic.Commons.Reflection
             Type currentType = source;
             while (currentType != null)
             {
-                foreach (FieldInfo info in currentType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+                foreach (var fieldInfo in currentType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
                 {
-                    if (filter != null && filter(info) != true)
+                    if (filter != null && filter(fieldInfo) != true)
                         continue;
 
-                    yield return info;
+                    yield return fieldInfo;
                 }
 
                 if (currentType.BaseType != null)

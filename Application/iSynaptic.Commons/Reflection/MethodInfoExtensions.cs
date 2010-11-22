@@ -3,31 +3,15 @@ using System.Reflection;
 
 namespace iSynaptic.Commons.Reflection
 {
-    public static class MethodInfoExtensions
+    internal static class MethodInfoExtensions
     {
-        public static Func<TRet> ToFunc<TRet>(this MethodInfo self)
+        public static T ToDelegate<T>(this MethodInfo self)
         {
-            return (Func<TRet>)Delegate.CreateDelegate(typeof(Func<TRet>), self);
-        }
+            if(self == null)
+                throw new ArgumentNullException("self");
 
-        public static Func<T1, TRet> ToFunc<T1, TRet>(this MethodInfo self)
-        {
-            return (Func<T1, TRet>)Delegate.CreateDelegate(typeof(Func<T1, TRet>), self);
-        }
+            return (T)(object)Delegate.CreateDelegate(typeof(T), self);
 
-        public static Func<T1, T2, TRet> ToFunc<T1, T2, TRet>(this MethodInfo self)
-        {
-            return (Func<T1, T2, TRet>)Delegate.CreateDelegate(typeof(Func<T1, T2, TRet>), self);
-        }
-
-        public static Func<T1, T2, T3, TRet> ToFunc<T1, T2, T3, TRet>(this MethodInfo self)
-        {
-            return (Func<T1, T2, T3, TRet>)Delegate.CreateDelegate(typeof(Func<T1, T2, T3, TRet>), self);
-        }
-
-        public static Func<T1, T2, T3, T4, TRet> ToFunc<T1, T2, T3, T4, TRet>(this MethodInfo self)
-        {
-            return (Func<T1, T2, T3, T4, TRet>)Delegate.CreateDelegate(typeof(Func<T1, T2, T3, T4, TRet>), self);
         }
     }
 }

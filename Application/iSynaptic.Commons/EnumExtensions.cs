@@ -105,13 +105,10 @@ namespace iSynaptic.Commons
             ulong selfValue = Convert.ToUInt64(self);
             var values = Enum.GetValues(selfType).OfType<T>();
 
-            foreach (T flag in values)
-            {
-                ulong flagValue = Convert.ToUInt64(flag);
-
-                if ((selfValue & flagValue) == flagValue && selfValue != 0)
-                    yield return flag;
-            }
+            return from value in values
+                   let i64 = Convert.ToUInt64(value)
+                   where (selfValue & i64) == i64 && selfValue != 0
+                   select value;
         }
     }
 }

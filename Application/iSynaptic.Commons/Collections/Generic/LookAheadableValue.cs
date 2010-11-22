@@ -2,8 +2,8 @@
 {
     public class LookAheadableValue<T>
     {
-        private T _Value = default(T);
-        private LookAheadEnumerator<T> _Enumerator = null;
+        private readonly T _Value = default(T);
+        private readonly LookAheadEnumerator<T> _Enumerator = null;
 
         internal LookAheadableValue(T value, LookAheadEnumerator<T> enumerator)
         {

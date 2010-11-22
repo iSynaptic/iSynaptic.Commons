@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using NUnit.Core;
 using NUnit.Core.Extensibility;
 
@@ -41,7 +40,7 @@ namespace iSynaptic.Commons.Testing.NUnit.Addins
                 return results;
             }
 
-            private IEnumerable<T> GetAttributesOfType<T>(ICustomAttributeProvider provider)
+            private static IEnumerable<T> GetAttributesOfType<T>(ICustomAttributeProvider provider)
             {
                 if (provider == null)
                     throw new ArgumentNullException("provider");

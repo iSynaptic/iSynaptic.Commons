@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace iSynaptic.Commons.AOP
 {
@@ -26,7 +25,7 @@ namespace iSynaptic.Commons.AOP
                 }
                 else
                 {
-                    List<Exception> exceptions = new List<Exception>();
+                    var exceptions = new List<Exception>();
                     
                     Action<IDisposable> dispose = d => d.Dispose();
                     dispose = dispose.CatchExceptions(exceptions);

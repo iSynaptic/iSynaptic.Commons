@@ -35,7 +35,13 @@ namespace iSynaptic.Commons.Text.Parsing
                 else if (ch == '"' || ch == '\'') { yield return ParseString(reader); }
                 else if (ch == '=' && reader.LookAhead(0) != '=')
                 {
-                    yield return CreateToken(TokenKind.AssignmentEquals, 1, reader);
+                    Token<TokenKind> token = new Token<TokenKind>();
+                    token.Kind = TokenKind.AssignmentEquals;
+
+                    token.Position = reader.Position;
+                    token.Column = reader.Column;
+                    token.Line = reader.Line;
+                    yield return token;
                     reader.Read();
                 }
                 else
@@ -126,11 +132,6 @@ namespace iSynaptic.Commons.Text.Parsing
         }
 
         private static Token<TokenKind> CreateToken(TokenKind kind, ScanningTextReader reader)
-        {
-            return CreateToken(kind, 0, reader);
-        }
-
-        private static Token<TokenKind> CreateToken(TokenKind kind, int length, ScanningTextReader reader)
         {
             Token<TokenKind> token = new Token<TokenKind>();
             token.Kind = kind;

@@ -5,7 +5,7 @@ namespace iSynaptic.Commons.Collections.Generic
 {
     internal class LookAheadEnumerable<T> : IEnumerable<LookAheadableValue<T>>
     {
-        private IEnumerable<T> _InnerEnumerable = null;
+        private readonly IEnumerable<T> _InnerEnumerable = null;
 
         public LookAheadEnumerable(IEnumerable<T> innerEnumerable)
         {

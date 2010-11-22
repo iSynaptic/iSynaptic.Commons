@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Transactions;
 using iSynaptic.Commons.Runtime.Serialization;
 using iSynaptic.Commons.Threading;
@@ -15,8 +13,8 @@ namespace iSynaptic.Commons.Transactions
         
         private class EnlistmentManager : IEnlistmentNotification
         {
-            private string _Id = null;
-            private TransactionalBase<T> _Transactional = null;
+            private readonly string _Id = null;
+            private readonly TransactionalBase<T> _Transactional = null;
                
             public EnlistmentManager(string id, TransactionalBase<T> transactional)
             {

@@ -356,11 +356,22 @@ namespace iSynaptic.Commons.Transactions
             Assert.AreEqual("Testing Two", tso.Value.TestString);
         }
 
+        public class ExposedValuesTransactional<T> : Transactional<T>
+        {
+            public ExposedValuesTransactional(T value) : base(value)
+            {
+            }
+
+            public Dictionary<string, KeyValuePair<Guid, T>> GetValues()
+            {
+                return Values;
+            }
+        }
+
         [Test]
         public void NoMemoryLeakOnCommit()
         {
-            Transactional<SimpleObject> tso = new Transactional<SimpleObject>(new SimpleObject());
-            var getValues = tso.GetFunc<Dictionary<string, KeyValuePair<Guid, SimpleObject>>>("get_Values");
+            ExposedValuesTransactional<SimpleObject> tso = new ExposedValuesTransactional<SimpleObject>(new SimpleObject());
 
             using (TransactionScope scope = new TransactionScope())
             {
@@ -368,19 +379,18 @@ namespace iSynaptic.Commons.Transactions
                 tso.Value.TestGuid = Guid.NewGuid();
                 tso.Value.TestString = "Testing";
 
-                Assert.AreEqual(1, getValues().Count);
+                Assert.AreEqual(1, tso.GetValues().Count);
 
                 scope.Complete();
             }
 
-            Assert.AreEqual(0, getValues().Count);
+            Assert.AreEqual(0, tso.GetValues().Count);
         }
 
         [Test]
         public void NoMemoryLeakOnRollback()
         {
-            Transactional<SimpleObject> tso = new Transactional<SimpleObject>(new SimpleObject());
-            var getValues = tso.GetFunc<Dictionary<string, KeyValuePair<Guid, SimpleObject>>>("get_Values");
+            ExposedValuesTransactional<SimpleObject> tso = new ExposedValuesTransactional<SimpleObject>(new SimpleObject());
 
             using (TransactionScope scope = new TransactionScope())
             {
@@ -388,10 +398,10 @@ namespace iSynaptic.Commons.Transactions
                 tso.Value.TestGuid = Guid.NewGuid();
                 tso.Value.TestString = "Testing";
 
-                Assert.AreEqual(1, getValues().Count);
+                Assert.AreEqual(1, tso.GetValues().Count);
             }
 
-            Assert.AreEqual(0, getValues().Count);
+            Assert.AreEqual(0, tso.GetValues().Count);
         }
 
         [Test]

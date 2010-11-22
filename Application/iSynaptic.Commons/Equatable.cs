@@ -1,12 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Reflection.Emit;
-using System.Security.Permissions;
-using System.Text;
-using iSynaptic.Commons.Reflection;
-using iSynaptic.Commons.Reflection.Emit;
 
 namespace iSynaptic.Commons
 {
@@ -25,17 +17,17 @@ namespace iSynaptic.Commons
 
     public static class Equatable<T>
     {
-        private static readonly object _SyncLock = null;
+        //private static readonly object SyncLock = null;
 
-        private static Type _TargetType = null;
-        private static Func<T, T, bool> _IsEqualToStrategy = null;
+        //private static Type _TargetType = null;
+        //private static Func<T, T, bool> _IsEqualToStrategy = null;
         //private static Func<T, int> _ToHashCodeStrategy = null;
 
-        static Equatable()
-        {
-            _TargetType = typeof (T);
-            _SyncLock = new object();
-        }
+        //static Equatable()
+        //{
+        //    _TargetType = typeof (T);
+        //    SyncLock = new object();
+        //}
 
         public static bool IsEqualsTo(T source, T other)
         {
@@ -51,7 +43,9 @@ namespace iSynaptic.Commons
             if(source.GetType() != other.GetType())
                 return false;
 
-            return IsEqualToStrategy(source, other);
+            return false;
+
+            //return IsEqualToStrategy(source, other);
         }
 
         public static int ToHashCode(T source)
@@ -80,22 +74,22 @@ namespace iSynaptic.Commons
         //    return dynamicStrategyMethod.ToFunc<T, T, bool>();
         //}
 
-        private static Func<T, T, bool> IsEqualToStrategy
-        {
-            [ReflectionPermission(SecurityAction.Demand, ReflectionEmit = true)]
-            get
-            {
-                //if (_IsEqualToStrategy == null)
-                //{
-                //    lock (_SyncLock)
-                //    {
-                //        if (_IsEqualToStrategy == null)
-                //            _IsEqualToStrategy = BuildIsEqualToStrategy();
-                //    }
-                //}
+        //private static Func<T, T, bool> IsEqualToStrategy
+        //{
+        //    [ReflectionPermission(SecurityAction.Demand, ReflectionEmit = true)]
+        //    get
+        //    {
+        //        if (_IsEqualToStrategy == null)
+        //        {
+        //            lock (_SyncLock)
+        //            {
+        //                if (_IsEqualToStrategy == null)
+        //                    _IsEqualToStrategy = BuildIsEqualToStrategy();
+        //            }
+        //        }
 
-                return _IsEqualToStrategy;
-            }
-        }
+        //        return _IsEqualToStrategy;
+        //    }
+        //}
     }
 }

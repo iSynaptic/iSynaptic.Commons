@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using NUnit.Core.Extensibility;
+﻿using NUnit.Core.Extensibility;
 
 namespace iSynaptic.Commons.Testing.NUnit.Addins
 {
@@ -11,7 +7,7 @@ namespace iSynaptic.Commons.Testing.NUnit.Addins
     {
         public bool Install(IExtensionHost host)
         {
-            IExtensionPoint testDecorators = host.GetExtensionPoint("TestDecorators");
+            var testDecorators = host.GetExtensionPoint("TestDecorators");
             testDecorators.Install(new BehavioralAttributeTestDecorator());
 
             return true;

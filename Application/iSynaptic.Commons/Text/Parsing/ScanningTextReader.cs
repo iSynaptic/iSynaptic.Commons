@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.IO;
 
 namespace iSynaptic.Commons.Text.Parsing
@@ -69,8 +68,8 @@ namespace iSynaptic.Commons.Text.Parsing
                 LookAheadList.AddRange(buffer);
                 return LookAheadList[index];
             }
-            else
-                return -1;
+            
+            return -1;
         }
 
         public override int Peek()

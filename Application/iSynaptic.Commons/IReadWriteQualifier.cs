@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace iSynaptic.Commons
+﻿namespace iSynaptic.Commons
 {
-    public interface IReadWriteQualifier<Q, T>
+    public interface IReadWriteQualifier<TItem, TQualifier>
     {
-        T this[Q qualifier] { get; set; }
+        TItem this[TQualifier qualifier] { get; set; }
     }
 }

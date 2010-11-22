@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace iSynaptic.Commons
 {
@@ -98,7 +97,7 @@ namespace iSynaptic.Commons
 
         private class DisposableAction : IDisposable
         {
-            private Action _Action = null;
+            private readonly Action _Action = null;
             public DisposableAction(Action action)
             {
                 _Action = action;
