@@ -4,60 +4,15 @@ using System.Text;
 
 namespace iSynaptic.Commons.AOP
 {
-    public abstract class UnitOfWork<U, T> : NestableScope<U>, IUnitOfWork<T>
-        where U : NestableScope<U>, IUnitOfWork<T>
+    public abstract class UnitOfWork<T, U> : EnlistmentScope<T, U>, IUnitOfWork<T>
+        where U : EnlistmentScope<T, U>, IUnitOfWork<T>
     {
-        private List<T> _Items = null;
-
-        public UnitOfWork() : base(ScopeBounds.Thread)
+        public UnitOfWork() : this(ScopeNesting.Allowed)
         {
         }
 
-        #region Enlistment Methods
-
-        public bool IsEnlisted(T item)
+        public UnitOfWork(ScopeNesting nesting) : base(ScopeBounds.Thread, nesting)
         {
-            if(Disposed)
-                throw new ObjectDisposedException(GetType().Name);
-
-            if (Items.Contains(item))
-                return true;
-
-            if (Parent != null && Parent.IsEnlisted(item))
-                return true;
-
-            return false;
-        }
-
-        public void Enlist(params T[] items)
-        {
-            if (Disposed)
-                throw new ObjectDisposedException(GetType().Name);
-
-            Enlist((IEnumerable<T>)items);
-        }
-
-        public virtual void Enlist(IEnumerable<T> items)
-        {
-            if (Disposed)
-                throw new ObjectDisposedException(GetType().Name);
-
-            Items.AddRange(items);
-        } 
-
-        #endregion
-
-        protected override void Dispose(bool disposing)
-        {
-            try
-            {
-                if(Disposed != true)
-                    Items.Clear();
-            }
-            finally
-            {
-                base.Dispose(disposing);
-            }
         }
 
         protected abstract void Process(IEnumerable<T> items);
@@ -75,10 +30,5 @@ namespace iSynaptic.Commons.AOP
         }
 
         protected bool Completed { get; private set; }
-
-        protected List<T> Items
-        {
-            get { return _Items ?? (_Items = new List<T>()); }
-        }
     }
 }

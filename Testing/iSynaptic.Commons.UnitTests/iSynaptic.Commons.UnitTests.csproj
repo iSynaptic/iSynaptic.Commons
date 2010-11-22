@@ -70,9 +70,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AOP\DisposableContextTests.cs" />
-    <Compile Include="AOP\NestableScopeTests.cs" />
     <Compile Include="AOP\ScopeTests.cs" />
-    <Compile Include="AOP\StubNestableScope.cs" />
     <Compile Include="AOP\StubScope.cs" />
     <Compile Include="AOP\UnitOfWorkStub.cs" />
     <Compile Include="AOP\UnitOfWorkTests.cs" />

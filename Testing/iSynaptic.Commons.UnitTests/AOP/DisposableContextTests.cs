@@ -62,7 +62,7 @@ namespace iSynaptic.Commons.AOP
                 {
                     dc2.Enlist(second);
 
-                    Assert.IsTrue(dc2.IsEnlisted(first));
+                    Assert.IsFalse(dc2.IsEnlisted(first));
                     Assert.IsTrue(dc2.IsEnlisted(second));
                 }
 

@@ -8,11 +8,7 @@ namespace iSynaptic.Commons.AOP
 {
     public class StubScope : Scope<StubScope>
     {
-        public StubScope()
-        {
-        }
-
-        public StubScope(ScopeBounds bounds) : base(bounds)
+        public StubScope(ScopeBounds bounds, ScopeNesting nesting) : base(bounds, nesting)
         {
         }
 

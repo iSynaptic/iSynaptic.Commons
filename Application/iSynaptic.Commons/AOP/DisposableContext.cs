@@ -5,29 +5,14 @@ using System.Text;
 
 namespace iSynaptic.Commons.AOP
 {
-    public class DisposableContext : NestableScope<DisposableContext>
+    public class DisposableContext : EnlistmentScope<IDisposable, DisposableContext>
     {
-        private List<IDisposable> _Disposables = null;
-
-        public bool IsEnlisted(IDisposable disposable)
+        public DisposableContext() : this(ScopeBounds.Thread, ScopeNesting.Allowed)
         {
-            if (Disposables.Contains(disposable))
-                return true;
-
-            if (Parent != null && Parent.IsEnlisted(disposable))
-                return true;
-
-            return false;
         }
 
-        public void Enlist(params IDisposable[] disposables)
+        public DisposableContext(ScopeBounds bounds, ScopeNesting nesting) : base(bounds, nesting)
         {
-            Enlist((IEnumerable<IDisposable>)disposables);
-        }
-
-        public virtual void Enlist(IEnumerable<IDisposable> disposables)
-        {
-            Disposables.AddRange(disposables);
         }
 
         protected override void Dispose(bool disposing)
@@ -36,16 +21,21 @@ namespace iSynaptic.Commons.AOP
             {
                 if (Parent != null)
                 {
-                    Parent.Enlist(Disposables);
-                    Disposables.Clear();
+                    Parent.Enlist(Items);
+                    Items.Clear();
                 }
                 else
                 {
-                    Action<IDisposable> dispose = d => d.Dispose();
                     List<Exception> exceptions = new List<Exception>();
+                    
+                    Action<IDisposable> dispose = d => d.Dispose();
+                    dispose = dispose.CatchExceptions(exceptions);
 
-                    Disposables.ForEach(dispose.CatchExceptions(exceptions));
-                    Disposables.Clear();
+                    Items
+                        .ToList()
+                        .ForEach(dispose);
+
+                    Items.Clear();
 
                     if (exceptions.Count > 0)
                         throw new AggregateException("Exception(s) occured during disposal.", exceptions);
@@ -60,11 +50,6 @@ namespace iSynaptic.Commons.AOP
         public static DisposableContext Current
         {
             get { return GetCurrentScope(); }
-        }
-
-        protected List<IDisposable> Disposables
-        {
-            get { return _Disposables ?? (_Disposables = new List<IDisposable>()); }
         }
     }
 }

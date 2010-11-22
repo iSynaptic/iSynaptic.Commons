@@ -51,7 +51,7 @@ namespace iSynaptic.Commons.AOP
             using (UnitOfWorkStub uow = new UnitOfWorkStub())
             {
                 uow.Enlist(obj);
-                Assert.IsTrue(uow.GetItems().Contains(obj));
+                Assert.IsTrue(uow.IsEnlisted(obj));
             }
         }
 
@@ -69,7 +69,7 @@ namespace iSynaptic.Commons.AOP
 
                 using (UnitOfWorkStub uow2 = new UnitOfWorkStub())
                 {
-                    Assert.IsTrue(uow2.IsEnlisted(obj));
+                    Assert.IsFalse(uow2.IsEnlisted(obj));
                     Assert.IsFalse(uow2.IsEnlisted(new object()));
                 }
             }
@@ -85,11 +85,11 @@ namespace iSynaptic.Commons.AOP
                 using (UnitOfWorkStub uow2 = new UnitOfWorkStub())
                 {
                     uow2.Enlist(obj);
-                    Assert.IsFalse(uow.GetItems().Contains(obj));
-                    Assert.IsTrue(uow2.GetItems().Contains(obj));
+                    Assert.IsFalse(uow.IsEnlisted(obj));
+                    Assert.IsTrue(uow2.IsEnlisted(obj));
                 }
 
-                Assert.IsFalse(uow.GetItems().Contains(obj));
+                Assert.IsFalse(uow.IsEnlisted(obj));
             }
         }
 

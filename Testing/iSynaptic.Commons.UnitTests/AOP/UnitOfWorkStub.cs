@@ -6,7 +6,7 @@ using iSynaptic.Commons.AOP;
 
 namespace iSynaptic.Commons.AOP
 {
-    public class UnitOfWorkStub : UnitOfWork<UnitOfWorkStub, object>
+    public class UnitOfWorkStub : UnitOfWork<object, UnitOfWorkStub>
     {
         private Action<object> _ProcessHandler = null;
 
@@ -26,11 +26,6 @@ namespace iSynaptic.Commons.AOP
                 if (_ProcessHandler != null)
                     _ProcessHandler(item);
             }
-        }
-
-        public List<object> GetItems()
-        {
-            return Items;
         }
 
         public static UnitOfWorkStub Current
