@@ -58,5 +58,13 @@ namespace iSynaptic.Commons
         {
             _DependencyResolver = dependencyResolver;
         }
+
+        public static void SetDependencyResolver(Func<IDependencyResolver, IDependencyResolver> dependencyResolverFactory)
+        {
+            if(dependencyResolverFactory == null)
+                throw new ArgumentNullException("dependencyResolverFactory");
+
+            _DependencyResolver = dependencyResolverFactory(_DependencyResolver);
+        }
     }
 }

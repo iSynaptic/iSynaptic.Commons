@@ -59,9 +59,27 @@ namespace iSynaptic.Commons
         [Test]
         public void Resolve_WithNoResolver_ReturnsNull()
         {
-            Ioc.SetDependencyResolver(null);
+            Ioc.SetDependencyResolver((IDependencyResolver)null);
 
             Assert.IsNull(Ioc.Resolve<IDisposable>());
+        }
+
+        [Test]
+        public void SetDependencyResolver_WithNullFactory_ThrowsArgumentNullException()
+        {
+            Assert.Throws<ArgumentNullException>(() => Ioc.SetDependencyResolver((Func<IDependencyResolver, IDependencyResolver>)null));
+        }
+
+        [Test]
+        public void SetDependencyResolver_WithNonNullFactory_ProvidesCurrentResolverToFactory()
+        {
+            var resolver = MockRepository.GenerateStub<IDependencyResolver>();
+            Ioc.SetDependencyResolver(resolver);
+
+            IDependencyResolver providedResolver = null;
+            Ioc.SetDependencyResolver(x => { providedResolver = x; return x; });
+
+            Assert.IsTrue(ReferenceEquals(resolver, providedResolver));
         }
     }
 }
