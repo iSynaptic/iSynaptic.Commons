@@ -9,6 +9,7 @@
   
   <ItemGroup>
     <ApplicationProject Include="Application\$(SolutionName)\$(SolutionName).csproj" />
+    <ApplicationProject Include="Application\$(SolutionName).Data\$(SolutionName).Data.csproj" />
 
     <TestingProject Include="Testing\$(SolutionName).UnitTests\$(SolutionName).UnitTests.csproj" />
   </ItemGroup>

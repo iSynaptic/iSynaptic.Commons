@@ -605,7 +605,6 @@ namespace iSynaptic.Commons.Runtime.Serialization
 
         private static Func<T, T, CloneContext, T> Strategy
         {
-            [ReflectionPermission(SecurityAction.Demand, ReflectionEmit = true)]
             get
             {
                 if (_Strategy == null)
