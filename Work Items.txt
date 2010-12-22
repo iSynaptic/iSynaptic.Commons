@@ -6,7 +6,6 @@
 - Evaluate possible refactoring of Cloneable<T>/Equatable<T> to see if they could be simplified/generalized...
 - Move to .NET 4.0
 	* Replace thread safety in Cloneable<T>/Equatable<T> with Lazy<T>
-	* Remove SpinLock class
 	* Add support for new Func/Action types that take more arguments
 	* Scan all types for co/contra-variant posibilities
 - Refactor SimpleScanner to a class that inherits from abstract TextScanner<T>, where T is the Token type

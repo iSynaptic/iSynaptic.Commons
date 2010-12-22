@@ -119,7 +119,6 @@
     <Compile Include="Text\Parsing\SimpleScanner.cs" />
     <Compile Include="Text\Parsing\Token.cs" />
     <Compile Include="Text\Parsing\TokenKind.cs" />
-    <Compile Include="Threading\SpinLock.cs" />
     <Compile Include="Transactions\ITransactional.cs" />
     <Compile Include="Transactions\Transactional.cs" />
     <Compile Include="Transactions\TransactionalBase.cs" />

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Transactions;
 using iSynaptic.Commons.Runtime.Serialization;
-using iSynaptic.Commons.Threading;
 
 namespace iSynaptic.Commons.Transactions
 {
@@ -42,14 +42,18 @@ namespace iSynaptic.Commons.Transactions
 
             public void Prepare(PreparingEnlistment preparingEnlistment)
             {
-                _Transactional._Lock.Enter();
+                bool lockTaken = false;
+
+                _Transactional._Lock.Enter(ref lockTaken);
 
                 var value = _Transactional.GetTransactionValue(_Id).Value;
                 var originalValue = _Transactional.GetCurrentValue();
                 
                 if (value.Key != originalValue.Key)
                 {
-                    _Transactional._Lock.Exit();
+                    if(lockTaken)
+                        _Transactional._Lock.Exit();
+
                     preparingEnlistment.ForceRollback(new TransactionalConcurrencyException());
                     return;
                 }
@@ -68,7 +72,7 @@ namespace iSynaptic.Commons.Transactions
 
         #endregion
 
-        private SpinLock _Lock = new SpinLock();
+        private SpinLock _Lock = new SpinLock(enableThreadOwnerTracking: false);
 
         private KeyValuePair<Guid, T> _CurrentValue = default(KeyValuePair<Guid, T>);
         private Dictionary<string, KeyValuePair<Guid, T>> _Values = null;
@@ -204,12 +208,14 @@ namespace iSynaptic.Commons.Transactions
             {
                 if(_Values == null)
                 {
-                    _Lock.Enter();
+                    bool lockTaken = false;
+                    _Lock.Enter(ref lockTaken);
 
                     if(_Values == null)
                         _Values = new Dictionary<string, KeyValuePair<Guid, T>>();
 
-                    _Lock.Exit();
+                    if(lockTaken)
+                        _Lock.Exit();   
                 }
 
                 return _Values;
