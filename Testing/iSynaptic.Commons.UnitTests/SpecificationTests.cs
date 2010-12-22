@@ -5,12 +5,11 @@ using iSynaptic.Commons.Collections.Generic;
 using NUnit.Framework;
 
 using System.Linq;
-using iSynaptic.Commons.Testing.NUnit;
 
 namespace iSynaptic.Commons
 {
     [TestFixture]
-    public class SpecificationTests : NUnitBaseTestFixture
+    public class SpecificationTests
     {
         [Test]
         public void ConversionFromFunc()

@@ -110,14 +110,6 @@
     <Compile Include="Xml\ProcessingInstructionParserTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Application\iSynaptic.Commons.Ninject\iSynaptic.Commons.Ninject.csproj">
-      <Project>{A7C05520-1148-4A58-B9BF-A1C92803DBEA}</Project>
-      <Name>iSynaptic.Commons.Ninject</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Application\iSynaptic.Commons.Testing\iSynaptic.Commons.Testing.csproj">
-      <Project>{F16D5F6F-4CE4-4232-AEAB-76A4703B131E}</Project>
-      <Name>iSynaptic.Commons.Testing</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Application\iSynaptic.Commons\iSynaptic.Commons.csproj">
       <Project>{8F6C6021-0517-4033-B7DA-A07DD0112FC6}</Project>
       <Name>iSynaptic.Commons</Name>

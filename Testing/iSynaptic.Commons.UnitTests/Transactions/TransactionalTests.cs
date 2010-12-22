@@ -7,12 +7,11 @@ using NUnit.Framework;
 
 using iSynaptic.Commons.Transactions;
 using Rhino.Mocks;
-using iSynaptic.Commons.Testing.NUnit;
 
 namespace iSynaptic.Commons.Transactions
 {
     [TestFixture]
-    public class TransactionalTests : NUnitBaseTestFixture
+    public class TransactionalTests
     {
         [Test]
         public void NullOnCreation()

@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
-using iSynaptic.Commons.Testing.NUnit;
 
 namespace iSynaptic.Commons.Collections.Generic
 {
     [TestFixture]
-    public class CollectionExtensionsTests : NUnitBaseTestFixture
+    public class CollectionExtensionsTests
     {
         [Test]
         public void RemoveWithNull()

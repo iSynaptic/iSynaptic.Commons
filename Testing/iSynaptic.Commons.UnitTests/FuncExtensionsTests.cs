@@ -1,11 +1,10 @@
 ﻿using System;
 using NUnit.Framework;
-using iSynaptic.Commons.Testing.NUnit;
 
 namespace iSynaptic.Commons
 {
     [TestFixture]
-    public class FuncExtensionsTests : NUnitBaseTestFixture
+    public class FuncExtensionsTests
     {
         [Test]
         public void MakeConditional()

@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using NUnit.Framework;
-using iSynaptic.Commons.Testing.NUnit;
 
 namespace iSynaptic.Commons.Collections.Generic
 {
     [TestFixture]
-    public class DictionaryExtensionsTests : NUnitBaseTestFixture
+    public class DictionaryExtensionsTests
     {
         [Test]
         public void ToReadOnlyWithNull()

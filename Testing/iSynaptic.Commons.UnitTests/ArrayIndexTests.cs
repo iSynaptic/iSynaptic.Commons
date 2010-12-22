@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using iSynaptic.Commons.Testing.NUnit;
 using NUnit.Framework;
 
 namespace iSynaptic.Commons
 {
     [TestFixture]
-    public class ArrayIndexTests : NUnitBaseTestFixture
+    public class ArrayIndexTests
     {
         [Test]
         public void NullArray()

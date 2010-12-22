@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using iSynaptic.Commons.Testing.NUnit;
 using NUnit.Framework;
 
 namespace iSynaptic.Commons
 {
     [TestFixture]
-    public class DependencyResolverTests : NUnitBaseTestFixture
+    public class DependencyResolverTests
     {
         [Test]
         public void Construction_WithNullResolutionStrategy_ThrowsArgumentNullException()

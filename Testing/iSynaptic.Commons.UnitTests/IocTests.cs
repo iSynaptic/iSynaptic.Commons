@@ -2,17 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using iSynaptic.Commons.Testing.RhinoMocks;
-using iSynaptic.Commons.Testing.NUnit;
 
 using NUnit.Framework;
 using Rhino.Mocks;
-using Rhino.Mocks.Constraints;
 
 namespace iSynaptic.Commons
 {
     [TestFixture]
-    public class IocTests : NUnitBaseTestFixture
+    public class IocTests
     {
         [Test]
         public void Resolve_WithNoParameters_ReturnsExpectedValue()

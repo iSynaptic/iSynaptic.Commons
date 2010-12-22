@@ -4,14 +4,12 @@ using System.Text;
 using System.Linq;
 
 using NUnit.Framework;
-using iSynaptic.Commons.Collections.Generic;
 using System.Collections;
-using iSynaptic.Commons.Testing.NUnit;
 
 namespace iSynaptic.Commons.Collections.Generic
 {
     [TestFixture]
-    public class ReadOnlyDictionaryTests : NUnitBaseTestFixture
+    public class ReadOnlyDictionaryTests
     {
         [Test]
         public void NullInnerDictionary()

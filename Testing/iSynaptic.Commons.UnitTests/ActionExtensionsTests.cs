@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using NUnit.Framework;
-using iSynaptic.Commons.Testing.NUnit;
 
 namespace iSynaptic.Commons
 {
     [TestFixture]
-    public class ActionExtensionsTests : NUnitBaseTestFixture
+    public class ActionExtensionsTests
     {
         [Test]
         public void CurryOneOfOneArgument()
