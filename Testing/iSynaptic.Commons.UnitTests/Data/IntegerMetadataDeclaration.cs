@@ -24,8 +24,7 @@ namespace iSynaptic.Commons.Data
         {
             base.OnCheckValue(value, valueName);
 
-            var t = (int)value;
-            if (Min > t || t > Max)
+            if (Min > value || value > Max)
                 throw new ArgumentOutOfRangeException("value");
         }
     }

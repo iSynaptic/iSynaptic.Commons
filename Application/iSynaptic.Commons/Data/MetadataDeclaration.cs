@@ -5,7 +5,7 @@ using System.Text;
 
 namespace iSynaptic.Commons.Data
 {
-    public class MetadataDeclaration<T>
+    public class MetadataDeclaration<T> : IMetadataDeclaration
     {
         private Maybe<T> _Default = Maybe<T>.NoValue;
 
@@ -54,6 +54,9 @@ namespace iSynaptic.Commons.Data
                 return defaultValue;
             }
         }
+
+        object IMetadataDeclaration.Default { get { return Default; }}
+
         public Type MetadataType { get; private set; }
     }
 }

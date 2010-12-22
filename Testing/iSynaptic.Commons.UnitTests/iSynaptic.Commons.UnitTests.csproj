@@ -83,8 +83,10 @@
     <Compile Include="AggregateExceptionTests.cs" />
     <Compile Include="DataEventArgsTests.cs" />
     <Compile Include="Data\MetadataDeclarationTests.cs" />
+    <Compile Include="Data\StandardMetadataResolverTests.cs" />
     <Compile Include="Data\MetadataTests.cs" />
-    <Compile Include="Data\NonGenericIntegerMetadataDeclaration.cs" />
+    <Compile Include="Data\IntegerMetadataDeclaration.cs" />
+    <Compile Include="Data\StringMetadata.cs" />
     <Compile Include="DependencyResolverTests.cs" />
     <Compile Include="Diagnostics\LoggerExtensionsTests.cs" />
     <Compile Include="ActionExtensionsTests.cs" />
@@ -111,6 +113,10 @@
     <Compile Include="Xml\ProcessingInstructionParserTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Application\iSynaptic.Commons.Data\iSynaptic.Commons.Data.csproj">
+      <Project>{014346BA-0D7F-4C64-84C1-261657BFF90C}</Project>
+      <Name>iSynaptic.Commons.Data</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Application\iSynaptic.Commons\iSynaptic.Commons.csproj">
       <Project>{8F6C6021-0517-4033-B7DA-A07DD0112FC6}</Project>
       <Name>iSynaptic.Commons</Name>

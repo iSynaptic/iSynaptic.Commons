@@ -40,7 +40,15 @@
     <Compile Include="..\..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="IMetadataBinding.cs" />
+    <Compile Include="IMetadataBindingSource.cs" />
+    <Compile Include="MetadataBinding.cs" />
+    <Compile Include="MetadataBindingModule.cs" />
+    <Compile Include="MetadataRequest.cs" />
+    <Compile Include="MetadataResolver.cs" />
+    <Compile Include="ModuleMetadataBindingSource.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StandardMetadataResolver.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\iSynaptic.Commons\iSynaptic.Commons.csproj">
