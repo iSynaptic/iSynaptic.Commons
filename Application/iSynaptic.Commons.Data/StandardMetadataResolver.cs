@@ -7,13 +7,10 @@ namespace iSynaptic.Commons.Data
     {
         public StandardMetadataResolver(params MetadataBindingModule[] modules)
         {
-            if(modules == null)
-                throw new ArgumentNullException();
+            if(modules != null && modules.Length > 0)
+                AddMetadataBindingSource(new ModuleMetadataBindingSource(modules));
 
-            if (modules.Length <= 0)
-                return;
-
-            AddMetadataBindingSource(new ModuleMetadataBindingSource(modules));
+            AddMetadataBindingSource<AttributeMetadataBindingSource>();
         }
     }
 }

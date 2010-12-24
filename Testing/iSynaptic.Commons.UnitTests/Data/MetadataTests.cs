@@ -15,7 +15,7 @@ namespace iSynaptic.Commons.Data
         [SetUp]
         public void BeforeTest()
         {
-            Metadata.SetMetadataResolver(null);
+            Metadata.SetResolver(null);
             Ioc.SetDependencyResolver(null);
         }
 
@@ -28,7 +28,7 @@ namespace iSynaptic.Commons.Data
             resolver.Stub(x => x.Resolve(maxLength, typeof (string), null))
                 .Return(42);
 
-            Metadata.SetMetadataResolver(resolver);
+            Metadata.SetResolver(resolver);
 
             var value = Metadata<string>.Get(maxLength);
             Assert.AreEqual(42, value);
@@ -88,7 +88,7 @@ namespace iSynaptic.Commons.Data
             resolver.Expect(x => x.Resolve(maxLength, null, null))
                 .Return(42);
 
-            Metadata.SetMetadataResolver(resolver);
+            Metadata.SetResolver(resolver);
 
             Metadata.Get(maxLength);
             resolver.VerifyAllExpectations();
@@ -103,7 +103,7 @@ namespace iSynaptic.Commons.Data
             resolver.Expect(x => x.Resolve(maxLength, typeof(string), null))
                 .Return(42);
 
-            Metadata.SetMetadataResolver(resolver);
+            Metadata.SetResolver(resolver);
 
             Metadata<string>.Get(maxLength);
             resolver.VerifyAllExpectations();
@@ -119,7 +119,7 @@ namespace iSynaptic.Commons.Data
             resolver.Expect(x => x.Resolve(maxLength, subject, null))
                 .Return(42);
 
-            Metadata.SetMetadataResolver(resolver);
+            Metadata.SetResolver(resolver);
 
             Metadata<string>.Get(maxLength, subject);
             resolver.VerifyAllExpectations();
@@ -137,7 +137,7 @@ namespace iSynaptic.Commons.Data
             resolver.Expect(x => x.Resolve(maxLength, typeof(string), member))
                 .Return(42);
 
-            Metadata.SetMetadataResolver(resolver);
+            Metadata.SetResolver(resolver);
 
             Metadata<string>.Get(maxLength, expression);
             resolver.VerifyAllExpectations();
@@ -156,7 +156,7 @@ namespace iSynaptic.Commons.Data
             resolver.Expect(x => x.Resolve(maxLength, subject, member))
                 .Return(42);
 
-            Metadata.SetMetadataResolver(resolver);
+            Metadata.SetResolver(resolver);
 
             Metadata<string>.Get(maxLength, subject, expression);
             resolver.VerifyAllExpectations();

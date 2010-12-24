@@ -12,15 +12,20 @@ namespace iSynaptic.Commons.Data
 
         public T Resolve<T>(MetadataDeclaration<T> declaration, object subject, MemberInfo member)
         {
-            var request = new MetadataRequest(declaration, subject, member);
+            var request = new MetadataRequest<T>(declaration, subject, member);
 
             return _BindingSources
-                .SelectMany(x => x.GetBindingsFor(request))
+                .SelectMany(x => x.GetBindingsFor<T>(request))
                 .Where(x => x.Matches(request))
                 .Take(1)
-                .Select(x => x.Resolve<T>(request))
+                .Select(x => x.Resolve(request))
                 .DefaultIfEmpty(declaration.Default)
                 .First();
+        }
+
+        public void AddMetadataBindingSource<T>() where T : class, IMetadataBindingSource, new()
+        {
+            AddMetadataBindingSource(new T());
         }
 
         public void AddMetadataBindingSource(IMetadataBindingSource source)

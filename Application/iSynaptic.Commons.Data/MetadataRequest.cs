@@ -7,9 +7,9 @@ using System.Text;
 
 namespace iSynaptic.Commons.Data
 {
-    public class MetadataRequest
+    public class MetadataRequest<TMetadata>
     {
-        public MetadataRequest(IMetadataDeclaration declaration, object subject, MemberInfo member)
+        public MetadataRequest(IMetadataDeclaration<TMetadata> declaration, object subject, MemberInfo member)
         {
             if(declaration == null)
                 throw new ArgumentNullException("declaration");
@@ -19,7 +19,7 @@ namespace iSynaptic.Commons.Data
             Member = member;
         }
 
-        public IMetadataDeclaration Declaration { get; private set; }
+        public IMetadataDeclaration<TMetadata> Declaration { get; private set; }
 
         public object Subject { get; private set; }
         public MemberInfo Member { get; private set; }

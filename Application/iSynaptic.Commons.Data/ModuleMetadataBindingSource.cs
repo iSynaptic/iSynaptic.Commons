@@ -12,11 +12,10 @@ namespace iSynaptic.Commons.Data
             _Modules = modules;
         }
 
-        public IEnumerable<IMetadataBinding> GetBindingsFor(MetadataRequest request)
+        public IEnumerable<IMetadataBinding<TMetadata>> GetBindingsFor<TMetadata>(MetadataRequest<TMetadata> request)
         {
             return _Modules
-                .SelectMany(x => x.GetBindings())
-                .Where(x => x.Matches(request));
+                .SelectMany(x => x.GetBindings<TMetadata>());
         }
     }
 }

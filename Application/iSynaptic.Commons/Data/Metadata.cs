@@ -63,7 +63,7 @@ namespace iSynaptic.Commons.Data
             throw new ArgumentException("You can only retreive member metatdata for properties and fields.", "member");
         }
 
-        public static void SetMetadataResolver(IMetadataResolver metadataResolver)
+        public static void SetResolver(IMetadataResolver metadataResolver)
         {
             MetadataResolver = metadataResolver;
         }

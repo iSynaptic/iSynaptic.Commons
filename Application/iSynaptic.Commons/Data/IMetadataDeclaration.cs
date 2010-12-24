@@ -5,9 +5,8 @@ using System.Text;
 
 namespace iSynaptic.Commons.Data
 {
-    public interface IMetadataDeclaration
+    public interface IMetadataDeclaration<out TMetadata>
     {
-        Type MetadataType { get; }
-        object Default { get; }
+        TMetadata Default { get; }
     }
 }

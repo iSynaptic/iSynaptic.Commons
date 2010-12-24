@@ -18,12 +18,22 @@ namespace iSynaptic.Commons.Data
             }
         }
 
+
+        private class TestSubject
+        {
+            [MaxLength(84)]
+            public string FirstName { get; set; }
+
+            [MaxLength(1764)]
+            public string LastName = null;
+        }
+
         [Test]
         public void Resolve_ThruMetadataClass_ReturnsValue()
         {
             var resolver = new StandardMetadataResolver(new TestModule());
 
-            Metadata.SetMetadataResolver(resolver);
+            Metadata.SetResolver(resolver);
 
             var value = Metadata.Get(StringMetadata.MaxLength);
             Assert.AreEqual(42, value);
@@ -54,6 +64,26 @@ namespace iSynaptic.Commons.Data
 
             var value = resolver.Resolve(new IntegerMetadataDeclaration(-1, 42, 7), null, null);
             Assert.AreEqual(7, value);
+        }
+
+        [Test]
+        public void Resolve_WithAttributedProperty_ReturnsValue()
+        {
+            var resolver = new StandardMetadataResolver();
+            Metadata.SetResolver(resolver);
+
+            var value = Metadata<TestSubject>.Get(StringMetadata.MaxLength, x => x.FirstName);
+            Assert.AreEqual(84, value);
+        }
+
+        [Test]
+        public void Resolve_WithAttributedField_ReturnsValue()
+        {
+            var resolver = new StandardMetadataResolver();
+            Metadata.SetResolver(resolver);
+
+            var value = Metadata<TestSubject>.Get(StringMetadata.MaxLength, x => x.LastName);
+            Assert.AreEqual(1764, value);
         }
     }
 }

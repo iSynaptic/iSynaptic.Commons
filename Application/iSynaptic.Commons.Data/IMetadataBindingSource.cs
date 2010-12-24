@@ -7,6 +7,6 @@ namespace iSynaptic.Commons.Data
 {
     public interface IMetadataBindingSource
     {
-        IEnumerable<IMetadataBinding> GetBindingsFor(MetadataRequest request);
+        IEnumerable<IMetadataBinding<TMetadata>> GetBindingsFor<TMetadata>(MetadataRequest<TMetadata> request);
     }
 }

@@ -5,30 +5,30 @@ using System.Text;
 
 namespace iSynaptic.Commons.Data
 {
-    public class MetadataBinding : IMetadataBinding
+    public class MetadataBinding<TMetadata> : IMetadataBinding<TMetadata>
     {
-        private readonly IMetadataDeclaration _Declaration;
+        private readonly IMetadataDeclaration<TMetadata> _Declaration;
         private readonly object _Value;
 
-        public MetadataBinding(IMetadataDeclaration declaration, object value)
+        public MetadataBinding(IMetadataDeclaration<TMetadata> declaration, object value)
         {
             _Declaration = declaration;
             _Value = value;
         }
 
-        public bool Matches(MetadataRequest request)
+        public bool Matches(MetadataRequest<TMetadata> request)
         {
             return request.Declaration == _Declaration;
         }
 
-        public Func<MetadataRequest, object> ScopeFactory
+        public Func<MetadataRequest<TMetadata>, object> ScopeFactory
         {
             get { throw new NotImplementedException(); }
         }
 
-        public T Resolve<T>(MetadataRequest request)
+        public TMetadata Resolve(MetadataRequest<TMetadata> request)
         {
-            return (T) _Value;
+            return (TMetadata)_Value;
         }
     }
 }
