@@ -1,4 +1,6 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Linq.Expressions;
+using System.Reflection;
 
 namespace iSynaptic.Commons.Data
 {
@@ -6,10 +8,10 @@ namespace iSynaptic.Commons.Data
     {
         public static TMetadata For<T, TMetadata>(this MetadataDeclaration<TMetadata> declaration, T subject)
         {
-            return Metadata<T>.Get(declaration, subject, null);
+            return Metadata<T>.Get<object, TMetadata>(declaration, subject, null);
         }
 
-        public static TMetadata For<T, TMetadata>(this MetadataDeclaration<TMetadata> declaration, T subject, MemberInfo member)
+        public static TMetadata For<T, TMember, TMetadata>(this MetadataDeclaration<TMetadata> declaration, T subject, Expression<Func<T, TMember>> member)
         {
             return Metadata<T>.Get(declaration, subject, member);
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using NUnit.Framework;
@@ -128,7 +129,9 @@ namespace iSynaptic.Commons.Data
         public void Get_OnGenericMetadataWithDeclarationAndMember_ProvidesAllArgumentsToResolver()
         {
             var maxLength = new MetadataDeclaration<int>(7);
-            var member = GetType().GetMethods()[0];
+
+            Expression<Func<string, int>> expression = x => x.Length;
+            var member = ((MemberExpression) expression.Body).Member;
 
             var resolver = MockRepository.GenerateMock<IMetadataResolver>();
             resolver.Expect(x => x.Resolve(maxLength, typeof(string), member))
@@ -136,7 +139,7 @@ namespace iSynaptic.Commons.Data
 
             Metadata.SetMetadataResolver(resolver);
 
-            Metadata<string>.Get(maxLength, member);
+            Metadata<string>.Get(maxLength, expression);
             resolver.VerifyAllExpectations();
         }
 
@@ -145,7 +148,9 @@ namespace iSynaptic.Commons.Data
         {
             var maxLength = new MetadataDeclaration<int>(7);
             string subject = "Hello, World!";
-            var member = GetType().GetMethods()[0];
+
+            Expression<Func<string, int>> expression = x => x.Length;
+            var member = ((MemberExpression)expression.Body).Member;
 
             var resolver = MockRepository.GenerateMock<IMetadataResolver>();
             resolver.Expect(x => x.Resolve(maxLength, subject, member))
@@ -153,7 +158,7 @@ namespace iSynaptic.Commons.Data
 
             Metadata.SetMetadataResolver(resolver);
 
-            Metadata<string>.Get(maxLength, subject, member);
+            Metadata<string>.Get(maxLength, subject, expression);
             resolver.VerifyAllExpectations();
         }
 
