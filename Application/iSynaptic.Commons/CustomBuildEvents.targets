@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ILMergePath Condition="$(ILMergePath) == ''">$(MSBuildProjectDirectory)\..\..\External\Tools\ILMerge</ILMergePath>    
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ILFile Include="IL\*.il" />
+    </ItemGroup>
+    
+    <Target Name="BeforeBuild">
+        <Exec Command="$(MSBuildBinPath)\ilasm @(ILFile -> '&quot;%(Identity)&quot;', ' ') /out=$(OutputPath)iSynaptic.Commons.IL.dll /dll"
+              WorkingDirectory="$(MSBuildProjectDirectory)" />
+    </Target>
+    
+    <Target Name="AfterBuild">
+        <Exec Command="&quot;$(ILMergePath)\ILMerge.exe&quot; &quot;/targetplatform:v4,$(MSBuildBinPath)&quot; &quot;/out:$(OutputPath)iSynaptic.Commons.Temp.dll&quot; /internalize:&quot;$(MSBuildProjectDirectory)\IL\ILMergeInternalizationExcludes.txt&quot; &quot;$(OutputPath)iSynaptic.Commons.dll&quot; &quot;$(OutputPath)iSynaptic.Commons.IL.dll&quot;" />
+
+        <Delete Files="$(OutputPath)iSynaptic.Commons.dll;$(OutputPath)iSynaptic.Commons.pdb" />
+        <Exec Command="&quot;$(ILMergePath)\ILMerge.exe&quot; &quot;/targetplatform:v4,$(MSBuildBinPath)&quot; &quot;/out:$(OutputPath)iSynaptic.Commons.dll&quot; &quot;$(OutputPath)iSynaptic.Commons.Temp.dll&quot;" />
+        
+        <Delete Files="$(OutputPath)iSynaptic.Commons.Temp.dll;$(OutputPath)iSynaptic.Commons.Temp.pdb" />
+        <Delete Files="$(OutputPath)iSynaptic.Commons.IL.dll;$(OutputPath)iSynaptic.Commons.IL.pdb" />
+    </Target>
+</Project>

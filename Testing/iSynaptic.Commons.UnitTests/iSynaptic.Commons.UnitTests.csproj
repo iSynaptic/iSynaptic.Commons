@@ -79,6 +79,7 @@
     <Compile Include="AOP\UnitOfWorkStub.cs" />
     <Compile Include="AOP\UnitOfWorkTests.cs" />
     <Compile Include="ArrayIndexTests.cs" />
+    <Compile Include="CastTests.cs" />
     <Compile Include="Collections\Generic\ReadOnlyDictionaryTests.cs" />
     <Compile Include="AggregateExceptionTests.cs" />
     <Compile Include="DataEventArgsTests.cs" />
