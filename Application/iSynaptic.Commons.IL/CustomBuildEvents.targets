@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <ItemGroup>
+        <ILFile Include="**\*.il" />
+    </ItemGroup>
+    
+    <Target Name="BeforeBuild">
+    </Target>
+    
+    <Target Name="AfterBuild">
+        <Delete Files="$(OutputPath)\iSynaptic.Commons.IL.dll;$(OutputPath)\iSynaptic.Commons.IL.pdb" />
+        <Exec Command="$(MSBuildBinPath)\ilasm @(ILFile -> '&quot;%(Identity)&quot;', ' ') &quot;/out=$(OutputPath)\iSynaptic.Commons.IL.dll&quot; /dll"
+              WorkingDirectory="$(MSBuildProjectDirectory)" />
+    </Target>
+</Project>

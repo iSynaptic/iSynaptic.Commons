@@ -18,7 +18,7 @@
 - Investigate how Monads could be encorporated in "PipelineEnumerable" concept
     * Perhaps change so that it is strictly functional composition (i.e. not require interface)
 - Implement SmartFormat...
-- Fix CodeCoverage reporting...
+- Implement PartCover
 - Implement support for attaching unit test behaviors to interfaces (test fixtures that implement the interface inherit behavior)
     * Possible submit support back to NUnit project
 - Add support for Dependant Scopes (e.g. System.Transactions.Transaction.DependantClone(...))
