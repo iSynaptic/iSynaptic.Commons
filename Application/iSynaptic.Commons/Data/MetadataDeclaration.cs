@@ -5,42 +5,42 @@ using System.Text;
 
 namespace iSynaptic.Commons.Data
 {
-    public class MetadataDeclaration<T> : IMetadataDeclaration<T>
+    public class MetadataDeclaration<TMetadata> : IMetadataDeclaration<TMetadata>
     {
-        private Maybe<T> _Default = Maybe<T>.NoValue;
+        private Maybe<TMetadata> _Default = Maybe<TMetadata>.NoValue;
 
         public MetadataDeclaration()
         {
-            MetadataType = typeof(T);
+            MetadataType = typeof(TMetadata);
         }
 
-        public MetadataDeclaration(T @default) : this()
+        public MetadataDeclaration(TMetadata @default) : this()
         {
-            _Default = new Maybe<T>(@default);
+            _Default = new Maybe<TMetadata>(@default);
         }
 
-        protected virtual T GetDefault()
+        protected virtual TMetadata GetDefault()
         {
             if (_Default.HasValue)
                 return _Default.Value;
 
-            return default(T);
+            return default(TMetadata);
         }
 
-        public void CheckValue(T value)
+        public void CheckValue(TMetadata value)
         {
             OnCheckValue(value, "value");
         }
 
-        protected virtual void OnCheckValue(T value, string valueName)
+        protected virtual void OnCheckValue(TMetadata value, string valueName)
         {
         }
 
-        public T Default
+        public TMetadata Default
         {
             get
             {
-                T defaultValue = GetDefault();
+                TMetadata defaultValue = GetDefault();
 
                 try
                 {

@@ -19,7 +19,7 @@ namespace iSynaptic.Commons.Data
 
         public TMetadata Resolve<TMetadata>(MetadataRequest<TMetadata> request)
         {
-            return Cast.To<int, TMetadata>(_MaxLength);
+            return UnsafeCast.To<int, TMetadata>(_MaxLength);
         }
     }
 }

@@ -6,22 +6,27 @@ using System.Text;
 
 namespace iSynaptic.Commons.Data
 {
-    public class MetadataResolver : IMetadataResolver
+    public abstract class MetadataResolver : IMetadataResolver
     {
         private HashSet<IMetadataBindingSource> _BindingSources = new HashSet<IMetadataBindingSource>();
 
-        public T Resolve<T>(MetadataDeclaration<T> declaration, object subject, MemberInfo member)
+        public TMetadata Resolve<TMetadata>(MetadataDeclaration<TMetadata> declaration, object subject, MemberInfo member)
         {
-            var request = new MetadataRequest<T>(declaration, subject, member);
+            var request = new MetadataRequest<TMetadata>(declaration, subject, member);
 
-            return _BindingSources
-                .SelectMany(x => x.GetBindingsFor<T>(request))
-                .Where(x => x.Matches(request))
-                .Take(1)
-                .Select(x => x.Resolve(request))
-                .DefaultIfEmpty(declaration.Default)
-                .First();
+            var candidateBindings= _BindingSources
+                .SelectMany(x => x.GetBindingsFor<TMetadata>(request))
+                .Where(x => x.Matches(request));
+                
+            var selectedBinding = SelectBinding(request, candidateBindings);
+
+            if(selectedBinding == null)
+                return declaration.Default;
+
+            return selectedBinding.Resolve(request);
         }
+
+        protected abstract IMetadataBinding<TMetadata> SelectBinding<TMetadata>(MetadataRequest<TMetadata> request, IEnumerable<IMetadataBinding<TMetadata>> candidates);
 
         public void AddMetadataBindingSource<T>() where T : class, IMetadataBindingSource, new()
         {

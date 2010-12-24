@@ -80,7 +80,7 @@
     <Compile Include="AOP\UnitOfWorkStub.cs" />
     <Compile Include="AOP\UnitOfWorkTests.cs" />
     <Compile Include="ArrayIndexTests.cs" />
-    <Compile Include="CastTests.cs" />
+    <Compile Include="UnsafeCastTests.cs" />
     <Compile Include="Collections\Generic\ReadOnlyDictionaryTests.cs" />
     <Compile Include="AggregateExceptionTests.cs" />
     <Compile Include="DataEventArgsTests.cs" />
@@ -117,8 +117,8 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Application\iSynaptic.Commons.Data\iSynaptic.Commons.Data.csproj">
-        <Project>{014346BA-0D7F-4C64-84C1-261657BFF90C}</Project>
-        <Name>iSynaptic.Commons.Data</Name>
+      <Project>{014346BA-0D7F-4C64-84C1-261657BFF90C}</Project>
+      <Name>iSynaptic.Commons.Data</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Application\iSynaptic.Commons.IL\iSynaptic.Commons.IL.csproj">
       <Project>{69425B08-B6B4-4A34-94A5-FF8A3936BCBF}</Project>
