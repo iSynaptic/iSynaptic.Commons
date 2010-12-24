@@ -1,22 +1,41 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Project ToolsVersion="4.0" DefaultTargets="BuildComplete" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <SolutionName>iSynaptic.Commons</SolutionName>
-    <TestingFramework>NUnit</TestingFramework>
-  </PropertyGroup>
+    <PropertyGroup>
+        <SolutionName>iSynaptic.Commons</SolutionName>
+        <TestingFramework>NUnit</TestingFramework>
+        
+        <ILMergePath Condition="$(ILMergePath) == ''">External\Tools\ILMerge</ILMergePath>    
+    </PropertyGroup>
 
-  <Import Project="External\Tools\SolutionBuild.targets" />
-  
-  <ItemGroup>
-    <ApplicationProject Include="Application\$(SolutionName)\$(SolutionName).csproj" />
-    <ApplicationProject Include="Application\$(SolutionName).Data\$(SolutionName).Data.csproj" />
+    <Import Project="External\Tools\SolutionBuild.targets" />
 
-    <TestingProject Include="Testing\$(SolutionName).UnitTests\$(SolutionName).UnitTests.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ApplicationProject Include="Application\$(SolutionName).IL\$(SolutionName).IL.csproj" />
+        <ApplicationProject Include="Application\$(SolutionName)\$(SolutionName).csproj" />
+        <ApplicationProject Include="Application\$(SolutionName).Data\$(SolutionName).Data.csproj" />
 
-  <ItemGroup>
-    <!--ExcludeCoverageReporting Include="Assembly|Namespace|Class">
+        <TestingProject Include="Testing\$(SolutionName).UnitTests\$(SolutionName).UnitTests.csproj" />
+
+        <PreLayoutOutputFilesTarget Include="MergeILAssembly" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!--ExcludeCoverageReporting Include="Assembly|Namespace|Class">
             <FilterExpression>{Regular Expression}</FilterExpression>
         </ExcludeCoverageReporting-->
-  </ItemGroup>
+    </ItemGroup>
+
+    <Target Name="MergeILAssembly">
+        <MakeDir Directories="$(BinariesPath)\Temp" />
+        
+        <Exec Command="&quot;$(ILMergePath)\ILMerge.exe&quot; &quot;/targetplatform:v4,$(MSBuildBinPath)&quot; &quot;/out:$(BinariesPath)\Temp\iSynaptic.Commons.dll&quot; /internalize:&quot;$(MSBuildProjectDirectory)\Application\$(SolutionName).IL\ILMergeInternalizationExcludes.txt&quot; &quot;$(BinariesPath)\iSynaptic.Commons.dll&quot; &quot;$(BinariesPath)\iSynaptic.Commons.IL.dll&quot;" />
+
+        <Delete Files="$(BinariesPath)\iSynaptic.Commons.dll;$(BinariesPath)\iSynaptic.Commons.pdb" />
+        <Delete Files="$(BinariesPath)\iSynaptic.Commons.IL.dll;$(BinariesPath)\iSynaptic.Commons.IL.pdb" />
+
+        <Move SourceFiles="$(BinariesPath)\Temp\iSynaptic.Commons.dll;$(BinariesPath)\Temp\iSynaptic.Commons.pdb"
+              DestinationFiles="$(BinariesPath)\iSynaptic.Commons.dll;$(BinariesPath)\iSynaptic.Commons.pdb" />
+
+        <RemoveDir Directories="$(BinariesPath)\Temp" />
+    </Target>
 </Project>

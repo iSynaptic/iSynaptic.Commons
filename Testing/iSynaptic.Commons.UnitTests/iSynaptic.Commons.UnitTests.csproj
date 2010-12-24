@@ -71,7 +71,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\CommonAssemblyInfo.cs">
-      <Link>CommonAssemblyInfo.cs</Link>
+      <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AOP\DisposableContextTests.cs" />
     <Compile Include="AOP\ScopeTests.cs" />
@@ -112,6 +112,10 @@
     <Compile Include="Xml\ProcessingInstructionParserTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Application\iSynaptic.Commons.IL\iSynaptic.Commons.IL.csproj">
+      <Project>{69425B08-B6B4-4A34-94A5-FF8A3936BCBF}</Project>
+      <Name>iSynaptic.Commons.IL</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Application\iSynaptic.Commons\iSynaptic.Commons.csproj">
       <Project>{8F6C6021-0517-4033-B7DA-A07DD0112FC6}</Project>
       <Name>iSynaptic.Commons</Name>
