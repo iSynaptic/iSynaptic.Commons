@@ -3,7 +3,7 @@ using System.Reflection.Emit;
 
 namespace iSynaptic.Commons.Data
 {
-    public class MaxLengthAttribute : Attribute, IMetadataAttribute
+    public class MaxLengthAttribute : Attribute, IMetadataAttribute<int>
     {
         private readonly int _MaxLength;
 
@@ -17,9 +17,9 @@ namespace iSynaptic.Commons.Data
             return request.Declaration == StringMetadata.MaxLength;
         }
 
-        public TMetadata Resolve<TMetadata>(MetadataRequest<TMetadata> request)
+        public int Resolve(MetadataRequest<int> request)
         {
-            return UnsafeCast.To<int, TMetadata>(_MaxLength);
+            return _MaxLength;
         }
     }
 }

@@ -5,9 +5,9 @@ using System.Text;
 
 namespace iSynaptic.Commons.Data
 {
-    public interface IMetadataAttribute
+    public interface IMetadataAttribute<TMetadata>
     {
-        bool ProvidesMetadataFor<TMetadata>(MetadataRequest<TMetadata> request);
-        TMetadata Resolve<TMetadata>(MetadataRequest<TMetadata> request);
+        bool ProvidesMetadataFor<TRequestMetadata>(MetadataRequest<TRequestMetadata> request);
+        TMetadata Resolve(MetadataRequest<TMetadata> request);
     }
 }
