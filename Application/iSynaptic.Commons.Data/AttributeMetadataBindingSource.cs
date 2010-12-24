@@ -22,7 +22,7 @@ namespace iSynaptic.Commons.Data
             if (provider == null)
                 provider = request.Subject.GetType();
 
-            var attributes = provider.GetAttributesOfType<IMetadataAttribute<TMetadata>>()
+            var attributes = provider.GetAttributesOfType<IMetadataAttribute>()
                 .Where(x => x.ProvidesMetadataFor(request));
 
             foreach (var attribute in attributes)
@@ -31,9 +31,9 @@ namespace iSynaptic.Commons.Data
 
         private class AttributeMetadataBinding<TMetadata> : IMetadataBinding<TMetadata>
         {
-            private readonly IMetadataAttribute<TMetadata> _Attribute;
+            private readonly IMetadataAttribute _Attribute;
 
-            public AttributeMetadataBinding(IMetadataAttribute<TMetadata> attribute)
+            public AttributeMetadataBinding(IMetadataAttribute attribute)
             {
                 _Attribute = attribute;
             }

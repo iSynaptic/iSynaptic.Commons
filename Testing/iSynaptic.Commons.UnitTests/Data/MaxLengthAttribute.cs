@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Reflection.Emit;
 
 namespace iSynaptic.Commons.Data
 {
-    public class MaxLengthAttribute : Attribute, IMetadataAttribute<int>
+    public class MaxLengthAttribute : Attribute, IMetadataAttribute
     {
         private readonly int _MaxLength;
 
@@ -11,14 +12,14 @@ namespace iSynaptic.Commons.Data
             _MaxLength = maxLength;
         }
 
-        public bool ProvidesMetadataFor(MetadataRequest<int> request)
+        public bool ProvidesMetadataFor<TMetadata>(MetadataRequest<TMetadata> request)
         {
             return request.Declaration == StringMetadata.MaxLength;
         }
 
-        public int Resolve(MetadataRequest<int> request)
+        public TMetadata Resolve<TMetadata>(MetadataRequest<TMetadata> request)
         {
-            return _MaxLength;
+            return Cast.To<int, TMetadata>(_MaxLength);
         }
     }
 }
