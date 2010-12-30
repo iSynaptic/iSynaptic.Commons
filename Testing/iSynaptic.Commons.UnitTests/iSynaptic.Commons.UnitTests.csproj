@@ -81,6 +81,10 @@
     <Compile Include="AOP\UnitOfWorkTests.cs" />
     <Compile Include="ArrayIndexTests.cs" />
     <Compile Include="UnsafeCastTests.cs" />
+    <Compile Include="Collections\Generic\WeakDictionaryTests.cs" />
+    <Compile Include="Collections\Generic\WeakDictionaryTestsBase.cs" />
+    <Compile Include="Collections\Generic\WeakKeyDictionaryTests.cs" />
+    <Compile Include="Collections\Generic\WeakValueDictionaryTests.cs" />
     <Compile Include="Collections\Generic\ReadOnlyDictionaryTests.cs" />
     <Compile Include="AggregateExceptionTests.cs" />
     <Compile Include="DataEventArgsTests.cs" />

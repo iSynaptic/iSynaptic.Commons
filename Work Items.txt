@@ -12,20 +12,16 @@
 	* Use regular expressions to build a Table Lexer
 		** Convert multiple regular expressions into a single recognizer state machine
 - Create generic Reflection.Emit Visitor<T> implementation (similar to one used in RegularExpressionPipeline)...
-- Merge iSynaptic.SolutionBuild into Commons solution
 - Add RelativePath extension methods to FileSystemInfo and IEnumerable<FileSystemInfo>...
-- Add overridable OnEnlistment() method to UnitOfWork<U, T> class...
+- Add overridable OnEnlistment() method to EnlistmentScope class...
 - Investigate how Monads could be encorporated in "PipelineEnumerable" concept
     * Perhaps change so that it is strictly functional composition (i.e. not require interface)
 - Implement SmartFormat...
 - Implement PartCover
-- Implement support for attaching unit test behaviors to interfaces (test fixtures that implement the interface inherit behavior)
-    * Possible submit support back to NUnit project
 - Add support for Dependant Scopes (e.g. System.Transactions.Transaction.DependantClone(...))
 - Change LookAheadValue from class to struct
 - Create JSON LoggerContextSerializer
 - Add ObjectDumper to Serialization namespace + create ObjectDumper LoggerContextSerializer
 - Collapse all Func/Action Curry extension methods into a methods that takes in a delegate that dispatches to underlying delegate
-- Evaluate changing Action's CatchExceptions extension method from Action<T> to Action
 - Scan types for Command-Query Seperation opportunities
 - Enhance GetDelegate extension method to work with generic methods
