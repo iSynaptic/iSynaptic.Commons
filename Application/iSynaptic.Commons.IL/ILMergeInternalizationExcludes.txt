@@ -1,1 +1,1 @@
-﻿iSynaptic.Commons.Cast$
+﻿iSynaptic.Commons.UnsafeCast$

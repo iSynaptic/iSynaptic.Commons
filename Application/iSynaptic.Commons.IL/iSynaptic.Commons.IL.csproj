@@ -32,13 +32,13 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Stubs\Cast.cs" />
+    <Compile Include="Stubs\UnsafeCast.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Cast.il" />
+    <None Include="UnsafeCast.il" />
     <None Include="CustomBuildEvents.targets">
       <SubType>Designer</SubType>
     </None>

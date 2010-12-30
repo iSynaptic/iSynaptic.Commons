@@ -1,6 +1,6 @@
 .namespace iSynaptic.Commons
 {
-  .class public abstract auto ansi sealed beforefieldinit Cast
+  .class public abstract auto ansi sealed beforefieldinit UnsafeCast
       extends [mscorlib]System.Object
   {
       .method public hidebysig static !!TDestination To<TSource, TDestination>(!!TSource source) cil managed

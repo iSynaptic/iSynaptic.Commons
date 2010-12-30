@@ -7,6 +7,25 @@ namespace iSynaptic.Commons.Collections.Generic
 {
     public static class EnumerableExtensions
     {
+        public static void CopyTo<T>(this IEnumerable<T> source, T[] destination, int index)
+        {
+            if(source == null)
+                throw new ArgumentNullException("source");
+
+            if (destination == null)
+                throw new ArgumentNullException("destination");
+
+            if ((index < 0) || (index > destination.Length))
+                throw new ArgumentOutOfRangeException(
+                    "index", "Number must be either non-negative and less than or equal to Int32.MaxValue or -1.");
+
+            if ((destination.Length - index) < source.Count())
+                throw new ArgumentException("Destination array is not long enough to copy all the items in the collection. Check array index and length.", "index");
+
+            foreach (var item in source)
+                destination[index++] = item;
+        }
+
         public static IEnumerable<IndexedValue<T>> WithIndex<T>(this IEnumerable<T> self)
         {
             int index = 0;

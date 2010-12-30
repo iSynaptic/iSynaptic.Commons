@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace iSynaptic.Commons
 {
     [TestFixture]
-    public class CastTests
+    public class UnsafeCastTests
     {
         [Test]
         public void Cast_ValueType_ReturnsCorrectly()
@@ -24,12 +24,12 @@ namespace iSynaptic.Commons
 
         private int CastToInt<T>(T source)
         {
-            return Cast.To<T, int>(source);
+            return UnsafeCast.To<T, int>(source);
         }
 
         private string CastToString<T>(T source)
         {
-            return Cast.To<T, string>(source);
+            return UnsafeCast.To<T, string>(source);
         }
     }
 }

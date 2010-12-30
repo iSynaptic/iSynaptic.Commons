@@ -5,7 +5,7 @@ using System.Text;
 
 namespace iSynaptic.Commons
 {
-    public static class Cast
+    public static class UnsafeCast
     {
         public static TDestination To<TSource, TDestination>(TSource source)
         {
