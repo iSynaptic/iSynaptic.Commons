@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 
 namespace iSynaptic.Commons.Data
@@ -25,6 +26,31 @@ namespace iSynaptic.Commons.Data
                 return _Default.Value;
 
             return default(TMetadata);
+        }
+
+        public TMetadata Get()
+        {
+            return Metadata.Resolve(this, null, null);
+        }
+
+        public TMetadata For<T>()
+        {
+            return Metadata.Resolve(this, typeof(T), null);
+        }
+
+        public TMetadata For<T>(T subject)
+        {
+            return Metadata.Resolve(this, subject, null);
+        }
+
+        public TMetadata For<T>(Expression<Func<T, object>> member)
+        {
+            return Metadata.Resolve(this, typeof (T), member);
+        }
+
+        public TMetadata For<T, TMember>(T subject, Expression<Func<T, TMember>> member)
+        {
+            return Metadata.Resolve(this, subject, member);
         }
 
         public void CheckValue(TMetadata value)

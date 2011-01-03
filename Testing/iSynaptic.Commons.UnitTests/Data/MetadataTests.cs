@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using NUnit.Framework;
 using Rhino.Mocks;
+using Is = Rhino.Mocks.Constraints.Is;
 
 namespace iSynaptic.Commons.Data
 {
@@ -30,15 +31,15 @@ namespace iSynaptic.Commons.Data
 
             Metadata.SetResolver(resolver);
 
-            var value = Metadata<string>.Get(maxLength);
+            var value = maxLength.For<string>();
             Assert.AreEqual(42, value);
         }
 
         [Test]
-        public void Get_WithNullDeclaration_ThrowsException()
+        public void Resolve_WithNullDeclaration_ThrowsException()
         {
             Assert.Throws<ArgumentNullException>(() => 
-                Metadata<string>.Get<int>(null));
+                Metadata.Resolve<int>(null, null, null));
         }
 
         [Test]
@@ -46,7 +47,7 @@ namespace iSynaptic.Commons.Data
         {
             var maxLength = new MetadataDeclaration<int>(7);
 
-            var value = Metadata<string>.Get(maxLength);
+            var value = maxLength.For<string>();
             Assert.AreEqual(7, value);
         }
 
@@ -55,7 +56,7 @@ namespace iSynaptic.Commons.Data
         {
             var maxLengthWithBadDefault = new IntegerMetadataDeclaration(1, 10, 42);
 
-            Assert.That(() => { Metadata<string>.Get(maxLengthWithBadDefault); },
+            Assert.That(() => { maxLengthWithBadDefault.For<string>(); },
                 Throws
                     .InstanceOf<InvalidOperationException>().And
                     .InnerException
@@ -75,7 +76,7 @@ namespace iSynaptic.Commons.Data
 
             Ioc.SetDependencyResolver(new DependencyResolver((k, d, r) => metadataResolver));
 
-            var value = Metadata<string>.Get(maxLength);
+            var value = maxLength.For<string>();
             Assert.AreEqual(42, value);
         }
 
@@ -90,7 +91,7 @@ namespace iSynaptic.Commons.Data
 
             Metadata.SetResolver(resolver);
 
-            Metadata.Get(maxLength);
+            maxLength.Get();
             resolver.VerifyAllExpectations();
         }
 
@@ -105,7 +106,7 @@ namespace iSynaptic.Commons.Data
 
             Metadata.SetResolver(resolver);
 
-            Metadata<string>.Get(maxLength);
+            maxLength.For<string>();
             resolver.VerifyAllExpectations();
         }
 
@@ -121,7 +122,7 @@ namespace iSynaptic.Commons.Data
 
             Metadata.SetResolver(resolver);
 
-            Metadata<string>.Get(maxLength, subject);
+            maxLength.For(subject);
             resolver.VerifyAllExpectations();
         }
 
@@ -130,16 +131,14 @@ namespace iSynaptic.Commons.Data
         {
             var maxLength = new MetadataDeclaration<int>(7);
 
-            Expression<Func<string, int>> expression = x => x.Length;
-            var member = ((MemberExpression) expression.Body).Member;
-
             var resolver = MockRepository.GenerateMock<IMetadataResolver>();
-            resolver.Expect(x => x.Resolve(maxLength, typeof(string), member))
+            resolver.Expect(x => x.Resolve<int>(null, null, null))
+                .Constraints(Is.Equal(maxLength), Is.Equal(typeof(string)), Is.NotNull())
                 .Return(42);
 
             Metadata.SetResolver(resolver);
 
-            Metadata<string>.Get(maxLength, expression);
+            maxLength.For<string>(x => x.Length);
             resolver.VerifyAllExpectations();
         }
 
@@ -158,18 +157,32 @@ namespace iSynaptic.Commons.Data
 
             Metadata.SetResolver(resolver);
 
-            Metadata<string>.Get(maxLength, subject, expression);
+            maxLength.For(subject, expression);
             resolver.VerifyAllExpectations();
         }
 
         [Test]
-        public void Construction_OfObjectThatInheritsFromMetadata_NotSupported()
+        public void Get_OnNestedProperty_ThrowsException()
         {
-            Assert.Throws<NotSupportedException>(() => new ClassThanInheritsFromMetadata());
+            Assert.Throws<ArgumentException>(() =>
+                StringMetadata.MaxLength
+                    .For<TestSubject>(x => x.MiddleName.Length));
         }
 
-        public class ClassThanInheritsFromMetadata : Metadata<string>
+        [Test]
+        public void Get_OnMethodMember_ThrowsException()
         {
+            Assert.Throws<ArgumentException>(() =>
+                StringMetadata.MinLength
+                    .For<TestSubject>(x => x.ToString()));
+        }
+
+        [Test]
+        public void Get_OnMethodNestedMember_ThrowsException()
+        {
+            Assert.Throws<ArgumentException>(() =>
+                StringMetadata.MinLength
+                    .For<TestSubject>(x => x.ToString().Length));
         }
     }
 }

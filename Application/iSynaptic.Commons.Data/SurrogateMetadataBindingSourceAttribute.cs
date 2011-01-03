@@ -5,7 +5,7 @@ using System.Text;
 
 namespace iSynaptic.Commons.Data
 {
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = true)]
     public class SurrogateMetadataBindingSourceAttribute : Attribute
     {
         public SurrogateMetadataBindingSourceAttribute(Type realType)

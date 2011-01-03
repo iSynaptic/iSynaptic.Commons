@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
@@ -10,58 +9,22 @@ namespace iSynaptic.Commons.Data
     [TestFixture]
     public class StandardMetadataResolverTests
     {
-        private class TestModule : MetadataBindingModule
-        {
-            public TestModule()
-            {
-                Bind(StringMetadata.MaxLength, 42);
-            }
-        }
-
-        [SurrogateMetadataBindingSource(typeof(TestSubject))]
-        public class TestSubjectMetadata : IMetadataBindingSource
-        {
-            public IEnumerable<IMetadataBinding<TMetadata>> GetBindingsFor<TMetadata>(MetadataRequest<TMetadata> request)
-            {
-                if(request.Declaration != StringMetadata.MaxLength)
-                    yield break;
-
-                if((Type)request.Subject != typeof(TestSubject))
-                    yield break;
-
-                if(request.Member.Name != "MiddleName")
-                    yield break;
-
-                yield return new MetadataBinding<TMetadata>(request.Declaration, 74088);
-            }
-        }
-
-        private class TestSubject
-        {
-            [MaxLength(84)]
-            public string FirstName { get; set; }
-
-            [MaxLength(1764)]
-            public string LastName = null;
-
-            public string MiddleName { get; set; }
-        }
 
         [Test]
         public void Resolve_ThruMetadataClass_ReturnsValue()
         {
-            var resolver = new StandardMetadataResolver(new TestModule());
+            var resolver = new StandardMetadataResolver(new TestMetadataBindingModule());
 
             Metadata.SetResolver(resolver);
 
-            var value = Metadata.Get(StringMetadata.MaxLength);
+            var value = StringMetadata.MaxLength.Get();
             Assert.AreEqual(42, value);
         }
 
         [Test]
         public void Resolve_WithMatchingBinding_ReturnsValue()
         {
-            var resolver = new StandardMetadataResolver(new TestModule());
+            var resolver = new StandardMetadataResolver(new TestMetadataBindingModule());
 
             var value = resolver.Resolve(StringMetadata.MaxLength, null, null);
             Assert.AreEqual(42, value);
@@ -70,7 +33,7 @@ namespace iSynaptic.Commons.Data
         [Test]
         public void Resolve_WithoutMatchingBinding_ReturnsDefault()
         {
-            var resolver = new StandardMetadataResolver(new TestModule());
+            var resolver = new StandardMetadataResolver(new TestMetadataBindingModule());
 
             var value = resolver.Resolve(new IntegerMetadataDeclaration(-1, 42, 7), null, null);
             Assert.AreEqual(7, value);
@@ -91,7 +54,7 @@ namespace iSynaptic.Commons.Data
             var resolver = new StandardMetadataResolver();
             Metadata.SetResolver(resolver);
 
-            var value = Metadata<TestSubject>.Get(StringMetadata.MaxLength, x => x.FirstName);
+            var value = StringMetadata.MaxLength.For<TestSubject>(x => x.FirstName);
             Assert.AreEqual(84, value);
         }
 
@@ -101,7 +64,7 @@ namespace iSynaptic.Commons.Data
             var resolver = new StandardMetadataResolver();
             Metadata.SetResolver(resolver);
 
-            var value = Metadata<TestSubject>.Get(StringMetadata.MaxLength, x => x.LastName);
+            var value = StringMetadata.MaxLength.For<TestSubject>(x => x.LastName);
             Assert.AreEqual(1764, value);
         }
 
@@ -111,8 +74,17 @@ namespace iSynaptic.Commons.Data
             var resolver = new StandardMetadataResolver();
             Metadata.SetResolver(resolver);
 
-            var value = Metadata<TestSubject>.Get(StringMetadata.MaxLength, x => x.MiddleName);
+            var value = StringMetadata.MaxLength.For<TestSubject>(x => x.MiddleName);
             Assert.AreEqual(74088, value);
+        }
+
+        [Test]
+        public void Resolve_WithAmbiguousBindings_ThrowsException()
+        {
+            var resolver = new StandardMetadataResolver(new TestMetadataBindingModule(), new TestMetadataBindingModule());
+            Metadata.SetResolver(resolver);
+
+            Assert.Throws<InvalidOperationException>(() => StringMetadata.MaxLength.Get());
         }
     }
 }

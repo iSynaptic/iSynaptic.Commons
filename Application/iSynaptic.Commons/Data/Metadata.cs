@@ -7,19 +7,14 @@ using System.Text;
 
 namespace iSynaptic.Commons.Data
 {
-    public class Metadata
+    public static class Metadata
     {
-        protected Metadata()
-        {
-            throw new NotSupportedException();
-        }
+        //public static TMetadata Get<TMetadata>(MetadataDeclaration<TMetadata> declaration)
+        //{
+        //    return Resolve(declaration, null, null);
+        //}
 
-        public static TMetadata Get<TMetadata>(MetadataDeclaration<TMetadata> declaration)
-        {
-            return Resolve(declaration, null, null);
-        }
-
-        protected static TMetadata Resolve<TMetadata>(MetadataDeclaration<TMetadata> declaration, object subject, Expression member)
+        public static TMetadata Resolve<TMetadata>(MetadataDeclaration<TMetadata> declaration, object subject, Expression member)
         {
             if (declaration == null)
                 throw new ArgumentNullException("declaration");
@@ -52,12 +47,21 @@ namespace iSynaptic.Commons.Data
         private static MemberInfo ExtractMemberInfoFromExpression(Expression member)
         {
             var lambda = member as LambdaExpression;
-            if(lambda != null && lambda.Body is MemberExpression)
+            if (lambda != null)
             {
-                var memberExpression = (MemberExpression) lambda.Body;
+                var body = lambda.Body;
 
-                if(memberExpression.Member is PropertyInfo || memberExpression.Member is FieldInfo)
-                    return memberExpression.Member;
+                if (body.NodeType == ExpressionType.Convert)
+                    body = ((UnaryExpression) body).Operand;
+
+                if (body is MemberExpression)
+                {
+                    var memberExpression = (MemberExpression) body;
+
+                    if (memberExpression.Expression is ParameterExpression && memberExpression.Member is PropertyInfo ||
+                        memberExpression.Member is FieldInfo)
+                        return memberExpression.Member;
+                }
             }
 
             throw new ArgumentException("You can only retreive member metatdata for properties and fields.", "member");
@@ -68,33 +72,29 @@ namespace iSynaptic.Commons.Data
             MetadataResolver = metadataResolver;
         }
 
-        protected static IMetadataResolver MetadataResolver { get; private set; }
+        private static IMetadataResolver MetadataResolver { get; set; }
     }
 
-    public class Metadata<T> : Metadata
-    {
-        protected Metadata()
-        {
-        }
+    //public class Metadata<T> : Metadata
+    //{
+    //    public static new TMetadata Get<TMetadata>(MetadataDeclaration<TMetadata> declaration)
+    //    {
+    //        return Resolve(declaration, typeof(T), null);
+    //    }
 
-        public static new TMetadata Get<TMetadata>(MetadataDeclaration<TMetadata> declaration)
-        {
-            return Resolve(declaration, typeof(T), null);
-        }
+    //    public static TMetadata Get<TMetadata>(MetadataDeclaration<TMetadata> declaration, T subject)
+    //    {
+    //        return Resolve(declaration, subject, null);
+    //    }
 
-        public static TMetadata Get<TMetadata>(MetadataDeclaration<TMetadata> declaration, T subject)
-        {
-            return Resolve(declaration, subject, null);
-        }
+    //    public static TMetadata Get<TMember, TMetadata>(MetadataDeclaration<TMetadata> declaration, Expression<Func<T, TMember>> member)
+    //    {
+    //        return Resolve(declaration, typeof(T), member);
+    //    }
 
-        public static TMetadata Get<TMember, TMetadata>(MetadataDeclaration<TMetadata> declaration, Expression<Func<T, TMember>> member)
-        {
-            return Resolve(declaration, typeof(T), member);
-        }
-
-        public static TMetadata Get<TMember, TMetadata>(MetadataDeclaration<TMetadata> declaration, T subject, Expression<Func<T, TMember>> member)
-        {
-            return Resolve(declaration, subject, member);
-        }
-    }
+    //    public static TMetadata Get<TMember, TMetadata>(MetadataDeclaration<TMetadata> declaration, T subject, Expression<Func<T, TMember>> member)
+    //    {
+    //        return Resolve(declaration, subject, member);
+    //    }
+    //}
 }

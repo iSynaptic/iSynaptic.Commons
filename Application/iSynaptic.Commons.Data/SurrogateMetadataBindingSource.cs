@@ -18,9 +18,10 @@ namespace iSynaptic.Commons.Data
 
             _Surrogates = AppDomain.CurrentDomain
                 .GetAssemblies()
+                .Where(x => x.IsDynamic != true)
                 .SelectMany(x => x.GetExportedTypes())
                 .Where(bindingSourceType.IsAssignableFrom)
-                .Where(x => x.IsDefined(typeof(SurrogateMetadataBindingSourceAttribute), false))
+                .Where(x => x.IsDefined(typeof(SurrogateMetadataBindingSourceAttribute), true))
                 .Where(x => x.GetConstructors().Any(y => y.GetParameters().Length == 0))
                 .SelectMany(InstantiateSurrogate)
                 .ToReadOnlyDictionary();
