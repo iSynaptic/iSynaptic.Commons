@@ -9,6 +9,20 @@ namespace iSynaptic.Commons.Collections.Generic
         where TKey : class
         where TValue : class
     {
+        public WeakKeyDictionary()
+            : base(0, null) { }
+
+        public WeakKeyDictionary(int capacity)
+            : base(capacity, null) { }
+
+        public WeakKeyDictionary(IEqualityComparer<TKey> comparer)
+            : base(0, comparer) { }
+
+        public WeakKeyDictionary(int capacity, IEqualityComparer<TKey> comparer)
+            : base(capacity, comparer)
+        {
+        }
+
         protected override object WrapValue(TValue value)
         {
             return value;
