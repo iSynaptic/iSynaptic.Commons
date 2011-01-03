@@ -12,6 +12,7 @@ namespace iSynaptic.Commons.Data
             if(modules != null && modules.Length > 0)
                 AddMetadataBindingSource(new ModuleMetadataBindingSource(modules));
 
+            AddMetadataBindingSource<SurrogateMetadataBindingSource>();
             AddMetadataBindingSource<AttributeMetadataBindingSource>();
         }
 

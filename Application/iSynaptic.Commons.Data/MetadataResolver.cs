@@ -14,8 +14,8 @@ namespace iSynaptic.Commons.Data
         {
             var request = new MetadataRequest<TMetadata>(declaration, subject, member);
 
-            var candidateBindings= _BindingSources
-                .SelectMany(x => x.GetBindingsFor<TMetadata>(request))
+            var candidateBindings = _BindingSources
+                .SelectMany(x => x.GetBindingsFor(request))
                 .Where(x => x.Matches(request));
                 
             var selectedBinding = SelectBinding(request, candidateBindings);

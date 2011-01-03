@@ -46,6 +46,8 @@
     <Compile Include="IMetadataBindingSource.cs" />
     <Compile Include="MetadataBinding.cs" />
     <Compile Include="MetadataBindingModule.cs" />
+    <Compile Include="SurrogateMetadataBindingSource.cs" />
+    <Compile Include="SurrogateMetadataBindingSourceAttribute.cs" />
     <Compile Include="MetadataRequest.cs" />
     <Compile Include="MetadataResolver.cs" />
     <Compile Include="ModuleMetadataBindingSource.cs" />

@@ -18,6 +18,23 @@ namespace iSynaptic.Commons.Data
             }
         }
 
+        [SurrogateMetadataBindingSource(typeof(TestSubject))]
+        public class TestSubjectMetadata : IMetadataBindingSource
+        {
+            public IEnumerable<IMetadataBinding<TMetadata>> GetBindingsFor<TMetadata>(MetadataRequest<TMetadata> request)
+            {
+                if(request.Declaration != StringMetadata.MaxLength)
+                    yield break;
+
+                if((Type)request.Subject != typeof(TestSubject))
+                    yield break;
+
+                if(request.Member.Name != "MiddleName")
+                    yield break;
+
+                yield return new MetadataBinding<TMetadata>(request.Declaration, 74088);
+            }
+        }
 
         private class TestSubject
         {
@@ -26,6 +43,8 @@ namespace iSynaptic.Commons.Data
 
             [MaxLength(1764)]
             public string LastName = null;
+
+            public string MiddleName { get; set; }
         }
 
         [Test]
@@ -84,6 +103,16 @@ namespace iSynaptic.Commons.Data
 
             var value = Metadata<TestSubject>.Get(StringMetadata.MaxLength, x => x.LastName);
             Assert.AreEqual(1764, value);
+        }
+
+        [Test]
+        public void Resolve_WithSurrogate_ReturnsValue()
+        {
+            var resolver = new StandardMetadataResolver();
+            Metadata.SetResolver(resolver);
+
+            var value = Metadata<TestSubject>.Get(StringMetadata.MaxLength, x => x.MiddleName);
+            Assert.AreEqual(74088, value);
         }
     }
 }
