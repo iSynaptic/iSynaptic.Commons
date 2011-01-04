@@ -18,28 +18,52 @@ namespace iSynaptic.Commons.Collections.Generic
         [Test]
         public void RemoveWithNullItems()
         {
-            var col = new List<int> { 1, 2, 3 };
+            ICollection<int> col = new List<int> { 1, 2, 3 };
 
             col.Remove((int[])null);
-            Assert.IsTrue(col.SequenceEqual(new int[] { 1, 2, 3 }));
+            Assert.IsTrue(col.SequenceEqual(new [] { 1, 2, 3 }));
         }
 
         [Test]
         public void RemoveWithEmptyItems()
         {
-            var col = new List<int> { 1, 2, 3 };
+            ICollection<int> col = new List<int> { 1, 2, 3 };
 
             col.Remove(new int[] { });
-            Assert.IsTrue(col.SequenceEqual(new int[] { 1, 2, 3 }));
+            Assert.IsTrue(col.SequenceEqual(new [] { 1, 2, 3 }));
         }
 
         [Test]
         public void RemoveItems()
         {
-            var col = new List<int> { 1, 2, 3, 4, 5 };
+            ICollection<int> col = new List<int> { 1, 2, 3, 4, 5 };
 
             col.Remove(new int[] { 2, 4 });
-            Assert.IsTrue(col.SequenceEqual(new int[] { 1, 3, 5 }));
+            Assert.IsTrue(col.SequenceEqual(new [] { 1, 3, 5 }));
+        }
+
+        [Test]
+        public void RemoveAll()
+        {
+            ICollection<int> col = new List<int> { 1, 2, 3, 4, 5 };
+
+            col.RemoveAll(x => x % 2 == 0);
+            Assert.IsTrue(col.SequenceEqual(new [] { 1, 3, 5 }));
+        }
+
+        [Test]
+        public void RemoveAllWithNullCollection()
+        {
+            ICollection<int> col = null;
+            Assert.Throws<ArgumentNullException>(() => col.RemoveAll(x => true));
+        
+        }
+
+        [Test]
+        public void RemoveAllWithNullPredicate()
+        {
+            ICollection<int> col = new List<int> { 1, 2, 3 };
+            Assert.Throws<ArgumentNullException>(() => col.RemoveAll(null));
         }
     }
 }

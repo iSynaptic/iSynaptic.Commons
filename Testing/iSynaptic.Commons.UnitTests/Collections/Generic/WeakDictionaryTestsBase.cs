@@ -153,5 +153,18 @@ namespace iSynaptic.Commons.Collections.Generic
             var dictionary = CreateDictionary();
             Assert.IsFalse(dictionary.IsReadOnly);
         }
+
+        [Test]
+        public void SetValue_ViaIndexer()
+        {
+            var dictionary = CreateDictionary();
+
+            var key = new object();
+            var value = new object();
+
+            dictionary[key] = value;
+
+            Assert.IsTrue(ReferenceEquals(dictionary[key], value));
+        }
     }
 }

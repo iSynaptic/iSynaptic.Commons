@@ -11,6 +11,62 @@ namespace iSynaptic.Commons.Collections.Generic
     public class EnumerableExtensionsTests
     {
         [Test]
+        public void CopyTo_WithNullSource_ThrowsException()
+        {
+            IEnumerable<int> source = null;
+            int[] destination = new int[1];
+
+            Assert.Throws<ArgumentNullException>(() => source.CopyTo(destination, 0));
+        }
+
+        [Test]
+        public void CopyTo_WithNullDestination_ThrowsException()
+        {
+            IEnumerable<int> source = Enumerable.Range(1, 1);
+            int[] destination = null;
+
+            Assert.Throws<ArgumentNullException>(() => source.CopyTo(destination, 0));
+        }
+
+        [Test]
+        public void CopyTo_WithNegativeIndex_ThrowsException()
+        {
+            IEnumerable<int> source = Enumerable.Range(1, 1);
+            int[] destination = new int[1];
+
+            Assert.Throws<ArgumentOutOfRangeException>(() => source.CopyTo(destination, -1));
+        }
+
+        [Test]
+        public void CopyTo_WithIndexGreaterThanDestinationUpperBound_ThrowsException()
+        {
+            IEnumerable<int> source = Enumerable.Range(1, 1);
+            int[] destination = new int[1];
+
+            Assert.Throws<ArgumentOutOfRangeException>(() => source.CopyTo(destination, 42));
+        }
+
+        [Test]
+        public void CopyTo_WithIndexToHighGivenSourceAndDestinationSize_ThrowsException()
+        {
+            IEnumerable<int> source = Enumerable.Range(1, 3);
+            int[] destination = new int[3];
+
+            Assert.Throws<ArgumentException>(() => source.CopyTo(destination, 1));
+        }
+
+        [Test]
+        public void CopyTo_WithValidInput_ReturnsCorrectly()
+        {
+            IEnumerable<int> source = Enumerable.Range(1, 3);
+            int[] destination = new int[3];
+
+            source.CopyTo(destination, 0);
+
+            Assert.IsTrue(destination.SequenceEqual(new[] { 1, 2, 3 }));
+        }
+
+        [Test]
         public void WithIndex()
         {
             int[] items = { 1, 3, 5, 7, 9 };
@@ -34,17 +90,17 @@ namespace iSynaptic.Commons.Collections.Generic
             {
                 Assert.IsTrue(enumerator.MoveNext());
                 Assert.AreEqual(1, enumerator.Current.Value);
-                Assert.AreEqual(2, enumerator.Current.LookAhead(0));
+                Assert.AreEqual(2, enumerator.Current.LookAhead(0).Value);
 
                 Assert.IsTrue(enumerator.MoveNext());
                 Assert.AreEqual(2, enumerator.Current.Value);
-                Assert.AreEqual(3, enumerator.Current.LookAhead(0));
-                Assert.AreEqual(5, enumerator.Current.LookAhead(2));
-                Assert.AreEqual(4, enumerator.Current.LookAhead(1));
+                Assert.AreEqual(3, enumerator.Current.LookAhead(0).Value);
+                Assert.AreEqual(5, enumerator.Current.LookAhead(2).Value);
+                Assert.AreEqual(4, enumerator.Current.LookAhead(1).Value);
 
                 Assert.IsTrue(enumerator.MoveNext());
                 Assert.AreEqual(3, enumerator.Current.Value);
-                Assert.AreEqual(4, enumerator.Current.LookAhead(0));
+                Assert.AreEqual(4, enumerator.Current.LookAhead(0).Value);
             }
 
             IEnumerable<int> nullEnumerable = null;
@@ -69,6 +125,23 @@ namespace iSynaptic.Commons.Collections.Generic
         }
 
         [Test]
+        public void LookAheadEnumerator_WhenUsedAfterBeingDisposed_ThrowsException()
+        {
+            var lookaheadable = Enumerable.Range(1, 2).AsLookAheadable();
+
+            var enumerator = lookaheadable.GetEnumerator();
+            enumerator.MoveNext();
+
+            var value = enumerator.Current;
+            enumerator.Dispose();
+
+            Assert.Throws<ObjectDisposedException>(() => { var x = enumerator.Current; });
+            Assert.Throws<ObjectDisposedException>(() => enumerator.MoveNext());
+            Assert.Throws<ObjectDisposedException>(() => value.LookAhead(0));
+            Assert.Throws<ObjectDisposedException>(() => enumerator.Reset());
+        }
+
+        [Test]
         public void LookAheadEnumerableViaNonGenericGetEnumerator()
         {
             int[] items = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -79,17 +152,17 @@ namespace iSynaptic.Commons.Collections.Generic
             {
                 Assert.IsTrue(nonGenericEnumerator.MoveNext());
                 Assert.AreEqual(1, ((LookAheadableValue<int>)nonGenericEnumerator.Current).Value);
-                Assert.AreEqual(2, ((LookAheadableValue<int>)nonGenericEnumerator.Current).LookAhead(0));
+                Assert.AreEqual(2, ((LookAheadableValue<int>)nonGenericEnumerator.Current).LookAhead(0).Value);
 
                 Assert.IsTrue(nonGenericEnumerator.MoveNext());
                 Assert.AreEqual(2, ((LookAheadableValue<int>)nonGenericEnumerator.Current).Value);
-                Assert.AreEqual(3, ((LookAheadableValue<int>)nonGenericEnumerator.Current).LookAhead(0));
-                Assert.AreEqual(5, ((LookAheadableValue<int>)nonGenericEnumerator.Current).LookAhead(2));
-                Assert.AreEqual(4, ((LookAheadableValue<int>)nonGenericEnumerator.Current).LookAhead(1));
+                Assert.AreEqual(3, ((LookAheadableValue<int>)nonGenericEnumerator.Current).LookAhead(0).Value);
+                Assert.AreEqual(5, ((LookAheadableValue<int>)nonGenericEnumerator.Current).LookAhead(2).Value);
+                Assert.AreEqual(4, ((LookAheadableValue<int>)nonGenericEnumerator.Current).LookAhead(1).Value);
 
                 Assert.IsTrue(nonGenericEnumerator.MoveNext());
                 Assert.AreEqual(3, ((LookAheadableValue<int>)nonGenericEnumerator.Current).Value);
-                Assert.AreEqual(4, ((LookAheadableValue<int>)nonGenericEnumerator.Current).LookAhead(0));
+                Assert.AreEqual(4, ((LookAheadableValue<int>)nonGenericEnumerator.Current).LookAhead(0).Value);
             }
         }
 
@@ -105,6 +178,14 @@ namespace iSynaptic.Commons.Collections.Generic
 
             var lookAheadable = enumerable.AsLookAheadable();
             Assert.IsNull(lookAheadable.GetEnumerator());
+        }
+
+        [Test]
+        public void LookAheadToFar_ReturnsNoValue()
+        {
+            var lookAheadable = Enumerable.Range(1, 1).AsLookAheadable();
+            foreach (var i in lookAheadable)
+                Assert.AreEqual(Maybe<int>.NoValue, i.LookAhead(0));
         }
 
         [Test]
@@ -170,7 +251,7 @@ namespace iSynaptic.Commons.Collections.Generic
 
             var zipped = rangeOne.Zip(rangeTwo);
 
-            var expected = new[] {1, 10, 2, 11, 3, 12, 4, 13, 5, 14, 6, 15, 7, 16, 8, 17, 9, 18, 10, 19};
+            var expected = new[] { 1, 10, 2, 11, 3, 12, 4, 13, 5, 14, 6, 15, 7, 16, 8, 17, 9, 18, 10, 19 };
 
             Assert.IsTrue(zipped.SelectMany(x => x).SequenceEqual(expected));
         }
@@ -178,7 +259,7 @@ namespace iSynaptic.Commons.Collections.Generic
         [Test]
         public void Zip_ArrayOfEnumerables()
         {
-            var array = new[] {Enumerable.Range(1, 10), Enumerable.Range(10, 10)};
+            var array = new[] { Enumerable.Range(1, 10), Enumerable.Range(10, 10) };
             var zipped = array.Zip();
 
             var expected = new[] { 1, 10, 2, 11, 3, 12, 4, 13, 5, 14, 6, 15, 7, 16, 8, 17, 9, 18, 10, 19 };
@@ -198,12 +279,23 @@ namespace iSynaptic.Commons.Collections.Generic
         }
 
         [Test]
+        public void Zip_WithDifferentItemCounts()
+        {
+            var left = Enumerable.Range(1, 4);
+            var right = Enumerable.Range(1, 3);
+
+            var zipped = left.Zip(right).SelectMany(x => x);
+
+            Assert.IsTrue(zipped.SequenceEqual(new[] { 1, 1, 2, 2, 3, 3, 4, 0 }));
+        }
+
+        [Test]
         public void AllSatisfy()
         {
-            Func<int, bool> isEven = x => x%2 == 0;
+            Func<int, bool> isEven = x => x % 2 == 0;
             var spec = isEven.ToSpecification();
 
-            var numbers = new[] {2, 4, 6, 8, 10};
+            var numbers = new[] { 2, 4, 6, 8, 10 };
             Assert.IsTrue(numbers.AllSatisfy(spec));
         }
 
