@@ -9,8 +9,14 @@ namespace iSynaptic.Commons.Collections.Generic
 {
     public abstract class BaseDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {
-        private ICollection<TKey> _Keys = null;
-        private ICollection<TValue> _Values = null;
+        private readonly Lazy<ICollection<TKey>> _Keys = null;
+        private readonly Lazy<ICollection<TValue>> _Values = null;
+
+        protected BaseDictionary()
+        {
+            _Keys = new Lazy<ICollection<TKey>>(() => this.ToProjectedCollection(x => x.Key));
+            _Values = new Lazy<ICollection<TValue>>(() => this.ToProjectedCollection(x => x.Value));
+        }
 
         public abstract int Count { get; }
         public abstract void Clear();
@@ -28,24 +34,12 @@ namespace iSynaptic.Commons.Collections.Generic
 
         public ICollection<TKey> Keys
         {
-            get
-            {
-                if (_Keys == null)
-                    Interlocked.CompareExchange(ref _Keys, new KeyCollection<TKey, TValue>(this), null);
-
-                return _Keys;
-            }
+            get { return _Keys.Value; }
         }
 
         public ICollection<TValue> Values
         {
-            get
-            {
-                if (_Values == null)
-                    Interlocked.CompareExchange(ref _Values, new ValueCollection<TKey, TValue>(this), null);
-
-                return _Values;
-            }
+            get { return _Values.Value; }
         }
 
         public TValue this[TKey key]

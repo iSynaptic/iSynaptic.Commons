@@ -88,7 +88,7 @@ namespace iSynaptic.Commons.Collections.Generic
         #endregion
 
         public WeakDictionary()
-            : this(0, null) { }
+            : this(0) { }
 
         public WeakDictionary(int capacity)
             : this(capacity, null) { }

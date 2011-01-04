@@ -51,13 +51,13 @@ namespace iSynaptic.Commons.Collections.Generic
             _LookAheadList = null;
         }
 
-        public T LookAhead(int index)
+        public Maybe<T> LookAhead(int index)
         {
             if (_Disposed)
                 throw new ObjectDisposedException("IEnumerator<T>");
 
             if (LookAheadList.Count >= (index + 1))
-                return LookAheadList[index];
+                return new Maybe<T>(LookAheadList[index]);
 
             int itemsToEnumerate = (index + 1) - LookAheadList.Count;
 
@@ -69,15 +69,21 @@ namespace iSynaptic.Commons.Collections.Generic
                     LookAheadList.Add(_InnerEnumerator.Current);
                 }
                 else
-                    throw new IndexOutOfRangeException();
+                    return Maybe<T>.NoValue;
             }
 
-            return LookAheadList[index];
+            return new Maybe<T>(LookAheadList[index]);
         }
 
         public LookAheadableValue<T> Current
         {
-            get { return new LookAheadableValue<T>(_Current, this); }
+            get
+            {
+                if(_Disposed)
+                    throw new ObjectDisposedException("IEnumerator<T>");
+
+                return new LookAheadableValue<T>(_Current, this);
+            }
         }
 
         object IEnumerator.Current

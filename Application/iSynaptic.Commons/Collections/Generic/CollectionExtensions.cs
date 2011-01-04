@@ -18,20 +18,25 @@ namespace iSynaptic.Commons.Collections.Generic
                 self.Remove(item);
         }
 
-        public static void RemoveAll<T>(this ICollection<T> self, Func<T, bool> match)
+        public static void RemoveAll<T>(this ICollection<T> self, Func<T, bool> predicate)
         {
             if(self == null)
                 throw new ArgumentNullException("self");
 
-            if(match == null)
-                throw new ArgumentNullException("match");
+            if (predicate == null)
+                throw new ArgumentNullException("predicate");
 
             var itemsToRemove = self
-                .Where(match)
+                .Where(predicate)
                 .ToArray();
 
             foreach (var itemToRemove in itemsToRemove)
                 self.Remove(itemToRemove);
+        }
+
+        public static ProjectionCollection<TSourceItem, TProjectedItem> ToProjectedCollection<TSourceItem, TProjectedItem>(this ICollection<TSourceItem> self, Func<TSourceItem, TProjectedItem> selector)
+        {
+            return new ProjectionCollection<TSourceItem, TProjectedItem>(self, selector);
         }
     }
 }

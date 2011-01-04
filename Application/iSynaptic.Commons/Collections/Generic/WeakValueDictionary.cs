@@ -10,13 +10,13 @@ namespace iSynaptic.Commons.Collections.Generic
         where TValue : class
     {
         public WeakValueDictionary()
-            : base(0, null) { }
+            : this(0) { }
 
         public WeakValueDictionary(int capacity)
-            : base(capacity, null) { }
+            : this(capacity, null) { }
 
         public WeakValueDictionary(IEqualityComparer<TKey> comparer)
-            : base(0, comparer) { }
+            : this(0, comparer) { }
 
         public WeakValueDictionary(int capacity, IEqualityComparer<TKey> comparer)
             : base(capacity, comparer)

@@ -11,7 +11,7 @@
             _Enumerator = enumerator;
         }
 
-        public T LookAhead(int index)
+        public Maybe<T> LookAhead(int index)
         {
             return _Enumerator.LookAhead(index);
         }

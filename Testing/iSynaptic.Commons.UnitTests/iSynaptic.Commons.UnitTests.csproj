@@ -83,6 +83,7 @@
     <Compile Include="Data\TestMetadataBindingModule.cs" />
     <Compile Include="Data\TestSubject.cs" />
     <Compile Include="Data\TestSubjectSurrogateMetadataBindingSource.cs" />
+    <Compile Include="Collections\Generic\ProjectionCollectionTests.cs" />
     <Compile Include="UnsafeCastTests.cs" />
     <Compile Include="Collections\Generic\WeakDictionaryTests.cs" />
     <Compile Include="Collections\Generic\WeakDictionaryTestsBase.cs" />
