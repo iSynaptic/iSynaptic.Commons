@@ -162,17 +162,17 @@ namespace iSynaptic.Commons.Collections.Generic
             self.All(x => true);
         }
 
-        public static IEnumerable<T> MeetsSpecifcation<T>(this IEnumerable<T> candidates, ISpecification<T> specification)
+        public static IEnumerable<T> MeetsSpecifcation<T>(this IEnumerable<T> candidates, Specification<T> specification)
         {
             return candidates.Where(specification.IsSatisfiedBy);
         }
 
-        public static IEnumerable<T> FailsSpecification<T>(this IEnumerable<T> candidates, ISpecification<T> specification)
+        public static IEnumerable<T> FailsSpecification<T>(this IEnumerable<T> candidates, Specification<T> specification)
         {
             return candidates.Where(x => specification.IsSatisfiedBy(x) != true);
         }
 
-        public static bool AllSatisfy<T>(this IEnumerable<T> candidates, ISpecification<T> specification)
+        public static bool AllSatisfy<T>(this IEnumerable<T> candidates, Specification<T> specification)
         {
             return candidates.All(specification.IsSatisfiedBy);
         }

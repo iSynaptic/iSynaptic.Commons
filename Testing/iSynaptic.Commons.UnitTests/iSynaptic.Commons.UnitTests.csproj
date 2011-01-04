@@ -120,6 +120,7 @@
     <Compile Include="Transactions\TransactionalGatewayTests.cs" />
     <Compile Include="Transactions\TransactionalTests.cs" />
     <Compile Include="UnitTestingExtensions.cs" />
+    <Compile Include="WeakReferenceTests.cs" />
     <Compile Include="Xml\ProcessingInstructionParserTests.cs" />
   </ItemGroup>
   <ItemGroup>

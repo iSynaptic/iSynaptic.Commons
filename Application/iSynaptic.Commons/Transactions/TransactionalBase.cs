@@ -92,18 +92,11 @@ namespace iSynaptic.Commons.Transactions
 
         protected virtual KeyValuePair<Guid, T>? GetTransactionValue()
         {
-            string transactionId = GetTransactionIdentifier();
-            if (transactionId == null)
-                return null;
-
-            return GetTransactionValue(transactionId);
+            return GetTransactionValue(GetTransactionIdentifier());
         }
 
         protected virtual KeyValuePair<Guid, T>? GetTransactionValue(string transactionId)
         {
-            if (transactionId == null)
-                throw new ArgumentNullException("transactionId");
-
             if (Values.ContainsKey(transactionId))
                 return Values[transactionId];
 
@@ -118,8 +111,6 @@ namespace iSynaptic.Commons.Transactions
         protected virtual void SetTransactionValue(T value)
         {
             string transactionId = GetTransactionIdentifier();
-            if(transactionId == null)
-                throw new InvalidOperationException("You cannot set a transaction value without an active transaction.");
 
             var pair = GetTransactionValue();
             if (pair.HasValue != true)
@@ -135,9 +126,6 @@ namespace iSynaptic.Commons.Transactions
 
         protected virtual void ClearTransactionValue(string transactionId)
         {
-            if (transactionId == null)
-                throw new ArgumentNullException("transactionId");
-
             Values.Remove(transactionId);
         }
 
@@ -148,12 +136,7 @@ namespace iSynaptic.Commons.Transactions
 
         protected virtual string GetTransactionIdentifier()
         {
-            var transaction = Transaction.Current;
-
-            if (transaction != null)
-                return transaction.TransactionInformation.LocalIdentifier;
-
-            return null;
+            return Transaction.Current.TransactionInformation.LocalIdentifier;
         }
 
         private T GetValue()

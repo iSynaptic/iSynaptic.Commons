@@ -300,11 +300,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
 
                 gen.Emit(OpCodes.Call, DictionaryGetItemMethod);
 
-                if (field.DeclaringType.IsValueType)
-                    gen.Emit(OpCodes.Ldloca_S, (byte)0);
-                else
-                    gen.Emit(OpCodes.Ldloc_0);
-
+                gen.Emit(OpCodes.Ldloc_0);
                 gen.Emit(OpCodes.Br_S, storeFieldLabel);
             }
 
@@ -434,9 +430,6 @@ namespace iSynaptic.Commons.Runtime.Serialization
 
         private static Type GetRootType(Type type)
         {
-            if(type == null)
-                throw new ArgumentNullException("type");
-
             while (type.IsArray)
                 type = type.GetElementType();
 

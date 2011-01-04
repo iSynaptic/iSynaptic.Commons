@@ -304,6 +304,18 @@ namespace iSynaptic.Commons
         }
 
         [Test]
+        public void CatchExceptionsWithCollectionAndNullAction()
+        {
+            var exceptions = new List<Exception>();
+
+            Action<int> actionT1 = null;
+            Assert.Throws<ArgumentNullException>(() => actionT1.CatchExceptions(exceptions));
+
+            Action action = null;
+            Assert.Throws<ArgumentNullException>(() => action.CatchExceptions(exceptions));
+        }
+
+        [Test]
         public void CatchExceptions()
         {
             Action<int> actionT1 = (i) => { throw new InvalidOperationException(); };

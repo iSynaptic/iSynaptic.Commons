@@ -37,6 +37,11 @@ namespace iSynaptic.Commons.Runtime.Serialization
             public IEnumerable<T> Collection { get; set; }
         }
 
+        private struct StructWithReferenceToSelfReferencingClass
+        {
+            public CloneTestClass Class { get; set; }
+        }
+
         private class CloneTestClass
         {
             public string FirstName { get; set; }
