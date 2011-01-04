@@ -59,6 +59,23 @@ namespace iSynaptic.Commons.Runtime.Serialization
         }
 
         [Test]
+        public void CloneStructWithSelfReferencingClass()
+        {
+            var selfRefClass = new CloneTestClass { FirstName = "John", LastName = "Doe" };
+            selfRefClass.InnerClass = selfRefClass;
+
+            var source = new StructWithReferenceToSelfReferencingClass {Class = selfRefClass};
+
+            var clone = Cloneable<StructWithReferenceToSelfReferencingClass>.Clone(source);
+            var shallowClone = Cloneable<StructWithReferenceToSelfReferencingClass>.ShallowClone(source);
+
+            Assert.IsFalse(object.ReferenceEquals(source.Class, clone.Class));
+            Assert.IsTrue(object.ReferenceEquals(source.Class, shallowClone.Class));
+
+            Assert.IsTrue(object.ReferenceEquals(clone.Class, clone.Class.InnerClass));
+        }
+
+        [Test]
         public void CloneStruct()
         {
             var source = new CloneTestStruct { FirstName = "John", LastName = "Doe" };

@@ -16,7 +16,7 @@ namespace iSynaptic.Commons
         {
             Func<int, bool> func = i => i > 5;
 
-            ISpecification<int> spec = func.ToSpecification();
+            Specification<int> spec = func.ToSpecification();
 
             Assert.IsTrue(spec.IsSatisfiedBy(6));
             Assert.IsFalse(spec.IsSatisfiedBy(4));
@@ -30,7 +30,7 @@ namespace iSynaptic.Commons
         {
             Predicate<int> predicate = i => i > 5;
 
-            ISpecification<int> spec = predicate.ToSpecification();
+            Specification<int> spec = predicate.ToSpecification();
 
             Assert.IsTrue(spec.IsSatisfiedBy(6));
             Assert.IsFalse(spec.IsSatisfiedBy(4));
@@ -44,12 +44,12 @@ namespace iSynaptic.Commons
         {
             var spec = new GreaterThanFiveSpecification();
 
-            Func<int, bool> func = spec.ToFunc();
+            Func<int, bool> func = spec;
 
             Assert.IsTrue(func(6));
             Assert.IsFalse(func(4));
 
-            func = ((ISpecification<int>)null).ToFunc();
+            func = ((Specification<int>)null).ToFunc();
             Assert.IsNull(func);
         }
 
@@ -57,7 +57,7 @@ namespace iSynaptic.Commons
         public void RoundtripFromFuncToSpecificationAndBack()
         {
             Func<int, bool> func = x => x > 5;
-            ISpecification<int> spec = func.ToSpecification();
+            Specification<int> spec = func.ToSpecification();
 
             Func<int, bool> roundTripFunc = spec.ToFunc();
 
@@ -70,7 +70,7 @@ namespace iSynaptic.Commons
             var spec = new GreaterThanFiveSpecification();
             Func<int, bool> func = spec.ToFunc();
 
-            ISpecification<int> roundTripSpec = func.ToSpecification();
+            Specification<int> roundTripSpec = func.ToSpecification();
 
             Assert.IsTrue(object.ReferenceEquals(spec, roundTripSpec));
         }
@@ -80,12 +80,12 @@ namespace iSynaptic.Commons
         {
             var spec = new GreaterThanFiveSpecification();
 
-            Predicate<int> predicate = spec.ToPredicate();
+            Predicate<int> predicate = spec;
 
             Assert.IsTrue(predicate(6));
             Assert.IsFalse(predicate(4));
 
-            predicate = ((ISpecification<int>)null).ToPredicate();
+            predicate = ((Specification<int>)null).ToPredicate();
             Assert.IsNull(predicate);
         }
 
@@ -95,7 +95,7 @@ namespace iSynaptic.Commons
             var gtFive = new GreaterThanFiveSpecification();
             var ltSeven = new LessThanSevenSpecification();
 
-            var andSpec = gtFive.And(ltSeven);
+            var andSpec = gtFive && ltSeven;
 
             Assert.IsTrue(andSpec.IsSatisfiedBy(6));
             Assert.IsFalse(andSpec.IsSatisfiedBy(4));
@@ -111,7 +111,7 @@ namespace iSynaptic.Commons
             var gtFive = new GreaterThanFiveSpecification();
             var ltSeven = new LessThanSevenSpecification();
 
-            var orMethod = gtFive.Or(ltSeven);
+            var orMethod = gtFive || ltSeven;
 
             Assert.IsTrue(orMethod.IsSatisfiedBy(6));
             Assert.IsTrue(orMethod.IsSatisfiedBy(4));
@@ -127,7 +127,7 @@ namespace iSynaptic.Commons
             var gtFive = new GreaterThanFiveSpecification();
             var ltSeven = new LessThanSevenSpecification();
 
-            var xorMethod = gtFive.XOr(ltSeven);
+            var xorMethod = gtFive ^ ltSeven;
 
             Assert.IsFalse(xorMethod.IsSatisfiedBy(6));
             Assert.IsTrue(xorMethod.IsSatisfiedBy(4));
@@ -146,8 +146,8 @@ namespace iSynaptic.Commons
             Assert.IsTrue(notGtFive.IsSatisfiedBy(4));
             Assert.IsFalse(gtFive.IsSatisfiedBy(4));
 
-            Assert.IsFalse(notGtFive.Not().IsSatisfiedBy(4));
-            Assert.IsTrue(gtFive.Not().IsSatisfiedBy(4));
+            Assert.IsFalse((!notGtFive).IsSatisfiedBy(4));
+            Assert.IsTrue((!gtFive).IsSatisfiedBy(4));
 
             Assert.Throws<ArgumentNullException>(() => Specification.Not<int>(null));
         }
@@ -222,7 +222,7 @@ namespace iSynaptic.Commons
         public void UnwrapsPredicateSpecification()
         {
             Predicate<int> predicate = val => val > 5;
-            ISpecification<int> spec = predicate.ToSpecification();
+            Specification<int> spec = predicate.ToSpecification();
 
             Predicate<int> unwrapedPredicate = spec.ToPredicate();
 
@@ -235,24 +235,24 @@ namespace iSynaptic.Commons
             var gtFive = new GreaterThanFiveSpecification();
             Predicate<int> predicate = gtFive.ToPredicate();
 
-            ISpecification<int> unwrapped = predicate.ToSpecification();
+            Specification<int> unwrapped = predicate.ToSpecification();
 
             Assert.IsAssignableFrom(typeof(GreaterThanFiveSpecification), unwrapped);
-            Assert.IsTrue(object.ReferenceEquals(gtFive, unwrapped));
+            Assert.IsTrue(ReferenceEquals(gtFive, unwrapped));
         }
     }
 
-    public class GreaterThanFiveSpecification : ISpecification<int>
+    public class GreaterThanFiveSpecification : Specification<int>
     {
-        public bool IsSatisfiedBy(int candidate)
+        public override bool IsSatisfiedBy(int candidate)
         {
             return candidate > 5;
         }
     }
 
-    public class LessThanSevenSpecification : ISpecification<int>
+    public class LessThanSevenSpecification : Specification<int>
     {
-        public bool IsSatisfiedBy(int candidate)
+        public override bool IsSatisfiedBy(int candidate)
         {
             return candidate < 7;
         }

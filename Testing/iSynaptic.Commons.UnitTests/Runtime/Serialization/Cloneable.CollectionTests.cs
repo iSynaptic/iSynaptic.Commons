@@ -16,8 +16,8 @@ namespace iSynaptic.Commons.Runtime.Serialization
             Assert.IsTrue(Cloneable<List<int>>.CanClone());
             Assert.IsTrue(Cloneable<List<int>>.CanShallowClone());
 
-            List<int> clone = Cloneable<List<int>>.Clone(source);
-            List<int> shallowClone = Cloneable<List<int>>.ShallowClone(source);
+            List<int> clone = source.Clone();
+            List<int> shallowClone = source.ShallowClone();
 
             Assert.IsFalse(ReferenceEquals(source, clone));
             Assert.IsFalse(ReferenceEquals(source, shallowClone));
