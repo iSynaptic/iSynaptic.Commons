@@ -9,8 +9,7 @@ namespace iSynaptic.Commons.Reflection
     {
         public static IEnumerable<T> GetAttributesOfType<T>(this ICustomAttributeProvider provider)
         {
-            if (provider == null)
-                throw new ArgumentNullException("provider");
+            Guard.NotNull(provider, "provider");
 
             Type desiredType = typeof (T);
 
@@ -26,9 +25,7 @@ namespace iSynaptic.Commons.Reflection
 
         public static IEnumerable<FieldInfo> GetFieldsDeeply(this Type source, Func<FieldInfo, bool> filter)
         {
-            if(source == null)
-                throw new ArgumentNullException("source");
-
+            Guard.NotNull(source, "source");
             return GetFieldsDeeplyCore(source, filter);
         }
 

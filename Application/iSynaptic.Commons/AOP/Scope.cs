@@ -11,11 +11,8 @@ namespace iSynaptic.Commons.AOP
 
         protected Scope(ScopeBounds bounds, ScopeNesting nesting)
         {
-            if (bounds.IsDefined() != true)
-                throw new ArgumentOutOfRangeException("bounds");
-
-            if(nesting.IsDefined() != true)
-                throw new ArgumentOutOfRangeException("nesting");
+            Guard.MustBeDefined(bounds, "bounds");
+            Guard.MustBeDefined(nesting, "nesting");
 
             Bounds = bounds;
             Nesting = nesting;

@@ -8,8 +8,7 @@ namespace iSynaptic.Commons
 
         public ArrayIndex(Array target)
         {
-            if (target == null)
-                throw new ArgumentNullException("target");
+            Guard.NotNull(target, "target");
 
             Index = new int[target.Rank];
             _Target = target;

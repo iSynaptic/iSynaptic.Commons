@@ -141,8 +141,7 @@ namespace iSynaptic.Commons.Collections.Generic
 
         public override void Add(TKey key, TValue value)
         {
-            if (key == null)
-                throw new ArgumentNullException("key");
+            Guard.NotNull(key, "key");
 
             var weakKey = WrapKey(key);
             var weakValue = WrapValue(value);

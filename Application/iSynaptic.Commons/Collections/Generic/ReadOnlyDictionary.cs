@@ -10,8 +10,7 @@ namespace iSynaptic.Commons.Collections.Generic
 
         public ReadOnlyDictionary(IDictionary<TKey, TValue> innerDictionary)
         {
-            if (innerDictionary == null)
-                throw new ArgumentNullException("innerDictionary");
+            Guard.NotNull(innerDictionary, "innerDictionary");
 
             _InnerDictionary = innerDictionary;
         }

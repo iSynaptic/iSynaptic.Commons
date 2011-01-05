@@ -21,7 +21,7 @@ namespace iSynaptic.Commons
             get
             {
                 if(HasValue != true)
-                    throw new InvalidOperationException("Maybe object must have a value.");
+                    throw new InvalidOperationException("No value can be provided.");
 
                 return _Value;
             }

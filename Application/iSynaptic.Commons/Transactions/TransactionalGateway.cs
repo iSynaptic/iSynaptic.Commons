@@ -11,8 +11,7 @@ namespace iSynaptic.Commons.Transactions
 
         protected override void SetCurrentValue(T value)
         {
-            if(value == null)
-                throw new ArgumentNullException("value");
+            Guard.NotNull(value, "value");
 
             var currentValue = GetCurrentValue();
             if(currentValue.Value != null)
@@ -26,8 +25,7 @@ namespace iSynaptic.Commons.Transactions
 
         protected override void SetTransactionValue(T value)
         {
-            if(value == null)
-                throw new ArgumentNullException("value");
+            Guard.NotNull(value, "value");
 
             var currentValue = GetTransactionValue();
             if (currentValue.HasValue)

@@ -9,11 +9,8 @@ namespace iSynaptic.Commons.Collections.Generic
     {
         public static void CopyTo<T>(this IEnumerable<T> source, T[] destination, int index)
         {
-            if(source == null)
-                throw new ArgumentNullException("source");
-
-            if (destination == null)
-                throw new ArgumentNullException("destination");
+            Guard.NotNull(source, "source");
+            Guard.NotNull(destination, "destination");
 
             if ((index < 0) || (index > destination.Length))
                 throw new ArgumentOutOfRangeException(
@@ -36,24 +33,20 @@ namespace iSynaptic.Commons.Collections.Generic
 
         public static IEnumerable<LookAheadableValue<T>> AsLookAheadable<T>(this IEnumerable<T> self)
         {
-            if (self == null)
-                throw new ArgumentNullException("self");
-
+            Guard.NotNull(self, "self");
             return new LookAheadEnumerable<T>(self);
         }
 
         public static IEnumerable<T> Buffer<T>(this IEnumerable<T> self)
         {
-            if (self == null)
-                throw new ArgumentNullException("self");
+            Guard.NotNull(self, "self");
 
             return self.ToArray();
         }
 
         public static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> self)
         {
-            if(self == null)
-                throw new ArgumentNullException("self");
+            Guard.NotNull(self, "self");
 
             return self.ToDictionary(x => x.Key, x => x.Value);
         }
@@ -72,14 +65,9 @@ namespace iSynaptic.Commons.Collections.Generic
 
         public static string Delimit<T>(this IEnumerable<T> self, string delimiter, Func<T, string> selector)
         {
-            if (self == null)
-                throw new ArgumentNullException("self");
-
-            if (delimiter == null)
-                throw new ArgumentNullException("delimiter");
-
-            if (selector == null)
-                throw new ArgumentNullException("selector");
+            Guard.NotNull(self, "self");
+            Guard.NotNull(delimiter, "delimiter");
+            Guard.NotNull(selector, "selector");
 
             var builder = new StringBuilder();
             bool isFirst = true;
@@ -109,11 +97,8 @@ namespace iSynaptic.Commons.Collections.Generic
         
         public static IEnumerable<T[]> Zip<T>(this IEnumerable<T> first, params IEnumerable<T>[] iterables)
         {
-            if (first == null)
-                throw new ArgumentNullException("first");
-
-            if (iterables == null)
-                throw new ArgumentNullException("iterables");
+            Guard.NotNull(first, "first");
+            Guard.NotNull(iterables, "iterables");
 
             return ZipCore(new[] { first }.Concat(iterables));
         }
@@ -156,8 +141,7 @@ namespace iSynaptic.Commons.Collections.Generic
 
         public static void ForceEnumeration<T>(this IEnumerable<T> self)
         {
-            if (self == null)
-                throw new ArgumentNullException("self");
+            Guard.NotNull(self, "self");
 
             self.All(x => true);
         }

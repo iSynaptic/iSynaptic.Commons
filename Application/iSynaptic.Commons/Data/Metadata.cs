@@ -54,8 +54,7 @@ namespace iSynaptic.Commons.Data
 
         private static TMetadata Resolve<TMetadata>(MetadataDeclaration<TMetadata> declaration, object subject, MemberInfo member)
         {
-            if (declaration == null)
-                throw new ArgumentNullException("declaration");
+            Guard.NotNull(declaration, "declaration");
 
             var resolver = MetadataResolver;
 

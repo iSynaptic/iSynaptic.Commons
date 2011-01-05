@@ -15,11 +15,8 @@ namespace iSynaptic.Commons.Collections.Generic
 
         public ProjectionCollection(ICollection<TSourceItem> underlying, Func<TSourceItem, TProjectedItem> selector)
         {
-            if (underlying == null)
-                throw new ArgumentNullException("underlying");
-
-            if (selector == null)
-                throw new ArgumentNullException("selector");
+            Guard.NotNull(underlying, "underlying");
+            Guard.NotNull(selector, "selector");
 
             _Underlying = underlying;
             _Selector = selector;

@@ -8,8 +8,7 @@ namespace iSynaptic.Commons
 
         public DependencyResolver(Func<string, Type, Type, object> resolutionStrategy)
         {
-            if (resolutionStrategy == null)
-                throw new ArgumentNullException("resolutionStrategy");
+            Guard.NotNull(resolutionStrategy, "resolutionStrategy");
 
             _ResolutionStrategy = resolutionStrategy;
         }

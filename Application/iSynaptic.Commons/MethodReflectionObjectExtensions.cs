@@ -8,6 +8,9 @@ namespace iSynaptic.Commons
     {
         public static T GetDelegate<T>(this object target, string methodName)
         {
+            Guard.NotNull(target, "target");
+            Guard.NotNullOrWhiteSpace(methodName, "methodName");
+
             Type delegateType = typeof (T);
             Type[] parameterTypes = delegateType.GetGenericArguments();
             
