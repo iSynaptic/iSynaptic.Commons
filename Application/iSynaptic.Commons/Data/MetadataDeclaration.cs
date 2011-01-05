@@ -62,6 +62,11 @@ namespace iSynaptic.Commons.Data
         {
         }
 
+        public static implicit operator TMetadata(MetadataDeclaration<TMetadata> declaration)
+        {
+            return declaration.Get();
+        }
+
         public TMetadata Default
         {
             get
