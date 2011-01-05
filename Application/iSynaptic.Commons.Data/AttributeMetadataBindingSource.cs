@@ -11,6 +11,8 @@ namespace iSynaptic.Commons.Data
     {
         public IEnumerable<IMetadataBinding<TMetadata>> GetBindingsFor<TMetadata>(MetadataRequest<TMetadata> request)
         {
+            Guard.NotNull(request, "request");
+
             if(request.Subject == null && request.Member == null)
                 yield break;
 
@@ -35,6 +37,7 @@ namespace iSynaptic.Commons.Data
 
             public AttributeMetadataBinding(IMetadataAttribute<TMetadata> attribute)
             {
+                Guard.NotNull(attribute, "attribute");
                 _Attribute = attribute;
             }
 

@@ -12,6 +12,8 @@ namespace iSynaptic.Commons.Data
 
         public MetadataBinding(IMetadataDeclaration<TMetadata> declaration, object value)
         {
+            Guard.NotNull(declaration, "declaration");
+
             _Declaration = declaration;
             _Value = value;
         }

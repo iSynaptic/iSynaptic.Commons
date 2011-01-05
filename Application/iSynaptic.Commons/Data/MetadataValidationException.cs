@@ -16,8 +16,7 @@ namespace iSynaptic.Commons.Data
     {
         public MetadataValidationException(IMetadataDeclaration<T> declaration, T invalidValue, string message) : base(message)
         {
-            if(declaration == null)
-                throw new ArgumentNullException("declaration");
+            Guard.NotNull(declaration, "declaration");
 
             Declaration = declaration;
             InvalidValue = invalidValue;

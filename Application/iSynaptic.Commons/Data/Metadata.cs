@@ -9,11 +9,6 @@ namespace iSynaptic.Commons.Data
 {
     public static class Metadata
     {
-        //public static TMetadata Get<TMetadata>(MetadataDeclaration<TMetadata> declaration)
-        //{
-        //    return Resolve(declaration, null, null);
-        //}
-
         public static TMetadata Resolve<TMetadata>(MetadataDeclaration<TMetadata> declaration, object subject, Expression member)
         {
             Guard.NotNull(declaration, "declaration");
@@ -73,27 +68,4 @@ namespace iSynaptic.Commons.Data
 
         private static IMetadataResolver MetadataResolver { get; set; }
     }
-
-    //public class Metadata<T> : Metadata
-    //{
-    //    public static new TMetadata Get<TMetadata>(MetadataDeclaration<TMetadata> declaration)
-    //    {
-    //        return Resolve(declaration, typeof(T), null);
-    //    }
-
-    //    public static TMetadata Get<TMetadata>(MetadataDeclaration<TMetadata> declaration, T subject)
-    //    {
-    //        return Resolve(declaration, subject, null);
-    //    }
-
-    //    public static TMetadata Get<TMember, TMetadata>(MetadataDeclaration<TMetadata> declaration, Expression<Func<T, TMember>> member)
-    //    {
-    //        return Resolve(declaration, typeof(T), member);
-    //    }
-
-    //    public static TMetadata Get<TMember, TMetadata>(MetadataDeclaration<TMetadata> declaration, T subject, Expression<Func<T, TMember>> member)
-    //    {
-    //        return Resolve(declaration, subject, member);
-    //    }
-    //}
 }

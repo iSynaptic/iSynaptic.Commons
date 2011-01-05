@@ -12,6 +12,8 @@ namespace iSynaptic.Commons.Data
 
         public TMetadata Resolve<TMetadata>(MetadataDeclaration<TMetadata> declaration, object subject, MemberInfo member)
         {
+            Guard.NotNull(declaration, "declaration");
+
             var request = new MetadataRequest<TMetadata>(declaration, subject, member);
 
             var candidateBindings = _BindingSources
@@ -38,8 +40,7 @@ namespace iSynaptic.Commons.Data
 
         public void AddMetadataBindingSource(IMetadataBindingSource source)
         {
-            if(source == null)
-                throw new ArgumentNullException("source");
+            Guard.NotNull(source, "source");
 
             _BindingSources.Add(source);
         }

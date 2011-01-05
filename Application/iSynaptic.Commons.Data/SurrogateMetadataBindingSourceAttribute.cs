@@ -10,8 +10,7 @@ namespace iSynaptic.Commons.Data
     {
         public SurrogateMetadataBindingSourceAttribute(Type realType)
         {
-            if (realType == null)
-                throw new ArgumentNullException("realType");
+            Guard.NotNull(realType, "realType");
 
             RealType = realType;
         }

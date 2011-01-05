@@ -18,6 +18,8 @@ namespace iSynaptic.Commons.Data
 
         protected override IMetadataBinding<TMetadata> SelectBinding<TMetadata>(MetadataRequest<TMetadata> request, IEnumerable<IMetadataBinding<TMetadata>> candidates)
         {
+            Guard.NotNull(candidates, "candidates");
+
             try
             {
                 return candidates.SingleOrDefault();

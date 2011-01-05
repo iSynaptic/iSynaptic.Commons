@@ -9,6 +9,7 @@ namespace iSynaptic.Commons.Data
 
         public ModuleMetadataBindingSource(MetadataBindingModule[] modules)
         {
+            Guard.NotNullOrEmpty(modules, "modules");
             _Modules = modules;
         }
 

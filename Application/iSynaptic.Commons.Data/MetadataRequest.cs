@@ -11,8 +11,7 @@ namespace iSynaptic.Commons.Data
     {
         public MetadataRequest(IMetadataDeclaration<TMetadata> declaration, object subject, MemberInfo member)
         {
-            if(declaration == null)
-                throw new ArgumentNullException("declaration");
+            Guard.NotNull(declaration, "declaration");
 
             Declaration = declaration;
             Subject = subject;
