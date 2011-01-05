@@ -8,8 +8,7 @@ namespace iSynaptic.Commons.Collections.Generic
     {
         public static void Remove<T>(this ICollection<T> self, params T[] itemsToRemove)
         {
-            if (self == null)
-                throw new ArgumentNullException("self");
+            Guard.NotNull(self, "self");
 
             if (itemsToRemove == null || itemsToRemove.Length <= 0)
                 return;
@@ -20,11 +19,8 @@ namespace iSynaptic.Commons.Collections.Generic
 
         public static void RemoveAll<T>(this ICollection<T> self, Func<T, bool> predicate)
         {
-            if(self == null)
-                throw new ArgumentNullException("self");
-
-            if (predicate == null)
-                throw new ArgumentNullException("predicate");
+            Guard.NotNull(self, "self");
+            Guard.NotNull(predicate, "predicate");
 
             var itemsToRemove = self
                 .Where(predicate)

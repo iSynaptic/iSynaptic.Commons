@@ -85,6 +85,7 @@
     <Compile Include="Data\TestSubject.cs" />
     <Compile Include="Data\TestSubjectSurrogateMetadataBindingSource.cs" />
     <Compile Include="Collections\Generic\ProjectionCollectionTests.cs" />
+    <Compile Include="GuardTests.cs" />
     <Compile Include="UnsafeCastTests.cs" />
     <Compile Include="Collections\Generic\WeakDictionaryTests.cs" />
     <Compile Include="Collections\Generic\WeakDictionaryTestsBase.cs" />
@@ -120,7 +121,6 @@
     <Compile Include="Transactions\SimpleObject.cs" />
     <Compile Include="Transactions\TransactionalGatewayTests.cs" />
     <Compile Include="Transactions\TransactionalTests.cs" />
-    <Compile Include="UnitTestingExtensions.cs" />
     <Compile Include="WeakReferenceTests.cs" />
     <Compile Include="Xml\ProcessingInstructionParserTests.cs" />
   </ItemGroup>

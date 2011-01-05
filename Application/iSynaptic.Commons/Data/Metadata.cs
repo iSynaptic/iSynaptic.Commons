@@ -16,8 +16,7 @@ namespace iSynaptic.Commons.Data
 
         public static TMetadata Resolve<TMetadata>(MetadataDeclaration<TMetadata> declaration, object subject, Expression member)
         {
-            if (declaration == null)
-                throw new ArgumentNullException("declaration");
+            Guard.NotNull(declaration, "declaration");
 
             MemberInfo memberInfo = null;
             

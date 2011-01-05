@@ -16,9 +16,7 @@ namespace iSynaptic.Commons.Text.Parsing
 
         public ScanningTextReader(TextReader innerReader)
         {
-            if (innerReader == null)
-                throw new ArgumentNullException("innerReader");
-
+            Guard.NotNull(innerReader, "innerReader");
             _InnerReader = innerReader;
         }
 

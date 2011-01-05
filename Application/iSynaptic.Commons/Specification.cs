@@ -13,6 +13,7 @@ namespace iSynaptic.Commons
             private readonly Specification<T> _InnerSpecification = null;
             public NotSpecification(Specification<T> specification)
             {
+                Guard.NotNull(specification, "specification");
                 _InnerSpecification = specification;
             }
 
@@ -35,6 +36,10 @@ namespace iSynaptic.Commons
 
             public LogicalSpecification(Specification<T> left, Specification<T> right, Func<bool, bool, bool> operation)
             {
+                Guard.NotNull(left, "left");
+                Guard.NotNull(right, "right");
+                Guard.NotNull(operation, "operation");
+
                 _Left = left;
                 _Right = right;
                 _Operation = operation;
@@ -55,6 +60,7 @@ namespace iSynaptic.Commons
 
             public PredicateSpecification(Predicate<T> predicate)
             {
+                Guard.NotNull(predicate, "predicate");
                 _Predicate = predicate;
             }
 
@@ -72,6 +78,7 @@ namespace iSynaptic.Commons
 
             public FuncSpecification(Func<T, bool> func)
             {
+                Guard.NotNull(func, "func");
                 _Func = func;
             }
 
@@ -87,11 +94,17 @@ namespace iSynaptic.Commons
 
         public static bool IsSatisfiedBy<T>(this Specification<T> specification, params T[] candidates)
         {
+            Guard.NotNull(specification, "specification");
+            Guard.NotNullOrEmpty(candidates, "candidates");
+
             return candidates.All(specification.IsSatisfiedBy);
         }
 
         public static bool IsSatisfiedBy<T>(this Specification<T> specification, IEnumerable<T> candidates)
         {
+            Guard.NotNull(specification, "specification");
+            Guard.NotNullOrEmpty(candidates, "candidates");
+
             return candidates.All(specification.IsSatisfiedBy);
         }
 
@@ -99,8 +112,7 @@ namespace iSynaptic.Commons
 
         public static Specification<T> Not<T>(this Specification<T> specification)
         {
-            if (specification == null)
-                throw new ArgumentNullException("specification");
+            Guard.NotNull(specification, "specification");
 
             if (specification.GetType() == typeof(NotSpecification<T>))
                 return ((NotSpecification<T>)specification).InnerSpecification;
@@ -110,11 +122,8 @@ namespace iSynaptic.Commons
 
         public static Specification<T> And<T>(this Specification<T> left, Specification<T> right)
         {
-            if (left == null)
-                throw new ArgumentNullException("left");
-
-            if (right == null)
-                throw new ArgumentNullException("right");
+            Guard.NotNull(left, "left");
+            Guard.NotNull(right, "right");
 
             return new LogicalSpecification<T>(left,
                 right,
@@ -123,11 +132,8 @@ namespace iSynaptic.Commons
 
         public static Specification<T> Or<T>(this Specification<T> left, Specification<T> right)
         {
-            if (left == null)
-                throw new ArgumentNullException("left");
-
-            if (right == null)
-                throw new ArgumentNullException("right");
+            Guard.NotNull(left, "left");
+            Guard.NotNull(right, "right");
 
             return new LogicalSpecification<T>(left,
                 right,
@@ -136,11 +142,8 @@ namespace iSynaptic.Commons
 
         public static Specification<T> XOr<T>(this Specification<T> left, Specification<T> right)
         {
-            if (left == null)
-                throw new ArgumentNullException("left");
-
-            if (right == null)
-                throw new ArgumentNullException("right");
+            Guard.NotNull(left, "left");
+            Guard.NotNull(right, "right");
 
             return new LogicalSpecification<T>(left,
                 right,

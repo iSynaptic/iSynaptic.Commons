@@ -21,11 +21,8 @@ namespace iSynaptic.Commons.Xml
 
         public static ProcessingInstruction Parse(string name, string attributes)
         {
-            if (string.IsNullOrEmpty(name))
-                throw new ArgumentOutOfRangeException("name");
-
-            if (string.IsNullOrEmpty(attributes))
-                throw new ArgumentOutOfRangeException("attributes");
+            Guard.NotNullOrEmpty(name, "name");
+            Guard.NotNullOrEmpty(attributes, "attributes");
 
            return new ProcessingInstruction(name, ParseAttributes(attributes));
         }

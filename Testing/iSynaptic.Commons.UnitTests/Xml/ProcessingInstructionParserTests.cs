@@ -92,25 +92,25 @@ namespace iSynaptic.Commons.Xml
         [Test]
         public void ParseWithNullName()
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() => ProcessingInstructionParser.Parse(null, @"version=""1.0"""));
+            Assert.Throws<ArgumentNullException>(() => ProcessingInstructionParser.Parse(null, @"version=""1.0"""));
         }
 
         [Test]
-        public void ParseWithEmpryName()
+        public void ParseWithEmptyName()
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() => ProcessingInstructionParser.Parse("", @"version=""1.0"""));
+            Assert.Throws<ArgumentException>(() => ProcessingInstructionParser.Parse("", @"version=""1.0"""));
         }
 
         [Test]
         public void ParseWithNullAttributes()
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() => ProcessingInstructionParser.Parse("xml", null));
+            Assert.Throws<ArgumentNullException>(() => ProcessingInstructionParser.Parse("xml", null));
         }
 
         [Test]
-        public void ParseWithEmpryAttributes()
+        public void ParseWithEmptyAttributes()
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() => ProcessingInstructionParser.Parse("xml", ""));
+            Assert.Throws<ArgumentException>(() => ProcessingInstructionParser.Parse("xml", ""));
         }
     }
 }

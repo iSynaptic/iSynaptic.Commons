@@ -7,8 +7,7 @@ namespace iSynaptic.Commons.Collections.Generic
     {
         public static ReadOnlyDictionary<TKey, TValue> ToReadOnlyDictionary<TKey, TValue>(this IDictionary<TKey, TValue> self)
         {
-            if (self == null)
-                throw new ArgumentNullException("self");
+            Guard.NotNull(self, "self");
 
             if (self is ReadOnlyDictionary<TKey, TValue>)
                 return self as ReadOnlyDictionary<TKey, TValue>;

@@ -533,11 +533,8 @@ namespace iSynaptic.Commons.Runtime.Serialization
 
         public static T CloneTo(T source, T destination)
         {
-            if(source == null)
-                throw new ArgumentNullException("source");
-
-            if (destination == null)
-                throw new ArgumentNullException("destination");
+            Guard.NotNull(source, "source");
+            Guard.NotNull(destination, "destination");
 
             if (TargetType.IsValueType != true && ReferenceEquals(source, destination))
                 throw new InvalidOperationException("The destination object cannot be the same as the source.");
@@ -554,11 +551,8 @@ namespace iSynaptic.Commons.Runtime.Serialization
 
         public static T ShallowCloneTo(T source, T destination)
         {
-            if (source == null)
-                throw new ArgumentNullException("source");
-
-            if (destination == null)
-                throw new ArgumentNullException("destination");
+            Guard.NotNull(source, "source");
+            Guard.NotNull(destination, "destination");
 
             if(TargetType.IsValueType != true && ReferenceEquals(source, destination))
                 throw new InvalidOperationException("The destination object cannot be the same as the source.");

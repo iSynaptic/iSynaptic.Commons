@@ -10,13 +10,10 @@ namespace iSynaptic.Commons
 
         public AggregateException(string message, IEnumerable<Exception> exceptions) : base(message)
         {
-            if(exceptions == null)
-                throw new ArgumentNullException("exceptions");
+            Guard.NotNull(exceptions, "exceptions");
 
             var exceptionArray = exceptions.ToArray();
-
-            if(exceptionArray.Length <= 0)
-                throw new ArgumentException("You must provide at least one exception.", "exceptions");
+            Guard.NotEmpty(exceptionArray, "exceptions");
 
             _Exceptions = exceptionArray;
         }

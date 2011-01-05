@@ -9,14 +9,14 @@ namespace iSynaptic.Commons.Text.Parsing
     {
         public static IEnumerable<Token<TokenKind>> ScanText(string input)
         {
-            if (string.IsNullOrEmpty(input))
-                throw new ArgumentOutOfRangeException("input");
-
+            Guard.NotEmpty(input, input);
             return ScanTextCore(new StringReader(input));
         }
 
         public static IEnumerable<Token<TokenKind>> ScanText(TextReader inputReader)
         {
+            Guard.NotNull(inputReader, "inputReader");
+
             if (inputReader == null)
                 throw new ArgumentNullException("inputReader");
 
