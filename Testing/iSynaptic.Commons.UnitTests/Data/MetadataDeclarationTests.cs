@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using iSynaptic.Commons.Data.MetadataDeclarations;
 using NUnit.Framework;
 
 namespace iSynaptic.Commons.Data
@@ -12,29 +13,21 @@ namespace iSynaptic.Commons.Data
         [Test]
         public void Default_WhenExplicit_ReturnsCorrectly()
         {
-            Assert.AreEqual(5, new IntegerMetadataDeclaration(1, 10, 5).Default);
+            Assert.AreEqual(5, new ComparableMetadataDeclaration<int>(1, 10, 5).Default);
         }
 
         [Test]
         public void Default_WithExplicitInvalidDefault_ThrowsException()
         {
-            var declaration = new IntegerMetadataDeclaration(1, 10, 42);
-            Assert.That(() => { var x = declaration.Default; },
-                Throws
-                .InstanceOf<InvalidOperationException>().And
-                .InnerException
-                    .InstanceOf<ArgumentOutOfRangeException>());
+            var declaration = new ComparableMetadataDeclaration<int>(1, 10, 42);
+            Assert.Throws<MetadataValidationException<int>>(() => { var x = declaration.Default; });
         }
 
         [Test]
         public void Default_WithImplicitInvalidDefault_ThrowsException()
         {
-            var declaration = new IntegerMetadataDeclaration(1, 10);
-            Assert.That(() => { var x = declaration.Default; },
-                Throws
-                .InstanceOf<InvalidOperationException>().And
-                .InnerException
-                    .InstanceOf<ArgumentOutOfRangeException>());
+            var declaration = new ComparableMetadataDeclaration<int>(1, 10);
+            Assert.Throws<MetadataValidationException<int>>(() => { var x = declaration.Default; });
         }
 
         [Test]
@@ -50,20 +43,20 @@ namespace iSynaptic.Commons.Data
         }
 
         [Test]
-        public void CheckValue_WithValidValue_DoesNotThrowException()
+        public void ValidateValue_WithValidValue_DoesNotThrowException()
         {
-            var betweenOneAndTen = new IntegerMetadataDeclaration(1, 10, 5);
+            var betweenOneAndTen = new ComparableMetadataDeclaration<int>(1, 10, 5);
 
-            for (int i = betweenOneAndTen.Min; i <= betweenOneAndTen.Max; i++)
-                betweenOneAndTen.CheckValue(i);
+            for (int i = betweenOneAndTen.MinValue; i <= betweenOneAndTen.MaxValue; i++)
+                betweenOneAndTen.ValidateValue(i);
         }
 
         [Test]
-        public void CheckValue_WithoutValidValue_ThrowsException()
+        public void ValidateValue_WithoutValidValue_ThrowsException()
         {
-            var betweenOneAndTen = new IntegerMetadataDeclaration(1, 10, 5);
+            var betweenOneAndTen = new ComparableMetadataDeclaration<int>(1, 10, 5);
 
-            Assert.Throws<ArgumentOutOfRangeException>(() => betweenOneAndTen.CheckValue(0));
+            Assert.Throws<MetadataValidationException<int>>(() => betweenOneAndTen.ValidateValue(0));
         }
     }
 }

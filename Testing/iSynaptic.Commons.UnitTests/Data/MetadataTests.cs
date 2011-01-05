@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
+using iSynaptic.Commons.Data.MetadataDeclarations;
 using NUnit.Framework;
 using Rhino.Mocks;
 using Is = Rhino.Mocks.Constraints.Is;
@@ -54,15 +55,13 @@ namespace iSynaptic.Commons.Data
         [Test]
         public void Get_WithNoMetadataResolverAndBadDefault_ThrowsWrappedException()
         {
-            var maxLengthWithBadDefault = new IntegerMetadataDeclaration(1, 10, 42);
+            var maxLengthWithBadDefault = new ComparableMetadataDeclaration<int>(1, 10, 42);
 
             Assert.That(() => { maxLengthWithBadDefault.For<string>(); },
                 Throws
                     .InstanceOf<InvalidOperationException>().And
                     .InnerException
-                        .InstanceOf<InvalidOperationException>().And
-                    .InnerException.InnerException
-                                .InstanceOf<ArgumentOutOfRangeException>());
+                        .InstanceOf<MetadataValidationException<int>>());
         }
 
         [Test]

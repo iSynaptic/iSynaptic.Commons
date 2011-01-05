@@ -80,6 +80,7 @@
     <Compile Include="AOP\UnitOfWorkStub.cs" />
     <Compile Include="AOP\UnitOfWorkTests.cs" />
     <Compile Include="ArrayIndexTests.cs" />
+    <Compile Include="Data\CommonMetadata.cs" />
     <Compile Include="Data\TestMetadataBindingModule.cs" />
     <Compile Include="Data\TestSubject.cs" />
     <Compile Include="Data\TestSubjectSurrogateMetadataBindingSource.cs" />
@@ -92,11 +93,10 @@
     <Compile Include="Collections\Generic\ReadOnlyDictionaryTests.cs" />
     <Compile Include="AggregateExceptionTests.cs" />
     <Compile Include="DataEventArgsTests.cs" />
-    <Compile Include="Data\MaxLengthAttribute.cs" />
+    <Compile Include="Data\StringMetadataAttribute.cs" />
     <Compile Include="Data\MetadataDeclarationTests.cs" />
     <Compile Include="Data\StandardMetadataResolverTests.cs" />
     <Compile Include="Data\MetadataTests.cs" />
-    <Compile Include="Data\IntegerMetadataDeclaration.cs" />
     <Compile Include="Data\StringMetadata.cs" />
     <Compile Include="DependencyResolverTests.cs" />
     <Compile Include="Diagnostics\LoggerExtensionsTests.cs" />

@@ -53,12 +53,12 @@ namespace iSynaptic.Commons.Data
             return Metadata.Resolve(this, subject, member);
         }
 
-        public void CheckValue(TMetadata value)
+        public void ValidateValue(TMetadata value)
         {
-            OnCheckValue(value, "value");
+            OnValidateValue(value, "value");
         }
 
-        protected virtual void OnCheckValue(TMetadata value, string valueName)
+        protected virtual void OnValidateValue(TMetadata value, string valueName)
         {
         }
 
@@ -68,14 +68,7 @@ namespace iSynaptic.Commons.Data
             {
                 TMetadata defaultValue = GetDefault();
 
-                try
-                {
-                    OnCheckValue(defaultValue, "default");
-                }
-                catch (Exception ex)
-                {
-                    throw new InvalidOperationException("The default value defined was not valid. See the inner exception for details.", ex);
-                }
+                OnValidateValue(defaultValue, "default");
 
                 return defaultValue;
             }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
+using iSynaptic.Commons.Data.MetadataDeclarations;
 using NUnit.Framework;
 using Rhino.Mocks;
 
@@ -35,7 +36,7 @@ namespace iSynaptic.Commons.Data
         {
             var resolver = new StandardMetadataResolver(new TestMetadataBindingModule());
 
-            var value = resolver.Resolve(new IntegerMetadataDeclaration(-1, 42, 7), null, null);
+            var value = resolver.Resolve(new ComparableMetadataDeclaration<int>(-1, 42, 7), null, null);
             Assert.AreEqual(7, value);
         }
 
@@ -44,7 +45,7 @@ namespace iSynaptic.Commons.Data
         {
             var resolver = new StandardMetadataResolver();
 
-            var value = resolver.Resolve(new IntegerMetadataDeclaration(-1, 42, 7), null, null);
+            var value = resolver.Resolve(new ComparableMetadataDeclaration<int>(-1, 42, 7), null, null);
             Assert.AreEqual(7, value);
         }
 
@@ -54,8 +55,14 @@ namespace iSynaptic.Commons.Data
             var resolver = new StandardMetadataResolver();
             Metadata.SetResolver(resolver);
 
-            var value = StringMetadata.MaxLength.For<TestSubject>(x => x.FirstName);
-            Assert.AreEqual(84, value);
+            var minLength = StringMetadata.MinLength.For<TestSubject>(x => x.FirstName);
+            Assert.AreEqual(21, minLength);
+
+            var maxLength = StringMetadata.MaxLength.For<TestSubject>(x => x.FirstName);
+            Assert.AreEqual(84, maxLength);
+
+            var description = CommonMetadata.Description.For<TestSubject>(x => x.FirstName);
+            Assert.AreEqual("First Name", description);
         }
 
         [Test]
@@ -64,8 +71,11 @@ namespace iSynaptic.Commons.Data
             var resolver = new StandardMetadataResolver();
             Metadata.SetResolver(resolver);
 
-            var value = StringMetadata.MaxLength.For<TestSubject>(x => x.LastName);
-            Assert.AreEqual(1764, value);
+            var allMetadata = StringMetadata.All.For<TestSubject>(x => x.LastName);
+
+            Assert.AreEqual(7, allMetadata.MinimumLength);
+            Assert.AreEqual(1764, allMetadata.MaximumLength);
+            Assert.AreEqual("Last Name", allMetadata.Description);
         }
 
         [Test]

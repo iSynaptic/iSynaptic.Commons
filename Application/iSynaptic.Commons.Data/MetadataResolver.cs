@@ -23,7 +23,10 @@ namespace iSynaptic.Commons.Data
             if(selectedBinding == null)
                 return declaration.Default;
 
-            return selectedBinding.Resolve(request);
+            var results = selectedBinding.Resolve(request);
+            declaration.ValidateValue(results);
+
+            return results;
         }
 
         protected abstract IMetadataBinding<TMetadata> SelectBinding<TMetadata>(MetadataRequest<TMetadata> request, IEnumerable<IMetadataBinding<TMetadata>> candidates);

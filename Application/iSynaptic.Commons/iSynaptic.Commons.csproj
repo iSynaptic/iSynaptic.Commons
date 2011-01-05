@@ -85,6 +85,10 @@
     <Compile Include="Data\IMetadataResolver.cs" />
     <Compile Include="Data\Metadata.cs" />
     <Compile Include="Data\MetadataDeclaration.cs" />
+    <Compile Include="Data\MetadataDeclarations\GuidMetadataDeclaration.cs" />
+    <Compile Include="Data\MetadataDeclarations\ComparableMetadataDeclaration.cs" />
+    <Compile Include="Data\MetadataDeclarations\StringMetadataDeclaration.cs" />
+    <Compile Include="Data\MetadataValidationException.cs" />
     <Compile Include="DependencyResolver.cs" />
     <Compile Include="Diagnostics\ILogger.cs" />
     <Compile Include="Diagnostics\ILoggerContextSerializer.cs" />
