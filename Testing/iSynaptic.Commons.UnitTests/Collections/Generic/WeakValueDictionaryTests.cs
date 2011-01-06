@@ -9,7 +9,7 @@ namespace iSynaptic.Commons.Collections.Generic
     [TestFixture]
     public class WeakValueDictionaryTests : WeakDictionaryTestsBase
     {
-        protected override WeakDictionary<object, object> CreateDictionary()
+        protected override IWeakDictionary<object, object> CreateDictionary()
         {
             return new WeakValueDictionary<object, object>();
         }

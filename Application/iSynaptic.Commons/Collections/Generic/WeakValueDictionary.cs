@@ -5,8 +5,7 @@ using System.Text;
 
 namespace iSynaptic.Commons.Collections.Generic
 {
-    public sealed class WeakValueDictionary<TKey, TValue> : WeakDictionary<TKey, TValue>
-        where TKey : class
+    public sealed class WeakValueDictionary<TKey, TValue> : BaseWeakDictionary<TKey, TValue, TKey, WeakReference<TValue>>
         where TValue : class
     {
         public WeakValueDictionary()
@@ -23,15 +22,30 @@ namespace iSynaptic.Commons.Collections.Generic
         {
         }
 
-        protected override object WrapKey(TKey key)
+        protected override IEqualityComparer<TKey> BuildComparer(IEqualityComparer<TKey> comparer)
+        {
+            return comparer;
+        }
+
+        protected override TKey WrapKey(TKey key, IEqualityComparer<TKey> comparer)
         {
             return key;
         }
 
-        protected override bool UnwrapKey(object key, ref TKey destination)
+        protected override bool UnwrapKey(TKey key, ref TKey destination)
         {
-            destination = (TKey) key;
+            destination = key;
             return true;
+        }
+
+        protected override WeakReference<TValue> WrapValue(TValue value)
+        {
+            return WeakReference<TValue>.Create(value);
+        }
+
+        protected override bool UnwrapValue(WeakReference<TValue> value, ref TValue destination)
+        {
+            return UnwrapWeakReference(value, ref destination);
         }
     }
 }
