@@ -3,11 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using iSynaptic.Commons.Collections.Generic;
 
 namespace iSynaptic.Commons.Data
 {
     public abstract class MetadataResolver : IMetadataResolver
     {
+        private static class ScopingCache<TMetadata>
+        {
+            public static readonly IDictionary<object, TMetadata> Cache = new WeakKeyDictionary<object, TMetadata>();
+        }
+
         private HashSet<IMetadataBindingSource> _BindingSources = new HashSet<IMetadataBindingSource>();
 
         public TMetadata Resolve<TMetadata>(MetadataDeclaration<TMetadata> declaration, object subject, MemberInfo member)
@@ -25,8 +31,18 @@ namespace iSynaptic.Commons.Data
             if(selectedBinding == null)
                 return declaration.Default;
 
-            var results = selectedBinding.Resolve(request);
-            declaration.ValidateValue(results);
+            TMetadata results = default(TMetadata);
+
+            if(selectedBinding.ScopeFactory != null)
+            {
+                object scopeObject = selectedBinding.ScopeFactory(request);
+
+                if(scopeObject != null && ScopingCache<TMetadata>.Cache.TryGetValue(scopeObject, out results))
+                    return results;
+            }
+        
+            results = selectedBinding.Resolve(request);
+            declaration.ValidateValue(results);    
 
             return results;
         }

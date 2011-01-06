@@ -25,7 +25,7 @@ namespace iSynaptic.Commons.Data
 
         public Func<MetadataRequest<TMetadata>, object> ScopeFactory
         {
-            get { throw new NotImplementedException(); }
+            get { return null; }
         }
 
         public TMetadata Resolve(MetadataRequest<TMetadata> request)
