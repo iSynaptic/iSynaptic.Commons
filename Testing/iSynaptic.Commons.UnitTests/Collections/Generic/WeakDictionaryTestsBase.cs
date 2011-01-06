@@ -8,7 +8,7 @@ namespace iSynaptic.Commons.Collections.Generic
 {
     public abstract class WeakDictionaryTestsBase
     {
-        protected abstract WeakDictionary<object, object> CreateDictionary();
+        protected abstract IWeakDictionary<object, object> CreateDictionary();
 
         [Test]
         public void PurgeGarbage_RemovesEntriesForGarbageCollectedKeys()
@@ -126,7 +126,7 @@ namespace iSynaptic.Commons.Collections.Generic
             var value = new object();
 
             dictionary.Add(key, value);
-            dictionary.Remove(new KeyValuePair<object, object>(key, value));
+            ((ICollection<KeyValuePair<object, object>>)dictionary).Remove(new KeyValuePair<object, object>(key, value));
 
             Assert.IsFalse(dictionary.ContainsKey(key));
             Assert.AreEqual(0, dictionary.Count);

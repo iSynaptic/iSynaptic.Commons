@@ -74,6 +74,8 @@
     <Compile Include="AOP\UnitOfWork.cs" />
     <Compile Include="ArrayIndex.cs" />
     <Compile Include="Collections\Generic\BaseDictionary.cs" />
+    <Compile Include="Collections\Generic\BaseWeakDictionary.cs" />
+    <Compile Include="Collections\Generic\IWeakDictionary.cs" />
     <Compile Include="Collections\Generic\ProjectionCollection.cs" />
     <Compile Include="Collections\Generic\ReadOnlyDictionary.cs" />
     <Compile Include="AggregateException.cs" />
