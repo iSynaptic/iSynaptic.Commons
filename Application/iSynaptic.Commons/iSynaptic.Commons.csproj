@@ -90,6 +90,7 @@
     <Compile Include="Data\MetadataDeclarations\GuidMetadataDeclaration.cs" />
     <Compile Include="Data\MetadataDeclarations\ComparableMetadataDeclaration.cs" />
     <Compile Include="Data\MetadataDeclarations\StringMetadataDeclaration.cs" />
+    <Compile Include="Data\MetadataHelper.cs" />
     <Compile Include="Data\MetadataValidationException.cs" />
     <Compile Include="DependencyResolver.cs" />
     <Compile Include="Diagnostics\ILogger.cs" />
@@ -100,6 +101,7 @@
     <Compile Include="Collections\Generic\DictionaryExtensions.cs" />
     <Compile Include="Equatable.cs" />
     <Compile Include="Guard.cs" />
+    <Compile Include="IFluentInterface.cs" />
     <Compile Include="Maybe.cs" />
     <Compile Include="Reflection\Emit\DynamicMethodExtensions.cs" />
     <Compile Include="Collections\Generic\EnumerableExtensions.cs" />

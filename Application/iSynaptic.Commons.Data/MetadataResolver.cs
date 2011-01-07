@@ -7,11 +7,11 @@ using iSynaptic.Commons.Collections.Generic;
 
 namespace iSynaptic.Commons.Data
 {
-    public abstract class MetadataResolver : IMetadataResolver
+    public class MetadataResolver : IMetadataResolver
     {
         private static class ScopingCache<TMetadata>
         {
-            public static readonly IDictionary<object, TMetadata> Cache = new WeakKeyDictionary<object, TMetadata>();
+            public static readonly IWeakDictionary<object, TMetadata> Cache = new WeakKeyDictionary<object, TMetadata>();
         }
 
         private HashSet<IMetadataBindingSource> _BindingSources = new HashSet<IMetadataBindingSource>();
@@ -31,23 +31,41 @@ namespace iSynaptic.Commons.Data
             if(selectedBinding == null)
                 return declaration.Default;
 
-            TMetadata results = default(TMetadata);
+            var results = default(TMetadata);
 
-            if(selectedBinding.ScopeFactory != null)
+            object scopeObject = null;
+
+            if (selectedBinding.ScopeFactory != null)
             {
-                object scopeObject = selectedBinding.ScopeFactory(request);
-
-                if(scopeObject != null && ScopingCache<TMetadata>.Cache.TryGetValue(scopeObject, out results))
-                    return results;
+                scopeObject = selectedBinding.ScopeFactory(request);
+                ScopingCache<TMetadata>.Cache.PurgeGarbage();
             }
+
+            if(scopeObject != null && ScopingCache<TMetadata>.Cache.TryGetValue(scopeObject, out results))
+                return results;
         
             results = selectedBinding.Resolve(request);
-            declaration.ValidateValue(results);    
+            declaration.ValidateValue(results);
+
+            if(scopeObject != null)
+                ScopingCache<TMetadata>.Cache.Add(scopeObject, results);
 
             return results;
         }
 
-        protected abstract IMetadataBinding<TMetadata> SelectBinding<TMetadata>(MetadataRequest<TMetadata> request, IEnumerable<IMetadataBinding<TMetadata>> candidates);
+        protected virtual IMetadataBinding<TMetadata> SelectBinding<TMetadata>(MetadataRequest<TMetadata> request, IEnumerable<IMetadataBinding<TMetadata>> candidates)
+        {
+            Guard.NotNull(candidates, "candidates");
+
+            try
+            {
+                return candidates.SingleOrDefault();
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("More than one metadata binding was found. Remove duplicate bindings or apply additional conditions to existing bindings to make them unambiguous.", ex);
+            }
+        }
 
         public void AddMetadataBindingSource<T>() where T : class, IMetadataBindingSource, new()
         {

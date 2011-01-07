@@ -10,43 +10,14 @@ namespace iSynaptic.Commons.Data
     [TestFixture]
     public class StandardMetadataResolverTests
     {
-
         [Test]
-        public void Resolve_ThruMetadataClass_ReturnsValue()
+        public void Resolve_WithModuleProvidedMatchingBinding_ReturnsValue()
         {
             var resolver = new StandardMetadataResolver(new TestMetadataBindingModule());
-
             Metadata.SetResolver(resolver);
 
-            var value = StringMetadata.MaxLength.Get();
+            int value = StringMetadata.MaxLength;
             Assert.AreEqual(42, value);
-        }
-
-        [Test]
-        public void Resolve_WithMatchingBinding_ReturnsValue()
-        {
-            var resolver = new StandardMetadataResolver(new TestMetadataBindingModule());
-
-            var value = resolver.Resolve(StringMetadata.MaxLength, null, null);
-            Assert.AreEqual(42, value);
-        }
-
-        [Test]
-        public void Resolve_WithoutMatchingBinding_ReturnsDefault()
-        {
-            var resolver = new StandardMetadataResolver(new TestMetadataBindingModule());
-
-            var value = resolver.Resolve(new ComparableMetadataDeclaration<int>(-1, 42, 7), null, null);
-            Assert.AreEqual(7, value);
-        }
-
-        [Test]
-        public void Resolve_WithNoBindings_ReturnsDefault()
-        {
-            var resolver = new StandardMetadataResolver();
-
-            var value = resolver.Resolve(new ComparableMetadataDeclaration<int>(-1, 42, 7), null, null);
-            Assert.AreEqual(7, value);
         }
 
         [Test]
@@ -86,15 +57,6 @@ namespace iSynaptic.Commons.Data
 
             var value = StringMetadata.MaxLength.For<TestSubject>(x => x.MiddleName);
             Assert.AreEqual(74088, value);
-        }
-
-        [Test]
-        public void Resolve_WithAmbiguousBindings_ThrowsException()
-        {
-            var resolver = new StandardMetadataResolver(new TestMetadataBindingModule(), new TestMetadataBindingModule());
-            Metadata.SetResolver(resolver);
-
-            Assert.Throws<InvalidOperationException>(() => StringMetadata.MaxLength.Get());
         }
     }
 }

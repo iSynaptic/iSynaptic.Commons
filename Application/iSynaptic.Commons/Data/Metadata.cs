@@ -16,7 +16,7 @@ namespace iSynaptic.Commons.Data
             MemberInfo memberInfo = null;
             
             if(member != null)
-                memberInfo = ExtractMemberInfoFromExpression(member);
+                memberInfo = member.ExtractMemberInfoForMetadata();
 
             var resolver = MetadataResolver;
 
@@ -38,28 +38,6 @@ namespace iSynaptic.Commons.Data
             return resolver.Resolve(declaration, subject, memberInfo);
         }
 
-        private static MemberInfo ExtractMemberInfoFromExpression(Expression member)
-        {
-            var lambda = member as LambdaExpression;
-            if (lambda != null)
-            {
-                var body = lambda.Body;
-
-                if (body.NodeType == ExpressionType.Convert)
-                    body = ((UnaryExpression) body).Operand;
-
-                if (body is MemberExpression)
-                {
-                    var memberExpression = (MemberExpression) body;
-
-                    if (memberExpression.Expression is ParameterExpression && memberExpression.Member is PropertyInfo ||
-                        memberExpression.Member is FieldInfo)
-                        return memberExpression.Member;
-                }
-            }
-
-            throw new ArgumentException("You can only retreive member metatdata for properties and fields.", "member");
-        }
 
         public static void SetResolver(IMetadataResolver metadataResolver)
         {

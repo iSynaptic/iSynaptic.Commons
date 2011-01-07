@@ -147,8 +147,8 @@ namespace iSynaptic.Commons.Data
             var maxLength = new MetadataDeclaration<int>(7);
             string subject = "Hello, World!";
 
-            Expression<Func<string, int>> expression = x => x.Length;
-            var member = ((MemberExpression)expression.Body).Member;
+            Expression<Func<string, object>> expression = x => x.Length;
+            var member = expression.ExtractMemberInfoForMetadata();
 
             var resolver = MockRepository.GenerateMock<IMetadataResolver>();
             resolver.Expect(x => x.Resolve(maxLength, subject, member))

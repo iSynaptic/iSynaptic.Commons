@@ -81,6 +81,7 @@
     <Compile Include="AOP\UnitOfWorkTests.cs" />
     <Compile Include="ArrayIndexTests.cs" />
     <Compile Include="Data\CommonMetadata.cs" />
+    <Compile Include="Data\MetadataResolverTests.cs" />
     <Compile Include="Data\TestMetadataBindingModule.cs" />
     <Compile Include="Data\TestSubject.cs" />
     <Compile Include="Data\TestSubjectSurrogateMetadataBindingSource.cs" />

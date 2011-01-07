@@ -48,7 +48,7 @@ namespace iSynaptic.Commons.Data
             return Metadata.Resolve(this, typeof (T), member);
         }
 
-        public TMetadata For<T, TMember>(T subject, Expression<Func<T, TMember>> member)
+        public TMetadata For<T>(T subject, Expression<Func<T, object>> member)
         {
             return Metadata.Resolve(this, subject, member);
         }
