@@ -11,7 +11,7 @@ namespace iSynaptic.Commons.Data
     {
         private HashSet<object> _Bindings = new HashSet<object>();
 
-        private class FluentHelper<TMetadata> : ISubjectPredicateToBinding<TMetadata>
+        private class FluentHelper<TMetadata> : ISubjectPredicateScopeToBinding<TMetadata>
         {
             private readonly MetadataBindingModule _Parent;
 
@@ -119,7 +119,7 @@ namespace iSynaptic.Commons.Data
             _Bindings.Add(new MetadataBinding<TMetadata>(declaration, value));
         }
 
-        public ISubjectPredicateToBinding<TMetadata> Bind<TMetadata>(IMetadataDeclaration<TMetadata> declaration)
+        public ISubjectPredicateScopeToBinding<TMetadata> Bind<TMetadata>(IMetadataDeclaration<TMetadata> declaration)
         {
             Guard.NotNull(declaration, "declaration");
             return new FluentHelper<TMetadata>(this, r => r.Declaration == declaration);
