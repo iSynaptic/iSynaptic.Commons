@@ -35,8 +35,18 @@ namespace iSynaptic.Commons.Data
             }
 
             AddMetadataBindingSource(new ModuleMetadataBindingSource(this));
-            AddMetadataBindingSource<SurrogateMetadataBindingSource>();
+            AddMetadataBindingSource<MetadataSurrogateBindingSource>();
             AddMetadataBindingSource<AttributeMetadataBindingSource>();
+        }
+
+        protected override IMetadataBinding<TMetadata> SelectBinding<TMetadata>(MetadataRequest<TMetadata> request, IEnumerable<IMetadataBinding<TMetadata>> candidates)
+        {
+            var bindingList = candidates.ToList();
+
+            if (bindingList.Count > 1)
+                bindingList.RemoveAll(x => x is AttributeMetadataBinding<TMetadata>);
+
+            return base.SelectBinding(request, bindingList);
         }
 
         public void LoadModule(MetadataBindingModule module)

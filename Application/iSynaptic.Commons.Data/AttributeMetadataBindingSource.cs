@@ -30,31 +30,5 @@ namespace iSynaptic.Commons.Data
             foreach (var attribute in attributes)
                 yield return new AttributeMetadataBinding<TMetadata>(attribute);
         }
-
-        private class AttributeMetadataBinding<TMetadata> : IMetadataBinding<TMetadata>
-        {
-            private readonly IMetadataAttribute<TMetadata> _Attribute;
-
-            public AttributeMetadataBinding(IMetadataAttribute<TMetadata> attribute)
-            {
-                Guard.NotNull(attribute, "attribute");
-                _Attribute = attribute;
-            }
-
-            public bool Matches(MetadataRequest<TMetadata> request)
-            {
-                return _Attribute.ProvidesMetadataFor(request);
-            }
-
-            public Func<MetadataRequest<TMetadata>, object> ScopeFactory
-            {
-                get { return null; }
-            }
-
-            public TMetadata Resolve(MetadataRequest<TMetadata> request)
-            {
-                return _Attribute.Resolve(request);
-            }
-        }
     }
 }

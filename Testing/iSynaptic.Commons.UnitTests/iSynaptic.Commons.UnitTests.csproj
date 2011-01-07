@@ -81,10 +81,11 @@
     <Compile Include="AOP\UnitOfWorkTests.cs" />
     <Compile Include="ArrayIndexTests.cs" />
     <Compile Include="Data\CommonMetadata.cs" />
+    <Compile Include="Data\DescriptionAttribute.cs" />
     <Compile Include="Data\MetadataResolverTests.cs" />
     <Compile Include="Data\TestMetadataBindingModule.cs" />
     <Compile Include="Data\TestSubject.cs" />
-    <Compile Include="Data\TestSubjectSurrogateMetadataBindingSource.cs" />
+    <Compile Include="Data\TestSubjectMetadataSurrogate.cs" />
     <Compile Include="Collections\Generic\ProjectionCollectionTests.cs" />
     <Compile Include="GuardTests.cs" />
     <Compile Include="UnsafeCastTests.cs" />

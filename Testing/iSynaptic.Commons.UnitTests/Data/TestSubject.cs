@@ -1,5 +1,6 @@
 ﻿namespace iSynaptic.Commons.Data
 {
+    [Description("Test Subject")]
     public class TestSubject
     {
         [StringMetadata(21, 84, "First Name")]

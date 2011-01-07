@@ -7,7 +7,7 @@ using System.Text;
 
 namespace iSynaptic.Commons.Data
 {
-    public class MetadataBindingModule : IMetadataBindingSource
+    public class MetadataBindingModule : IMetadataBindingSource, IFluentInterface
     {
         private HashSet<object> _Bindings = new HashSet<object>();
 

@@ -40,18 +40,19 @@
     <Compile Include="..\..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="AttributeMetadataBinding.cs" />
     <Compile Include="AttributeMetadataBindingSource.cs" />
     <Compile Include="IMetadataAttribute.cs" />
     <Compile Include="IMetadataBinding.cs" />
     <Compile Include="IMetadataBindingSource.cs" />
-    <Compile Include="IPredicateToBinding.cs" />
+    <Compile Include="IPredicateScopeToBinding.cs" />
     <Compile Include="IScopeToBinding.cs" />
-    <Compile Include="ISubjectPredicateToBinding.cs" />
+    <Compile Include="ISubjectPredicateScopeToBinding.cs" />
     <Compile Include="IToBinding.cs" />
     <Compile Include="MetadataBinding.cs" />
     <Compile Include="MetadataBindingModule.cs" />
-    <Compile Include="SurrogateMetadataBindingSource.cs" />
-    <Compile Include="SurrogateMetadataBindingSourceAttribute.cs" />
+    <Compile Include="MetadataSurrogate.cs" />
+    <Compile Include="MetadataSurrogateBindingSource.cs" />
     <Compile Include="MetadataRequest.cs" />
     <Compile Include="MetadataResolver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
