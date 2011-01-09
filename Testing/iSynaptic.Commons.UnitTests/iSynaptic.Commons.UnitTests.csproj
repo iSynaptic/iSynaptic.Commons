@@ -80,8 +80,9 @@
     <Compile Include="AOP\UnitOfWorkTests.cs" />
     <Compile Include="ArrayIndexTests.cs" />
     <Compile Include="Collections\Generic\ProjectionCollectionTests.cs" />
+    <Compile Include="ExceptionExtensionsTests.cs" />
     <Compile Include="GuardTests.cs" />
-    <Compile Include="UnsafeCastTests.cs" />
+    <Compile Include="CastTests.cs" />
     <Compile Include="Collections\Generic\WeakDictionaryTests.cs" />
     <Compile Include="Collections\Generic\WeakDictionaryTestsBase.cs" />
     <Compile Include="Collections\Generic\WeakKeyDictionaryTests.cs" />

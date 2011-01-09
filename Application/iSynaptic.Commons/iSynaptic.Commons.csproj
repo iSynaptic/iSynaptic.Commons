@@ -94,6 +94,7 @@
     <Compile Include="ActionExtensions.cs" />
     <Compile Include="Collections\Generic\DictionaryExtensions.cs" />
     <Compile Include="Equatable.cs" />
+    <Compile Include="ExceptionExtensions.cs" />
     <Compile Include="Guard.cs" />
     <Compile Include="Maybe.cs" />
     <Compile Include="Reflection\Emit\DynamicMethodExtensions.cs" />

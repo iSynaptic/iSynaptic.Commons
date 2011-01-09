@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace iSynaptic.Commons
 {
     [TestFixture]
-    public class UnsafeCastTests
+    public class CastTests
     {
         [Test]
         public void Cast_ValueType_ReturnsCorrectly()
@@ -19,17 +19,22 @@ namespace iSynaptic.Commons
         public void Cast_ReferenceType_ReturnsCorrectly()
         {
             Assert.AreEqual("Hello, World!", CastToString("Hello, World!"));
+        }
 
+        [Test]
+        public void Cast_WithInvalidCast_ThrowsException()
+        {
+            Assert.Throws<TypeInitializationException>(() => Cast<int, CastTests>.With(1));
         }
 
         private int CastToInt<T>(T source)
         {
-            return UnsafeCast.To<T, int>(source);
+            return Cast<T, int>.With(source);
         }
 
         private string CastToString<T>(T source)
         {
-            return UnsafeCast.To<T, string>(source);
+            return Cast<T, string>.With(source);
         }
     }
 }
