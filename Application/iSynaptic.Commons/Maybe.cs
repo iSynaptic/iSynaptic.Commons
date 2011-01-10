@@ -1,25 +1,38 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace iSynaptic.Commons
 {
     public struct Maybe<T> : IEquatable<Maybe<T>>
     {
-        public static readonly Maybe<T> NoValue = new Maybe<T>(default(T)) { _HasValue = false };
+        public static readonly Maybe<T> NoValue = new Maybe<T>();
+        public static readonly Maybe<T> Default = new Maybe<T>(default(T));
 
         private readonly T _Value;
-        private bool _HasValue;
+        private readonly bool _HasValue;
+        private readonly Exception _Exception;
 
         public Maybe(T value)
         {
-            _HasValue = true;
             _Value = value;
+            _HasValue = true;
+            _Exception = null;
         }
 
-        public bool HasValue { get { return _HasValue; } }
+        internal Maybe(Exception exception)
+        {
+            _Value = default(T);
+            _HasValue = false;
+            _Exception = exception;
+        }
+
         public T Value
         {
             get
             {
+                if(Exception != null)
+                    Exception.Rethrow();
+
                 if(HasValue != true)
                     throw new InvalidOperationException("No value can be provided.");
 
@@ -27,18 +40,24 @@ namespace iSynaptic.Commons
             }
         }
 
+        public bool HasValue { get { return _HasValue; } }
+        public Exception Exception { get { return _Exception; } }
+
         public bool Equals(Maybe<T> other)
         {
-            if (HasValue != true)
-                return other.HasValue == HasValue;
+            if(Exception != null)
+                return other.Exception != null && other.Exception == Exception;
 
-            if (other.HasValue != true)
+            if (other.Exception != null)
                 return false;
 
-            if (Value is IEquatable<T>)
-                return ((IEquatable<T>) Value).Equals(other.Value);
+            if (!HasValue)
+                return !other.HasValue;
 
-            return Value.Equals(other.Value);
+            if (!other.HasValue)
+                return false;
+
+            return EqualityComparer<T>.Default.Equals(Value, other.Value);
         }
 
         public override bool Equals(object obj)
@@ -54,6 +73,9 @@ namespace iSynaptic.Commons
 
         public override int GetHashCode()
         {
+            if (Exception != null)
+                return Exception.GetHashCode();
+
             if (HasValue != true)
                 return 0;
 
@@ -68,6 +90,34 @@ namespace iSynaptic.Commons
         public static bool operator !=(Maybe<T> left, Maybe<T> right)
         {
             return !(left == right);
+        }
+
+        public Maybe<TResult> Bind<TResult>(Func<T, TResult> func)
+        {
+            return Bind(x => new Maybe<TResult>(func(x)));
+        }
+
+        public Maybe<TResult> Bind<TResult>(Func<T, Maybe<TResult>> func)
+        {
+            return Bind(x => func(x.Value));
+        }
+
+        private Maybe<TResult> Bind<TResult>(Func<Maybe<T>, Maybe<TResult>> func)
+        {
+            if (Exception != null)
+                return new Maybe<TResult>(Exception);
+
+            if (HasValue != true)
+                return Maybe<TResult>.NoValue;
+
+            try
+            {
+                return func(this);
+            }
+            catch (Exception ex)
+            {
+                return new Maybe<TResult>(ex);
+            }
         }
     }
 }

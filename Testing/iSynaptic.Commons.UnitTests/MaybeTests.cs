@@ -95,5 +95,125 @@ namespace iSynaptic.Commons
             int val = 42;
             Assert.AreEqual(val.GetHashCode(), new Maybe<int>(val).GetHashCode());
         }
+
+        [Test]
+        public void Bind_ThatReturnsScalar_ValueReturnsCorrectly()
+        {
+            var results = Maybe<int>.Default
+                .Bind(x => x + 7)
+                .Bind(x => x * 6);
+
+            Assert.AreEqual(42, results.Value);
+        }
+
+        [Test]
+        public void Bind_ThatReturnsMaybe_ValueReturnsCorrectly()
+        {
+            var results = Maybe<int>.Default
+                .Bind(x => new Maybe<int>(x + 7))
+                .Bind(x => new Maybe<int>(x * 6));
+
+            Assert.AreEqual(42, results.Value);
+        }
+
+        [Test]
+        public void Bind_ThatImplicitlyThrowsException_ValueRethrowsException()
+        {
+            var results = Maybe<int>
+                .Default
+                .Bind(x => 7 / x);
+
+            Assert.Throws<DivideByZeroException>(() => { var x = results.Value; });
+        }
+
+        [Test]
+        public void Bind_ThatImplicitlyThrowsException_ExceptionReturnsCorrectly()
+        {
+            var results = Maybe<int>
+                .Default
+                .Bind(x => 7 / x);
+
+            Assert.IsInstanceOf<DivideByZeroException>(results.Exception);
+        }
+
+        [Test]
+        public void Bind_WhenExceptionOccurs_DoesNotExecuteRemainingComputations()
+        {
+            bool executed = false;
+
+            var results = Maybe<int>
+                .Default
+                .Bind(x => 7/x)
+                .Bind(x => executed = true);
+
+            Assert.Throws<DivideByZeroException>(() => { var x = results.Value; });
+            Assert.IsFalse(executed);
+        }
+
+        [Test]
+        public void Bind_WhenNoValue_DoesNotExecuteRemaningComputations()
+        {
+            bool executed = false;
+
+            var results = Maybe<int>
+                .Default
+                .Bind(x => x + 7)
+                .Bind(x => Maybe<int>.NoValue)
+                .Bind(x => executed = true);
+
+            Assert.IsFalse(results.HasValue);
+            Assert.IsFalse(executed);
+        }
+
+        [Test]
+        public void Equals_WithSameException_ReturnsTrue()
+        {
+            var results = Maybe<int>
+                .Default
+                .Bind(x => 7/x);
+
+            Assert.IsTrue(results.Equals(results));
+        }
+
+        [Test]
+        public void Equals_WithDifferentException_ReturnsFalse()
+        {
+            var first = Maybe<int>
+                .Default
+                .Bind(x => 7 / x);
+
+            var second = Maybe<int>
+                .Default
+                .Bind(ThrowsException);
+
+            Assert.IsFalse(first.Equals(second));
+        }
+
+        [Test]
+        public void Equals_WithOnlyOneException_ReturnsFalse()
+        {
+            var result = Maybe<int>
+                .Default
+                .Bind(x => 7 / x);
+
+            Assert.IsFalse(Maybe<int>.Default.Equals(result));
+
+        }
+
+        [Test]
+        public void GetHashCode_WithException_ReturnsExceptionsHashCode()
+        {
+            var result = Maybe<int>
+                .Default
+                .Bind(x => 7 / x);
+
+            Assert.AreEqual(result.Exception.GetHashCode(), result.GetHashCode());
+        }
+
+        private static int ThrowsException(int x)
+        {
+            throw new InvalidOperationException();
+        }
     }
 }
+ 
