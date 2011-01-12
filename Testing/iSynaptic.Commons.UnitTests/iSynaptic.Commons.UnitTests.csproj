@@ -88,7 +88,6 @@
     <Compile Include="Collections\Generic\WeakKeyDictionaryTests.cs" />
     <Compile Include="Collections\Generic\WeakValueDictionaryTests.cs" />
     <Compile Include="Collections\Generic\ReadOnlyDictionaryTests.cs" />
-    <Compile Include="AggregateExceptionTests.cs" />
     <Compile Include="DataEventArgsTests.cs" />
     <Compile Include="Data\MetadataDeclarationTests.cs" />
     <Compile Include="Data\MetadataTests.cs" />

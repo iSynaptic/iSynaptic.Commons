@@ -78,7 +78,6 @@
     <Compile Include="Collections\Generic\IWeakDictionary.cs" />
     <Compile Include="Collections\Generic\ProjectionCollection.cs" />
     <Compile Include="Collections\Generic\ReadOnlyDictionary.cs" />
-    <Compile Include="AggregateException.cs" />
     <Compile Include="Collections\Generic\WeakDictionary.cs" />
     <Compile Include="Collections\Generic\WeakKeyDictionary.cs" />
     <Compile Include="Collections\Generic\WeakValueDictionary.cs" />
