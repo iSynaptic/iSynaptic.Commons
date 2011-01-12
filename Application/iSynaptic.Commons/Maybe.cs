@@ -5,7 +5,7 @@ namespace iSynaptic.Commons
 {
     public struct Maybe<T> : IEquatable<Maybe<T>>
     {
-        public static readonly Maybe<T> NoValue = new Maybe<T>();
+        public static readonly Maybe<T> NoValue;
         public static readonly Maybe<T> Default = new Maybe<T>(default(T));
 
         private readonly T _Value;
@@ -99,11 +99,6 @@ namespace iSynaptic.Commons
 
         public Maybe<TResult> Bind<TResult>(Func<T, Maybe<TResult>> func)
         {
-            return Bind(x => func(x.Value));
-        }
-
-        private Maybe<TResult> Bind<TResult>(Func<Maybe<T>, Maybe<TResult>> func)
-        {
             if (Exception != null)
                 return new Maybe<TResult>(Exception);
 
@@ -112,7 +107,7 @@ namespace iSynaptic.Commons
 
             try
             {
-                return func(this);
+                return func(Value);
             }
             catch (Exception ex)
             {
