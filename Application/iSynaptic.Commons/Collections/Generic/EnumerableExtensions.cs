@@ -70,17 +70,11 @@ namespace iSynaptic.Commons.Collections.Generic
             Guard.NotNull(selector, "selector");
 
             var builder = new StringBuilder();
-            bool isFirst = true;
 
-            foreach (T item in self)
-            {
-                if (isFirst)
-                    isFirst = false;
-                else
-                    builder.Append(delimiter);
-
-                builder.Append(selector(item));
-            }
+            self.SmartLoop()
+                .Between(() => builder.Append(delimiter))
+                .Each(x => builder.Append(selector(x)))
+                .Execute();
 
             return builder.ToString();
         }
@@ -159,6 +153,12 @@ namespace iSynaptic.Commons.Collections.Generic
         public static bool AllSatisfy<T>(this IEnumerable<T> candidates, Specification<T> specification)
         {
             return candidates.All(specification.IsSatisfiedBy);
+        }
+
+        public static SmartLoop<T> SmartLoop<T>(this IEnumerable<T> items)
+        {
+            Guard.NotNull(items, "items");
+            return new SmartLoop<T>(items);
         }
     }
 }

@@ -1,0 +1,104 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ output extension=".cs" #>
+
+using System;
+using System.Collections.Generic;
+
+namespace iSynaptic.Commons
+{
+	public static partial class FuncExtensions
+	{
+		<# foreach(var i in Enumerable.Range(1, 16))
+		{
+			string typeArgs = Delimit(Enumerable.Range(1, i), ", ", x => "T" + x.ToString());
+			string args = Delimit(Enumerable.Range(1, i), ", ", x => "t" + x.ToString());
+	    #>
+
+		public static Action<<#= typeArgs #>> ToAction<<#= typeArgs #>, TRet>(this Func<<#= typeArgs #>, TRet> self)
+        {
+            Guard.NotNull(self, "self");
+            return (<#= args #>) => self(<#= args #>);
+        }
+
+		public static Func<<#= typeArgs #>, TResult> MakeConditional<<#= typeArgs #>, TResult>(this Func<<#= typeArgs #>, TResult> self, Func<<#= typeArgs #>, bool> condition)
+        {
+            return MakeConditional(self, condition, null);
+        }
+
+        public static Func<<#= typeArgs #>, TResult> MakeConditional<<#= typeArgs #>, TResult>(this Func<<#= typeArgs #>, TResult> self, Func<<#= typeArgs #>, bool> condition, TResult defaultValue)
+        {
+            return MakeConditional(self, condition, (<#= args #>) => defaultValue);
+        }
+
+        public static Func<<#= typeArgs #>, TResult> MakeConditional<<#= typeArgs #>, TResult>(this Func<<#= typeArgs #>, TResult> self, Func<<#= typeArgs #>, bool> condition, Func<<#= typeArgs #>, TResult> falseFunc)
+        {
+            Guard.NotNull(self, "self");
+            Guard.NotNull(condition, "condition");
+
+            return (<#= args #>) =>
+            {
+                if (condition(<#= args #>))
+                    return self(<#= args #>);
+
+                if (falseFunc != null)
+                    return falseFunc(<#= args #>);
+                
+                return default(TResult);
+            };
+        }
+
+		<# } #>
+
+		<# foreach(var i in Enumerable.Range(1, 7))
+		{
+			string typeArgs = Delimit(Enumerable.Range(1, i), ", ", x => "T" + x.ToString());
+			string args = Delimit(Enumerable.Range(1, i), ", ", x => "t" + x.ToString());
+	    #>
+
+		public static Func<<#= typeArgs #>, TResult> Memoize<<#= typeArgs #>, TResult>(this Func<<#= typeArgs #>, TResult> self)
+		{
+			Guard.NotNull(self, "self");
+
+			var dictionary = new Dictionary<Tuple<<#= typeArgs #>>, TResult>();
+			return (<#= args #>) =>
+			{
+				var key = Tuple.Create(<#= args #>);
+
+				TResult result;
+				if(dictionary.TryGetValue(key, out result))
+					return result;
+
+				result = self(<#= args #>);
+				dictionary.Add(key, result);
+
+				return result;
+			};
+		}
+		<# } #>
+
+	}
+}
+
+<#+
+	public static string Delimit<T>(IEnumerable<T> self, string delimiter, Func<T, string> selector)
+	{
+		var builder = new StringBuilder();
+		bool isFirst = true;
+
+		foreach (T item in self)
+		{
+			if (isFirst)
+				isFirst = false;
+			else
+				builder.Append(delimiter);
+
+			builder.Append(selector(item));
+		}
+
+        return builder.ToString();
+	}
+#>

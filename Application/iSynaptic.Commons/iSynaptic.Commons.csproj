@@ -78,6 +78,7 @@
     <Compile Include="Collections\Generic\IWeakDictionary.cs" />
     <Compile Include="Collections\Generic\ProjectionCollection.cs" />
     <Compile Include="Collections\Generic\ReadOnlyDictionary.cs" />
+    <Compile Include="Collections\Generic\SmartLoop.cs" />
     <Compile Include="Collections\Generic\WeakDictionary.cs" />
     <Compile Include="Collections\Generic\WeakKeyDictionary.cs" />
     <Compile Include="Collections\Generic\WeakValueDictionary.cs" />
@@ -94,6 +95,11 @@
     <Compile Include="Collections\Generic\DictionaryExtensions.cs" />
     <Compile Include="Equatable.cs" />
     <Compile Include="ExceptionExtensions.cs" />
+    <Compile Include="FuncExtensions1.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>FuncExtensions.tt</DependentUpon>
+    </Compile>
     <Compile Include="Guard.cs" />
     <Compile Include="Maybe.cs" />
     <Compile Include="Reflection\Emit\DynamicMethodExtensions.cs" />
@@ -148,6 +154,15 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="FuncExtensions.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>FuncExtensions1.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -5,70 +5,6 @@ namespace iSynaptic.Commons
 {
     public static class ActionExtensions
     {
-        #region Curry
-
-        public static Action Curry<T1>(this Action<T1> f, T1 arg1)
-        {
-            Guard.NotNull(f, "f");
-            return () => f(arg1);
-        }
-
-        public static Action Curry<T1, T2>(this Action<T1, T2> f, T1 arg1, T2 arg2)
-        {
-            Guard.NotNull(f, "f");
-            return () => f(arg1, arg2);
-        }
-
-        public static Action<T2> Curry<T1, T2>(this Action<T1, T2> f, T1 arg1)
-        {
-            Guard.NotNull(f, "f");
-            return t2 => f(arg1, t2);
-        }
-
-        public static Action Curry<T1, T2, T3>(this Action<T1, T2, T3> f, T1 arg1, T2 arg2, T3 arg3)
-        {
-            Guard.NotNull(f, "f");
-            return () => f(arg1, arg2, arg3);
-        }
-
-        public static Action<T3> Curry<T1, T2, T3>(this Action<T1, T2, T3> f, T1 arg1, T2 arg2)
-        {
-            Guard.NotNull(f, "f");
-            return t3 => f(arg1, arg2, t3);
-        }
-
-        public static Action<T2, T3> Curry<T1, T2, T3>(this Action<T1, T2, T3> f, T1 arg1)
-        {
-            Guard.NotNull(f, "f");
-            return (t2, t3) => f(arg1, t2, t3);
-        }
-
-        public static Action Curry<T1, T2, T3, T4>(this Action<T1, T2, T3, T4> f, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
-        {
-            Guard.NotNull(f, "f");
-            return () => f(arg1, arg2, arg3, arg4);
-        }
-
-        public static Action<T4> Curry<T1, T2, T3, T4>(this Action<T1, T2, T3, T4> f, T1 arg1, T2 arg2, T3 arg3)
-        {
-            Guard.NotNull(f, "f");
-            return t4 => f(arg1, arg2, arg3, t4);
-        }
-
-        public static Action<T3, T4> Curry<T1, T2, T3, T4>(this Action<T1, T2, T3, T4> f, T1 arg1, T2 arg2)
-        {
-            Guard.NotNull(f, "f");
-            return (t3, t4) => f(arg1, arg2, t3, t4);
-        }
-
-        public static Action<T2, T3, T4> Curry<T1, T2, T3, T4>(this Action<T1, T2, T3, T4> f, T1 arg1)
-        {
-            Guard.NotNull(f, "f");
-            return (t2, t3, t4) => f(arg1, t2, t3, t4);
-        }
-
-        #endregion
-
         #region MakeConditional
 
         public static Action<T> MakeConditional<T>(this Action<T> self, Predicate<T> condition)
@@ -120,14 +56,20 @@ namespace iSynaptic.Commons
 
         public static Action<T> CatchExceptions<T>(this Action<T> self)
         {
-            Guard.NotNull(self, "self");
-            return x => self.Curry(x).CatchExceptions()();
+            return self.CatchExceptions(null);
         }
 
         public static Action<T> CatchExceptions<T>(this Action<T> self, ICollection<Exception> exceptions)
         {
             Guard.NotNull(self, "self");
-            return x => self.Curry(x).CatchExceptions(exceptions)();
+
+            return x =>
+            {
+                Action innerAction = () => self(x);
+                innerAction = innerAction.CatchExceptions(exceptions);
+
+                innerAction();
+            };
         }
 
         public static Action CatchExceptions(this Action self)
@@ -153,5 +95,29 @@ namespace iSynaptic.Commons
         }
 
         #endregion
+
+        public static Action FollowedBy(this Action self, Action followedBy)
+        {
+            if(self == null || followedBy == null)
+                return self ?? followedBy;
+
+            return () =>
+            {
+                self();
+                followedBy();
+            };
+        }
+
+        public static Action<T> FollowedBy<T>(this Action<T> self, Action<T> followedBy)
+        {
+            if (self == null || followedBy == null)
+                return self ?? followedBy;
+
+            return x =>
+            {
+                self(x);
+                followedBy(x);
+            };
+        }
     }
 }
