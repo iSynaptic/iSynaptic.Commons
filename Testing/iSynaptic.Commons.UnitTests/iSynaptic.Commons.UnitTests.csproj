@@ -53,6 +53,7 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="nunit.framework, Version=2.5.0.9122, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\External\References\nunit.framework.dll</HintPath>
@@ -79,6 +80,12 @@
     <Compile Include="AOP\UnitOfWorkStub.cs" />
     <Compile Include="AOP\UnitOfWorkTests.cs" />
     <Compile Include="ArrayIndexTests.cs" />
+    <Compile Include="Data\CommonMetadata.cs" />
+    <Compile Include="Data\DescriptionAttribute.cs" />
+    <Compile Include="Data\MetadataResolverTests.cs" />
+    <Compile Include="Data\TestMetadataBindingModule.cs" />
+    <Compile Include="Data\TestSubject.cs" />
+    <Compile Include="Data\TestSubjectMetadataSurrogate.cs" />
     <Compile Include="Collections\Generic\ProjectionCollectionTests.cs" />
     <Compile Include="ExceptionExtensionsTests.cs" />
     <Compile Include="GuardTests.cs" />
@@ -89,9 +96,11 @@
     <Compile Include="Collections\Generic\WeakValueDictionaryTests.cs" />
     <Compile Include="Collections\Generic\ReadOnlyDictionaryTests.cs" />
     <Compile Include="DataEventArgsTests.cs" />
+    <Compile Include="Data\StringMetadataAttribute.cs" />
     <Compile Include="Data\MetadataDeclarationTests.cs" />
+    <Compile Include="Data\StandardMetadataResolverTests.cs" />
     <Compile Include="Data\MetadataTests.cs" />
-    <Compile Include="Data\NonGenericIntegerMetadataDeclaration.cs" />
+    <Compile Include="Data\StringMetadata.cs" />
     <Compile Include="DependencyResolverTests.cs" />
     <Compile Include="Diagnostics\LoggerExtensionsTests.cs" />
     <Compile Include="ActionExtensionsTests.cs" />
@@ -118,6 +127,10 @@
     <Compile Include="Xml\ProcessingInstructionParserTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Application\iSynaptic.Commons.Data\iSynaptic.Commons.Data.csproj">
+      <Project>{014346BA-0D7F-4C64-84C1-261657BFF90C}</Project>
+      <Name>iSynaptic.Commons.Data</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Application\iSynaptic.Commons.IL\iSynaptic.Commons.IL.csproj">
       <Project>{69425B08-B6B4-4A34-94A5-FF8A3936BCBF}</Project>
       <Name>iSynaptic.Commons.IL</Name>

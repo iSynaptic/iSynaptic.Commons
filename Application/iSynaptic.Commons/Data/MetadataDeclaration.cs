@@ -1,59 +1,84 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 
 namespace iSynaptic.Commons.Data
 {
-    public class MetadataDeclaration<T>
+    public class MetadataDeclaration<TMetadata> : IMetadataDeclaration<TMetadata>
     {
-        private Maybe<T> _Default = Maybe<T>.NoValue;
+        private Maybe<TMetadata> _Default = Maybe<TMetadata>.NoValue;
 
         public MetadataDeclaration()
         {
-            MetadataType = typeof(T);
+            MetadataType = typeof(TMetadata);
         }
 
-        public MetadataDeclaration(T @default) : this()
+        public MetadataDeclaration(TMetadata @default) : this()
         {
-            _Default = new Maybe<T>(@default);
+            _Default = new Maybe<TMetadata>(@default);
         }
 
-        protected virtual T GetDefault()
+        protected virtual TMetadata GetDefault()
         {
             if (_Default.HasValue)
                 return _Default.Value;
 
-            return default(T);
+            return default(TMetadata);
         }
 
-        public void CheckValue(T value)
+        public TMetadata Get()
         {
-            OnCheckValue(value, "value");
+            return Metadata.Resolve(this, null, null);
         }
 
-        protected virtual void OnCheckValue(T value, string valueName)
+        public TMetadata For<T>()
+        {
+            return Metadata.Resolve(this, typeof(T), null);
+        }
+
+        public TMetadata For<T>(T subject)
+        {
+            return Metadata.Resolve(this, subject, null);
+        }
+
+        public TMetadata For<T>(Expression<Func<T, object>> member)
+        {
+            return Metadata.Resolve(this, typeof (T), member);
+        }
+
+        public TMetadata For<T>(T subject, Expression<Func<T, object>> member)
+        {
+            return Metadata.Resolve(this, subject, member);
+        }
+
+        public void ValidateValue(TMetadata value)
+        {
+            OnValidateValue(value, "value");
+        }
+
+        protected virtual void OnValidateValue(TMetadata value, string valueName)
         {
         }
 
-        public T Default
+        public static implicit operator TMetadata(MetadataDeclaration<TMetadata> declaration)
+        {
+            return declaration.Get();
+        }
+
+        public TMetadata Default
         {
             get
             {
-                T defaultValue = GetDefault();
+                TMetadata defaultValue = GetDefault();
 
-                try
-                {
-                    OnCheckValue(defaultValue, "default");
-                }
-                catch (Exception ex)
-                {
-                    throw new InvalidOperationException("The default value defined was not valid. See the inner exception for details.", ex);
-                }
+                OnValidateValue(defaultValue, "default");
 
                 return defaultValue;
             }
         }
+
         public Type MetadataType { get; private set; }
     }
 }

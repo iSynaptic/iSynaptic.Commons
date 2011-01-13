@@ -83,9 +83,15 @@
     <Compile Include="Collections\Generic\WeakKeyDictionary.cs" />
     <Compile Include="Collections\Generic\WeakValueDictionary.cs" />
     <Compile Include="DataEventArgs.cs" />
+    <Compile Include="Data\IMetadataDeclaration.cs" />
     <Compile Include="Data\IMetadataResolver.cs" />
     <Compile Include="Data\Metadata.cs" />
     <Compile Include="Data\MetadataDeclaration.cs" />
+    <Compile Include="Data\MetadataDeclarations\GuidMetadataDeclaration.cs" />
+    <Compile Include="Data\MetadataDeclarations\ComparableMetadataDeclaration.cs" />
+    <Compile Include="Data\MetadataDeclarations\StringMetadataDeclaration.cs" />
+    <Compile Include="Data\MetadataHelper.cs" />
+    <Compile Include="Data\MetadataValidationException.cs" />
     <Compile Include="DependencyResolver.cs" />
     <Compile Include="Diagnostics\ILogger.cs" />
     <Compile Include="Diagnostics\ILoggerContextSerializer.cs" />
@@ -101,6 +107,7 @@
       <DependentUpon>FuncExtensions.tt</DependentUpon>
     </Compile>
     <Compile Include="Guard.cs" />
+    <Compile Include="IFluentInterface.cs" />
     <Compile Include="Maybe.cs" />
     <Compile Include="Reflection\Emit\DynamicMethodExtensions.cs" />
     <Compile Include="Collections\Generic\EnumerableExtensions.cs" />

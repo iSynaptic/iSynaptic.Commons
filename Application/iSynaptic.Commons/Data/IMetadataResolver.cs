@@ -8,6 +8,6 @@ namespace iSynaptic.Commons.Data
 {
     public interface IMetadataResolver
     {
-        T Resolve<T>(MetadataDeclaration<T> declaration, object subject, MemberInfo memberInfo);
+        TMetadata Resolve<TMetadata>(MetadataDeclaration<TMetadata> declaration, object subject, MemberInfo memberInfo);
     }
 }
