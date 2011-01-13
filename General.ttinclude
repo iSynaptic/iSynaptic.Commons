@@ -1,0 +1,19 @@
+﻿<#+
+	public static string Delimit<T>(IEnumerable<T> self, string delimiter, Func<T, string> selector)
+	{
+		var builder = new StringBuilder();
+		bool isFirst = true;
+
+		foreach (T item in self)
+		{
+			if (isFirst)
+				isFirst = false;
+			else
+				builder.Append(delimiter);
+
+			builder.Append(selector(item));
+		}
+
+        return builder.ToString();
+	}
+#>

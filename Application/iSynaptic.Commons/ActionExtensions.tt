@@ -1,0 +1,74 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ output extension=".generated.cs" #>
+<#@ include file="..\..\General.ttinclude" #>
+
+using System;
+using System.Collections.Generic;
+
+
+namespace iSynaptic.Commons
+{
+	public static partial class ActionExtensions
+	{
+		<# foreach(var i in Enumerable.Range(1, 16))
+		{
+			string typeArgs = Delimit(Enumerable.Range(1, i), ", ", x => "T" + x.ToString());
+			string args = Delimit(Enumerable.Range(1, i), ", ", x => "t" + x.ToString());
+	    #>
+
+		public static Action<<#= typeArgs #>> MakeConditional<<#= typeArgs #>>(this Action<<#= typeArgs #>> self, Func<<#= typeArgs #>, bool> condition)
+        {
+            return MakeConditional(self, condition, null);
+        }
+
+        public static Action<<#= typeArgs #>> MakeConditional<<#= typeArgs #>>(this Action<<#= typeArgs #>> self, Func<<#= typeArgs #>, bool> condition, Action<<#= typeArgs #>> falseAction)
+        {
+            Guard.NotNull(self, "self");
+            Guard.NotNull(condition, "condition");
+
+            return (<#= args #>) =>
+            {
+                if (condition(<#= args #>))
+                    self(<#= args #>);
+                else if (falseAction != null)
+                    falseAction(<#= args #>);
+            };
+        }
+
+		public static Action<<#= typeArgs #>> FollowedBy<<#= typeArgs #>>(this Action<<#= typeArgs #>> self, Action<<#= typeArgs #>> followedBy)
+        {
+            if (self == null || followedBy == null)
+                return self ?? followedBy;
+
+            return (<#= args #>) =>
+            {
+                self(<#= args #>);
+                followedBy(<#= args #>);
+            };
+        }
+
+		public static Action<<#= typeArgs #>> CatchExceptions<<#= typeArgs #>>(this Action<<#= typeArgs #>> self)
+        {
+            return self.CatchExceptions(null);
+        }
+
+        public static Action<<#= typeArgs #>> CatchExceptions<<#= typeArgs #>>(this Action<<#= typeArgs #>> self, ICollection<Exception> exceptions)
+        {
+            Guard.NotNull(self, "self");
+
+            return (<#= args #>) =>
+            {
+                Action innerAction = () => self(<#= args #>);
+                innerAction = innerAction.CatchExceptions(exceptions);
+
+                innerAction();
+            };
+        }
+
+		<# } #>
+	}
+}

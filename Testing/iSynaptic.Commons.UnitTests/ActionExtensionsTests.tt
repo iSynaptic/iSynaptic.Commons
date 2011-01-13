@@ -1,0 +1,117 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ output extension=".generated.cs" #>
+<#@ include file="..\..\General.ttinclude" #>
+
+using System;
+using System.Collections.Generic;
+using NUnit.Framework;
+
+namespace iSynaptic.Commons
+{
+    public partial class ActionExtensionsTests
+    {
+		<# foreach(var i in Enumerable.Range(1, 16))
+		{
+			string nameSuffix = Delimit(Enumerable.Range(1, i), "", x => "T" + x.ToString());
+			string typeArgs = Delimit(Enumerable.Range(1, i), ", ", x => "T" + x.ToString());
+			string fixedTypes = Delimit(Enumerable.Range(1, i), ", ", x => "int");
+			string args = Delimit(Enumerable.Range(1, i), ", ", x => "t" + x.ToString());
+			string fixedArgs = Delimit(Enumerable.Range(1, i), ", ", x => x.ToString());
+	    #>
+
+		[Test]
+        public void MakeConditional_WithNullAction_ForActionOf<#= nameSuffix #>()
+        {
+            Action<<#= fixedTypes #>> action = null;
+            Assert.Throws<ArgumentNullException>(() => { action = action.MakeConditional((<#= args #>) => false); });
+        }
+
+        [Test]
+        public void MakeConditional_WithNullCondition_ForActionOf<#= nameSuffix #>()
+        {
+            Action<<#= fixedTypes #>> action = (<#= args #>) => { };
+            Assert.Throws<ArgumentNullException>(() => { action = action.MakeConditional(null); });
+        }
+
+        [Test]
+        public void MakeConditional_ForActionOf<#= nameSuffix #>()
+        {
+			bool conditionResult = false;
+            bool actionExecuted = false;
+            Action<<#= fixedTypes #>> action = (<#= args #>) => actionExecuted = true;
+            action = action.MakeConditional((<#= args #>) => conditionResult);
+
+            action(<#= fixedArgs #>);
+            Assert.IsFalse(actionExecuted);
+
+			conditionResult = true;
+            action(<#= fixedArgs #>);
+            Assert.IsTrue(actionExecuted);
+        }
+
+        [Test]
+        public void MakeConditionalWithFalseAction_ForActionOf<#= nameSuffix #>()
+        {
+            int falseCount = 0;
+			bool conditionResult = false;
+            bool actionExecuted = false;
+
+            Action<<#= fixedTypes #>> action = (<#= args #>) => actionExecuted = true;
+            action = action.MakeConditional((<#= args #>) => conditionResult, (<#= args #>) => falseCount++);
+
+            action(<#= fixedArgs #>);
+            Assert.IsFalse(actionExecuted);
+			Assert.AreEqual(1, falseCount);
+
+			conditionResult = true;
+            action(<#= fixedArgs #>);
+            Assert.IsTrue(actionExecuted);
+			Assert.AreEqual(1, falseCount);
+        }
+
+		[Test]
+        public void CatchExceptions_WithNullAction_ForActionOf<#= nameSuffix #>()
+        {
+            Action<<#= fixedTypes #>> action = null;
+            Assert.Throws<ArgumentNullException>(() => action.CatchExceptions());
+        }
+
+		[Test]
+        public void CatchExceptions_WithCollectionAndNullAction_ForActionOf<#= nameSuffix #>()
+        {
+            var exceptions = new List<Exception>();
+
+            Action<<#= fixedTypes #>> actionT1 = null;
+            Assert.Throws<ArgumentNullException>(() => actionT1.CatchExceptions(exceptions));
+        }
+
+		[Test]
+        public void CatchExceptions_ForActionOf<#= nameSuffix #>()
+        {
+            Action<<#= fixedTypes #>> action = (<#= args #>) => { throw new InvalidOperationException(); };
+            action = action.CatchExceptions();
+
+            action(<#= fixedArgs #>);
+        }
+
+		[Test]
+        public void CatchExceptions_WithCollection_ForActionOf<#= nameSuffix #>()
+        {
+            var exceptions = new List<Exception>();
+
+            Action<<#= fixedTypes #>> action = (<#= args #>) => { throw new InvalidOperationException(); };
+            action = action.CatchExceptions(exceptions);
+
+            action(<#= fixedArgs #>);
+            
+            Assert.AreEqual(1, exceptions.Count);
+            Assert.IsTrue(exceptions[0].GetType() == typeof(InvalidOperationException));
+        }
+
+		<# } #>
+	}
+}

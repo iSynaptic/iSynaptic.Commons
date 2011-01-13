@@ -3,7 +3,8 @@
 <#@ import namespace="System.Collections.Generic" #>
 <#@ import namespace="System.Linq" #>
 <#@ import namespace="System.Text" #>
-<#@ output extension=".cs" #>
+<#@ output extension=".generated.cs" #>
+<#@ include file="..\..\General.ttinclude" #>
 
 using System;
 using System.Collections.Generic;
@@ -82,23 +83,3 @@ namespace iSynaptic.Commons
 
 	}
 }
-
-<#+
-	public static string Delimit<T>(IEnumerable<T> self, string delimiter, Func<T, string> selector)
-	{
-		var builder = new StringBuilder();
-		bool isFirst = true;
-
-		foreach (T item in self)
-		{
-			if (isFirst)
-				isFirst = false;
-			else
-				builder.Append(delimiter);
-
-			builder.Append(selector(item));
-		}
-
-        return builder.ToString();
-	}
-#>

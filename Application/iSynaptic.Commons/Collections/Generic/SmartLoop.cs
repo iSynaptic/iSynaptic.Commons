@@ -11,7 +11,7 @@ namespace iSynaptic.Commons.Collections.Generic
         private Func<T, bool> _IgnorePredicate;
         private List<T> _IgnoreItems;
 
-        private Action<T> _Action;
+        private Action<List<T>, T> _Action;
 
         private Action<IEnumerable<T>> _BeforeAllAction;
         private Action<IEnumerable<T>> _AfterAllAction;
@@ -27,7 +27,7 @@ namespace iSynaptic.Commons.Collections.Generic
         public SmartLoop<T> Each(Action<T> action)
         {
             Guard.NotNull(action, "action");
-            _Action = _Action.FollowedBy(action);
+            _Action = _Action.FollowedBy((l, x) => action(x));
 
             return this;
         }
@@ -35,7 +35,7 @@ namespace iSynaptic.Commons.Collections.Generic
         public SmartLoop<T> OnlyOne(Action<T> action)
         {
             Guard.NotNull(action, "action");
-            _Action = _Action.FollowedBy(x => { if (_Items.Count == 1) action(x); });
+            _Action = _Action.FollowedBy((l, x) => { if (l.Count == 1) action(x); });
 
             return this;
         }
@@ -43,7 +43,7 @@ namespace iSynaptic.Commons.Collections.Generic
         public SmartLoop<T> MoreThanOne(Action<T> action)
         {
             Guard.NotNull(action, "action");
-            _Action = _Action.FollowedBy(x => { if (_Items.Count > 1) action(x); });
+            _Action = _Action.FollowedBy((l, x) => { if (l.Count > 1) action(x); });
 
             return this;
         }
@@ -68,8 +68,17 @@ namespace iSynaptic.Commons.Collections.Generic
 
         public SmartLoop<T> When(T item, Action<T> action)
         {
+            return When(x => EqualityComparer<T>.Default.Equals(x, item), action);
+        }
+
+        public SmartLoop<T> When(Func<T, bool> predicate, Action<T> action)
+        {
+            Guard.NotNull(predicate, "predicate");
             Guard.NotNull(action, "action");
-            _Action = _Action.FollowedBy(x => { if (x.Equals(item)) action(x); });
+
+            action = action.MakeConditional(predicate);
+
+            _Action = _Action.FollowedBy((l, x) => action(x));
 
             return this;
         }
@@ -133,7 +142,8 @@ namespace iSynaptic.Commons.Collections.Generic
             {
                 var item = finalItems[i];
 
-                _Action(item);
+                if(_Action != null)
+                    _Action(finalItems, item);
 
                 if (_BetweenAction != null && (finalItems.Count - 1) != i) // not last one
                     _BetweenAction();

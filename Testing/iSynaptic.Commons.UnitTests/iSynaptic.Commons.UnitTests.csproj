@@ -74,12 +74,18 @@
     <Compile Include="..\..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="ActionExtensionsTests.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ActionExtensionsTests.tt</DependentUpon>
+    </Compile>
     <Compile Include="AOP\DisposableContextTests.cs" />
     <Compile Include="AOP\ScopeTests.cs" />
     <Compile Include="AOP\StubScope.cs" />
     <Compile Include="AOP\UnitOfWorkStub.cs" />
     <Compile Include="AOP\UnitOfWorkTests.cs" />
     <Compile Include="ArrayIndexTests.cs" />
+    <Compile Include="Collections\Generic\SmartLoopTests.cs" />
     <Compile Include="Data\CommonMetadata.cs" />
     <Compile Include="Data\DescriptionAttribute.cs" />
     <Compile Include="Data\MetadataResolverTests.cs" />
@@ -161,6 +167,15 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ActionExtensionsTests.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ActionExtensionsTests.generated.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
