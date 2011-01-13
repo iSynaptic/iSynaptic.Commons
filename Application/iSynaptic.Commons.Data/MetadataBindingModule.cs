@@ -46,13 +46,13 @@ namespace iSynaptic.Commons.Data
 
             public void To(TMetadata value)
             {
-                _Parent._Bindings.Add(new MetadataBinding<TMetadata>(Matches, x => value, _ScopeFactory));
+                _Parent._Bindings.Add(new MetadataBinding<TMetadata>(Matches, x => value, _Parent, _ScopeFactory));
             }
 
             public void To(Func<MetadataRequest<TMetadata>, TMetadata> valueFactory)
             {
                 Guard.NotNull(valueFactory, "valueFactory");
-                _Parent._Bindings.Add(new MetadataBinding<TMetadata>(Matches, valueFactory, _ScopeFactory));
+                _Parent._Bindings.Add(new MetadataBinding<TMetadata>(Matches, valueFactory, _Parent, _ScopeFactory));
             }
 
             public IScopeToBinding<TMetadata> When(Func<MetadataRequest<TMetadata>, bool> userPredicate)
@@ -116,7 +116,7 @@ namespace iSynaptic.Commons.Data
         public void Bind<TMetadata>(IMetadataDeclaration<TMetadata> declaration, TMetadata value)
         {
             Guard.NotNull(declaration, "declaration");
-            _Bindings.Add(new MetadataBinding<TMetadata>(declaration, value));
+            _Bindings.Add(new MetadataBinding<TMetadata>(declaration, value, this));
         }
 
         public ISubjectPredicateScopeToBinding<TMetadata> Bind<TMetadata>(IMetadataDeclaration<TMetadata> declaration)

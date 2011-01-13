@@ -28,7 +28,7 @@ namespace iSynaptic.Commons.Data
                 .Where(x => x.ProvidesMetadataFor(request));
 
             foreach (var attribute in attributes)
-                yield return new AttributeMetadataBinding<TMetadata>(attribute);
+                yield return new MetadataBinding<TMetadata>(attribute.ProvidesMetadataFor, attribute.Resolve, this);
         }
     }
 }

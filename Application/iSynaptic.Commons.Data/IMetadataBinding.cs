@@ -11,5 +11,7 @@ namespace iSynaptic.Commons.Data
         bool Matches(MetadataRequest<TMetadata> request);
         Func<MetadataRequest<TMetadata>, object> ScopeFactory { get; }
         TMetadata Resolve(MetadataRequest<TMetadata> request);
+
+        IMetadataBindingSource Source { get;}
     }
 }

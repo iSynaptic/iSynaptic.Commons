@@ -44,7 +44,7 @@ namespace iSynaptic.Commons.Data
             var bindingList = candidates.ToList();
 
             if (bindingList.Count > 1)
-                bindingList.RemoveAll(x => x is AttributeMetadataBinding<TMetadata>);
+                bindingList.RemoveAll(x => x.Source is AttributeMetadataBindingSource);
 
             return base.SelectBinding(request, bindingList);
         }
