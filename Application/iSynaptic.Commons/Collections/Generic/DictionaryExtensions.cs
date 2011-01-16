@@ -14,5 +14,17 @@ namespace iSynaptic.Commons.Collections.Generic
 
             return new ReadOnlyDictionary<TKey, TValue>(self);
         }
+
+        public static Maybe<TValue> TryGetValue<TKey, TValue>(this IDictionary<TKey, TValue> self, TKey key)
+        {
+            Guard.NotNull(self, "self");
+
+            TValue retreivedValue = default(TValue);
+
+            if(self.TryGetValue(key, out retreivedValue))
+                return retreivedValue;
+
+            return Maybe<TValue>.NoValue;
+        }
     }
 }

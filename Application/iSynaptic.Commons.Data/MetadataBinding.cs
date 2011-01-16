@@ -7,7 +7,7 @@ namespace iSynaptic.Commons.Data
 {
     public class MetadataBinding<TMetadata> : IMetadataBinding<TMetadata>
     {
-        public MetadataBinding(IMetadataDeclaration<TMetadata> declaration, TMetadata value, IMetadataBindingSource source)
+        public MetadataBinding(MetadataDeclaration<TMetadata> declaration, TMetadata value, IMetadataBindingSource source)
             : this(r => r.Declaration == declaration, value, source)
         {
             Guard.NotNull(declaration, "declaration");

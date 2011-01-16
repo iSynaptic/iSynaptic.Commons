@@ -15,25 +15,25 @@ namespace iSynaptic.Commons.Data
             _Module = new MetadataBindingModule();
         }
 
-        public IPredicateScopeToBinding<TMetadata> Bind<TMetadata>(IMetadataDeclaration<TMetadata> declaration)
+        public IPredicateScopeToBinding<TMetadata> Bind<TMetadata>(MetadataDeclaration<TMetadata> declaration)
         {
             return _Module.Bind(declaration)
                 .For<TSubject>();
         }
 
-        public IPredicateScopeToBinding<TMetadata> Bind<TMetadata>(IMetadataDeclaration<TMetadata> declaration, TSubject subject)
+        public IPredicateScopeToBinding<TMetadata> Bind<TMetadata>(MetadataDeclaration<TMetadata> declaration, TSubject subject)
         {
             return _Module.Bind(declaration)
                 .For(subject);
         }
 
-        public IPredicateScopeToBinding<TMetadata> Bind<TMetadata>(IMetadataDeclaration<TMetadata> declaration, Expression<Func<TSubject, object>> member)
+        public IPredicateScopeToBinding<TMetadata> Bind<TMetadata>(MetadataDeclaration<TMetadata> declaration, Expression<Func<TSubject, object>> member)
         {
             return _Module.Bind(declaration)
                 .For(member);
         }
 
-        public IPredicateScopeToBinding<TMetadata> Bind<TMetadata>(IMetadataDeclaration<TMetadata> declaration, TSubject subject, Expression<Func<TSubject, object>> member)
+        public IPredicateScopeToBinding<TMetadata> Bind<TMetadata>(MetadataDeclaration<TMetadata> declaration, TSubject subject, Expression<Func<TSubject, object>> member)
         {
             return _Module.Bind(declaration)
                 .For(subject, member);

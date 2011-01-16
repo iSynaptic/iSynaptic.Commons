@@ -85,9 +85,12 @@
     <Compile Include="AOP\UnitOfWorkStub.cs" />
     <Compile Include="AOP\UnitOfWorkTests.cs" />
     <Compile Include="ArrayIndexTests.cs" />
+    <Compile Include="Collections\Generic\LazyDictionaryTests.cs" />
     <Compile Include="Collections\Generic\SmartLoopTests.cs" />
     <Compile Include="Data\CommonMetadata.cs" />
     <Compile Include="Data\DescriptionAttribute.cs" />
+    <Compile Include="Data\IntegerMetadata.cs" />
+    <Compile Include="Data\LazyMetadataTests.cs" />
     <Compile Include="Data\MetadataResolverTests.cs" />
     <Compile Include="Data\TestMetadataBindingModule.cs" />
     <Compile Include="Data\TestSubject.cs" />

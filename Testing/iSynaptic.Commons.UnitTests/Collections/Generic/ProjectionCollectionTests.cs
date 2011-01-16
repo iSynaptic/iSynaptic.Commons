@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -29,6 +30,8 @@ namespace iSynaptic.Commons.Collections.Generic
             ICollection<int> projection = source.ToProjectedCollection(x => x * 2);
 
             Assert.IsTrue(projection.SequenceEqual(new[] { 2, 4, 6 }));
+            Assert.IsTrue(((IEnumerable)projection).OfType<int>().SequenceEqual(new[] {2, 4, 6}));
+
         }
 
         [Test]
@@ -59,15 +62,16 @@ namespace iSynaptic.Commons.Collections.Generic
         public void ProjectedCollection_Contains_ReturnsCorrectly()
         {
             var source = new List<int> { 1, 2, 3 };
-            ICollection<int> projection = source.ToProjectedCollection(x => x * 2);
+            ICollection<string> projection = source.ToProjectedCollection(x => (x * 2).ToString());
 
-            Assert.IsFalse(projection.Contains(1));
-            Assert.IsTrue(projection.Contains(2));
-            Assert.IsFalse(projection.Contains(3));
-            Assert.IsTrue(projection.Contains(4));
-            Assert.IsFalse(projection.Contains(5));
-            Assert.IsTrue(projection.Contains(6));
+            Assert.IsFalse(projection.Contains("1"));
+            Assert.IsTrue(projection.Contains("2"));
+            Assert.IsFalse(projection.Contains("3"));
+            Assert.IsTrue(projection.Contains("4"));
+            Assert.IsFalse(projection.Contains("5"));
+            Assert.IsTrue(projection.Contains("6"));
+
+            Assert.IsFalse(projection.Contains(null));
         }
-
     }
 }

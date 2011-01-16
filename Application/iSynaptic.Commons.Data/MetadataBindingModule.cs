@@ -113,13 +113,13 @@ namespace iSynaptic.Commons.Data
             }
         }
 
-        public void Bind<TMetadata>(IMetadataDeclaration<TMetadata> declaration, TMetadata value)
+        public void Bind<TMetadata>(MetadataDeclaration<TMetadata> declaration, TMetadata value)
         {
             Guard.NotNull(declaration, "declaration");
             _Bindings.Add(new MetadataBinding<TMetadata>(declaration, value, this));
         }
 
-        public ISubjectPredicateScopeToBinding<TMetadata> Bind<TMetadata>(IMetadataDeclaration<TMetadata> declaration)
+        public ISubjectPredicateScopeToBinding<TMetadata> Bind<TMetadata>(MetadataDeclaration<TMetadata> declaration)
         {
             Guard.NotNull(declaration, "declaration");
             return new FluentHelper<TMetadata>(this, r => r.Declaration == declaration);

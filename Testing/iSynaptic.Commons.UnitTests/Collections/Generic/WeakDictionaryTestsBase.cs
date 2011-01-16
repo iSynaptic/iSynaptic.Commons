@@ -1,14 +1,17 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
+using Rhino.Mocks;
 
 namespace iSynaptic.Commons.Collections.Generic
 {
     public abstract class WeakDictionaryTestsBase
     {
         protected abstract IWeakDictionary<object, object> CreateDictionary();
+        protected abstract IWeakDictionary<object, object> CreateDictionary(IEqualityComparer<object> comparer);
 
         [Test]
         public void PurgeGarbage_RemovesEntriesForGarbageCollectedKeys()
@@ -165,6 +168,101 @@ namespace iSynaptic.Commons.Collections.Generic
             dictionary[key] = value;
 
             Assert.IsTrue(ReferenceEquals(dictionary[key], value));
+        }
+
+        [Test]
+        public void Clear_BehavesCorrectly()
+        {
+            var dictionary = CreateDictionary();
+
+            var key = new object();
+            var value = new object();
+
+            dictionary.Add(key, value);
+
+            Assert.AreEqual(1, dictionary.Count);
+
+            dictionary.Clear();
+            Assert.AreEqual(0, dictionary.Count);
+        }
+
+        [Test]
+        public void Add_ViaPair()
+        {
+            var dictionary = CreateDictionary();
+
+            var key = new object();
+            var value = new object();
+
+            dictionary.Add(new KeyValuePair<object, object>(key, value));
+
+            Assert.AreEqual(value, dictionary[key]);
+        }
+
+        [Test]
+        public void CopyTo_PairArray()
+        {
+            var dictionary = CreateDictionary();
+
+            var key = new object();
+            var value = new object();
+
+            dictionary.Add(key, value);
+
+            var array = new KeyValuePair<object, object>[1];
+            dictionary.CopyTo(array, 0);
+
+            Assert.AreEqual(key, array[0].Key);
+            Assert.AreEqual(value, array[0].Value);
+        }
+
+        [Test]
+        public void Remove_ViaPair()
+        {
+            var dictionary = CreateDictionary();
+
+            var key = new object();
+            var value = new object();
+
+            dictionary.Add(key, value);
+            Assert.AreEqual(1, dictionary.Count);
+
+            ((ICollection<KeyValuePair<object, object>>)dictionary).Remove(new KeyValuePair<object, object>(key, value));
+            Assert.AreEqual(0, dictionary.Count);
+        }
+
+        [Test]
+        public void NonGenericEnumerator()
+        {
+            var dictionary = CreateDictionary();
+
+            var key = new object();
+            var value = new object();
+
+            dictionary.Add(key, value);
+
+            var array = ((IEnumerable) dictionary)
+                .OfType<KeyValuePair<object, object>>()
+                .ToArray();
+
+            Assert.AreEqual(key, array[0].Key);
+            Assert.AreEqual(value, array[0].Value);
+        }
+
+        [Test]
+        public void DictionaryUsesProvidedEqualityComparerToGetHashCodes()
+        {
+            var key = new object();
+            var comparer = MockRepository.GenerateMock<IEqualityComparer<object>>();
+            comparer.Expect(x => x.GetHashCode(key))
+                .Return(42)
+                .Repeat.AtLeastOnce();
+
+            var dictionary = CreateDictionary(comparer);
+
+            dictionary.Add(key, key);
+
+            comparer.VerifyAllExpectations();
         }
     }
 }

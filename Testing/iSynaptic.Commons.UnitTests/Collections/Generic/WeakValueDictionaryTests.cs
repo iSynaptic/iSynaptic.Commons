@@ -13,5 +13,10 @@ namespace iSynaptic.Commons.Collections.Generic
         {
             return new WeakValueDictionary<object, object>();
         }
+
+        protected override IWeakDictionary<object, object> CreateDictionary(IEqualityComparer<object> comparer)
+        {
+            return new WeakValueDictionary<object, object>(comparer);
+        }
     }
 }

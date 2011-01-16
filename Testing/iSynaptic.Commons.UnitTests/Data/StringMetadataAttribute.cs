@@ -18,11 +18,13 @@ namespace iSynaptic.Commons.Data
 
         public bool ProvidesMetadataFor<TMetadata>(MetadataRequest<TMetadata> request)
         {
+            var declaration = request.Declaration;
+
             return
-                request.Declaration == StringMetadata.All ||
-                request.Declaration == StringMetadata.MinLength ||
-                request.Declaration == StringMetadata.MaxLength ||
-                request.Declaration == CommonMetadata.Description;
+                ReferenceEquals(declaration, StringMetadata.All) ||
+                ReferenceEquals(declaration, StringMetadata.MinLength) ||
+                ReferenceEquals(declaration, StringMetadata.MaxLength) ||
+                ReferenceEquals(declaration, CommonMetadata.Description);
         }
 
         public StringMetadata Resolve(MetadataRequest<StringMetadata> request)

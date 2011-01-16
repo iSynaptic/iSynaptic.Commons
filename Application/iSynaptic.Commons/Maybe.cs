@@ -45,7 +45,14 @@ namespace iSynaptic.Commons
 
         public bool Equals(Maybe<T> other)
         {
-            if(Exception != null)
+            return Equals(other, EqualityComparer<T>.Default);
+        }
+
+        public bool Equals(Maybe<T> other, IEqualityComparer<T> comparer)
+        {
+            Guard.NotNull(comparer, "comparer");
+
+            if (Exception != null)
                 return other.Exception != null && other.Exception == Exception;
 
             if (other.Exception != null)
@@ -57,7 +64,7 @@ namespace iSynaptic.Commons
             if (!other.HasValue)
                 return false;
 
-            return EqualityComparer<T>.Default.Equals(Value, other.Value);
+            return comparer.Equals(Value, other.Value);
         }
 
         public override bool Equals(object obj)
@@ -113,6 +120,16 @@ namespace iSynaptic.Commons
             {
                 return new Maybe<TResult>(ex);
             }
+        }
+
+        public static implicit operator Maybe<T>(T value)
+        {
+            return new Maybe<T>(value);
+        }
+
+        public static explicit operator T(Maybe<T> value)
+        {
+            return value.Value;
         }
     }
 }

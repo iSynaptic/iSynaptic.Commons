@@ -17,7 +17,7 @@ namespace iSynaptic.Commons.Data
 
         public bool ProvidesMetadataFor<TRequestMetadata>(MetadataRequest<TRequestMetadata> request)
         {
-            return request.Declaration == CommonMetadata.Description;
+            return ReferenceEquals(request.Declaration, CommonMetadata.Description);
         }
 
         public string Resolve(MetadataRequest<string> request)

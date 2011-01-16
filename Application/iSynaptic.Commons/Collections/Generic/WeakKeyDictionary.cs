@@ -32,9 +32,9 @@ namespace iSynaptic.Commons.Collections.Generic
             return new WeakKeyReference<TKey>(key, comparer);
         }
 
-        protected override bool UnwrapKey(WeakReference<TKey> key, ref TKey destination)
+        protected override Maybe<TKey> UnwrapKey(WeakReference<TKey> key)
         {
-            return UnwrapWeakReference(key, ref destination);
+            return UnwrapWeakReference(key);
         }
 
         protected override TValue WrapValue(TValue value)
@@ -42,10 +42,9 @@ namespace iSynaptic.Commons.Collections.Generic
             return value;
         }
 
-        protected override bool UnwrapValue(TValue value, ref TValue destination)
+        protected override Maybe<TValue> UnwrapValue(TValue value)
         {
-            destination = value;
-            return true;
+            return value;
         }
     }
 }

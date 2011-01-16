@@ -22,6 +22,18 @@ namespace iSynaptic.Commons.Data
         }
 
         [Test]
+        public void Get_ByTypeOnly_UsesTypeDeclaration()
+        {
+            var resolver = MockRepository.GenerateStub<IMetadataResolver>();
+            resolver.Stub(x => x.Resolve(MetadataDeclaration<int>.TypeDeclaration, null, null))
+                .Return(42);
+
+            Metadata.SetResolver(resolver);
+
+            Assert.AreEqual(42, Metadata.Get<int>());
+        }
+
+        [Test]
         public void Get_WithValidArguments_ReturnsMetadataResolverResults()
         {
             var maxLength = new MetadataDeclaration<int>(7);

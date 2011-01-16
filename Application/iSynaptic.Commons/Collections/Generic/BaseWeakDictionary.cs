@@ -19,53 +19,29 @@ namespace iSynaptic.Commons.Collections.Generic
 
             public WeakKeyComparer(IEqualityComparer<T> comparer)
             {
-                if (comparer == null)
-                    comparer = EqualityComparer<T>.Default;
-
-                _Comparer = comparer;
+                _Comparer = comparer ?? EqualityComparer<T>.Default;
             }
 
             public int GetHashCode(object obj)
             {
-                var weakKey = obj as WeakKeyReference<T>;
-
-                if (weakKey != null)
-                    return weakKey.HashCode;
-
-                return _Comparer.GetHashCode((T)obj);
+                var weakKey = (WeakKeyReference<T>) obj;
+                return weakKey.HashCode;
             }
 
             public new bool Equals(object x, object y)
             {
-                bool xIsDead, yIsDead;
+                var xTarget = GetTarget(x);
+                var yTarget = GetTarget(y);
 
-                T first = GetTarget(x, out xIsDead);
-                T second = GetTarget(y, out yIsDead);
-
-                if (xIsDead)
-                    return yIsDead ? x == y : false;
-
-                if (yIsDead)
-                    return false;
-
-                return _Comparer.Equals(first, second);
+                return xTarget.Equals(yTarget, _Comparer);
             }
 
-            private static T GetTarget(object obj, out bool isDead)
+            private static Maybe<T> GetTarget(object obj)
             {
-                var weakKey = obj as WeakKeyReference<T>;
-                T target;
-                if (weakKey != null)
-                {
-                    target = weakKey.Target;
-                    isDead = !weakKey.IsAlive;
-                }
-                else
-                {
-                    target = (T)obj;
-                    isDead = false;
-                }
-                return target;
+                var weakKey = (WeakKeyReference<T>)obj;
+             
+                T target = weakKey.Target;
+                return weakKey.IsAlive ? target : Maybe<T>.NoValue;
             }
         }
 
@@ -86,16 +62,7 @@ namespace iSynaptic.Commons.Collections.Generic
 
         #endregion
 
-        public BaseWeakDictionary()
-            : this(0) { }
-
-        public BaseWeakDictionary(int capacity)
-            : this(capacity, null) { }
-
-        public BaseWeakDictionary(IEqualityComparer<TKey> comparer)
-            : this(0, comparer) { }
-
-        public BaseWeakDictionary(int capacity, IEqualityComparer<TKey> comparer)
+        protected BaseWeakDictionary(int capacity, IEqualityComparer<TKey> comparer)
         {
             _BaseComparer = comparer ?? EqualityComparer<TKey>.Default;
 
@@ -111,19 +78,15 @@ namespace iSynaptic.Commons.Collections.Generic
         }
 
         protected abstract TWrappedKey WrapKey(TKey key, IEqualityComparer<TKey> comparer);
-        protected abstract bool UnwrapKey(TWrappedKey key, ref TKey destination);
+        protected abstract Maybe<TKey> UnwrapKey(TWrappedKey key);
         protected abstract TWrappedValue WrapValue(TValue value);
-        protected abstract bool UnwrapValue(TWrappedValue value, ref TValue destination);
+        protected abstract Maybe<TValue> UnwrapValue(TWrappedValue value);
 
-        protected static bool UnwrapWeakReference<T>(WeakReference<T> value, ref T destination) where T : class
+        protected static Maybe<T> UnwrapWeakReference<T>(WeakReference<T> value) where T : class
         {
             var target = value.Target;
 
-            bool isAlive = value.IsAlive;
-            if (isAlive)
-                destination = target;
-
-            return isAlive;
+            return value.IsAlive ? target : Maybe<T>.NoValue;
         }
 
         public override int Count
@@ -153,20 +116,12 @@ namespace iSynaptic.Commons.Collections.Generic
 
         public override bool TryGetValue(TKey key, out TValue value)
         {
-            TWrappedValue dictValue;
-            if (_Dictionary.TryGetValue(WrapKey(key), out dictValue))
-            {
-                TValue retreivedValue = default(TValue);
+            var result = _Dictionary
+                .TryGetValue(WrapKey(key))
+                .Bind(UnwrapValue);
 
-                if (UnwrapValue(dictValue, ref retreivedValue))
-                {
-                    value = retreivedValue;
-                    return true;
-                }
-            }
-
-            value = default(TValue);
-            return false;
+            value = result.HasValue ? result.Value : default(TValue);
+            return result.HasValue;
         }
 
         protected override void SetValue(TKey key, TValue value)
@@ -184,11 +139,11 @@ namespace iSynaptic.Commons.Collections.Generic
         {
             foreach (KeyValuePair<TWrappedKey, TWrappedValue> pair in _Dictionary)
             {
-                TKey key = default(TKey);
-                TValue value = default(TValue);
+                var key = UnwrapKey(pair.Key);
+                var value = UnwrapValue(pair.Value);
 
-                if (UnwrapKey(pair.Key, ref key) && UnwrapValue(pair.Value, ref value))
-                    yield return new KeyValuePair<TKey, TValue>(key, value);
+                if (key.HasValue && value.HasValue)
+                    yield return new KeyValuePair<TKey, TValue>(key.Value, value.Value);
             }
         }
 
@@ -196,10 +151,10 @@ namespace iSynaptic.Commons.Collections.Generic
         {
             _Dictionary.RemoveAll(pair =>
             {
-                TKey key = default(TKey);
-                TValue value = default(TValue);
+                var key = UnwrapKey(pair.Key);
+                var value = UnwrapValue(pair.Value);
 
-                return !UnwrapKey(pair.Key, ref key) || !UnwrapValue(pair.Value, ref value);
+                return !key.HasValue || !value.HasValue;
             });
         }
     } 

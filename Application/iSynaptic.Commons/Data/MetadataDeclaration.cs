@@ -6,7 +6,7 @@ using System.Text;
 
 namespace iSynaptic.Commons.Data
 {
-    public class MetadataDeclaration<TMetadata> : IMetadataDeclaration<TMetadata>
+    public class MetadataDeclaration<TMetadata>
     {
         public static readonly MetadataDeclaration<TMetadata> TypeDeclaration = new MetadataDeclaration<TMetadata>();
 
@@ -35,24 +35,49 @@ namespace iSynaptic.Commons.Data
             return Metadata.Resolve(this, null, null);
         }
 
-        public TMetadata For<T>()
+        public TMetadata For<TSubject>()
         {
-            return Metadata.Resolve(this, typeof(T), null);
+            return Metadata.Resolve(this, typeof(TSubject), null);
         }
 
-        public TMetadata For<T>(T subject)
+        public TMetadata For<TSubject>(TSubject subject)
         {
             return Metadata.Resolve(this, subject, null);
         }
 
-        public TMetadata For<T>(Expression<Func<T, object>> member)
+        public TMetadata For<TSubject>(Expression<Func<TSubject, object>> member)
         {
-            return Metadata.Resolve(this, typeof (T), member);
+            return Metadata.Resolve(this, typeof(TSubject), member);
         }
 
-        public TMetadata For<T>(T subject, Expression<Func<T, object>> member)
+        public TMetadata For<TSubject>(TSubject subject, Expression<Func<TSubject, object>> member)
         {
             return Metadata.Resolve(this, subject, member);
+        }
+
+        public LazyMetadata<TMetadata> LazyGet()
+        {
+            return new LazyMetadata<TMetadata>(this);
+        }
+
+        public LazyMetadata<TMetadata, TSubject> LazyFor<TSubject>()
+        {
+            return new LazyMetadata<TMetadata, TSubject>(this);
+        }
+
+        public LazyMetadata<TMetadata, TSubject> LazyFor<TSubject>(TSubject subject)
+        {
+            return new LazyMetadata<TMetadata, TSubject>(this, subject);
+        }
+
+        public LazyMetadata<TMetadata, TSubject> LazyFor<TSubject>(Expression<Func<TSubject, object>> member)
+        {
+            return new LazyMetadata<TMetadata, TSubject>(this, member);
+        }
+
+        public LazyMetadata<TMetadata, TSubject> LazyFor<TSubject>(TSubject subject, Expression<Func<TSubject, object>> member)
+        {
+            return new LazyMetadata<TMetadata, TSubject>(this, subject, member);
         }
 
         public void ValidateValue(TMetadata value)
