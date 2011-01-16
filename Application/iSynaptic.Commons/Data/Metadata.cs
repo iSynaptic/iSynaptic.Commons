@@ -9,6 +9,11 @@ namespace iSynaptic.Commons.Data
 {
     public static class Metadata
     {
+        public static TMetadata Get<TMetadata>()
+        {
+            return MetadataDeclaration<TMetadata>.TypeDeclaration.Get();
+        }
+
         public static TMetadata Resolve<TMetadata>(MetadataDeclaration<TMetadata> declaration, object subject, Expression member)
         {
             Guard.NotNull(declaration, "declaration");
@@ -37,8 +42,7 @@ namespace iSynaptic.Commons.Data
 
             return resolver.Resolve(declaration, subject, memberInfo);
         }
-
-
+        
         public static void SetResolver(IMetadataResolver metadataResolver)
         {
             MetadataResolver = metadataResolver;
