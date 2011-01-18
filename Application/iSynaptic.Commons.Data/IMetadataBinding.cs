@@ -13,5 +13,7 @@ namespace iSynaptic.Commons.Data
         TMetadata Resolve(MetadataRequest<TMetadata> request);
 
         IMetadataBindingSource Source { get;}
+        object Subject { get; }
+        MemberInfo Member { get; }
     }
 }

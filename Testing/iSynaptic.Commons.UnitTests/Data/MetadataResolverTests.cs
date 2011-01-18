@@ -23,7 +23,7 @@ namespace iSynaptic.Commons.Data
         [Test]
         public void Resolve_ThruImplicitCastOperator_ReturnsValue()
         {
-            var binding = new MetadataBinding<int>(StringMetadata.MaxLength, 42, MockRepository.GenerateStub<IMetadataBindingSource>());
+            var binding = new MetadataBinding<int>(r => r.Declaration == StringMetadata.MaxLength, r => 42, MockRepository.GenerateStub<IMetadataBindingSource>());
 
             var source = MockRepository.GenerateStub<IMetadataBindingSource>();
             source.Expect(x => x.GetBindingsFor<int>(null))
@@ -71,7 +71,7 @@ namespace iSynaptic.Commons.Data
             int resolveCount = 0;
             var scopeObject = new object();
 
-            var binding = new MetadataBinding<int>(r => r.Declaration == StringMetadata.MaxLength, x => { resolveCount++; return 42; }, MockRepository.GenerateStub<IMetadataBindingSource>(), x => scopeObject);
+            var binding = new MetadataBinding<int>(r => r.Declaration == StringMetadata.MaxLength, x => { resolveCount++; return 42; }, MockRepository.GenerateStub<IMetadataBindingSource>()) { ScopeFactory = x => scopeObject};
 
             var source = MockRepository.GenerateStub<IMetadataBindingSource>();
             source.Expect(x => x.GetBindingsFor<int>(null))
@@ -96,7 +96,7 @@ namespace iSynaptic.Commons.Data
             int resolveCount = 0;
             var scopeObject = new object();
 
-            var binding = new MetadataBinding<int>(r => r.Declaration == StringMetadata.MaxLength, x => { resolveCount++; return 42; }, MockRepository.GenerateStub<IMetadataBindingSource>(), x => scopeObject);
+            var binding = new MetadataBinding<int>(r => r.Declaration == StringMetadata.MaxLength, x => { resolveCount++; return 42; }, MockRepository.GenerateStub<IMetadataBindingSource>()) { ScopeFactory = x => scopeObject };
 
             var source = MockRepository.GenerateStub<IMetadataBindingSource>();
             source.Expect(x => x.GetBindingsFor<int>(null))

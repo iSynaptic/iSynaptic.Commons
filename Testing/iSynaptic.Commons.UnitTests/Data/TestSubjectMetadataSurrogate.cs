@@ -15,7 +15,7 @@ namespace iSynaptic.Commons.Data
                 .To(74088);
 
             Bind(CommonMetadata.Description)
-                .When(r => ShouldYieldInstanceMetadata && r.Subject != Subject)
+                .When(r => ShouldYieldInstanceMetadata)
                 .To("Surrogate Description");
 
             Bind(CommonMetadata.Description, Subject)
