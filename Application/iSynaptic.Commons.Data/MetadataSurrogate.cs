@@ -10,33 +10,16 @@ namespace iSynaptic.Commons.Data
     {
         private readonly HashSet<object> _Bindings = new HashSet<object>();
 
-        public IPredicateScopeToBinding<TMetadata> Bind<TMetadata>(MetadataDeclaration<TMetadata> declaration)
+        public void Bind<TMetadata>(MetadataDeclaration<TMetadata> declaration, TMetadata value)
         {
-            return StartBuildingBinding(declaration)
-                .For<TSubject>();
+            Guard.NotNull(declaration, "declaration");
+            _Bindings.Add(new MetadataBinding<TMetadata>(r => r.Declaration == declaration, r => value, this));
         }
 
-        public IPredicateScopeToBinding<TMetadata> Bind<TMetadata>(MetadataDeclaration<TMetadata> declaration, TSubject subject)
+        public ISpecificSubjectPredicateScopeToBinding<TMetadata, TSubject> Bind<TMetadata>(MetadataDeclaration<TMetadata> declaration)
         {
-            return StartBuildingBinding(declaration)
-                .For(subject);
-        }
-
-        public IPredicateScopeToBinding<TMetadata> Bind<TMetadata>(MetadataDeclaration<TMetadata> declaration, Expression<Func<TSubject, object>> member)
-        {
-            return StartBuildingBinding(declaration)
-                .For(member);
-        }
-
-        public IPredicateScopeToBinding<TMetadata> Bind<TMetadata>(MetadataDeclaration<TMetadata> declaration, TSubject subject, Expression<Func<TSubject, object>> member)
-        {
-            return StartBuildingBinding(declaration)
-                .For(subject, member);
-        }
-
-        private ISubjectPredicateScopeToBinding<TMetadata> StartBuildingBinding<TMetadata>(MetadataDeclaration<TMetadata> declaration)
-        {
-            return new FluentMetadataBindingBuilder<TMetadata>(this, r => r.Declaration == declaration, b => _Bindings.Add(b));
+            Guard.NotNull(declaration, "declaration");
+            return new FluentMetadataBindingBuilder<TMetadata, TSubject>(this, r => r.Declaration == declaration, b => _Bindings.Add(b));
         }
 
         IEnumerable<IMetadataBinding<TMetadata>> IMetadataBindingSource.GetBindingsFor<TMetadata>(MetadataRequest<TMetadata> request)

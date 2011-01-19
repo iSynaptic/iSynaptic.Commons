@@ -11,19 +11,22 @@ namespace iSynaptic.Commons.Data
         {
             ScopeObject = new object();
 
-            Bind(StringMetadata.MaxLength, x => x.MiddleName)
+            Bind(StringMetadata.MaxLength)
+                .For(x => x.MiddleName)
                 .To(74088);
 
             Bind(CommonMetadata.Description)
                 .When(r => ShouldYieldInstanceMetadata)
                 .To("Surrogate Description");
 
-            Bind(CommonMetadata.Description, Subject)
+            Bind(CommonMetadata.Description)
+                .For(Subject)
                 .When(r => ShouldYieldInstanceMetadata)
                 .InScope(ScopeObject)
                 .To(r => "Special Instance Description");
 
-            Bind(CommonMetadata.Description, Subject, x => x.FirstName)
+            Bind(CommonMetadata.Description)
+                .For(Subject, x => x.FirstName)
                 .When(r => ShouldYieldInstanceMetadata)
                 .InScope(r => ScopeObject)
                 .To("Special Member Description");

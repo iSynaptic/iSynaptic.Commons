@@ -7,9 +7,9 @@ using System.Text;
 
 namespace iSynaptic.Commons.Data
 {
-    internal class FluentMetadataBindingBuilder<TMetadata> : ISubjectPredicateScopeToBinding<TMetadata>
+    internal abstract class BaseFluentMetadataBindingBuilder<TMetadata> : IPredicateScopeToBinding<TMetadata>
     {
-        public FluentMetadataBindingBuilder(IMetadataBindingSource source, Func<MetadataRequest<TMetadata>, bool> userPredicate, Action<MetadataBinding<TMetadata>> onCompletedBinding)
+        protected BaseFluentMetadataBindingBuilder(IMetadataBindingSource source, Func<MetadataRequest<TMetadata>, bool> userPredicate, Action<MetadataBinding<TMetadata>> onCompletedBinding)
         {
             Guard.NotNull(source, "source");
             Guard.NotNull(userPredicate, "userPredicate");
@@ -20,40 +20,7 @@ namespace iSynaptic.Commons.Data
             OnCompletedBinding = onCompletedBinding;
         }
 
-        public IPredicateScopeToBinding<TMetadata> For<TSubject>()
-        {
-            Subject = typeof(TSubject);
-            return this;
-        }
-
-        public IPredicateScopeToBinding<TMetadata> For<TSubject>(Expression<Func<TSubject, object>> member)
-        {
-            Guard.NotNull(member, "member");
-
-            Subject = typeof(TSubject);
-            Member = member.ExtractMemberInfoForMetadata();
-            return this;
-        }
-
-        public IPredicateScopeToBinding<TMetadata> For<TSubject>(TSubject subject)
-        {
-            Guard.NotNull(subject, "subject");
-
-            Subject = subject;
-            return this;
-        }
-
-        public IPredicateScopeToBinding<TMetadata> For<TSubject>(TSubject subject, Expression<Func<TSubject, object>> member)
-        {
-            Guard.NotNull(subject, "subject");
-            Guard.NotNull(member, "member");
-
-            Subject = subject;
-            Member = member.ExtractMemberInfoForMetadata();
-
-            return this;
-        }
-
+        
         public void To(TMetadata value)
         {
             To(r => value);
@@ -121,5 +88,84 @@ namespace iSynaptic.Commons.Data
         protected Func<MetadataRequest<TMetadata>, object> ScopeFactory { get; set; }
 
         protected Action<MetadataBinding<TMetadata>> OnCompletedBinding { get; set; }
+
+    }
+
+    internal class FluentMetadataBindingBuilder<TMetadata, TSubject> : BaseFluentMetadataBindingBuilder<TMetadata>, ISpecificSubjectPredicateScopeToBinding<TMetadata, TSubject>
+    {
+        public FluentMetadataBindingBuilder(IMetadataBindingSource source, Func<MetadataRequest<TMetadata>, bool> userPredicate, Action<MetadataBinding<TMetadata>> onCompletedBinding)
+            : base(source, userPredicate, onCompletedBinding)
+        {
+            Subject = typeof(TSubject);
+        }
+
+        public IPredicateScopeToBinding<TMetadata> For(Expression<Func<TSubject, object>> member)
+        {
+            Guard.NotNull(member, "member");
+            Member = member.ExtractMemberInfoForMetadata();
+
+            return this;
+        }
+
+        public IPredicateScopeToBinding<TMetadata> For(TSubject subject)
+        {
+            Guard.NotNull(subject, "subject");
+            Subject = subject;
+
+            return this;
+        }
+
+        public IPredicateScopeToBinding<TMetadata> For(TSubject subject, Expression<Func<TSubject, object>> member)
+        {
+            Guard.NotNull(subject, "subject");
+            Guard.NotNull(member, "member");
+
+            Subject = subject;
+            Member = member.ExtractMemberInfoForMetadata();
+
+            return this;
+        }
+    }
+
+    internal class FluentMetadataBindingBuilder<TMetadata> : BaseFluentMetadataBindingBuilder<TMetadata>, ISubjectPredicateScopeToBinding<TMetadata>
+    {
+        public FluentMetadataBindingBuilder(IMetadataBindingSource source, Func<MetadataRequest<TMetadata>, bool> userPredicate, Action<MetadataBinding<TMetadata>> onCompletedBinding)
+            : base(source, userPredicate, onCompletedBinding)
+        {
+        }
+
+        public IPredicateScopeToBinding<TMetadata> For<TSubject>()
+        {
+            Subject = typeof(TSubject);
+            return this;
+        }
+
+        public IPredicateScopeToBinding<TMetadata> For<TSubject>(Expression<Func<TSubject, object>> member)
+        {
+            Guard.NotNull(member, "member");
+
+            Subject = typeof(TSubject);
+            Member = member.ExtractMemberInfoForMetadata();
+            return this;
+        }
+
+        public IPredicateScopeToBinding<TMetadata> For<TSubject>(TSubject subject)
+        {
+            Guard.NotNull(subject, "subject");
+
+            Subject = subject;
+            return this;
+        }
+
+        public IPredicateScopeToBinding<TMetadata> For<TSubject>(TSubject subject, Expression<Func<TSubject, object>> member)
+        {
+            Guard.NotNull(subject, "subject");
+            Guard.NotNull(member, "member");
+
+            Subject = subject;
+            Member = member.ExtractMemberInfoForMetadata();
+
+            return this;
+        }
     }
 }

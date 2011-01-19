@@ -47,6 +47,7 @@
     <Compile Include="IMetadataBindingSource.cs" />
     <Compile Include="IPredicateScopeToBinding.cs" />
     <Compile Include="IScopeToBinding.cs" />
+    <Compile Include="ISpecificSubjectPredicateScopeToBinding.cs" />
     <Compile Include="ISubjectPredicateScopeToBinding.cs" />
     <Compile Include="IToBinding.cs" />
     <Compile Include="MetadataBinding.cs" />
