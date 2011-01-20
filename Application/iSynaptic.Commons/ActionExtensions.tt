@@ -8,7 +8,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Threading;
 
 namespace iSynaptic.Commons
 {
@@ -48,6 +48,23 @@ namespace iSynaptic.Commons
             {
                 self(<#= args #>);
                 followedBy(<#= args #>);
+            };
+        }
+
+        public static Action<<#= typeArgs #>> MakeIdempotent<<#= typeArgs #>>(this Action<<#= typeArgs #>> self)
+        {
+            Guard.NotNull(self, "self");
+
+            int beenExecuted = 0;
+
+            return (<#= args #>) =>
+            {
+                int previousValue = Interlocked.Increment(ref beenExecuted);
+
+                if(previousValue == 0)
+                    self(<#= args #>);
+                else
+                    beenExecuted = 1;
             };
         }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace iSynaptic.Commons
 {
@@ -24,6 +25,23 @@ namespace iSynaptic.Commons
             {
                 _Action();
             }
+        }
+
+        public static Action MakeIdempotent(this Action self)
+        {
+            Guard.NotNull(self, "self");
+
+            int beenExecuted = 0;
+
+            return () =>
+            {
+                int previousValue = Interlocked.Increment(ref beenExecuted);
+
+                if (previousValue == 0)
+                    self();
+                else
+                    beenExecuted = 1;
+            };
         }
 
         public static Action CatchExceptions(this Action self)

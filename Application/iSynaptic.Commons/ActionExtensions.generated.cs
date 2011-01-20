@@ -1,7 +1,7 @@
 ﻿
 using System;
 using System.Collections.Generic;
-
+using System.Threading;
 
 namespace iSynaptic.Commons
 {
@@ -36,6 +36,23 @@ namespace iSynaptic.Commons
             {
                 self(t1);
                 followedBy(t1);
+            };
+        }
+
+        public static Action<T1> MakeIdempotent<T1>(this Action<T1> self)
+        {
+            Guard.NotNull(self, "self");
+
+            int beenExecuted = 0;
+
+            return (t1) =>
+            {
+                int previousValue = Interlocked.Increment(ref beenExecuted);
+
+                if(previousValue == 0)
+                    self(t1);
+                else
+                    beenExecuted = 1;
             };
         }
 
@@ -89,6 +106,23 @@ namespace iSynaptic.Commons
             };
         }
 
+        public static Action<T1, T2> MakeIdempotent<T1, T2>(this Action<T1, T2> self)
+        {
+            Guard.NotNull(self, "self");
+
+            int beenExecuted = 0;
+
+            return (t1, t2) =>
+            {
+                int previousValue = Interlocked.Increment(ref beenExecuted);
+
+                if(previousValue == 0)
+                    self(t1, t2);
+                else
+                    beenExecuted = 1;
+            };
+        }
+
 		public static Action<T1, T2> CatchExceptions<T1, T2>(this Action<T1, T2> self)
         {
             return self.CatchExceptions(null);
@@ -136,6 +170,23 @@ namespace iSynaptic.Commons
             {
                 self(t1, t2, t3);
                 followedBy(t1, t2, t3);
+            };
+        }
+
+        public static Action<T1, T2, T3> MakeIdempotent<T1, T2, T3>(this Action<T1, T2, T3> self)
+        {
+            Guard.NotNull(self, "self");
+
+            int beenExecuted = 0;
+
+            return (t1, t2, t3) =>
+            {
+                int previousValue = Interlocked.Increment(ref beenExecuted);
+
+                if(previousValue == 0)
+                    self(t1, t2, t3);
+                else
+                    beenExecuted = 1;
             };
         }
 
@@ -189,6 +240,23 @@ namespace iSynaptic.Commons
             };
         }
 
+        public static Action<T1, T2, T3, T4> MakeIdempotent<T1, T2, T3, T4>(this Action<T1, T2, T3, T4> self)
+        {
+            Guard.NotNull(self, "self");
+
+            int beenExecuted = 0;
+
+            return (t1, t2, t3, t4) =>
+            {
+                int previousValue = Interlocked.Increment(ref beenExecuted);
+
+                if(previousValue == 0)
+                    self(t1, t2, t3, t4);
+                else
+                    beenExecuted = 1;
+            };
+        }
+
 		public static Action<T1, T2, T3, T4> CatchExceptions<T1, T2, T3, T4>(this Action<T1, T2, T3, T4> self)
         {
             return self.CatchExceptions(null);
@@ -236,6 +304,23 @@ namespace iSynaptic.Commons
             {
                 self(t1, t2, t3, t4, t5);
                 followedBy(t1, t2, t3, t4, t5);
+            };
+        }
+
+        public static Action<T1, T2, T3, T4, T5> MakeIdempotent<T1, T2, T3, T4, T5>(this Action<T1, T2, T3, T4, T5> self)
+        {
+            Guard.NotNull(self, "self");
+
+            int beenExecuted = 0;
+
+            return (t1, t2, t3, t4, t5) =>
+            {
+                int previousValue = Interlocked.Increment(ref beenExecuted);
+
+                if(previousValue == 0)
+                    self(t1, t2, t3, t4, t5);
+                else
+                    beenExecuted = 1;
             };
         }
 
@@ -289,6 +374,23 @@ namespace iSynaptic.Commons
             };
         }
 
+        public static Action<T1, T2, T3, T4, T5, T6> MakeIdempotent<T1, T2, T3, T4, T5, T6>(this Action<T1, T2, T3, T4, T5, T6> self)
+        {
+            Guard.NotNull(self, "self");
+
+            int beenExecuted = 0;
+
+            return (t1, t2, t3, t4, t5, t6) =>
+            {
+                int previousValue = Interlocked.Increment(ref beenExecuted);
+
+                if(previousValue == 0)
+                    self(t1, t2, t3, t4, t5, t6);
+                else
+                    beenExecuted = 1;
+            };
+        }
+
 		public static Action<T1, T2, T3, T4, T5, T6> CatchExceptions<T1, T2, T3, T4, T5, T6>(this Action<T1, T2, T3, T4, T5, T6> self)
         {
             return self.CatchExceptions(null);
@@ -336,6 +438,23 @@ namespace iSynaptic.Commons
             {
                 self(t1, t2, t3, t4, t5, t6, t7);
                 followedBy(t1, t2, t3, t4, t5, t6, t7);
+            };
+        }
+
+        public static Action<T1, T2, T3, T4, T5, T6, T7> MakeIdempotent<T1, T2, T3, T4, T5, T6, T7>(this Action<T1, T2, T3, T4, T5, T6, T7> self)
+        {
+            Guard.NotNull(self, "self");
+
+            int beenExecuted = 0;
+
+            return (t1, t2, t3, t4, t5, t6, t7) =>
+            {
+                int previousValue = Interlocked.Increment(ref beenExecuted);
+
+                if(previousValue == 0)
+                    self(t1, t2, t3, t4, t5, t6, t7);
+                else
+                    beenExecuted = 1;
             };
         }
 
@@ -389,6 +508,23 @@ namespace iSynaptic.Commons
             };
         }
 
+        public static Action<T1, T2, T3, T4, T5, T6, T7, T8> MakeIdempotent<T1, T2, T3, T4, T5, T6, T7, T8>(this Action<T1, T2, T3, T4, T5, T6, T7, T8> self)
+        {
+            Guard.NotNull(self, "self");
+
+            int beenExecuted = 0;
+
+            return (t1, t2, t3, t4, t5, t6, t7, t8) =>
+            {
+                int previousValue = Interlocked.Increment(ref beenExecuted);
+
+                if(previousValue == 0)
+                    self(t1, t2, t3, t4, t5, t6, t7, t8);
+                else
+                    beenExecuted = 1;
+            };
+        }
+
 		public static Action<T1, T2, T3, T4, T5, T6, T7, T8> CatchExceptions<T1, T2, T3, T4, T5, T6, T7, T8>(this Action<T1, T2, T3, T4, T5, T6, T7, T8> self)
         {
             return self.CatchExceptions(null);
@@ -436,6 +572,23 @@ namespace iSynaptic.Commons
             {
                 self(t1, t2, t3, t4, t5, t6, t7, t8, t9);
                 followedBy(t1, t2, t3, t4, t5, t6, t7, t8, t9);
+            };
+        }
+
+        public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9> MakeIdempotent<T1, T2, T3, T4, T5, T6, T7, T8, T9>(this Action<T1, T2, T3, T4, T5, T6, T7, T8, T9> self)
+        {
+            Guard.NotNull(self, "self");
+
+            int beenExecuted = 0;
+
+            return (t1, t2, t3, t4, t5, t6, t7, t8, t9) =>
+            {
+                int previousValue = Interlocked.Increment(ref beenExecuted);
+
+                if(previousValue == 0)
+                    self(t1, t2, t3, t4, t5, t6, t7, t8, t9);
+                else
+                    beenExecuted = 1;
             };
         }
 
@@ -489,6 +642,23 @@ namespace iSynaptic.Commons
             };
         }
 
+        public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> MakeIdempotent<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(this Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> self)
+        {
+            Guard.NotNull(self, "self");
+
+            int beenExecuted = 0;
+
+            return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) =>
+            {
+                int previousValue = Interlocked.Increment(ref beenExecuted);
+
+                if(previousValue == 0)
+                    self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10);
+                else
+                    beenExecuted = 1;
+            };
+        }
+
 		public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> CatchExceptions<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(this Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> self)
         {
             return self.CatchExceptions(null);
@@ -536,6 +706,23 @@ namespace iSynaptic.Commons
             {
                 self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11);
                 followedBy(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11);
+            };
+        }
+
+        public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> MakeIdempotent<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(this Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> self)
+        {
+            Guard.NotNull(self, "self");
+
+            int beenExecuted = 0;
+
+            return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) =>
+            {
+                int previousValue = Interlocked.Increment(ref beenExecuted);
+
+                if(previousValue == 0)
+                    self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11);
+                else
+                    beenExecuted = 1;
             };
         }
 
@@ -589,6 +776,23 @@ namespace iSynaptic.Commons
             };
         }
 
+        public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> MakeIdempotent<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(this Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> self)
+        {
+            Guard.NotNull(self, "self");
+
+            int beenExecuted = 0;
+
+            return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) =>
+            {
+                int previousValue = Interlocked.Increment(ref beenExecuted);
+
+                if(previousValue == 0)
+                    self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12);
+                else
+                    beenExecuted = 1;
+            };
+        }
+
 		public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> CatchExceptions<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(this Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> self)
         {
             return self.CatchExceptions(null);
@@ -636,6 +840,23 @@ namespace iSynaptic.Commons
             {
                 self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13);
                 followedBy(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13);
+            };
+        }
+
+        public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> MakeIdempotent<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(this Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> self)
+        {
+            Guard.NotNull(self, "self");
+
+            int beenExecuted = 0;
+
+            return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) =>
+            {
+                int previousValue = Interlocked.Increment(ref beenExecuted);
+
+                if(previousValue == 0)
+                    self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13);
+                else
+                    beenExecuted = 1;
             };
         }
 
@@ -689,6 +910,23 @@ namespace iSynaptic.Commons
             };
         }
 
+        public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> MakeIdempotent<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(this Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> self)
+        {
+            Guard.NotNull(self, "self");
+
+            int beenExecuted = 0;
+
+            return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) =>
+            {
+                int previousValue = Interlocked.Increment(ref beenExecuted);
+
+                if(previousValue == 0)
+                    self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14);
+                else
+                    beenExecuted = 1;
+            };
+        }
+
 		public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> CatchExceptions<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(this Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> self)
         {
             return self.CatchExceptions(null);
@@ -739,6 +977,23 @@ namespace iSynaptic.Commons
             };
         }
 
+        public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> MakeIdempotent<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(this Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> self)
+        {
+            Guard.NotNull(self, "self");
+
+            int beenExecuted = 0;
+
+            return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) =>
+            {
+                int previousValue = Interlocked.Increment(ref beenExecuted);
+
+                if(previousValue == 0)
+                    self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15);
+                else
+                    beenExecuted = 1;
+            };
+        }
+
 		public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> CatchExceptions<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(this Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> self)
         {
             return self.CatchExceptions(null);
@@ -786,6 +1041,23 @@ namespace iSynaptic.Commons
             {
                 self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16);
                 followedBy(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16);
+            };
+        }
+
+        public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> MakeIdempotent<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(this Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> self)
+        {
+            Guard.NotNull(self, "self");
+
+            int beenExecuted = 0;
+
+            return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) =>
+            {
+                int previousValue = Interlocked.Increment(ref beenExecuted);
+
+                if(previousValue == 0)
+                    self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16);
+                else
+                    beenExecuted = 1;
             };
         }
 

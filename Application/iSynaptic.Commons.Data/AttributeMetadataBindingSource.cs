@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
+
 using iSynaptic.Commons.Reflection;
 
 namespace iSynaptic.Commons.Data
@@ -13,8 +13,8 @@ namespace iSynaptic.Commons.Data
         {
             Guard.NotNull(request, "request");
 
-            if(request.Subject == null && request.Member == null)
-                yield break;
+            if (request.Subject == null && request.Member == null)
+                return Enumerable.Empty<IMetadataBinding<TMetadata>>();
 
             ICustomAttributeProvider provider = request.Member;
 
@@ -24,11 +24,9 @@ namespace iSynaptic.Commons.Data
             if (provider == null)
                 provider = request.Subject.GetType();
 
-            var attributes = provider.GetAttributesOfType<IMetadataAttribute<TMetadata>>()
-                .Where(x => x.ProvidesMetadataFor(request));
-
-            foreach (var attribute in attributes)
-                yield return new MetadataBinding<TMetadata>(attribute.ProvidesMetadataFor, attribute.Resolve, this);
+            return provider.GetAttributesOfType<IMetadataAttribute<TMetadata>>()
+                .Where(x => x.ProvidesMetadataFor(request))
+                .Select(x => new MetadataBinding<TMetadata>(x.ProvidesMetadataFor, x.Resolve, this));
         }
     }
 }

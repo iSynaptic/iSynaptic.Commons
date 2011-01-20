@@ -88,7 +88,6 @@ namespace iSynaptic.Commons.Data
         protected Func<MetadataRequest<TMetadata>, object> ScopeFactory { get; set; }
 
         protected Action<MetadataBinding<TMetadata>> OnCompletedBinding { get; set; }
-
     }
 
     internal class FluentMetadataBindingBuilder<TMetadata, TSubject> : BaseFluentMetadataBindingBuilder<TMetadata>, ISpecificSubjectPredicateScopeToBinding<TMetadata, TSubject>
