@@ -70,7 +70,7 @@ namespace iSynaptic.Commons.Data
             if (Subject.HasValue && !request.Subject.HasValue)
                 return false;
 
-            if (Subject.HasValue && !request.Subject.Value.Equals(Subject.Value))
+            if (Subject.HasValue && !EqualityComparer<TSubject>.Default.Equals(request.Subject.Value, Subject.Value))
                 return false;
 
             return UserPredicate(request);
