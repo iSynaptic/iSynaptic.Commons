@@ -25,7 +25,7 @@ namespace iSynaptic.Commons.Data
         public void Get_ByTypeOnly_UsesTypeDeclaration()
         {
             var resolver = MockRepository.GenerateStub<IMetadataResolver>();
-            resolver.Stub(x => x.Resolve(MetadataDeclaration<int>.TypeDeclaration, null, null))
+            resolver.Stub(x => x.Resolve<int, object>(MetadataDeclaration<int>.TypeDeclaration, null, null))
                 .Return(42);
 
             Metadata.SetResolver(resolver);
@@ -52,7 +52,7 @@ namespace iSynaptic.Commons.Data
         public void Resolve_WithNullDeclaration_ThrowsException()
         {
             Assert.Throws<ArgumentNullException>(() => 
-                Metadata.Resolve<int>(null, null, null));
+                Metadata.Resolve<int, object>(null, null, null));
         }
 
         [Test]
@@ -97,7 +97,7 @@ namespace iSynaptic.Commons.Data
             var maxLength = new MetadataDeclaration<int>(7);
 
             var resolver = MockRepository.GenerateMock<IMetadataResolver>();
-            resolver.Expect(x => x.Resolve(maxLength, null, null))
+            resolver.Expect(x => x.Resolve<int, object>(maxLength, null, null))
                 .Return(42);
 
             Metadata.SetResolver(resolver);
@@ -143,7 +143,7 @@ namespace iSynaptic.Commons.Data
             var maxLength = new MetadataDeclaration<int>(7);
 
             var resolver = MockRepository.GenerateMock<IMetadataResolver>();
-            resolver.Expect(x => x.Resolve<int>(null, null, null))
+            resolver.Expect(x => x.Resolve<int, Type>(null, null, null))
                 .Constraints(Is.Equal(maxLength), Is.Equal(typeof(string)), Is.NotNull())
                 .Return(42);
 

@@ -16,7 +16,7 @@ namespace iSynaptic.Commons.Data
         {
             var resolver = new MetadataResolver();
 
-            var value = resolver.Resolve(new ComparableMetadataDeclaration<int>(-1, 42, 7), null, null);
+            var value = resolver.Resolve<int, object>(new ComparableMetadataDeclaration<int>(-1, 42, 7), null, null);
             Assert.AreEqual(7, value);
         }
 

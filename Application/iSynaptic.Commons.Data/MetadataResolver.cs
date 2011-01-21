@@ -16,7 +16,7 @@ namespace iSynaptic.Commons.Data
 
         private HashSet<IMetadataBindingSource> _BindingSources = new HashSet<IMetadataBindingSource>();
 
-        public TMetadata Resolve<TMetadata>(MetadataDeclaration<TMetadata> declaration, object subject, MemberInfo member)
+        public TMetadata Resolve<TMetadata, TSubject>(MetadataDeclaration<TMetadata> declaration, TSubject subject, MemberInfo member)
         {
             Guard.NotNull(declaration, "declaration");
 

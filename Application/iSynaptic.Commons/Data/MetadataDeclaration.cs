@@ -32,7 +32,7 @@ namespace iSynaptic.Commons.Data
 
         public TMetadata Get()
         {
-            return Metadata.Resolve(this, null, null);
+            return Metadata.Resolve<TMetadata, object>(this, null, null);
         }
 
         public TMetadata For<TSubject>()

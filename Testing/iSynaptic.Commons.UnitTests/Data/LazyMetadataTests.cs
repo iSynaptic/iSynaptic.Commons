@@ -22,7 +22,7 @@ namespace iSynaptic.Commons.Data
         public void LazyMetadata_ViaParameterlessConstructor_UsesTypeDeclaration()
         {
             var resolver = MockRepository.GenerateStub<IMetadataResolver>();
-            resolver.Stub(x => x.Resolve(MetadataDeclaration<int>.TypeDeclaration, null, null))
+            resolver.Stub(x => x.Resolve<int, object>(MetadataDeclaration<int>.TypeDeclaration, null, null))
                 .Return(42);
 
             Metadata.SetResolver(resolver);
@@ -37,7 +37,7 @@ namespace iSynaptic.Commons.Data
         public void LazyMetadata_ViaDeclaration()
         {
             var resolver = MockRepository.GenerateStub<IMetadataResolver>();
-            resolver.Stub(x => x.Resolve(StringMetadata.MaxLength, null, null))
+            resolver.Stub(x => x.Resolve<int, object>(StringMetadata.MaxLength, null, null))
                 .Return(42);
 
             Metadata.SetResolver(resolver);
