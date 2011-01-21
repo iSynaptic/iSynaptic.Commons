@@ -3,11 +3,11 @@ using System.Linq.Expressions;
 
 namespace iSynaptic.Commons.Data
 {
-    public interface ISubjectPredicateScopeToBinding<TMetadata> : IPredicateScopeToBinding<TMetadata>
+    public interface ISubjectPredicateScopeToBinding<TMetadata> : ISpecificSubjectPredicateScopeToBinding<TMetadata, object>
     {
-        IPredicateScopeToBinding<TMetadata> For<TSubject>();
-        IPredicateScopeToBinding<TMetadata> For<TSubject>(Expression<Func<TSubject, object>> member);
-        IPredicateScopeToBinding<TMetadata> For<TSubject>(TSubject subject);
-        IPredicateScopeToBinding<TMetadata> For<TSubject>(TSubject subject, Expression<Func<TSubject, object>> member);
+        IPredicateScopeToBinding<TMetadata, TSubject> For<TSubject>();
+        IPredicateScopeToBinding<TMetadata, TSubject> For<TSubject>(Expression<Func<TSubject, object>> member);
+        IPredicateScopeToBinding<TMetadata, TSubject> For<TSubject>(TSubject subject);
+        IPredicateScopeToBinding<TMetadata, TSubject> For<TSubject>(TSubject subject, Expression<Func<TSubject, object>> member);
     }
 }

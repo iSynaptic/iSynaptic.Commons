@@ -15,12 +15,12 @@ namespace iSynaptic.Commons.Data
             _Description = description;
         }
 
-        public bool ProvidesMetadataFor<TRequestMetadata>(MetadataRequest<TRequestMetadata> request)
+        public bool ProvidesMetadataFor<TRequestMetadata, TSubject>(MetadataRequest<TRequestMetadata, TSubject> request)
         {
             return ReferenceEquals(request.Declaration, CommonMetadata.Description);
         }
 
-        public string Resolve(MetadataRequest<string> request)
+        public string Resolve<TSubject>(MetadataRequest<string, TSubject> request)
         {
             return _Description;
         }

@@ -6,14 +6,14 @@ using System.Text;
 
 namespace iSynaptic.Commons.Data
 {
-    public interface IMetadataBinding<TMetadata>
+    public interface IMetadataBinding<TMetadata, TSubject>
     {
-        bool Matches(MetadataRequest<TMetadata> request);
-        Func<MetadataRequest<TMetadata>, object> ScopeFactory { get; }
-        TMetadata Resolve(MetadataRequest<TMetadata> request);
+        bool Matches(MetadataRequest<TMetadata, TSubject> request);
+        Func<MetadataRequest<TMetadata, TSubject>, object> ScopeFactory { get; }
+        TMetadata Resolve(MetadataRequest<TMetadata, TSubject> request);
 
         IMetadataBindingSource Source { get;}
-        object Subject { get; }
+        Maybe<TSubject> Subject { get; }
         MemberInfo Member { get; }
     }
 }

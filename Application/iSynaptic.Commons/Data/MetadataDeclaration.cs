@@ -37,22 +37,22 @@ namespace iSynaptic.Commons.Data
 
         public TMetadata For<TSubject>()
         {
-            return Metadata.Resolve(this, typeof(TSubject), null);
+            return Metadata.Resolve(this, Maybe<TSubject>.NoValue, null);
         }
 
         public TMetadata For<TSubject>(TSubject subject)
         {
-            return Metadata.Resolve(this, subject, null);
+            return Metadata.Resolve(this, new Maybe<TSubject>(subject), null);
         }
 
         public TMetadata For<TSubject>(Expression<Func<TSubject, object>> member)
         {
-            return Metadata.Resolve(this, typeof(TSubject), member);
+            return Metadata.Resolve(this, Maybe<TSubject>.NoValue, member);
         }
 
         public TMetadata For<TSubject>(TSubject subject, Expression<Func<TSubject, object>> member)
         {
-            return Metadata.Resolve(this, subject, member);
+            return Metadata.Resolve(this, new Maybe<TSubject>(subject), member);
         }
 
         public LazyMetadata<TMetadata> LazyGet()

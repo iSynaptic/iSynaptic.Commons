@@ -23,10 +23,10 @@ namespace iSynaptic.Commons.Data
         [Test]
         public void Resolve_ThruImplicitCastOperator_ReturnsValue()
         {
-            var binding = new MetadataBinding<int>(r => r.Declaration == StringMetadata.MaxLength, r => 42, MockRepository.GenerateStub<IMetadataBindingSource>());
+            var binding = new MetadataBinding<int, object>(r => r.Declaration == StringMetadata.MaxLength, r => 42, MockRepository.GenerateStub<IMetadataBindingSource>());
 
             var source = MockRepository.GenerateStub<IMetadataBindingSource>();
-            source.Expect(x => x.GetBindingsFor<int>(null))
+            source.Expect(x => x.GetBindingsFor<int, object>(null))
                 .IgnoreArguments()
                 .Return(new[] { binding });
 
@@ -42,10 +42,10 @@ namespace iSynaptic.Commons.Data
         [Test]
         public void Resolve_WithAmbiguousBindingSelection_ThrowsException()
         {
-            var binding1 = MockRepository.GenerateStub<IMetadataBinding<int>>();
-            var binding2 = MockRepository.GenerateStub<IMetadataBinding<int>>();
+            var binding1 = MockRepository.GenerateStub<IMetadataBinding<int, object>>();
+            var binding2 = MockRepository.GenerateStub<IMetadataBinding<int, object>>();
 
-            Action<IMetadataBinding<int>> expectations = b =>
+            Action<IMetadataBinding<int, object>> expectations = b =>
                 b.Expect(x => x.Matches(null))
                     .IgnoreArguments()
                     .Return(true);
@@ -54,7 +54,7 @@ namespace iSynaptic.Commons.Data
             expectations(binding2);
 
             var source = MockRepository.GenerateStub<IMetadataBindingSource>();
-            source.Expect(x => x.GetBindingsFor<int>(null))
+            source.Expect(x => x.GetBindingsFor<int, object>(null))
                 .IgnoreArguments()
                 .Return(new[] { binding1, binding2 });
 
@@ -71,10 +71,10 @@ namespace iSynaptic.Commons.Data
             int resolveCount = 0;
             var scopeObject = new object();
 
-            var binding = new MetadataBinding<int>(r => r.Declaration == StringMetadata.MaxLength, x => { resolveCount++; return 42; }, MockRepository.GenerateStub<IMetadataBindingSource>()) { ScopeFactory = x => scopeObject};
+            var binding = new MetadataBinding<int, object>(r => r.Declaration == StringMetadata.MaxLength, x => { resolveCount++; return 42; }, MockRepository.GenerateStub<IMetadataBindingSource>()) { ScopeFactory = x => scopeObject};
 
             var source = MockRepository.GenerateStub<IMetadataBindingSource>();
-            source.Expect(x => x.GetBindingsFor<int>(null))
+            source.Expect(x => x.GetBindingsFor<int, object>(null))
                 .IgnoreArguments()
                 .Return(new[] { binding });
 
@@ -96,10 +96,10 @@ namespace iSynaptic.Commons.Data
             int resolveCount = 0;
             var scopeObject = new object();
 
-            var binding = new MetadataBinding<int>(r => r.Declaration == StringMetadata.MaxLength, x => { resolveCount++; return 42; }, MockRepository.GenerateStub<IMetadataBindingSource>()) { ScopeFactory = x => scopeObject };
+            var binding = new MetadataBinding<int, object>(r => r.Declaration == StringMetadata.MaxLength, x => { resolveCount++; return 42; }, MockRepository.GenerateStub<IMetadataBindingSource>()) { ScopeFactory = x => scopeObject };
 
             var source = MockRepository.GenerateStub<IMetadataBindingSource>();
-            source.Expect(x => x.GetBindingsFor<int>(null))
+            source.Expect(x => x.GetBindingsFor<int, object>(null))
                 .IgnoreArguments()
                 .Return(new[] { binding });
 

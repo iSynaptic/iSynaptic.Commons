@@ -13,19 +13,19 @@ namespace iSynaptic.Commons.Data
         public void Bind<TMetadata>(MetadataDeclaration<TMetadata> declaration, TMetadata value)
         {
             Guard.NotNull(declaration, "declaration");
-            _Bindings.Add(new MetadataBinding<TMetadata>(r => r.Declaration == declaration, r => value, this));
+            _Bindings.Add(new MetadataBinding<TMetadata, object>(r => r.Declaration == declaration, r => value, this));
         }
 
         public ISpecificSubjectPredicateScopeToBinding<TMetadata, TSubject> Bind<TMetadata>(MetadataDeclaration<TMetadata> declaration)
         {
             Guard.NotNull(declaration, "declaration");
-            return new FluentMetadataBindingBuilder<TMetadata, TSubject>(this, r => r.Declaration == declaration, b => _Bindings.Add(b));
+            return new FluentMetadataBindingBuilder<TMetadata, TSubject>(this, r => r.Declaration == declaration, x => _Bindings.Add(x));
         }
 
-        IEnumerable<IMetadataBinding<TMetadata>> IMetadataBindingSource.GetBindingsFor<TMetadata>(MetadataRequest<TMetadata> request)
+        IEnumerable<IMetadataBinding<TMetadata, TBindingSubject>> IMetadataBindingSource.GetBindingsFor<TMetadata, TBindingSubject>(MetadataRequest<TMetadata, TBindingSubject> request)
         {
             return _Bindings
-                .OfType<IMetadataBinding<TMetadata>>();
+                .OfType<IMetadataBinding<TMetadata, TBindingSubject>>();
         }
     }
 }

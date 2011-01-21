@@ -7,9 +7,9 @@ using System.Text;
 
 namespace iSynaptic.Commons.Data
 {
-    public class MetadataRequest<TMetadata>
+    public class MetadataRequest<TMetadata, TSubject>
     {
-        public MetadataRequest(MetadataDeclaration<TMetadata> declaration, object subject, MemberInfo member)
+        public MetadataRequest(MetadataDeclaration<TMetadata> declaration, Maybe<TSubject> subject, MemberInfo member)
         {
             Guard.NotNull(declaration, "declaration");
 
@@ -20,7 +20,7 @@ namespace iSynaptic.Commons.Data
 
         public MetadataDeclaration<TMetadata> Declaration { get; private set; }
 
-        public object Subject { get; private set; }
+        public Maybe<TSubject> Subject { get; private set; }
         public MemberInfo Member { get; private set; }
    }
 }

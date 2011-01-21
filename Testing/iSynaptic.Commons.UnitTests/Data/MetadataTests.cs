@@ -39,7 +39,7 @@ namespace iSynaptic.Commons.Data
             var maxLength = new MetadataDeclaration<int>(7);
 
             var resolver = MockRepository.GenerateStub<IMetadataResolver>();
-            resolver.Stub(x => x.Resolve(maxLength, typeof (string), null))
+            resolver.Stub(x => x.Resolve(maxLength, Maybe<string>.NoValue, null))
                 .Return(42);
 
             Metadata.SetResolver(resolver);
@@ -82,7 +82,7 @@ namespace iSynaptic.Commons.Data
             var maxLength = new MetadataDeclaration<int>(7);
 
             var metadataResolver = MockRepository.GenerateStub<IMetadataResolver>();
-            metadataResolver.Stub(x => x.Resolve(maxLength, typeof(string), null))
+            metadataResolver.Stub(x => x.Resolve(maxLength, Maybe<string>.NoValue, null))
                 .Return(42);
 
             Ioc.SetDependencyResolver(new DependencyResolver((k, d, r) => metadataResolver));
@@ -112,7 +112,7 @@ namespace iSynaptic.Commons.Data
             var maxLength = new MetadataDeclaration<int>(7);
 
             var resolver = MockRepository.GenerateMock<IMetadataResolver>();
-            resolver.Expect(x => x.Resolve(maxLength, typeof(string), null))
+            resolver.Expect(x => x.Resolve(maxLength, Maybe<string>.NoValue, null))
                 .Return(42);
 
             Metadata.SetResolver(resolver);
@@ -128,7 +128,7 @@ namespace iSynaptic.Commons.Data
             string subject = "Hello, World!";
 
             var resolver = MockRepository.GenerateMock<IMetadataResolver>();
-            resolver.Expect(x => x.Resolve(maxLength, subject, null))
+            resolver.Expect(x => x.Resolve<int, string>(maxLength, subject, null))
                 .Return(42);
 
             Metadata.SetResolver(resolver);
@@ -140,16 +140,18 @@ namespace iSynaptic.Commons.Data
         [Test]
         public void Get_OnGenericMetadataWithDeclarationAndMember_ProvidesAllArgumentsToResolver()
         {
+            Expression<Func<string, object>> expression = x => x.Length;
+            var member = expression.ExtractMemberInfoForMetadata();
+
             var maxLength = new MetadataDeclaration<int>(7);
 
             var resolver = MockRepository.GenerateMock<IMetadataResolver>();
-            resolver.Expect(x => x.Resolve<int, Type>(null, null, null))
-                .Constraints(Is.Equal(maxLength), Is.Equal(typeof(string)), Is.NotNull())
+            resolver.Expect(x => x.Resolve(maxLength, Maybe<string>.NoValue, member))
                 .Return(42);
 
             Metadata.SetResolver(resolver);
 
-            maxLength.For<string>(x => x.Length);
+            maxLength.For<string>(expression);
             resolver.VerifyAllExpectations();
         }
 
@@ -163,7 +165,7 @@ namespace iSynaptic.Commons.Data
             var member = expression.ExtractMemberInfoForMetadata();
 
             var resolver = MockRepository.GenerateMock<IMetadataResolver>();
-            resolver.Expect(x => x.Resolve(maxLength, subject, member))
+            resolver.Expect(x => x.Resolve<int, string>(maxLength, subject, member))
                 .Return(42);
 
             Metadata.SetResolver(resolver);

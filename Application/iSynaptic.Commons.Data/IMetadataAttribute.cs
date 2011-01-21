@@ -7,7 +7,7 @@ namespace iSynaptic.Commons.Data
 {
     public interface IMetadataAttribute<TMetadata>
     {
-        bool ProvidesMetadataFor<TRequestMetadata>(MetadataRequest<TRequestMetadata> request);
-        TMetadata Resolve(MetadataRequest<TMetadata> request);
+        bool ProvidesMetadataFor<TRequestMetadata, TSubject>(MetadataRequest<TRequestMetadata, TSubject> request);
+        TMetadata Resolve<TSubject>(MetadataRequest<TMetadata, TSubject> request);
     }
 }

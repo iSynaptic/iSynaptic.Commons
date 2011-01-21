@@ -2,9 +2,9 @@
 
 namespace iSynaptic.Commons.Data
 {
-    public interface IScopeToBinding<TMetadata> : IToBinding<TMetadata>
+    public interface IScopeToBinding<TMetadata, TSubject> : IToBinding<TMetadata, TSubject>
     {
-        IToBinding<TMetadata> InScope(object scopeObject);
-        IToBinding<TMetadata> InScope(Func<MetadataRequest<TMetadata>, object> scopeFactory);
+        IToBinding<TMetadata, TSubject> InScope(object scopeObject);
+        IToBinding<TMetadata, TSubject> InScope(Func<MetadataRequest<TMetadata, TSubject>, object> scopeFactory);
     }
 }

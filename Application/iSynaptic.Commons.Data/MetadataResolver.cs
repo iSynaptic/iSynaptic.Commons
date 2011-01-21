@@ -16,11 +16,11 @@ namespace iSynaptic.Commons.Data
 
         private HashSet<IMetadataBindingSource> _BindingSources = new HashSet<IMetadataBindingSource>();
 
-        public TMetadata Resolve<TMetadata, TSubject>(MetadataDeclaration<TMetadata> declaration, TSubject subject, MemberInfo member)
+        public TMetadata Resolve<TMetadata, TSubject>(MetadataDeclaration<TMetadata> declaration, Maybe<TSubject> subject, MemberInfo member)
         {
             Guard.NotNull(declaration, "declaration");
 
-            var request = new MetadataRequest<TMetadata>(declaration, subject, member);
+            var request = new MetadataRequest<TMetadata, TSubject>(declaration, subject, member);
 
             var candidateBindings = _BindingSources
                 .SelectMany(x => x.GetBindingsFor(request))
@@ -53,7 +53,7 @@ namespace iSynaptic.Commons.Data
             return results;
         }
 
-        protected virtual IMetadataBinding<TMetadata> SelectBinding<TMetadata>(MetadataRequest<TMetadata> request, IEnumerable<IMetadataBinding<TMetadata>> candidates)
+        protected virtual IMetadataBinding<TMetadata, TSubject> SelectBinding<TMetadata, TSubject>(MetadataRequest<TMetadata, TSubject> request, IEnumerable<IMetadataBinding<TMetadata, TSubject>> candidates)
         {
             Guard.NotNull(candidates, "candidates");
 

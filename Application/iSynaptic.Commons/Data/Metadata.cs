@@ -14,7 +14,7 @@ namespace iSynaptic.Commons.Data
             return MetadataDeclaration<TMetadata>.TypeDeclaration.Get();
         }
 
-        public static TMetadata Resolve<TMetadata, TSubject>(MetadataDeclaration<TMetadata> declaration, TSubject subject, Expression member)
+        public static TMetadata Resolve<TMetadata, TSubject>(MetadataDeclaration<TMetadata> declaration, Maybe<TSubject> subject, Expression member)
         {
             Guard.NotNull(declaration, "declaration");
 
