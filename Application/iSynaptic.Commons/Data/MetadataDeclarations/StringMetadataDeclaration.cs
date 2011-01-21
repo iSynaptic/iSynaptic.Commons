@@ -7,15 +7,16 @@ namespace iSynaptic.Commons.Data.MetadataDeclarations
 {
     public class StringMetadataDeclaration : MetadataDeclaration<string>
     {
-        public StringMetadataDeclaration() : this(0, int.MaxValue)
+        public StringMetadataDeclaration() : this(0, int.MaxValue, null)
         {
         }
 
-        public StringMetadataDeclaration(int minLength, int maxLength) : this(minLength, maxLength, true, true, true)
+        public StringMetadataDeclaration(int minLength, int maxLength, string @default) : this(minLength, maxLength, @default, true, true, true)
         {
         }
 
-        public StringMetadataDeclaration(int minLength, int maxLength, bool isNullPermitted, bool isEmptyPermitted, bool isWhitespacePermitted)
+        public StringMetadataDeclaration(int minLength, int maxLength, string @default, bool isNullPermitted, bool isEmptyPermitted, bool isWhitespacePermitted)
+            : base(@default)
         {
             MinLength = minLength;
             MaxLength = maxLength;
