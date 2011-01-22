@@ -5,7 +5,7 @@ namespace iSynaptic.Commons.Data.Syntax
 {
     internal class FluentMetadataBindingBuilder<TMetadata, TSubject> : BaseFluentMetadataBindingBuilder<TMetadata, TSubject>, ISpecificSubjectPredicateScopeToBinding<TMetadata, TSubject>
     {
-        public FluentMetadataBindingBuilder(IMetadataBindingSource source, MetadataDeclaration<TMetadata> declaration, Action<object> onBuildComplete)
+        public FluentMetadataBindingBuilder(IMetadataBindingSource source, IMetadataDeclaration<TMetadata> declaration, Action<object> onBuildComplete)
             : base(source, declaration, onBuildComplete)
         {
         }

@@ -19,7 +19,7 @@ namespace iSynaptic.Commons.Data
                 _Parent = parent;
             }
 
-            public IEnumerable<IMetadataBinding<TMetadata, TSubject>> GetBindingsFor<TMetadata, TSubject>(IMetadataRequest<TSubject> request)
+            public IEnumerable<IMetadataBinding<TMetadata, TSubject>> GetBindingsFor<TMetadata, TSubject>(IMetadataRequest<TMetadata, TSubject> request)
             {
                 return _Parent._Modules
                     .SelectMany(x => x.GetBindingsFor<TMetadata, TSubject>(request));
@@ -39,7 +39,7 @@ namespace iSynaptic.Commons.Data
             AddMetadataBindingSource<AttributeMetadataBindingSource>();
         }
 
-        protected override IMetadataBinding<TMetadata, TSubject> SelectBinding<TMetadata, TSubject>(IMetadataRequest<TSubject> request, IEnumerable<IMetadataBinding<TMetadata, TSubject>> candidates)
+        protected override IMetadataBinding<TMetadata, TSubject> SelectBinding<TMetadata, TSubject>(IMetadataRequest<TMetadata, TSubject> request, IEnumerable<IMetadataBinding<TMetadata, TSubject>> candidates)
         {
             var bindingList = candidates
                 .ToList();

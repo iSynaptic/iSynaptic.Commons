@@ -12,19 +12,19 @@ namespace iSynaptic.Commons.Data
     {
         private readonly HashSet<object> _Bindings = new HashSet<object>();
 
-        public void Bind<TMetadata>(MetadataDeclaration<TMetadata> declaration, TMetadata value)
+        public void Bind<TMetadata>(IMetadataDeclaration<TMetadata> declaration, TMetadata value)
         {
             Guard.NotNull(declaration, "declaration");
             _Bindings.Add(new MetadataBinding<TMetadata, object>(r => r.Declaration == declaration, r => value, this));
         }
 
-        public ISubjectPredicateScopeToBinding<TMetadata> Bind<TMetadata>(MetadataDeclaration<TMetadata> declaration)
+        public ISubjectPredicateScopeToBinding<TMetadata> Bind<TMetadata>(IMetadataDeclaration<TMetadata> declaration)
         {
             Guard.NotNull(declaration, "declaration");
             return new FluentHelper<TMetadata>(this, declaration);
         }
 
-        public IEnumerable<IMetadataBinding<TMetadata, TSubject>> GetBindingsFor<TMetadata, TSubject>(IMetadataRequest<TSubject> request)
+        public IEnumerable<IMetadataBinding<TMetadata, TSubject>> GetBindingsFor<TMetadata, TSubject>(IMetadataRequest<TMetadata, TSubject> request)
         {
             return _Bindings
                 .OfType<IMetadataBinding<TMetadata, TSubject>>();
@@ -33,9 +33,9 @@ namespace iSynaptic.Commons.Data
         private class FluentHelper<TMetadata> : BaseFluentMetadataBindingBuilder<TMetadata, object>, ISubjectPredicateScopeToBinding<TMetadata>
         {
             private readonly MetadataBindingModule _Parent;
-            private readonly MetadataDeclaration<TMetadata> _Declaration;
+            private readonly IMetadataDeclaration<TMetadata> _Declaration;
 
-            public FluentHelper(MetadataBindingModule parent, MetadataDeclaration<TMetadata> declaration) 
+            public FluentHelper(MetadataBindingModule parent, IMetadataDeclaration<TMetadata> declaration) 
                 : base(parent, declaration, x => parent._Bindings.Add(x))
             {
                 _Parent = parent;

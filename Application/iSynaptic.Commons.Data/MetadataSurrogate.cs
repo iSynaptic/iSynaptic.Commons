@@ -23,7 +23,7 @@ namespace iSynaptic.Commons.Data
             return new FluentMetadataBindingBuilder<TMetadata, TSubject>(this, declaration, x => _Bindings.Add(x));
         }
 
-        IEnumerable<IMetadataBinding<TMetadata, TBindingSubject>> IMetadataBindingSource.GetBindingsFor<TMetadata, TBindingSubject>(IMetadataRequest<TBindingSubject> request)
+        IEnumerable<IMetadataBinding<TMetadata, TBindingSubject>> IMetadataBindingSource.GetBindingsFor<TMetadata, TBindingSubject>(IMetadataRequest<TMetadata, TBindingSubject> request)
         {
             return _Bindings
                 .OfType<IMetadataBinding<TMetadata, TBindingSubject>>();

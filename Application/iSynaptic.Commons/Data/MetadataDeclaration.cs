@@ -6,7 +6,7 @@ using System.Text;
 
 namespace iSynaptic.Commons.Data
 {
-    public class MetadataDeclaration<TMetadata> : IMetadataDeclaration
+    public class MetadataDeclaration<TMetadata> : IMetadataDeclaration<TMetadata>
     {
         public static readonly MetadataDeclaration<TMetadata> TypeDeclaration = new MetadataDeclaration<TMetadata>();
 

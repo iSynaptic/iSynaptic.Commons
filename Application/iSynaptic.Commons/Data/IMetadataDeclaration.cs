@@ -1,6 +1,9 @@
-﻿namespace iSynaptic.Commons.Data
+﻿using System;
+
+namespace iSynaptic.Commons.Data
 {
-    public interface IMetadataDeclaration
+    public interface IMetadataDeclaration<in TMetadata>
     {
+        void ValidateValue(TMetadata value);
     }
 }

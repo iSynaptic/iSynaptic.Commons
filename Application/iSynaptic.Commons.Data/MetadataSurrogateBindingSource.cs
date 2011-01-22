@@ -32,7 +32,7 @@ namespace iSynaptic.Commons.Data
             return new KeyValuePair<Type, object>(surrogatesFor, surrogate);
         }
 
-        public IEnumerable<IMetadataBinding<TMetadata, TSubject>> GetBindingsFor<TMetadata, TSubject>(IMetadataRequest<TSubject> request)
+        public IEnumerable<IMetadataBinding<TMetadata, TSubject>> GetBindingsFor<TMetadata, TSubject>(IMetadataRequest<TMetadata, TSubject> request)
         {
             Type subjectType = typeof(TSubject);
 

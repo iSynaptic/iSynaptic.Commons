@@ -3,9 +3,9 @@ using System.Reflection;
 
 namespace iSynaptic.Commons.Data
 {
-    public interface IMetadataRequest<out TSubject>
+    public interface IMetadataRequest<in TMetadata, out TSubject>
     {
-        IMetadataDeclaration Declaration { get; }
+        IMetadataDeclaration<TMetadata> Declaration { get; }
         Func<TSubject> Subject { get; }
         MemberInfo Member { get; }
     }

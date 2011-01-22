@@ -16,7 +16,7 @@ namespace iSynaptic.Commons.Data
             _Description = description;
         }
 
-        public bool ProvidesMetadataFor<TSubject>(IMetadataRequest<TSubject> request)
+        public bool ProvidesMetadataFor<TMetadata, TSubject>(IMetadataRequest<TMetadata, TSubject> request)
         {
             return
                 request.Declaration == StringMetadata.All ||
@@ -25,17 +25,17 @@ namespace iSynaptic.Commons.Data
                 request.Declaration == CommonMetadata.Description;
         }
 
-        StringMetadata IMetadataAttribute<StringMetadata>.Resolve<TSubject>(IMetadataRequest<TSubject> request)
+        public StringMetadata Resolve<TSubject>(IMetadataRequest<StringMetadata, TSubject> request)
         {
             return new StringMetadata(_MinLength, _MaxLength, _Description);
         }
 
-        string IMetadataAttribute<string>.Resolve<TSubject>(IMetadataRequest<TSubject> request)
+        public string Resolve<TSubject>(IMetadataRequest<string, TSubject> request)
         {
             return _Description;
         }
 
-        int IMetadataAttribute<int>.Resolve<TSubject>(IMetadataRequest<TSubject> request)
+        public int Resolve<TSubject>(IMetadataRequest<int, TSubject> request)
         {
             return request.Declaration == StringMetadata.MinLength ? _MinLength : _MaxLength;
         }

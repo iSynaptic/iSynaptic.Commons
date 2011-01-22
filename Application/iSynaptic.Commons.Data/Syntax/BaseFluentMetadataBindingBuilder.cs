@@ -6,7 +6,7 @@ namespace iSynaptic.Commons.Data.Syntax
 {
     internal class BaseFluentMetadataBindingBuilder<TMetadata, TSubject> : IPredicateScopeToBinding<TMetadata, TSubject>
     {
-        public BaseFluentMetadataBindingBuilder(IMetadataBindingSource source, MetadataDeclaration<TMetadata> declaration, Action<object> onBuildComplete)
+        public BaseFluentMetadataBindingBuilder(IMetadataBindingSource source, IMetadataDeclaration<TMetadata> declaration, Action<object> onBuildComplete)
         {
             Guard.NotNull(source, "source");
             Guard.NotNull(declaration, "declaration");
@@ -24,7 +24,7 @@ namespace iSynaptic.Commons.Data.Syntax
             To(r => value);
         }
 
-        public void To(Func<IMetadataRequest<TSubject>, TMetadata> valueFactory)
+        public void To(Func<IMetadataRequest<TMetadata, TSubject>, TMetadata> valueFactory)
         {
             Guard.NotNull(valueFactory, "valueFactory");
 
@@ -36,7 +36,7 @@ namespace iSynaptic.Commons.Data.Syntax
                                 });
         }
 
-        public IScopeToBinding<TMetadata, TSubject> When(Func<IMetadataRequest<TSubject>, bool> userPredicate)
+        public IScopeToBinding<TMetadata, TSubject> When(Func<IMetadataRequest<TMetadata, TSubject>, bool> userPredicate)
         {
             Guard.NotNull(userPredicate, "userPredicate");
             UserPredicate = userPredicate;
@@ -50,14 +50,14 @@ namespace iSynaptic.Commons.Data.Syntax
             return this;
         }
 
-        public IToBinding<TMetadata, TSubject> InScope(Func<IMetadataRequest<TSubject>, object> scopeFactory)
+        public IToBinding<TMetadata, TSubject> InScope(Func<IMetadataRequest<TMetadata, TSubject>, object> scopeFactory)
         {
             Guard.NotNull(scopeFactory, "scopeFactory");
             ScopeFactory = scopeFactory;
             return this;
         }
 
-        private bool Matches(IMetadataRequest<TSubject> request)
+        private bool Matches(IMetadataRequest<TMetadata, TSubject> request)
         {
             Guard.NotNull(request, "request");
 
@@ -83,10 +83,10 @@ namespace iSynaptic.Commons.Data.Syntax
         protected Maybe<TSubject> Subject { get; set; }
         protected MemberInfo Member { get; set; }
 
-        protected MetadataDeclaration<TMetadata> Declaration { get; set; }
+        protected IMetadataDeclaration<TMetadata> Declaration { get; set; }
 
-        protected Func<IMetadataRequest<TSubject>, bool> UserPredicate { get; set; }
-        protected Func<IMetadataRequest<TSubject>, object> ScopeFactory { get; set; }
+        protected Func<IMetadataRequest<TMetadata, TSubject>, bool> UserPredicate { get; set; }
+        protected Func<IMetadataRequest<TMetadata, TSubject>, object> ScopeFactory { get; set; }
 
         protected Action<object> OnBuildComplete { get; set; }
     }

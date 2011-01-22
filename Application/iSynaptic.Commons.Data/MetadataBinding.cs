@@ -8,7 +8,7 @@ namespace iSynaptic.Commons.Data
 {
     public class MetadataBinding<TMetadata, TSubject> : IMetadataBinding<TMetadata, TSubject>
     {
-        public MetadataBinding(Func<IMetadataRequest<TSubject>, bool> predicate, Func<IMetadataRequest<TSubject>, TMetadata> valueFactory, IMetadataBindingSource source)
+        public MetadataBinding(Func<IMetadataRequest<TMetadata, TSubject>, bool> predicate, Func<IMetadataRequest<TMetadata, TSubject>, TMetadata> valueFactory, IMetadataBindingSource source)
         {
             Guard.NotNull(predicate, "predicate");
             Guard.NotNull(valueFactory, "valueFactory");
@@ -19,12 +19,12 @@ namespace iSynaptic.Commons.Data
             Source = source;
         }
 
-        public bool Matches(IMetadataRequest<TSubject> request)
+        public bool Matches(IMetadataRequest<TMetadata, TSubject> request)
         {
             return Predicate(request);
         }
 
-        public object GetScopeObject(IMetadataRequest<TSubject> request)
+        public object GetScopeObject(IMetadataRequest<TMetadata, TSubject> request)
         {
             if (ScopeFactory != null)
                 return ScopeFactory(request);
@@ -32,7 +32,7 @@ namespace iSynaptic.Commons.Data
             return null;
         }
 
-        public TMetadata Resolve(IMetadataRequest<TSubject> request)
+        public TMetadata Resolve(IMetadataRequest<TMetadata, TSubject> request)
         {
             return ValueFactory(request);
         }
@@ -40,10 +40,10 @@ namespace iSynaptic.Commons.Data
         public bool BoundToSubjectInstance { get; set; }
         public bool BoundToMember { get; set; }
 
-        public Func<IMetadataRequest<TSubject>, object> ScopeFactory { get; set; }
+        public Func<IMetadataRequest<TMetadata, TSubject>, object> ScopeFactory { get; set; }
 
-        public Func<IMetadataRequest<TSubject>, bool> Predicate { get; private set; }
-        public Func<IMetadataRequest<TSubject>, TMetadata> ValueFactory { get; private set; }
+        public Func<IMetadataRequest<TMetadata, TSubject>, bool> Predicate { get; private set; }
+        public Func<IMetadataRequest<TMetadata, TSubject>, TMetadata> ValueFactory { get; private set; }
 
         public IMetadataBindingSource Source { get; private set; }
 
