@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace iSynaptic.Commons.Data
+namespace iSynaptic.Commons.Data.Syntax
 {
     public interface IPredicateScopeToBinding<TMetadata, TSubject> : IScopeToBinding<TMetadata, TSubject>
     {

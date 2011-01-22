@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace iSynaptic.Commons.Data
+namespace iSynaptic.Commons.Data.Syntax
 {
     public interface IScopeToBinding<TMetadata, TSubject> : IToBinding<TMetadata, TSubject>
     {

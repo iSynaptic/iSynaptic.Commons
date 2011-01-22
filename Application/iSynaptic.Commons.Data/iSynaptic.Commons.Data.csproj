@@ -41,15 +41,15 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AttributeMetadataBindingSource.cs" />
-    <Compile Include="FluentMetadataBindingBuilder.cs" />
+    <Compile Include="Syntax\FluentMetadataBindingBuilder.cs" />
     <Compile Include="IMetadataAttribute.cs" />
     <Compile Include="IMetadataBinding.cs" />
     <Compile Include="IMetadataBindingSource.cs" />
-    <Compile Include="IPredicateScopeToBinding.cs" />
-    <Compile Include="IScopeToBinding.cs" />
-    <Compile Include="ISpecificSubjectPredicateScopeToBinding.cs" />
-    <Compile Include="ISubjectPredicateScopeToBinding.cs" />
-    <Compile Include="IToBinding.cs" />
+    <Compile Include="Syntax\IPredicateScopeToBinding.cs" />
+    <Compile Include="Syntax\IScopeToBinding.cs" />
+    <Compile Include="Syntax\ISpecificSubjectPredicateScopeToBinding.cs" />
+    <Compile Include="Syntax\ISubjectPredicateScopeToBinding.cs" />
+    <Compile Include="Syntax\IToBinding.cs" />
     <Compile Include="MetadataBinding.cs" />
     <Compile Include="MetadataBindingModule.cs" />
     <Compile Include="MetadataSurrogate.cs" />

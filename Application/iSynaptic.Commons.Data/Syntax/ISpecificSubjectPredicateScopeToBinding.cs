@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 
-namespace iSynaptic.Commons.Data
+namespace iSynaptic.Commons.Data.Syntax
 {
     public interface ISpecificSubjectPredicateScopeToBinding<TMetadata, TSubject> : IPredicateScopeToBinding<TMetadata, TSubject>
     {
