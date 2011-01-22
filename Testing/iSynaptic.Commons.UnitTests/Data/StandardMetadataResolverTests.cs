@@ -160,5 +160,34 @@ namespace iSynaptic.Commons.Data
             var value = CommonMetadata.Description.For(TestSubjectMetadataSurrogate.Subject);
             Assert.AreEqual("Test Subject", value);
         }
+
+        [Test]
+        public void Resolve_AgainstArbitraryDerivedInstance_YieldsSurrogateMetadata()
+        {
+            var resolver = new StandardMetadataResolver();
+            Metadata.SetResolver(resolver);
+
+            TestSubjectMetadataSurrogate.ShouldYieldInstanceMetadata = true;
+
+            var value = CommonMetadata.Description.For(new DerivedTestSubject());
+            Assert.AreEqual("Surrogate Description", value);
+        }
+
+        [Test]
+        public void Resolve_WithDerivedInstance_YieldsMostDerivedBindingsMetadata()
+        {
+            var module = new MetadataBindingModule();
+            module.Bind(CommonMetadata.Description)
+                .For<DerivedTestSubject>()
+                .To("Derived Surrogate Description");
+
+            var resolver = new StandardMetadataResolver(module);
+            Metadata.SetResolver(resolver);
+
+            TestSubjectMetadataSurrogate.ShouldYieldInstanceMetadata = true;
+
+            var value = CommonMetadata.Description.For(new DerivedTestSubject());
+            Assert.AreEqual("Derived Surrogate Description", value);
+        }
     }
 }

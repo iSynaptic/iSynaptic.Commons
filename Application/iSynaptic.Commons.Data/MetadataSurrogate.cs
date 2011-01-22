@@ -20,10 +20,10 @@ namespace iSynaptic.Commons.Data
         public ISpecificSubjectPredicateScopeToBinding<TMetadata, TSubject> Bind<TMetadata>(MetadataDeclaration<TMetadata> declaration)
         {
             Guard.NotNull(declaration, "declaration");
-            return new FluentMetadataBindingBuilder<TMetadata, TSubject>(this, r => r.Declaration == declaration, x => _Bindings.Add(x));
+            return new FluentMetadataBindingBuilder<TMetadata, TSubject>(this, declaration, x => _Bindings.Add(x));
         }
 
-        IEnumerable<IMetadataBinding<TMetadata, TBindingSubject>> IMetadataBindingSource.GetBindingsFor<TMetadata, TBindingSubject>(MetadataRequest<TMetadata, TBindingSubject> request)
+        IEnumerable<IMetadataBinding<TMetadata, TBindingSubject>> IMetadataBindingSource.GetBindingsFor<TMetadata, TBindingSubject>(IMetadataRequest<TBindingSubject> request)
         {
             return _Bindings
                 .OfType<IMetadataBinding<TMetadata, TBindingSubject>>();

@@ -24,7 +24,7 @@ namespace iSynaptic.Commons.Data
             return new FluentHelper<TMetadata>(this, declaration);
         }
 
-        public IEnumerable<IMetadataBinding<TMetadata, TSubject>> GetBindingsFor<TMetadata, TSubject>(MetadataRequest<TMetadata, TSubject> request)
+        public IEnumerable<IMetadataBinding<TMetadata, TSubject>> GetBindingsFor<TMetadata, TSubject>(IMetadataRequest<TSubject> request)
         {
             return _Bindings
                 .OfType<IMetadataBinding<TMetadata, TSubject>>();
@@ -36,7 +36,7 @@ namespace iSynaptic.Commons.Data
             private readonly MetadataDeclaration<TMetadata> _Declaration;
 
             public FluentHelper(MetadataBindingModule parent, MetadataDeclaration<TMetadata> declaration) 
-                : base(parent, r => r.Declaration == declaration, x => parent._Bindings.Add(x))
+                : base(parent, declaration, x => parent._Bindings.Add(x))
             {
                 _Parent = parent;
                 _Declaration = declaration;
@@ -71,7 +71,7 @@ namespace iSynaptic.Commons.Data
 
             private ISpecificSubjectPredicateScopeToBinding<TMetadata, TSubject> UseSpecificSubject<TSubject>()
             {
-                return new FluentMetadataBindingBuilder<TMetadata, TSubject>(_Parent, r => r.Declaration == _Declaration, x => _Parent._Bindings.Add(x));
+                return new FluentMetadataBindingBuilder<TMetadata, TSubject>(_Parent, Declaration, x => _Parent._Bindings.Add(x));
             }
 
             public IPredicateScopeToBinding<TMetadata, object> For(Expression<Func<object, object>> member)

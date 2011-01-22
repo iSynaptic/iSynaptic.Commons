@@ -32,7 +32,7 @@ namespace iSynaptic.Commons.Data
             return new KeyValuePair<Type, object>(surrogatesFor, surrogate);
         }
 
-        public IEnumerable<IMetadataBinding<TMetadata, TSubject>> GetBindingsFor<TMetadata, TSubject>(MetadataRequest<TMetadata, TSubject> request)
+        public IEnumerable<IMetadataBinding<TMetadata, TSubject>> GetBindingsFor<TMetadata, TSubject>(IMetadataRequest<TSubject> request)
         {
             Type subjectType = typeof(TSubject);
 
@@ -40,7 +40,7 @@ namespace iSynaptic.Commons.Data
                 .Where(x => x.Key.IsAssignableFrom(subjectType))
                 .Select(x => x.Value)
                 .Cast<IMetadataBindingSource>()
-                .SelectMany(x => x.GetBindingsFor(request));
+                .SelectMany(x => x.GetBindingsFor<TMetadata, TSubject>(request));
         }
     }
 }

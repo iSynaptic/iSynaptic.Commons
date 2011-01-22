@@ -6,15 +6,18 @@ using System.Text;
 
 namespace iSynaptic.Commons.Data
 {
-    public interface IMetadataBinding<TMetadata, TSubject>
+    public interface IMetadataBinding<out TMetadata, in TSubject>
     {
-        bool Matches(MetadataRequest<TMetadata, TSubject> request);
-        object GetScopeObject(MetadataRequest<TMetadata, TSubject> request);
-        
-        TMetadata Resolve(MetadataRequest<TMetadata, TSubject> request);
+        bool Matches(IMetadataRequest<TSubject> request);
+        object GetScopeObject(IMetadataRequest<TSubject> request);
 
-        IMetadataBindingSource Source { get;}
-        Maybe<TSubject> Subject { get; }
-        MemberInfo Member { get; }
+        TMetadata Resolve(IMetadataRequest<TSubject> request);
+
+        IMetadataBindingSource Source { get; }
+
+        bool BoundToSubjectInstance { get; }
+        bool BoundToMember { get; }
+
+        Type SubjectType { get; }
     }
 }

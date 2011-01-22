@@ -20,10 +20,12 @@ namespace iSynaptic.Commons.Data
         {
             Guard.NotNull(declaration, "declaration");
 
-            var request = new MetadataRequest<TMetadata, TSubject>(declaration, subject, member);
+            var subjectFunc = !subject.HasValue ? (Func<TSubject>)null : () => subject.Value;
+
+            var request = new MetadataRequest<TSubject>(declaration, subjectFunc, member);
 
             var candidateBindings = _BindingSources
-                .SelectMany(x => x.GetBindingsFor(request))
+                .SelectMany(x => x.GetBindingsFor<TMetadata, TSubject>(request))
                 .Where(x => x.Matches(request));
                 
             var selectedBinding = SelectBinding(request, candidateBindings);
@@ -51,7 +53,7 @@ namespace iSynaptic.Commons.Data
             return results;
         }
 
-        protected virtual IMetadataBinding<TMetadata, TSubject> SelectBinding<TMetadata, TSubject>(MetadataRequest<TMetadata, TSubject> request, IEnumerable<IMetadataBinding<TMetadata, TSubject>> candidates)
+        protected virtual IMetadataBinding<TMetadata, TSubject> SelectBinding<TMetadata, TSubject>(IMetadataRequest<TSubject> request, IEnumerable<IMetadataBinding<TMetadata, TSubject>> candidates)
         {
             Guard.NotNull(candidates, "candidates");
 

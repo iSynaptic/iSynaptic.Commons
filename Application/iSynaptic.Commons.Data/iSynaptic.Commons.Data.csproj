@@ -41,6 +41,8 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AttributeMetadataBindingSource.cs" />
+    <Compile Include="IMetadataRequest.cs" />
+    <Compile Include="Syntax\BaseFluentMetadataBindingBuilder.cs" />
     <Compile Include="Syntax\FluentMetadataBindingBuilder.cs" />
     <Compile Include="IMetadataAttribute.cs" />
     <Compile Include="IMetadataBinding.cs" />

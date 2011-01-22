@@ -90,6 +90,7 @@
     <Compile Include="Collections\Generic\WeakKeyDictionary.cs" />
     <Compile Include="Collections\Generic\WeakValueDictionary.cs" />
     <Compile Include="DataEventArgs.cs" />
+    <Compile Include="Data\IMetadataDeclaration.cs" />
     <Compile Include="Data\IMetadataResolver.cs" />
     <Compile Include="Data\LazyMetadata.cs" />
     <Compile Include="Data\Metadata.cs" />
@@ -137,6 +138,7 @@
     <Compile Include="IReadWriteQualifier.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Runtime\Serialization\Cloneable.cs" />
+    <Compile Include="Runtime\Serialization\CloneContext.cs" />
     <Compile Include="Runtime\Serialization\CloneReferenceOnlyAttribute.cs" />
     <Compile Include="Specification.cs" />
     <Compile Include="Text\Parsing\ScanningTextReader.cs" />

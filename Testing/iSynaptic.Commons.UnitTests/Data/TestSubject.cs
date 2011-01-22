@@ -11,4 +11,7 @@
 
         public string MiddleName { get; set; }
     }
+
+    [Description("Derived Test Subject")]
+    public class DerivedTestSubject : TestSubject {}
 }

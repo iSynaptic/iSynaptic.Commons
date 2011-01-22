@@ -19,10 +19,10 @@ namespace iSynaptic.Commons.Data
                 _Parent = parent;
             }
 
-            public IEnumerable<IMetadataBinding<TMetadata, TSubject>> GetBindingsFor<TMetadata, TSubject>(MetadataRequest<TMetadata, TSubject> request)
+            public IEnumerable<IMetadataBinding<TMetadata, TSubject>> GetBindingsFor<TMetadata, TSubject>(IMetadataRequest<TSubject> request)
             {
                 return _Parent._Modules
-                    .SelectMany(x => x.GetBindingsFor(request));
+                    .SelectMany(x => x.GetBindingsFor<TMetadata, TSubject>(request));
             }
         }
 
@@ -39,7 +39,7 @@ namespace iSynaptic.Commons.Data
             AddMetadataBindingSource<AttributeMetadataBindingSource>();
         }
 
-        protected override IMetadataBinding<TMetadata, TSubject> SelectBinding<TMetadata, TSubject>(MetadataRequest<TMetadata, TSubject> request, IEnumerable<IMetadataBinding<TMetadata, TSubject>> candidates)
+        protected override IMetadataBinding<TMetadata, TSubject> SelectBinding<TMetadata, TSubject>(IMetadataRequest<TSubject> request, IEnumerable<IMetadataBinding<TMetadata, TSubject>> candidates)
         {
             var bindingList = candidates
                 .ToList();
@@ -62,35 +62,25 @@ namespace iSynaptic.Commons.Data
             if (!(right.Source is AttributeMetadataBindingSource) && left.Source is AttributeMetadataBindingSource)
                 return 1;
 
-            if (left.Member != null && right.Member == null)
+            if (left.BoundToMember && !right.BoundToMember)
                 return -1;
 
-            if (right.Member != null && left.Member == null)
+            if (right.BoundToMember && !left.BoundToMember)
                 return 1;
 
-            if (left.Subject.HasValue && !right.Subject.HasValue)
+            if (left.BoundToSubjectInstance && !right.BoundToSubjectInstance)
                 return -1;
 
-            if (right.Subject.HasValue && !left.Subject.HasValue)
+            if (right.BoundToSubjectInstance && !left.BoundToSubjectInstance)
                 return 1;
 
-            //Type leftType = left.Subject as Type;
-            //Type rightType = right.Subject as Type;
+            if(left.SubjectType != right.SubjectType)
+            {
+                if (left.SubjectType.IsAssignableFrom(right.SubjectType))
+                    return 1;
 
-            //if (leftType != null && rightType == null)
-            //    return 1;
-
-            //if (rightType != null && leftType == null)
-            //    return -1;
-
-            //if(leftType != null && leftType != rightType)
-            //{
-            //    if (leftType.IsAssignableFrom(rightType))
-            //        return 1;
-
-            //    if (rightType.IsAssignableFrom(leftType))
-            //        return -1;
-            //}
+                return -1;
+            }
 
             return 0;
         }
