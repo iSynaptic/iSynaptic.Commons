@@ -31,20 +31,18 @@ namespace iSynaptic.Commons.Data
             if(selectedBinding == null)
                 return declaration.Default;
 
-            var results = default(TMetadata);
+            object scopeObject = selectedBinding.GetScopeObject(request);
 
-            object scopeObject = null;
-
-            if (selectedBinding.ScopeFactory != null)
+            if (scopeObject != null)
             {
-                scopeObject = selectedBinding.ScopeFactory(request);
                 ScopingCache<TMetadata>.Cache.PurgeGarbage();
+
+                var cachedResult = ScopingCache<TMetadata>.Cache.TryGetValue(scopeObject);
+                if(cachedResult.HasValue)
+                    return cachedResult.Value;
             }
 
-            if(scopeObject != null && ScopingCache<TMetadata>.Cache.TryGetValue(scopeObject, out results))
-                return results;
-        
-            results = selectedBinding.Resolve(request);
+            var results = selectedBinding.Resolve(request);
             declaration.ValidateValue(results);
 
             if(scopeObject != null)

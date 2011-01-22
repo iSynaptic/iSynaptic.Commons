@@ -24,6 +24,14 @@ namespace iSynaptic.Commons.Data
             return Predicate(request);
         }
 
+        public object GetScopeObject(MetadataRequest<TMetadata, TSubject> request)
+        {
+            if (ScopeFactory != null)
+                return ScopeFactory(request);
+
+            return null;
+        }
+
         public TMetadata Resolve(MetadataRequest<TMetadata, TSubject> request)
         {
             return ValueFactory(request);
@@ -31,6 +39,7 @@ namespace iSynaptic.Commons.Data
 
         public Maybe<TSubject> Subject { get; set; }
         public MemberInfo Member { get; set; }
+
         public Func<MetadataRequest<TMetadata, TSubject>, object> ScopeFactory { get; set; }
 
         public Func<MetadataRequest<TMetadata, TSubject>, bool> Predicate { get; private set; }

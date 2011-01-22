@@ -9,7 +9,8 @@ namespace iSynaptic.Commons.Data
     public interface IMetadataBinding<TMetadata, TSubject>
     {
         bool Matches(MetadataRequest<TMetadata, TSubject> request);
-        Func<MetadataRequest<TMetadata, TSubject>, object> ScopeFactory { get; }
+        object GetScopeObject(MetadataRequest<TMetadata, TSubject> request);
+        
         TMetadata Resolve(MetadataRequest<TMetadata, TSubject> request);
 
         IMetadataBindingSource Source { get;}
