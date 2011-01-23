@@ -1,9 +1,15 @@
 ﻿using System;
+using System.Reflection;
 
 namespace iSynaptic.Commons.Data
 {
-    public interface IMetadataDeclaration<in TMetadata>
+    public interface IMetadataDeclaration
     {
-        void ValidateValue(TMetadata value);
+    }
+
+    public interface IMetadataDeclaration<out TMetadata> : IMetadataDeclaration
+    {
+        TMetadata Resolve<TSubject>(IMetadataResolver resolver, Maybe<TSubject> subject, MemberInfo member);
+        TMetadata Default { get; }
     }
 }

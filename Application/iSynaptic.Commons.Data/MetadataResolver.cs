@@ -16,7 +16,7 @@ namespace iSynaptic.Commons.Data
 
         private HashSet<IMetadataBindingSource> _BindingSources = new HashSet<IMetadataBindingSource>();
 
-        public TMetadata Resolve<TMetadata, TSubject>(MetadataDeclaration<TMetadata> declaration, Maybe<TSubject> subject, MemberInfo member)
+        public TMetadata Resolve<TMetadata, TSubject>(IMetadataDeclaration<TMetadata> declaration, Maybe<TSubject> subject, MemberInfo member)
         {
             Guard.NotNull(declaration, "declaration");
 
@@ -45,7 +45,6 @@ namespace iSynaptic.Commons.Data
             }
 
             var results = selectedBinding.Resolve(request);
-            declaration.ValidateValue(results);
 
             if(scopeObject != null)
                 ScopingCache<TMetadata>.Cache.Add(scopeObject, results);

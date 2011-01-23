@@ -11,10 +11,10 @@ namespace iSynaptic.Commons.Data
     {
         public static TMetadata Get<TMetadata>()
         {
-            return MetadataDeclaration<TMetadata>.TypeDeclaration.Get();
+            return Resolve(MetadataDeclaration<TMetadata>.TypeDeclaration, Maybe<object>.NoValue, null);
         }
 
-        public static TMetadata Resolve<TMetadata, TSubject>(MetadataDeclaration<TMetadata> declaration, Maybe<TSubject> subject, Expression member)
+        public static TMetadata Resolve<TMetadata, TSubject>(IMetadataDeclaration<TMetadata> declaration, Maybe<TSubject> subject, Expression member)
         {
             Guard.NotNull(declaration, "declaration");
 
@@ -40,7 +40,7 @@ namespace iSynaptic.Commons.Data
                 }
             }
 
-            return resolver.Resolve(declaration, subject, memberInfo);
+            return declaration.Resolve(resolver, subject, memberInfo);
         }
         
         public static void SetResolver(IMetadataResolver metadataResolver)

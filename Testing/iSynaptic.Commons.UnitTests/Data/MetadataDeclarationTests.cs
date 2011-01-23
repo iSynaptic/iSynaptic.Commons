@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using iSynaptic.Commons.Data.MetadataDeclarations;
 using NUnit.Framework;
+using Rhino.Mocks;
 
 namespace iSynaptic.Commons.Data
 {
@@ -47,8 +49,14 @@ namespace iSynaptic.Commons.Data
         {
             var betweenOneAndTen = new ComparableMetadataDeclaration<int>(1, 10, 5);
 
-            for (int i = betweenOneAndTen.MinValue; i <= betweenOneAndTen.MaxValue; i++)
-                betweenOneAndTen.ValidateValue(i);
+            var resolver = MockRepository.GenerateStub<IMetadataResolver>();
+            resolver.Stub(x => x.Resolve(betweenOneAndTen, Maybe<object>.NoValue, null))
+                .IgnoreArguments()
+                .Return(7);
+
+            Metadata.SetResolver(resolver);
+            
+            Assert.AreEqual(7, betweenOneAndTen.Get());
         }
 
         [Test]
@@ -56,7 +64,14 @@ namespace iSynaptic.Commons.Data
         {
             var betweenOneAndTen = new ComparableMetadataDeclaration<int>(1, 10, 5);
 
-            Assert.Throws<MetadataValidationException<int>>(() => betweenOneAndTen.ValidateValue(0));
+            var resolver = MockRepository.GenerateStub<IMetadataResolver>();
+            resolver.Stub(x => x.Resolve(betweenOneAndTen, Maybe<object>.NoValue, null))
+                .IgnoreArguments()
+                .Return(42);
+
+            Metadata.SetResolver(resolver);
+
+            Assert.Throws<MetadataValidationException<int>>(() => betweenOneAndTen.Get());
         }
     }
 }

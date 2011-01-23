@@ -11,13 +11,13 @@ namespace iSynaptic.Commons.Data
     {
         private readonly HashSet<object> _Bindings = new HashSet<object>();
 
-        public void Bind<TMetadata>(MetadataDeclaration<TMetadata> declaration, TMetadata value)
+        public void Bind<TMetadata>(IMetadataDeclaration<TMetadata> declaration, TMetadata value)
         {
             Guard.NotNull(declaration, "declaration");
             _Bindings.Add(new MetadataBinding<TMetadata, object>(r => r.Declaration == declaration, r => value, this));
         }
 
-        public ISpecificSubjectPredicateScopeToBinding<TMetadata, TSubject> Bind<TMetadata>(MetadataDeclaration<TMetadata> declaration)
+        public ISpecificSubjectPredicateScopeToBinding<TMetadata, TSubject> Bind<TMetadata>(IMetadataDeclaration<TMetadata> declaration)
         {
             Guard.NotNull(declaration, "declaration");
             return new FluentMetadataBindingBuilder<TMetadata, TSubject>(this, declaration, x => _Bindings.Add(x));

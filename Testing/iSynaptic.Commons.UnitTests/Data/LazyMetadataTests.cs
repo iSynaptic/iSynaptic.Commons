@@ -22,7 +22,7 @@ namespace iSynaptic.Commons.Data
         public void LazyMetadata_ViaParameterlessConstructor_UsesTypeDeclaration()
         {
             var resolver = MockRepository.GenerateStub<IMetadataResolver>();
-            resolver.Stub(x => x.Resolve<int, object>(MetadataDeclaration<int>.TypeDeclaration, null, null))
+            resolver.Stub(x => x.Resolve(MetadataDeclaration<int>.TypeDeclaration, Maybe<object>.NoValue, null))
                 .Return(42);
 
             Metadata.SetResolver(resolver);
@@ -37,7 +37,7 @@ namespace iSynaptic.Commons.Data
         public void LazyMetadata_ViaDeclaration()
         {
             var resolver = MockRepository.GenerateStub<IMetadataResolver>();
-            resolver.Stub(x => x.Resolve<int, object>(StringMetadata.MaxLength, null, null))
+            resolver.Stub(x => x.Resolve(StringMetadata.MaxLength, Maybe<object>.NoValue, null))
                 .Return(42);
 
             Metadata.SetResolver(resolver);
@@ -49,7 +49,7 @@ namespace iSynaptic.Commons.Data
         public void LazyMetadata_ViaDeclarationSubjectType()
         {
             var resolver = MockRepository.GenerateStub<IMetadataResolver>();
-            resolver.Stub(x => x.Resolve<int, string>(StringMetadata.MaxLength, Maybe<string>.NoValue, null))
+            resolver.Stub(x => x.Resolve(StringMetadata.MaxLength, Maybe<string>.NoValue, null))
                 .Return(42);
 
             Metadata.SetResolver(resolver);
@@ -63,7 +63,7 @@ namespace iSynaptic.Commons.Data
             string subject = "Hello, World!";
 
             var resolver = MockRepository.GenerateStub<IMetadataResolver>();
-            resolver.Stub(x => x.Resolve<int, string>(StringMetadata.MaxLength, subject, null))
+            resolver.Stub(x => x.Resolve(StringMetadata.MaxLength, new Maybe<string>(subject), null))
                 .Return(42);
 
             Metadata.SetResolver(resolver);
@@ -78,13 +78,16 @@ namespace iSynaptic.Commons.Data
 
             var member = expression.ExtractMemberInfoForMetadata();
 
-            var resolver = MockRepository.GenerateStub<IMetadataResolver>();
-            resolver.Stub(x => x.Resolve<int, string>(IntegerMetadata.MinValue, Maybe<string>.NoValue, member))
+            var resolver = MockRepository.GenerateStrictMock<IMetadataResolver>();
+            resolver.Expect(x => x.Resolve(IntegerMetadata.MinValue, Maybe<string>.NoValue, member))
                 .Return(42);
+
+            resolver.Replay();
 
             Metadata.SetResolver(resolver);
 
             Assert.AreEqual(42, IntegerMetadata.MinValue.LazyFor(expression));
+
         }
 
         [Test]

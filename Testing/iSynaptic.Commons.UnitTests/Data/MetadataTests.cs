@@ -26,6 +26,7 @@ namespace iSynaptic.Commons.Data
         {
             var resolver = MockRepository.GenerateStub<IMetadataResolver>();
             resolver.Stub(x => x.Resolve<int, object>(MetadataDeclaration<int>.TypeDeclaration, null, null))
+                .IgnoreArguments()
                 .Return(42);
 
             Metadata.SetResolver(resolver);

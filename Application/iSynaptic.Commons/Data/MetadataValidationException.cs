@@ -14,7 +14,7 @@ namespace iSynaptic.Commons.Data
 
     public class MetadataValidationException<T> : MetadataValidationException
     {
-        public MetadataValidationException(MetadataDeclaration<T> declaration, T invalidValue, string message) : base(message)
+        public MetadataValidationException(IMetadataDeclaration<T> declaration, T invalidValue, string message) : base(message)
         {
             Guard.NotNull(declaration, "declaration");
 
@@ -22,7 +22,7 @@ namespace iSynaptic.Commons.Data
             InvalidValue = invalidValue;
         }
 
-        public MetadataDeclaration<T> Declaration { get; private set; }
+        public IMetadataDeclaration<T> Declaration { get; private set; }
         public T InvalidValue { get; private set; }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 
 namespace iSynaptic.Commons.Data
@@ -14,7 +15,6 @@ namespace iSynaptic.Commons.Data
 
         public MetadataDeclaration()
         {
-            MetadataType = typeof(TMetadata);
         }
 
         public MetadataDeclaration(TMetadata @default) : this()
@@ -80,13 +80,16 @@ namespace iSynaptic.Commons.Data
             return new LazyMetadata<TMetadata, TSubject>(this, subject, member);
         }
 
-        public void ValidateValue(TMetadata value)
-        {
-            OnValidateValue(value, "value");
-        }
-
         protected virtual void OnValidateValue(TMetadata value, string valueName)
         {
+        }
+
+        TMetadata IMetadataDeclaration<TMetadata>.Resolve<TSubject>(IMetadataResolver resolver, Maybe<TSubject> subject, MemberInfo member)
+        {
+            var results = resolver.Resolve(this, subject, member);
+            OnValidateValue(results, "bound value");
+
+            return results;
         }
 
         public static implicit operator TMetadata(MetadataDeclaration<TMetadata> declaration)
@@ -105,7 +108,5 @@ namespace iSynaptic.Commons.Data
                 return defaultValue;
             }
         }
-
-        public Type MetadataType { get; private set; }
     }
 }

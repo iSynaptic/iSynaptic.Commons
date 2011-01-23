@@ -5,7 +5,7 @@ namespace iSynaptic.Commons.Data
 {
     public interface IMetadataRequest<in TMetadata, out TSubject>
     {
-        IMetadataDeclaration<TMetadata> Declaration { get; }
+        IMetadataDeclaration Declaration { get; }
         Func<TSubject> Subject { get; }
         MemberInfo Member { get; }
     }
