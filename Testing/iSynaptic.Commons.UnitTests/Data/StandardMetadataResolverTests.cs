@@ -72,6 +72,17 @@ namespace iSynaptic.Commons.Data
         }
 
         [Test]
+        public void Resolve_WithAttributedFieldForBaseMetadataClass_ReturnsValue()
+        {
+            var resolver = new StandardMetadataResolver();
+            Metadata.SetResolver(resolver);
+
+            var allMetadata = CommonMetadata.All.For<TestSubject>(x => x.LastName);
+
+            Assert.AreEqual("Last Name", allMetadata.Description);
+        }
+
+        [Test]
         public void Resolve_WithSurrogate_ReturnsValue()
         {
             var resolver = new StandardMetadataResolver();
