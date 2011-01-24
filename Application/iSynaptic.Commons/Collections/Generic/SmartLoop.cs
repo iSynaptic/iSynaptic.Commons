@@ -15,7 +15,7 @@ namespace iSynaptic.Commons.Collections.Generic
 
         private Action<IEnumerable<T>> _BeforeAllAction;
         private Action<IEnumerable<T>> _AfterAllAction;
-        private Action _BetweenAction;
+        private Action<T, T> _BetweenAction;
         private Action _NoneAction;
 
         public SmartLoop(IEnumerable<T> items)
@@ -107,7 +107,7 @@ namespace iSynaptic.Commons.Collections.Generic
             return this;
         }
 
-        public SmartLoop<T> Between(Action action)
+        public SmartLoop<T> Between(Action<T, T> action)
         {
             Guard.NotNull(action, "action");
             _BetweenAction = _BetweenAction.FollowedBy(action);
@@ -146,7 +146,7 @@ namespace iSynaptic.Commons.Collections.Generic
                     _Action(finalItems, item);
 
                 if (_BetweenAction != null && (finalItems.Count - 1) != i) // not last one
-                    _BetweenAction();
+                    _BetweenAction(finalItems[i], finalItems[i + 1]);
             }
 
             if (_AfterAllAction != null)

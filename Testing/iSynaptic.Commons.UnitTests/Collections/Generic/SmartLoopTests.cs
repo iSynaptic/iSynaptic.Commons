@@ -150,15 +150,15 @@ namespace iSynaptic.Commons.Collections.Generic
         public void Between_ExecutesAtTheCorrectTime()
         {
             int lastNum = 0;
-            var results = new List<bool>();
+            var results = new List<int>();
 
             Enumerable.Range(1, 3)
                 .SmartLoop()
                 .Each(x => lastNum = x)
-                .Between(() => results.Add(lastNum % 2 == 0))
+                .Between((x, y) => results.Add(x + y))
                 .Execute();
 
-            Assert.IsTrue(results.SequenceEqual(new[] { false, true }));
+            Assert.IsTrue(results.SequenceEqual(new[] { 3, 5 }));
         }
     }
 }

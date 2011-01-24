@@ -72,7 +72,7 @@ namespace iSynaptic.Commons.Collections.Generic
             var builder = new StringBuilder();
 
             self.SmartLoop()
-                .Between(() => builder.Append(delimiter))
+                .Between((x, y) => builder.Append(delimiter))
                 .Each(x => builder.Append(selector(x)))
                 .Execute();
 
