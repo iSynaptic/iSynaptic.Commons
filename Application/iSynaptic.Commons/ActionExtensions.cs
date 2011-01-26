@@ -9,21 +9,44 @@ namespace iSynaptic.Commons
         public static IDisposable ToDisposable(this Action self)
         {
             Guard.NotNull(self, "self");
-            return new DisposableAction(self);
+            return new ActionDisposer(self);
         }
 
-        private class DisposableAction : IDisposable
+        public static IDisposable ToDisposable(this Action<bool> self)
         {
-            private readonly Action _Action = null;
-            public DisposableAction(Action action)
+            Guard.NotNull(self, "self");
+            return new ActionDisposer(self);
+        }
+
+        private sealed class ActionDisposer : IDisposable
+        {
+            private readonly Action<bool> _Action = null;
+            public ActionDisposer(Action action)
+            {
+                Guard.NotNull(action, "action");
+                _Action = disposing => action();
+            }
+
+            public ActionDisposer(Action<bool> action)
             {
                 Guard.NotNull(action, "action");
                 _Action = action;
             }
 
+            ~ActionDisposer()
+            {
+                Dispose(false);
+            }
+
             public void Dispose()
             {
-                _Action();
+                Dispose(true);
+                GC.SuppressFinalize(this);
+            }
+
+            private void Dispose(bool disposing)
+            {
+                _Action(disposing);
             }
         }
 
