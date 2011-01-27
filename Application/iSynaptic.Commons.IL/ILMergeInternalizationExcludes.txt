@@ -1,1 +1,1 @@
-﻿iSynaptic.Commons.UnsafeCast$
+﻿iSynaptic.Commons.Cast[^\.]*$

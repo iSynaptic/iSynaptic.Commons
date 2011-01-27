@@ -40,8 +40,14 @@ namespace iSynaptic.Commons
 
             public void Dispose()
             {
-                Dispose(true);
-                GC.SuppressFinalize(this);
+                try
+                {
+                    Dispose(true);
+                }
+                finally
+                {
+                    GC.SuppressFinalize(this);
+                }
             }
 
             private void Dispose(bool disposing)
