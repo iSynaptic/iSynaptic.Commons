@@ -151,6 +151,7 @@
     <Compile Include="Transactions\TransactionalConcurrencyException.cs" />
     <Compile Include="Transactions\TransactionalGateway.cs" />
     <Compile Include="WeakReference.cs" />
+    <Compile Include="Xml\DeclarativeXmlParser.cs" />
     <Compile Include="Xml\ProcessingInstruction.cs" />
     <Compile Include="Xml\ProcessingInstructionParser.cs" />
   </ItemGroup>
@@ -183,6 +184,12 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\iSynaptic.Commons.IL\iSynaptic.Commons.IL.csproj">
+      <Project>{69425B08-B6B4-4A34-94A5-FF8A3936BCBF}</Project>
+      <Name>iSynaptic.Commons.IL</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
