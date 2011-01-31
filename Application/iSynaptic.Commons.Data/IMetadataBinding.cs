@@ -16,7 +16,6 @@ namespace iSynaptic.Commons.Data
         IMetadataBindingSource Source { get; }
 
         bool BoundToSubjectInstance { get; }
-        bool BoundToMember { get; }
 
         Type SubjectType { get; }
     }

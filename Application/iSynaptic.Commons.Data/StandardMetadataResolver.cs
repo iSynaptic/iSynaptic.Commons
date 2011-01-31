@@ -62,12 +62,6 @@ namespace iSynaptic.Commons.Data
             if (!(right.Source is AttributeMetadataBindingSource) && left.Source is AttributeMetadataBindingSource)
                 return 1;
 
-            if (left.BoundToMember && !right.BoundToMember)
-                return -1;
-
-            if (right.BoundToMember && !left.BoundToMember)
-                return 1;
-
             if (left.BoundToSubjectInstance && !right.BoundToSubjectInstance)
                 return -1;
 

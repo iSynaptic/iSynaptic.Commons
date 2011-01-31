@@ -38,7 +38,6 @@ namespace iSynaptic.Commons.Data
         }
 
         public bool BoundToSubjectInstance { get; set; }
-        public bool BoundToMember { get; set; }
 
         public Func<IMetadataRequest<TMetadata, TSubject>, object> ScopeFactory { get; set; }
 

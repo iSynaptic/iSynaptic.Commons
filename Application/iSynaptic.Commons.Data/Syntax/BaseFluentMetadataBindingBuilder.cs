@@ -31,8 +31,7 @@ namespace iSynaptic.Commons.Data.Syntax
             OnBuildComplete(new MetadataBinding<TMetadata, TSubject>(Matches, valueFactory, Source)
                                 {
                                     ScopeFactory = ScopeFactory,
-                                    BoundToSubjectInstance = Subject.HasValue,
-                                    BoundToMember = Member != null
+                                    BoundToSubjectInstance = Subject.HasValue
                                 });
         }
 
