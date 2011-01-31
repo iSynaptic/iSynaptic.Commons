@@ -9,17 +9,37 @@ namespace iSynaptic.Commons.Xml
 {
     public abstract class DeclarativeXmlParser
     {
+        private readonly ParseContext _Context = null;
+
+        protected DeclarativeXmlParser(XmlReader reader)
+        {
+            Guard.NotNull(reader, "reader");
+            _Context = new ParseContext(reader);
+        }
+
         #region Nested Types
 
-        protected interface IUponBuilder
+        protected interface IUponBuilder : IFluentInterface
         {
-            Matcher<T> Attribute<T>(string name, Action<T> action);
-            Matcher<T> ContentElement<T>(string name, Action<T> action);
-            Matcher<string> Element(string name, Action<string> action);
+            IAttributeMultiplicity Attribute<T>(string name, Action<T> action);
+            IElementMultiplicity ContentElement<T>(string name, Action<T> action);
+            IElementMultiplicity Element(string name, Action action);
 
             void IgnoreUnrecognizedAttributes();
             void IgnoreUnrecognizedElements();
             void IgnoreUnrecognizedText();
+        }
+
+        protected interface IAttributeMultiplicity : IFluentInterface
+        {
+            void Optional();
+        }
+
+        protected interface IElementMultiplicity : IFluentInterface
+        {
+            void ZeroOrOne();
+            void ZeroOrMore();
+            void OneOrMore();
         }
 
         protected class UponBuilder : IUponBuilder
@@ -39,7 +59,7 @@ namespace iSynaptic.Commons.Xml
             public void IgnoreUnrecognizedElements() { _IgnoreUnrecognizedElements = true; }
             public void IgnoreUnrecognizedText() { _IgnoreUnrecognizedText = true; }
 
-            public Matcher<T> Attribute<T>(string name, Action<T> action)
+            public IAttributeMultiplicity Attribute<T>(string name, Action<T> action)
             {
                 var matcher = new Matcher<T>(_Parent, name, XmlNodeType.Attribute, pc => Convert<T>(pc.Token.Value), action);
                 Matchers.Add(matcher);
@@ -47,7 +67,7 @@ namespace iSynaptic.Commons.Xml
                 return matcher;
             }
 
-            public Matcher<T> ContentElement<T>(string name, Action<T> action)
+            public IElementMultiplicity ContentElement<T>(string name, Action<T> action)
             {
                 Func<ParseContext, Maybe<T>> converter = pc =>
                 {
@@ -88,9 +108,9 @@ namespace iSynaptic.Commons.Xml
                 return matcher;
             }
 
-            public Matcher<string> Element(string name, Action<string> action)
+            public IElementMultiplicity Element(string name, Action action)
             {
-                var matcher = new Matcher<string>(_Parent, name, XmlNodeType.Element, pc => pc.Token.Name, action);
+                var matcher = new Matcher<object>(_Parent, name, XmlNodeType.Element, pc => null, x => action());
                 Matchers.Add(matcher);
 
                 return matcher;
@@ -181,7 +201,7 @@ namespace iSynaptic.Commons.Xml
             void ValidateMatcher(ParseContext context);
         }
 
-        protected class Matcher<T> : IMatcher
+        protected class Matcher<T> : IMatcher, IElementMultiplicity, IAttributeMultiplicity
         {
             private readonly XmlToken _Parent;
             private readonly string _Name;
@@ -202,9 +222,11 @@ namespace iSynaptic.Commons.Xml
                 _MatchAction = matchAction;
             }
 
-            public void ZeroOrOne() { _Multiplicity = Multiplicity.ZeroOrOne; }
-            public void ZeroOrMore() { _Multiplicity = Multiplicity.ZeroOrMore; }
-            public void OneOrMore() { _Multiplicity = Multiplicity.OneOrMore; }
+            void IAttributeMultiplicity.Optional() { _Multiplicity = Multiplicity.ZeroOrOne; }
+
+            void IElementMultiplicity.ZeroOrOne() { _Multiplicity = Multiplicity.ZeroOrOne; }
+            void IElementMultiplicity.ZeroOrMore() { _Multiplicity = Multiplicity.ZeroOrMore; }
+            void IElementMultiplicity.OneOrMore() { _Multiplicity = Multiplicity.OneOrMore; }
 
             bool IMatcher.CanExecute(ParseContext context)
             {
@@ -256,10 +278,9 @@ namespace iSynaptic.Commons.Xml
             }
         }
 
-        protected class ParseContext : Scope<ParseContext>
+        protected class ParseContext
         {
             public ParseContext(XmlReader reader)
-                : base(ScopeBounds.Thread, ScopeNesting.Prohibited)
             {
                 Guard.NotNull(reader, "reader");
                 Tokens = ParseElement(reader).GetEnumerator();
@@ -270,7 +291,7 @@ namespace iSynaptic.Commons.Xml
 
             private static IEnumerable<XmlToken> ParseElement(XmlReader reader)
             {
-                if (reader.NodeType == XmlNodeType.None)
+                if (reader.NodeType == XmlNodeType.None && reader.EOF != true)
                     reader.Read();
 
                 yield return new XmlToken(reader);
@@ -347,10 +368,6 @@ namespace iSynaptic.Commons.Xml
             public List<ParseError> Errors { get; private set; }
 
             private IEnumerator<XmlToken> Tokens { get; set; }
-            public static ParseContext Current
-            {
-                get { return GetCurrentScope(); }
-            }
         }
 
         public struct XmlToken
@@ -381,17 +398,14 @@ namespace iSynaptic.Commons.Xml
                 _Name = reader.Name;
                 _NodeType = reader.NodeType;
                 _Value = reader.Value;
+                _LineNumber = null;
+                _LinePosition = null;
 
                 var lineInfo = reader as IXmlLineInfo;
                 if (lineInfo != null && lineInfo.HasLineInfo())
                 {
                     _LineNumber = lineInfo.LineNumber;
                     _LinePosition = lineInfo.LinePosition;
-                }
-                else
-                {
-                    _LineNumber = null;
-                    _LinePosition = null;
                 }
             }
 
@@ -415,53 +429,32 @@ namespace iSynaptic.Commons.Xml
             public XmlToken Token { get; private set; }
         }
 
+        protected ParseContext Context
+        {
+            get { return _Context; }
+        }
+
         #endregion
 
-        protected static IEnumerable<ParseError> Upon(XmlReader reader, Action<IUponBuilder> builderActions)
+        protected IEnumerable<ParseError> Upon(Action<IUponBuilder> builderActions)
         {
-            if (ParseContext.Current == null)
-            {
-                Guard.NotNull(reader, "reader");
-                using (var pc = new ParseContext(reader))
-                {
-                    Upon(builderActions);
-                    return pc.Errors;
-                }
-            }
+            if (Context.Token.NodeType == XmlNodeType.None)
+                Context.MoveNext();
 
-            if (reader != null)
-                throw new ArgumentException("You can only use one xml reader at a time.");
-
-            Upon(builderActions);
-            return ParseContext.Current.Errors;
-        }
-
-        protected static IEnumerable<ParseError> Upon(Action<IUponBuilder> builderActions)
-        {
-            if (ParseContext.Current == null)
-                throw new InvalidOperationException("No xml reader is available.");
-
-            var pc = ParseContext.Current;
-
-            if (pc.Token.NodeType == XmlNodeType.None)
-                pc.MoveNext();
-
-            if (pc.Token.NodeType != XmlNodeType.Element)
+            if (Context.Token.NodeType != XmlNodeType.Element)
                 throw new InvalidOperationException("Upon can only be called while reader's current node is the start of an element");
 
-
-            var builder = new UponBuilder(pc.Token);
+            var builder = new UponBuilder(Context.Token);
             builderActions(builder);
 
-            pc.MoveNext();
+            Context.MoveNext();
 
-            while (pc.Token.NodeType != XmlNodeType.EndElement)
-                builder.ExecuteMatch(pc);
+            while (Context.Token.NodeType != XmlNodeType.EndElement)
+                builder.ExecuteMatch(Context);
 
-            builder.ValidateMatchers(pc);
+            builder.ValidateMatchers(Context);
 
-            return ParseContext.Current.Errors;
+            return Context.Errors;
         }
     }
-
 }
