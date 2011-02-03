@@ -28,18 +28,6 @@ namespace iSynaptic.Commons.Data
             if (resolver == null)
                 resolver = Ioc.Resolve<IMetadataResolver>();
 
-            if (resolver == null)
-            {
-                try
-                {
-                    return declaration.Default;
-                }
-                catch (Exception ex)
-                {
-                    throw new InvalidOperationException("Metadata resolver has not been set and obtaining the default value resulted in an exception. See inner exception(s) for details.", ex);
-                }
-            }
-
             return declaration.Resolve(resolver, subject, memberInfo);
         }
         

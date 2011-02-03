@@ -15,8 +15,11 @@ namespace iSynaptic.Commons.Data
         public void Resolve_WithNoBindings_ReturnsDefault()
         {
             var resolver = new MetadataResolver();
+            Metadata.SetResolver(resolver);
 
-            var value = resolver.Resolve<int, object>(new ComparableMetadataDeclaration<int>(-1, 42, 7), null, null);
+            var declaration = new ComparableMetadataDeclaration<int>(-1, 42, 7);
+            var value = declaration.For<object>();
+
             Assert.AreEqual(7, value);
         }
 
@@ -71,7 +74,7 @@ namespace iSynaptic.Commons.Data
             int resolveCount = 0;
             var scopeObject = new object();
 
-            var binding = new MetadataBinding<int, object>(r => r.Declaration == StringMetadata.MaxLength, x => { resolveCount++; return 42; }, MockRepository.GenerateStub<IMetadataBindingSource>()) { ScopeFactory = x => scopeObject};
+            var binding = new MetadataBinding<int, object>(r => r.Declaration == StringMetadata.MaxLength, x => { resolveCount++; return 42; }, MockRepository.GenerateStub<IMetadataBindingSource>()) { ScopeFactory = x => scopeObject };
 
             var source = MockRepository.GenerateStub<IMetadataBindingSource>();
             source.Expect(x => x.GetBindingsFor<int, object>(null))
@@ -86,7 +89,7 @@ namespace iSynaptic.Commons.Data
             int maxLength = StringMetadata.MaxLength;
             maxLength = StringMetadata.MaxLength;
             maxLength = StringMetadata.MaxLength;
-            
+
             Assert.AreEqual(1, resolveCount);
         }
 

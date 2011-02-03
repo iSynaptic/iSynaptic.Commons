@@ -86,10 +86,20 @@ namespace iSynaptic.Commons.Data
 
         TMetadata IMetadataDeclaration<TMetadata>.Resolve<TSubject>(IMetadataResolver resolver, Maybe<TSubject> subject, MemberInfo member)
         {
-            var results = resolver.Resolve(this, subject, member);
-            OnValidateValue(results, "bound value");
+            var resolvedResult = resolver != null
+                            ? resolver.Resolve(this, subject, member)
+                            : Maybe<TMetadata>.NoValue;
 
-            return results;
+            if(resolvedResult.HasValue)
+            {
+                OnValidateValue(resolvedResult.Value, "bound");
+                return resolvedResult.Value;
+            }
+
+            var @default = Default;
+            OnValidateValue(@default, "default");
+
+            return @default;
         }
 
         public static implicit operator TMetadata(MetadataDeclaration<TMetadata> declaration)

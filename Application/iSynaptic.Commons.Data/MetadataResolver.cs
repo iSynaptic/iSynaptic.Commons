@@ -16,7 +16,7 @@ namespace iSynaptic.Commons.Data
 
         private HashSet<IMetadataBindingSource> _BindingSources = new HashSet<IMetadataBindingSource>();
 
-        public TMetadata Resolve<TMetadata, TSubject>(IMetadataDeclaration<TMetadata> declaration, Maybe<TSubject> subject, MemberInfo member)
+        public Maybe<TMetadata> Resolve<TMetadata, TSubject>(IMetadataDeclaration<TMetadata> declaration, Maybe<TSubject> subject, MemberInfo member)
         {
             Guard.NotNull(declaration, "declaration");
 
@@ -31,7 +31,7 @@ namespace iSynaptic.Commons.Data
             var selectedBinding = SelectBinding(request, candidateBindings);
 
             if(selectedBinding == null)
-                return declaration.Default;
+                return Maybe<TMetadata>.NoValue;
 
             object scopeObject = selectedBinding.GetScopeObject(request);
 

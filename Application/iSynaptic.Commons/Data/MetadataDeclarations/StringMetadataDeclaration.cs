@@ -31,22 +31,22 @@ namespace iSynaptic.Commons.Data.MetadataDeclarations
             if(value == null)
             {
                 if(IsNullPermitted != true)
-                    throw new MetadataValidationException<string>(this, value, string.Format("The {0} must not be null.", valueName));
+                    throw new MetadataValidationException<string>(this, value, string.Format("The {0} value must not be null.", valueName));
 
                 return;
             }
 
             if (value == string.Empty && IsEmptyPermitted != true)
-                throw new MetadataValidationException<string>(this, value, string.Format("The {0} must not be empty.", valueName));
+                throw new MetadataValidationException<string>(this, value, string.Format("The {0} value must not be empty.", valueName));
 
             if(string.IsNullOrWhiteSpace(value) && IsWhitespaceOnlyPermitted)
-                throw new MetadataValidationException<string>(this, value, string.Format("The {0} must not be only whitespace.", valueName));
+                throw new MetadataValidationException<string>(this, value, string.Format("The {0} value must not be only whitespace.", valueName));
 
             if (valueName.Length < MinLength)
-                throw new MetadataValidationException<string>(this, value, string.Format("The {0} must be at least {1} characters long.", valueName, MinLength));
+                throw new MetadataValidationException<string>(this, value, string.Format("The {0} value must be at least {1} characters long.", valueName, MinLength));
 
             if (valueName.Length > MaxLength)
-                throw new MetadataValidationException<string>(this, value, string.Format("The {0} must be no more than {1} characters long.", valueName, MaxLength));
+                throw new MetadataValidationException<string>(this, value, string.Format("The {0} value must be no more than {1} characters long.", valueName, MaxLength));
             
             base.OnValidateValue(value, valueName);
         }

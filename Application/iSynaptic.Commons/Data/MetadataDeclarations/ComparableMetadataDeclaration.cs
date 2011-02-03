@@ -23,10 +23,10 @@ namespace iSynaptic.Commons.Data.MetadataDeclarations
         protected override void OnValidateValue(T value, string valueName)
         {
             if(value.CompareTo(MinValue) < 0)
-                throw new MetadataValidationException<T>(this, value, string.Format("The {0} must be greater than or equal to {1}.", valueName, MinValue));
+                throw new MetadataValidationException<T>(this, value, string.Format("The {0} value must be greater than or equal to {1}.", valueName, MinValue));
 
             if(value.CompareTo(MaxValue) > 0)
-                throw new MetadataValidationException<T>(this, value, string.Format("The {0} must be less than or equal to {1}.", valueName, MaxValue));
+                throw new MetadataValidationException<T>(this, value, string.Format("The {0} value must be less than or equal to {1}.", valueName, MaxValue));
 
             base.OnValidateValue(value, valueName);
         }

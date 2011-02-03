@@ -70,11 +70,7 @@ namespace iSynaptic.Commons.Data
         {
             var maxLengthWithBadDefault = new ComparableMetadataDeclaration<int>(1, 10, 42);
 
-            Assert.That(() => { maxLengthWithBadDefault.For<string>(); },
-                Throws
-                    .InstanceOf<InvalidOperationException>().And
-                    .InnerException
-                        .InstanceOf<MetadataValidationException<int>>());
+            Assert.Throws<MetadataValidationException<int>>(() => maxLengthWithBadDefault.For<string>());
         }
 
         [Test]
