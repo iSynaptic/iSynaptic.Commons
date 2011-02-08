@@ -20,9 +20,7 @@ namespace iSynaptic.Commons.Data
         {
             Guard.NotNull(declaration, "declaration");
 
-            var subjectFunc = !subject.HasValue ? (Func<TSubject>)null : () => subject.Value;
-
-            var request = new MetadataRequest<TMetadata, TSubject>(declaration, subjectFunc, member);
+            var request = new MetadataRequest<TMetadata, TSubject>(declaration, subject, member);
 
             var candidateBindings = _BindingSources
                 .SelectMany(x => x.GetBindingsFor(request))

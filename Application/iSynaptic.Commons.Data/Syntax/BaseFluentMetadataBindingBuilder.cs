@@ -66,10 +66,10 @@ namespace iSynaptic.Commons.Data.Syntax
             if (Member != request.Member)
                 return false;
 
-            if (Subject.HasValue && request.Subject == null)
+            if (Subject.HasValue && !request.Subject.HasValue)
                 return false;
 
-            if (Subject.HasValue && !EqualityComparer<TSubject>.Default.Equals(request.Subject(), Subject.Value))
+            if (Subject.HasValue && !EqualityComparer<TSubject>.Default.Equals(request.Subject.Value, Subject.Value))
                 return false;
 
             if(UserPredicate != null)

@@ -6,7 +6,7 @@ namespace iSynaptic.Commons.Data
     public interface IMetadataRequest<in TMetadata, out TSubject>
     {
         IMetadataDeclaration Declaration { get; }
-        Func<TSubject> Subject { get; }
+        IMaybe<TSubject> Subject { get; }
         MemberInfo Member { get; }
     }
 }
