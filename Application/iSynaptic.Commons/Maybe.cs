@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace iSynaptic.Commons
 {
-    public struct Maybe<T> : IEquatable<Maybe<T>>
+    public struct Maybe<T> : IMaybe<T>, IEquatable<Maybe<T>>
     {
-        public static readonly Maybe<T> NoValue;
+        public static readonly Maybe<T> NoValue = new Maybe<T>();
         public static readonly Maybe<T> Default = new Maybe<T>(default(T));
 
         private readonly T _Value;

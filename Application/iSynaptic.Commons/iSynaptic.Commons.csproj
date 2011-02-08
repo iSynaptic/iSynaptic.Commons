@@ -117,6 +117,7 @@
     </Compile>
     <Compile Include="Guard.cs" />
     <Compile Include="IFluentInterface.cs" />
+    <Compile Include="IMaybe.cs" />
     <Compile Include="Maybe.cs" />
     <Compile Include="Reflection\Emit\DynamicMethodExtensions.cs" />
     <Compile Include="Collections\Generic\EnumerableExtensions.cs" />
