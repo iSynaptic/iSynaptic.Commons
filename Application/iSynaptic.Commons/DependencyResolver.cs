@@ -4,18 +4,18 @@ namespace iSynaptic.Commons
 {
     public class DependencyResolver : IDependencyResolver
     {
-        private readonly Func<string, Type, Type, object> _ResolutionStrategy = null;
+        private readonly Func<IDependencyDeclaration, object> _ResolutionStrategy = null;
 
-        public DependencyResolver(Func<string, Type, Type, object> resolutionStrategy)
+        public DependencyResolver(Func<IDependencyDeclaration, object> resolutionStrategy)
         {
             Guard.NotNull(resolutionStrategy, "resolutionStrategy");
-
             _ResolutionStrategy = resolutionStrategy;
         }
 
-        public object Resolve(string key, Type dependencyType, Type requestingType)
+        public object Resolve(IDependencyDeclaration declaration)
         {
-            return _ResolutionStrategy(key, dependencyType, requestingType);
+            Guard.NotNull(declaration, "declaration");
+            return _ResolutionStrategy(declaration);
         }
     }
 }

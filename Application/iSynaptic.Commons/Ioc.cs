@@ -5,58 +5,45 @@ namespace iSynaptic.Commons
 {
     public static class Ioc
     {
+        private class NullDependencyResolver : IDependencyResolver
+        {
+            public object Resolve(IDependencyDeclaration declaration)
+            {
+                return null;
+            }
+        }
+
         private static IDependencyResolver _DependencyResolver = null;
 
         public static T Resolve<T>()
         {
-            return (T)Resolve(typeof(T));
+            return DependencyResolver.Resolve<T>();
         }
 
-        public static T Resolve<T>(string key)
+        public static T Resolve<T>(string name)
         {
-            return (T)Resolve(typeof(T), key);
-        }
-
-        public static T Resolve<T>(string key, Type requestingType)
-        {
-            return (T)Resolve(typeof(T), key, requestingType);
+            return DependencyResolver.Resolve<T>(name);
         }
 
         public static object Resolve(Type dependencyType)
         {
-            return Resolve(dependencyType, null);
+            return DependencyResolver.Resolve(dependencyType);
         }
 
-        public static object Resolve(Type dependencyType, string key)
+        public static object Resolve(Type dependencyType, string name)
         {
-            Type requestingType = typeof(Ioc);
-
-            var stackTrace = new StackTrace(1);
-
-            int currentFrame = 0;
-            while(requestingType == typeof(Ioc))
-            {
-                var stackFrame = stackTrace.GetFrame(currentFrame++);
-                var method = stackFrame.GetMethod();
-
-                if(method.DeclaringType != typeof(Ioc))
-                    requestingType = method.DeclaringType;
-            }
-
-            return Resolve(dependencyType, key, requestingType);
+            return DependencyResolver.Resolve(dependencyType, name);
         }
 
-        public static object Resolve(Type dependencyType, string key, Type requestingType)
+        public static void SetDependencyResolver(IDependencyResolver resolver)
         {
-            if(_DependencyResolver == null)
-                return null;
-
-            return _DependencyResolver.Resolve(key, dependencyType, requestingType);
+            DependencyResolver = resolver;
         }
 
-        public static void SetDependencyResolver(IDependencyResolver dependencyResolver)
+        private static IDependencyResolver DependencyResolver
         {
-            _DependencyResolver = dependencyResolver;
+            get { return _DependencyResolver ?? new NullDependencyResolver(); }
+            set { _DependencyResolver = value; }
         }
     }
 }

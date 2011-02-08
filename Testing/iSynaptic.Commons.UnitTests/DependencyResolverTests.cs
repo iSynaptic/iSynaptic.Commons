@@ -18,34 +18,31 @@ namespace iSynaptic.Commons
         [Test]
         public void Resolve_WithAbritraryParameters_CallsResolutionStrategyCorrectly()
         {
-            string key = null;
+            string name = null;
             Type dependencyType = null;
-            Type requestingType = null;
 
-            Func<string, Type, Type, object> strategy = (k, d, r) =>
+            Func<IDependencyDeclaration, object> strategy = decl =>
                                                 {
-                                                    key = k;
-                                                    dependencyType = d;
-                                                    requestingType = r;
+                                                    name = ((INamedDependencyDeclaration)decl).Name;
+                                                    dependencyType = decl.DependencyType;
                                                     return null;
                                                 };
 
             var resolver = new DependencyResolver(strategy);
-            resolver.Resolve("Foo", typeof (IDisposable), typeof (string));
+            resolver.Resolve(typeof(IDisposable), "Foo");
 
-            Assert.AreEqual("Foo", key);
+            Assert.AreEqual("Foo", name);
             Assert.AreEqual(typeof(IDisposable), dependencyType);
-            Assert.AreEqual(typeof(string), requestingType);
 
         }
 
         [Test]
         public void Resolve_WithAbritraryParameters_ReturnsResultCorrectly()
         {
-            Func<string, Type, Type, object> strategy = (k, d, r) => "Baz";
+            Func<IDependencyDeclaration, object> strategy = decl => "Baz";
 
             var resolver = new DependencyResolver(strategy);
-            var result = resolver.Resolve("Foo", typeof(IDisposable), typeof(string));
+            var result = resolver.Resolve(typeof (IDisposable), "Foo");
 
             Assert.AreEqual("Baz", result);
         }

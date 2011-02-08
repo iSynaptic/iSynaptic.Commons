@@ -101,6 +101,7 @@
     <Compile Include="Data\MetadataHelper.cs" />
     <Compile Include="Data\MetadataValidationException.cs" />
     <Compile Include="DependencyResolver.cs" />
+    <Compile Include="DependencyResolverExtensions.cs" />
     <Compile Include="Diagnostics\ILogger.cs" />
     <Compile Include="Diagnostics\ILoggerContextSerializer.cs" />
     <Compile Include="Diagnostics\LoggerExtensions.cs" />

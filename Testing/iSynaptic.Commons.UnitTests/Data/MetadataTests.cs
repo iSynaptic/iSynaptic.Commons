@@ -82,7 +82,7 @@ namespace iSynaptic.Commons.Data
             metadataResolver.Stub(x => x.Resolve(maxLength, Maybe<string>.NoValue, null))
                 .Return(42);
 
-            Ioc.SetDependencyResolver(new DependencyResolver((k, d, r) => metadataResolver));
+            Ioc.SetDependencyResolver(new DependencyResolver(decl => metadataResolver));
 
             var value = maxLength.For<string>();
             Assert.AreEqual(42, value);
