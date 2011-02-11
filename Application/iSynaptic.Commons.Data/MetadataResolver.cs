@@ -9,9 +9,22 @@ namespace iSynaptic.Commons.Data
 {
     public class MetadataResolver : IMetadataResolver
     {
-        private static class ScopingCache<TMetadata>
+        private class CacheValue<TMetadata>
         {
-            public static readonly IWeakDictionary<object, TMetadata> Cache = new WeakKeyDictionary<object, TMetadata>();
+            public int RequestHashCode;
+            public TMetadata Metadata;
+        }
+
+        private static class ScopedCache<TMetadata>
+        {
+            public static readonly MultiMap<object, CacheValue<TMetadata>> Cache;
+            public static readonly WeakKeyDictionary<object, ICollection<CacheValue<TMetadata>>> Dictionary;
+
+            static ScopedCache()
+            {
+                Dictionary = new WeakKeyDictionary<object, ICollection<CacheValue<TMetadata>>>();
+                Cache = new MultiMap<object, CacheValue<TMetadata>>(Dictionary);
+            }
         }
 
         private HashSet<IMetadataBindingSource> _BindingSources = new HashSet<IMetadataBindingSource>();
@@ -21,6 +34,7 @@ namespace iSynaptic.Commons.Data
             Guard.NotNull(declaration, "declaration");
 
             var request = new MetadataRequest<TMetadata, TSubject>(declaration, subject, member);
+            int requestHashCode = request.GetHashCode();
 
             var candidateBindings = _BindingSources
                 .SelectMany(x => x.GetBindingsFor(request))
@@ -35,17 +49,19 @@ namespace iSynaptic.Commons.Data
 
             if (scopeObject != null)
             {
-                ScopingCache<TMetadata>.Cache.PurgeGarbage();
+                ScopedCache<TMetadata>.Dictionary.PurgeGarbage();
 
-                var cachedResult = ScopingCache<TMetadata>.Cache.TryGetValue(scopeObject);
-                if(cachedResult.HasValue)
-                    return cachedResult.Value;
+                var scopedCache = ScopedCache<TMetadata>.Cache[scopeObject];
+                var cachedValue = scopedCache.FirstOrDefault(x => x.RequestHashCode == requestHashCode);
+
+                if(cachedValue != null)
+                    return cachedValue.Metadata;
             }
 
             var results = selectedBinding.Resolve(request);
 
             if(scopeObject != null)
-                ScopingCache<TMetadata>.Cache.Add(scopeObject, results);
+                ScopedCache<TMetadata>.Cache.Add(scopeObject, new CacheValue<TMetadata> { Metadata = results, RequestHashCode = requestHashCode });
 
             return results;
         }

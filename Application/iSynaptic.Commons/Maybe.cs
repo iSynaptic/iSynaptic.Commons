@@ -84,6 +84,9 @@ namespace iSynaptic.Commons
                 return Exception.GetHashCode();
 
             if (HasValue != true)
+                return -1;
+
+            if (Value == null)
                 return 0;
 
             return Value.GetHashCode();

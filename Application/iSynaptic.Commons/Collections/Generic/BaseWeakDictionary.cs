@@ -47,21 +47,6 @@ namespace iSynaptic.Commons.Collections.Generic
 
         #endregion
 
-        #region WeakKeyReference
-
-        protected sealed class WeakKeyReference<T> : WeakReference<T> where T : class
-        {
-            public WeakKeyReference(T key, IEqualityComparer<T> comparer)
-                : base(key)
-            {
-                HashCode = comparer.GetHashCode(key);
-            }
-
-            public int HashCode { get; private set; }
-        }
-
-        #endregion
-
         protected BaseWeakDictionary(int capacity, IEqualityComparer<TKey> comparer)
         {
             _BaseComparer = comparer ?? EqualityComparer<TKey>.Default;

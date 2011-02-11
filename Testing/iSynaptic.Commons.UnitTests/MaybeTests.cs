@@ -84,9 +84,9 @@ namespace iSynaptic.Commons
         }
         
         [Test]
-        public void GetHashCodeReturnsZeroForNoValue()
+        public void GetHashCodeReturnsNegativeOneForNoValue()
         {
-            Assert.AreEqual(0, Maybe<int>.NoValue.GetHashCode());
+            Assert.AreEqual(-1, Maybe<int>.NoValue.GetHashCode());
         }
 
         [Test]

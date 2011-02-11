@@ -83,6 +83,7 @@
     <Compile Include="Collections\Generic\BaseWeakDictionary.cs" />
     <Compile Include="Collections\Generic\IWeakDictionary.cs" />
     <Compile Include="Collections\Generic\LazyDictionary.cs" />
+    <Compile Include="Collections\Generic\MultiMap.cs" />
     <Compile Include="Collections\Generic\ProjectionCollection.cs" />
     <Compile Include="Collections\Generic\ReadOnlyDictionary.cs" />
     <Compile Include="Collections\Generic\SmartLoop.cs" />
@@ -152,6 +153,7 @@
     <Compile Include="Transactions\TransactionalBase.cs" />
     <Compile Include="Transactions\TransactionalConcurrencyException.cs" />
     <Compile Include="Transactions\TransactionalGateway.cs" />
+    <Compile Include="WeakKeyReference.cs" />
     <Compile Include="WeakReference.cs" />
     <Compile Include="Xml\DeclarativeXmlParser.cs" />
     <Compile Include="Xml\ProcessingInstruction.cs" />
