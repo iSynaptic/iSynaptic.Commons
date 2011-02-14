@@ -61,7 +61,7 @@ namespace iSynaptic.Commons.Xml
 
             public IAttributeMultiplicity Attribute<T>(string name, Action<T> action)
             {
-                var matcher = new Matcher<T>(_Parent, name, XmlNodeType.Attribute, pc => Convert<T>(pc.Token.Value), action);
+                var matcher = new Matcher<T>(_Parent, name, XmlNodeType.Attribute, pc => new Maybe<string>(pc.Token.Value).Bind(Convert<string, T>.From), action);
                 Matchers.Add(matcher);
 
                 return matcher;
@@ -85,7 +85,8 @@ namespace iSynaptic.Commons.Xml
                         return Maybe<T>.NoValue;
                     }
 
-                    var data = Convert<T>(pc.Token.Value);
+                    var data = new Maybe<string>(pc.Token.Value)
+                        .Bind(Convert<string, T>.From);
 
                     pc.MoveNext();
 
@@ -114,34 +115,6 @@ namespace iSynaptic.Commons.Xml
                 Matchers.Add(matcher);
 
                 return matcher;
-            }
-
-            protected Maybe<T> Convert<T>(string value)
-            {
-                if (typeof(T) == typeof(int))
-                {
-                    int result = default(int);
-
-                    if (!int.TryParse(value, out result))
-                        return Maybe<T>.NoValue;
-
-                    return new Maybe<T>(Cast<int, T>.With(result));
-                }
-
-                if (typeof(T) == typeof(DateTime))
-                {
-                    DateTime result = default(DateTime);
-
-                    if (!DateTime.TryParse(value, out result))
-                        return Maybe<T>.NoValue;
-
-                    return new Maybe<T>(Cast<DateTime, T>.With(result));
-                }
-
-                if (typeof(T) == typeof(string))
-                    return Cast<string, T>.With(value);
-
-                return Maybe<T>.NoValue;
             }
 
             public void ExecuteMatch(ParseContext pc)
@@ -258,6 +231,8 @@ namespace iSynaptic.Commons.Xml
                     var data = _Selector(context);
                     if (data.HasValue)
                         _MatchAction(data.Value);
+                    else if (data.Exception != null)
+                        context.Errors.Add(new ParseError(string.Format("Unable to interpet data; exception occured: {0}", data.Exception.Message), context.Token));
                 }
             }
 

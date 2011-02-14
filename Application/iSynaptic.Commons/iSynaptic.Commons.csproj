@@ -90,6 +90,7 @@
     <Compile Include="Collections\Generic\WeakDictionary.cs" />
     <Compile Include="Collections\Generic\WeakKeyDictionary.cs" />
     <Compile Include="Collections\Generic\WeakValueDictionary.cs" />
+    <Compile Include="Convert.cs" />
     <Compile Include="DataEventArgs.cs" />
     <Compile Include="Data\IMetadataDeclaration.cs" />
     <Compile Include="Data\IMetadataResolver.cs" />

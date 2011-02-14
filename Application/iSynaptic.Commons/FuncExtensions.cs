@@ -34,5 +34,27 @@ namespace iSynaptic.Commons
 
             return input => self(input) ^ right(input);
         }
+
+        public static IComparer<T> ToComparer<T>(this Func<T, T, int> self)
+        {
+            Guard.NotNull(self, "self");
+            return new FuncComparer<T>(self);
+        }
+
+        private class FuncComparer<T> : IComparer<T>
+        {
+            private readonly Func<T, T, int> _Strategy;
+
+            public FuncComparer(Func<T, T, int> strategy)
+            {
+                _Strategy = strategy;
+            }
+
+            public int Compare(T x, T y)
+            {
+                return _Strategy(x, y);
+            }
+        }
+
     }
 }

@@ -7,6 +7,15 @@ namespace iSynaptic.Commons.Collections.Generic
 {
     public static class EnumerableExtensions
     {
+        public static IEnumerable<TSource> OrderBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TKey, TKey, int> comparer)
+        {
+            Guard.NotNull(source, "source");
+            Guard.NotNull(keySelector, "keySelector");
+            Guard.NotNull(comparer, "comparer");
+
+            return source.OrderBy(keySelector, comparer.ToComparer());
+        }
+
         public static void CopyTo<T>(this IEnumerable<T> source, T[] destination, int index)
         {
             Guard.NotNull(source, "source");
