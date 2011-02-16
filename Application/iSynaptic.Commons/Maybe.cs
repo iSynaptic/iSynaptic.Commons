@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace iSynaptic.Commons
 {
-    public struct Maybe<T> : IMaybe<T>, IEquatable<Maybe<T>>
+    public struct Maybe<T> : IMaybe<T>, IEquatable<Maybe<T>>, IEquatable<T>
     {
         public static readonly Maybe<T> NoValue = new Maybe<T>();
         public static readonly Maybe<T> Default = new Maybe<T>(default(T));
@@ -42,6 +42,11 @@ namespace iSynaptic.Commons
 
         public bool HasValue { get { return _HasValue; } }
         public Exception Exception { get { return _Exception; } }
+
+        public bool Equals(T other)
+        {
+            return Equals(new Maybe<T>(other));
+        }
 
         public bool Equals(Maybe<T> other)
         {
@@ -98,6 +103,26 @@ namespace iSynaptic.Commons
         }
 
         public static bool operator !=(Maybe<T> left, Maybe<T> right)
+        {
+            return !(left == right);
+        }
+
+        public static bool operator ==(Maybe<T> left, T right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(Maybe<T> left, T right)
+        {
+            return !(left == right);
+        }
+
+        public static bool operator ==(T left, Maybe<T> right)
+        {
+            return right.Equals(left);
+        }
+
+        public static bool operator !=(T left, Maybe<T> right)
         {
             return !(left == right);
         }
