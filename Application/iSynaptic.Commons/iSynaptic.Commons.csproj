@@ -146,9 +146,6 @@
     <Compile Include="Runtime\Serialization\CloneReferenceOnlyAttribute.cs" />
     <Compile Include="Specification.cs" />
     <Compile Include="Text\Parsing\ScanningTextReader.cs" />
-    <Compile Include="Text\Parsing\SimpleScanner.cs" />
-    <Compile Include="Text\Parsing\Token.cs" />
-    <Compile Include="Text\Parsing\TokenKind.cs" />
     <Compile Include="Transactions\ITransactional.cs" />
     <Compile Include="Transactions\Transactional.cs" />
     <Compile Include="Transactions\TransactionalBase.cs" />
@@ -157,8 +154,6 @@
     <Compile Include="WeakKeyReference.cs" />
     <Compile Include="WeakReference.cs" />
     <Compile Include="Xml\DeclarativeXmlParser.cs" />
-    <Compile Include="Xml\ProcessingInstruction.cs" />
-    <Compile Include="Xml\ProcessingInstructionParser.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

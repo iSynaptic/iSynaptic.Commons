@@ -129,13 +129,11 @@
     <Compile Include="Runtime\Serialization\Cloneable.GeneralTests.cs" />
     <Compile Include="SpecificationTests.cs" />
     <Compile Include="Text\Parsing\ScanningTextReaderTests.cs" />
-    <Compile Include="Text\Parsing\SimpleScannerTests.cs" />
     <Compile Include="Transactions\SimpleObject.cs" />
     <Compile Include="Transactions\TransactionalGatewayTests.cs" />
     <Compile Include="Transactions\TransactionalTests.cs" />
     <Compile Include="WeakReferenceTests.cs" />
     <Compile Include="Xml\DeclarativeXmlParserTests.cs" />
-    <Compile Include="Xml\ProcessingInstructionParserTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Application\iSynaptic.Commons.Data\iSynaptic.Commons.Data.csproj">
