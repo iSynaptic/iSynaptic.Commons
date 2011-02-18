@@ -154,6 +154,7 @@
     <Compile Include="WeakKeyReference.cs" />
     <Compile Include="WeakReference.cs" />
     <Compile Include="Xml\DeclarativeXmlParser.cs" />
+    <Compile Include="Xml\XmlToken.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

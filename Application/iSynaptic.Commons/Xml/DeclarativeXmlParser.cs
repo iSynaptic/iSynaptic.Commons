@@ -75,7 +75,7 @@ namespace iSynaptic.Commons.Xml
 
                     pc.MoveNext();
 
-                    if (pc.Token.NodeType != XmlNodeType.Text)
+                    if (pc.Token.Kind != XmlNodeType.Text)
                     {
                         pc.Panic();
 
@@ -90,7 +90,7 @@ namespace iSynaptic.Commons.Xml
 
                     pc.MoveNext();
 
-                    if (pc.Token.NodeType != XmlNodeType.EndElement)
+                    if (pc.Token.Kind != XmlNodeType.EndElement)
                     {
                         pc.Panic();
 
@@ -122,17 +122,17 @@ namespace iSynaptic.Commons.Xml
                 var matcher = Matchers.FirstOrDefault(x => x.CanExecute(pc));
                 if (matcher == null)
                 {
-                    if (pc.Token.NodeType == XmlNodeType.Attribute)
+                    if (pc.Token.Kind == XmlNodeType.Attribute)
                     {
                         if (!_IgnoreUnrecognizedAttributes)
                             pc.Errors.Add(new ParseError(string.Format("Unexpected attribute: '{0}'.", pc.Token.Name), pc.Token));
                     }
-                    else if (pc.Token.NodeType == XmlNodeType.Text)
+                    else if (pc.Token.Kind == XmlNodeType.Text)
                     {
                         if (!_IgnoreUnrecognizedText)
                             pc.Errors.Add(new ParseError(string.Format("Unexpected text: '{0}'.", pc.Token.Value), pc.Token));
                     }
-                    else if (pc.Token.NodeType == XmlNodeType.Element)
+                    else if (pc.Token.Kind == XmlNodeType.Element)
                     {
                         if (!_IgnoreUnrecognizedElements)
                             pc.Errors.Add(new ParseError(string.Format("Unexpected element: '{0}'.", pc.Token.Name), pc.Token));
@@ -204,7 +204,7 @@ namespace iSynaptic.Commons.Xml
             bool IMatcher.CanExecute(ParseContext context)
             {
                 return context.Token.Name == _Name &&
-                       context.Token.NodeType == _NodeType;
+                       context.Token.Kind == _NodeType;
             }
 
             void IMatcher.Execute(ParseContext context)
@@ -269,13 +269,13 @@ namespace iSynaptic.Commons.Xml
                 if (reader.NodeType == XmlNodeType.None && reader.EOF != true)
                     reader.Read();
 
-                yield return new XmlToken(reader);
+                yield return XmlToken.FromReader(reader);
                 bool isEmptyElement = reader.IsEmptyElement;
 
                 if (reader.HasAttributes)
                 {
                     while (reader.MoveToNextAttribute())
-                        yield return new XmlToken(reader);
+                        yield return XmlToken.FromReader(reader);
                 }
 
                 if (isEmptyElement != true)
@@ -284,12 +284,12 @@ namespace iSynaptic.Commons.Xml
                     {
                         if (reader.NodeType == XmlNodeType.EndElement)
                         {
-                            yield return new XmlToken(reader);
+                            yield return XmlToken.FromReader(reader);
                             break;
                         }
 
                         if (reader.NodeType == XmlNodeType.Text)
-                            yield return new XmlToken(reader);
+                            yield return XmlToken.FromReader(reader);
 
                         if (reader.NodeType == XmlNodeType.Element)
                         {
@@ -327,12 +327,12 @@ namespace iSynaptic.Commons.Xml
                 MoveNext();
 
                 int expectedEndElements = 0;
-                while (Token.NodeType != XmlNodeType.EndElement || expectedEndElements > 0)
+                while (Token.Kind != XmlNodeType.EndElement || expectedEndElements > 0)
                 {
-                    if (Token.NodeType == XmlNodeType.Element)
+                    if (Token.Kind == XmlNodeType.Element)
                         expectedEndElements++;
 
-                    if (Token.NodeType == XmlNodeType.EndElement)
+                    if (Token.Kind == XmlNodeType.EndElement)
                         expectedEndElements--;
 
                     MoveNext();
@@ -344,54 +344,6 @@ namespace iSynaptic.Commons.Xml
 
             private IEnumerator<XmlToken> Tokens { get; set; }
         }
-
-        public struct XmlToken
-        {
-            public static readonly XmlToken None = new XmlToken(XmlNodeType.None);
-            public static readonly XmlToken EndElement = new XmlToken(XmlNodeType.EndElement);
-
-            private readonly string _Name;
-            private readonly XmlNodeType _NodeType;
-            private readonly string _Value;
-
-            private readonly int? _LineNumber;
-            private readonly int? _LinePosition;
-
-            private XmlToken(XmlNodeType nodeType)
-            {
-                _Name = null;
-                _NodeType = nodeType;
-                _Value = null;
-                _LineNumber = null;
-                _LinePosition = null;
-            }
-
-            public XmlToken(XmlReader reader)
-            {
-                Guard.NotNull(reader, "reader");
-
-                _Name = reader.Name;
-                _NodeType = reader.NodeType;
-                _Value = reader.Value;
-                _LineNumber = null;
-                _LinePosition = null;
-
-                var lineInfo = reader as IXmlLineInfo;
-                if (lineInfo != null && lineInfo.HasLineInfo())
-                {
-                    _LineNumber = lineInfo.LineNumber;
-                    _LinePosition = lineInfo.LinePosition;
-                }
-            }
-
-            public string Name { get { return _Name; } }
-            public XmlNodeType NodeType { get { return _NodeType; } }
-            public string Value { get { return _Value; } }
-
-            public int? LineNumber { get { return _LineNumber; } }
-            public int? LinePosition { get { return _LinePosition; } }
-        }
-
         public class ParseError
         {
             public ParseError(string message, XmlToken token)
@@ -413,10 +365,10 @@ namespace iSynaptic.Commons.Xml
 
         protected IEnumerable<ParseError> Upon(Action<IUponBuilder> builderActions)
         {
-            if (Context.Token.NodeType == XmlNodeType.None)
+            if (Context.Token.Kind == XmlNodeType.None)
                 Context.MoveNext();
 
-            if (Context.Token.NodeType != XmlNodeType.Element)
+            if (Context.Token.Kind != XmlNodeType.Element)
                 throw new InvalidOperationException("Upon can only be called while reader's current node is the start of an element");
 
             var builder = new UponBuilder(Context.Token);
@@ -424,7 +376,7 @@ namespace iSynaptic.Commons.Xml
 
             Context.MoveNext();
 
-            while (Context.Token.NodeType != XmlNodeType.EndElement)
+            while (Context.Token.Kind != XmlNodeType.EndElement)
                 builder.ExecuteMatch(Context);
 
             builder.ValidateMatchers(Context);
