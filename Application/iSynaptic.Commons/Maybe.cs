@@ -12,17 +12,14 @@ namespace iSynaptic.Commons
         private readonly bool _HasValue;
         private readonly Exception _Exception;
 
-        public Maybe(T value)
+        public Maybe(T value) : this()
         {
             _Value = value;
             _HasValue = true;
-            _Exception = null;
         }
 
-        internal Maybe(Exception exception)
+        internal Maybe(Exception exception) : this()
         {
-            _Value = default(T);
-            _HasValue = false;
             _Exception = exception;
         }
 
