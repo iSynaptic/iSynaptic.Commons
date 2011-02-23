@@ -6,7 +6,7 @@ namespace iSynaptic.Commons.Data.Syntax
 {
     internal class BaseFluentMetadataBindingBuilder<TMetadata, TSubject> : IPredicateScopeToBinding<TMetadata, TSubject>
     {
-        public BaseFluentMetadataBindingBuilder(IMetadataBindingSource source, IMetadataDeclaration<TMetadata> declaration, Action<object> onBuildComplete)
+        public BaseFluentMetadataBindingBuilder(IMetadataBindingSource source, IMetadataDeclaration declaration, Action<object> onBuildComplete)
         {
             Guard.NotNull(source, "source");
             Guard.NotNull(declaration, "declaration");
@@ -82,7 +82,7 @@ namespace iSynaptic.Commons.Data.Syntax
         protected Maybe<TSubject> Subject { get; set; }
         protected MemberInfo Member { get; set; }
 
-        protected IMetadataDeclaration<TMetadata> Declaration { get; set; }
+        protected IMetadataDeclaration Declaration { get; set; }
 
         protected Func<IMetadataRequest<TMetadata, TSubject>, bool> UserPredicate { get; set; }
         protected Func<IMetadataRequest<TMetadata, TSubject>, object> ScopeFactory { get; set; }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq.Expressions;
 using System.Reflection;
 
 namespace iSynaptic.Commons.Data
@@ -9,6 +10,6 @@ namespace iSynaptic.Commons.Data
 
     public interface IMetadataDeclaration<out TMetadata> : IMetadataDeclaration
     {
-        TMetadata Resolve<TSubject>(IMetadataResolver resolver, Maybe<TSubject> subject, MemberInfo member);
+        TMetadata Resolve<TSubject>(Maybe<TSubject> subject, MemberInfo member);
     }
 }

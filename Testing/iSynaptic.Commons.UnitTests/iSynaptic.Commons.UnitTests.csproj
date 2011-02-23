@@ -109,7 +109,6 @@
     <Compile Include="Data\StringMetadataAttribute.cs" />
     <Compile Include="Data\MetadataDeclarationTests.cs" />
     <Compile Include="Data\StandardMetadataResolverTests.cs" />
-    <Compile Include="Data\MetadataTests.cs" />
     <Compile Include="Data\StringMetadata.cs" />
     <Compile Include="DependencyResolverTests.cs" />
     <Compile Include="Diagnostics\LoggerExtensionsTests.cs" />

@@ -7,7 +7,7 @@ using System.Text;
 
 namespace iSynaptic.Commons.Data
 {
-    public class MetadataDeclaration<TMetadata> : IMetadataDeclaration<TMetadata>
+    public class MetadataDeclaration<TMetadata> : MetadataDeclaration, IMetadataDeclaration<TMetadata>
     {
         public static readonly MetadataDeclaration<TMetadata> TypeDeclaration = new MetadataDeclaration<TMetadata>();
 
@@ -22,38 +22,36 @@ namespace iSynaptic.Commons.Data
             _Default = new Maybe<TMetadata>(@default);
         }
 
-        protected virtual TMetadata GetDefault()
-        {
-            if (_Default.HasValue)
-                return _Default.Value;
-
-            return default(TMetadata);
-        }
+        #region Get/For Methods
 
         public TMetadata Get()
         {
-            return Metadata.Resolve<TMetadata, object>(this, null, null);
+            return Resolve(Maybe<object>.NoValue, (MemberInfo)null);
         }
 
         public TMetadata For<TSubject>()
         {
-            return Metadata.Resolve(this, Maybe<TSubject>.NoValue, null);
+            return Resolve(Maybe<TSubject>.NoValue, (MemberInfo)null);
         }
 
         public TMetadata For<TSubject>(TSubject subject)
         {
-            return Metadata.Resolve(this, new Maybe<TSubject>(subject), null);
+            return Resolve(new Maybe<TSubject>(subject), (MemberInfo)null);
         }
 
         public TMetadata For<TSubject>(Expression<Func<TSubject, object>> member)
         {
-            return Metadata.Resolve(this, Maybe<TSubject>.NoValue, member);
+            return Resolve(Maybe<TSubject>.NoValue, member);
         }
 
         public TMetadata For<TSubject>(TSubject subject, Expression<Func<TSubject, object>> member)
         {
-            return Metadata.Resolve(this, new Maybe<TSubject>(subject), member);
+            return Resolve(new Maybe<TSubject>(subject), member);
         }
+
+        #endregion
+
+        #region Lazy Get/For Methods
 
         public LazyMetadata<TMetadata> LazyGet()
         {
@@ -72,39 +70,77 @@ namespace iSynaptic.Commons.Data
 
         public LazyMetadata<TMetadata, TSubject> LazyFor<TSubject>(Expression<Func<TSubject, object>> member)
         {
-            return new LazyMetadata<TMetadata, TSubject>(this, member);
+            return new LazyMetadata<TMetadata, TSubject>(this, GetMemberInfoFromExpression(member));
         }
 
         public LazyMetadata<TMetadata, TSubject> LazyFor<TSubject>(TSubject subject, Expression<Func<TSubject, object>> member)
         {
-            return new LazyMetadata<TMetadata, TSubject>(this, subject, member);
+            return new LazyMetadata<TMetadata, TSubject>(this, subject, GetMemberInfoFromExpression(member));
+        }
+
+        #endregion
+
+        #region Resolution Logic
+
+        public TMetadata Resolve<TSubject>(Maybe<TSubject> subject, MemberInfo member)
+        {
+            var resolvedResult = TryResolve(subject, member);
+
+            if (resolvedResult.HasValue)
+            {
+                OnValidateValue(resolvedResult.Value, "bound");
+                return resolvedResult.Value;
+            }
+
+            var @default = GetDefault();
+            OnValidateValue(@default, "default");
+
+            return @default;
+        }
+
+        protected TMetadata Resolve<TSubject>(Maybe<TSubject> subject, Expression member)
+        {
+            MemberInfo memberInfo = GetMemberInfoFromExpression(member);
+
+            return Resolve(subject, memberInfo);
+        }
+
+        protected virtual Maybe<TMetadata> TryResolve<TSubject>(Maybe<TSubject> subject, MemberInfo member)
+        {
+            var resolver = MetadataResolver ?? Ioc.Resolve<IMetadataResolver>();
+
+            return resolver != null
+                       ? resolver.Resolve<TMetadata, TSubject>(this, subject, member)
+                       : Maybe<TMetadata>.NoValue;
+        }
+
+        #endregion
+
+        protected virtual MemberInfo GetMemberInfoFromExpression(Expression member)
+        {
+            MemberInfo memberInfo = null;
+
+            if (member != null)
+                memberInfo = member.ExtractMemberInfoForMetadata();
+
+            return memberInfo;
         }
 
         protected virtual void OnValidateValue(TMetadata value, string valueName)
         {
         }
 
-        TMetadata IMetadataDeclaration<TMetadata>.Resolve<TSubject>(IMetadataResolver resolver, Maybe<TSubject> subject, MemberInfo member)
-        {
-            var resolvedResult = resolver != null
-                            ? resolver.Resolve(this, subject, member)
-                            : Maybe<TMetadata>.NoValue;
-
-            if(resolvedResult.HasValue)
-            {
-                OnValidateValue(resolvedResult.Value, "bound");
-                return resolvedResult.Value;
-            }
-
-            var @default = Default;
-            OnValidateValue(@default, "default");
-
-            return @default;
-        }
-
         public static implicit operator TMetadata(MetadataDeclaration<TMetadata> declaration)
         {
             return declaration.Get();
+        }
+
+        protected virtual TMetadata GetDefault()
+        {
+            if (_Default.HasValue)
+                return _Default.Value;
+
+            return default(TMetadata);
         }
 
         public TMetadata Default
@@ -118,5 +154,24 @@ namespace iSynaptic.Commons.Data
                 return defaultValue;
             }
         }
+    }
+
+    public abstract class MetadataDeclaration : IMetadataDeclaration
+    {
+        protected internal MetadataDeclaration()
+        {
+        }
+
+        public static TMetadata Get<TMetadata>()
+        {
+            return MetadataDeclaration<TMetadata>.TypeDeclaration.Get();
+        }
+
+        public static void SetResolver(IMetadataResolver metadataResolver)
+        {
+            MetadataResolver = metadataResolver;
+        }
+
+        protected static IMetadataResolver MetadataResolver { get; set; }
     }
 }

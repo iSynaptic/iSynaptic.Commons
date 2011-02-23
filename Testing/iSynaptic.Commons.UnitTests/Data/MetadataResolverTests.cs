@@ -15,7 +15,7 @@ namespace iSynaptic.Commons.Data
         public void Resolve_WithNoBindings_ReturnsDefault()
         {
             var resolver = new MetadataResolver();
-            Metadata.SetResolver(resolver);
+            MetadataDeclaration.SetResolver(resolver);
 
             var declaration = new ComparableMetadataDeclaration<int>(-1, 42, 7);
             var value = declaration.For<object>();
@@ -36,7 +36,7 @@ namespace iSynaptic.Commons.Data
             var resolver = new MetadataResolver();
             resolver.AddMetadataBindingSource(source);
 
-            Metadata.SetResolver(resolver);
+            MetadataDeclaration.SetResolver(resolver);
 
             int value = StringMetadata.MaxLength;
             Assert.AreEqual(42, value);
@@ -64,7 +64,7 @@ namespace iSynaptic.Commons.Data
             var resolver = new MetadataResolver();
             resolver.AddMetadataBindingSource(source);
 
-            Metadata.SetResolver(resolver);
+            MetadataDeclaration.SetResolver(resolver);
             Assert.Throws<InvalidOperationException>(() => StringMetadata.MaxLength.Get());
         }
 
@@ -84,7 +84,7 @@ namespace iSynaptic.Commons.Data
             var resolver = new MetadataResolver();
             resolver.AddMetadataBindingSource(source);
 
-            Metadata.SetResolver(resolver);
+            MetadataDeclaration.SetResolver(resolver);
 
             int maxLength = StringMetadata.MaxLength;
             maxLength = StringMetadata.MaxLength;
@@ -109,7 +109,7 @@ namespace iSynaptic.Commons.Data
             var resolver = new MetadataResolver();
             resolver.AddMetadataBindingSource(source);
 
-            Metadata.SetResolver(resolver);
+            MetadataDeclaration.SetResolver(resolver);
 
             int maxLength = StringMetadata.MaxLength;
             maxLength = StringMetadata.MaxLength;

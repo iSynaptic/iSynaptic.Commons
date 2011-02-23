@@ -20,7 +20,7 @@ namespace iSynaptic.Commons.Data
         public void Resolve_WithModuleProvidedMatchingBinding_ReturnsValue()
         {
             var resolver = new StandardMetadataResolver(new TestMetadataBindingModule());
-            Metadata.SetResolver(resolver);
+            MetadataDeclaration.SetResolver(resolver);
 
             int value = StringMetadata.MaxLength;
             Assert.AreEqual(42, value);
@@ -31,7 +31,7 @@ namespace iSynaptic.Commons.Data
         {
             var module = new TestMetadataBindingModule();
             var resolver = new StandardMetadataResolver(module);
-            Metadata.SetResolver(resolver);
+            MetadataDeclaration.SetResolver(resolver);
 
             int value = StringMetadata.MaxLength;
             Assert.AreEqual(42, value);
@@ -46,7 +46,7 @@ namespace iSynaptic.Commons.Data
         public void Resolve_WithAttributedProperty_ReturnsValue()
         {
             var resolver = new StandardMetadataResolver();
-            Metadata.SetResolver(resolver);
+            MetadataDeclaration.SetResolver(resolver);
 
             var minLength = StringMetadata.MinLength.For<TestSubject>(x => x.FirstName);
             Assert.AreEqual(21, minLength);
@@ -62,7 +62,7 @@ namespace iSynaptic.Commons.Data
         public void Resolve_WithAttributedField_ReturnsValue()
         {
             var resolver = new StandardMetadataResolver();
-            Metadata.SetResolver(resolver);
+            MetadataDeclaration.SetResolver(resolver);
 
             var allMetadata = StringMetadata.All.For<TestSubject>(x => x.LastName);
 
@@ -75,7 +75,7 @@ namespace iSynaptic.Commons.Data
         public void Resolve_WithAttributedFieldForBaseMetadataClass_ReturnsValue()
         {
             var resolver = new StandardMetadataResolver();
-            Metadata.SetResolver(resolver);
+            MetadataDeclaration.SetResolver(resolver);
 
             var allMetadata = CommonMetadata.All.For<TestSubject>(x => x.LastName);
 
@@ -86,7 +86,7 @@ namespace iSynaptic.Commons.Data
         public void Resolve_WithSurrogate_ReturnsValue()
         {
             var resolver = new StandardMetadataResolver();
-            Metadata.SetResolver(resolver);
+            MetadataDeclaration.SetResolver(resolver);
 
             var value = StringMetadata.MaxLength.For<TestSubject>(x => x.MiddleName);
             Assert.AreEqual(74088, value);
@@ -96,7 +96,7 @@ namespace iSynaptic.Commons.Data
         public void Resolve_WithAttributedType_ReturnsValue()
         {
             var resolver = new StandardMetadataResolver();
-            Metadata.SetResolver(resolver);
+            MetadataDeclaration.SetResolver(resolver);
 
             var value = CommonMetadata.Description.For<TestSubject>();
             Assert.AreEqual("Test Subject", value);
@@ -106,7 +106,7 @@ namespace iSynaptic.Commons.Data
         public void Resolve_WithModuleThatOverridesAttributeMetadata_ReturnsValue()
         {
             var resolver = new StandardMetadataResolver(new TestMetadataBindingModule());
-            Metadata.SetResolver(resolver);
+            MetadataDeclaration.SetResolver(resolver);
 
             var value = CommonMetadata.Description.For<TestSubject>();
             Assert.AreEqual("Overriden Description", value);
@@ -116,7 +116,7 @@ namespace iSynaptic.Commons.Data
         public void Resolve_AgainstSubjectInstanceWithAttributedType_ReturnsValue()
         {
             var resolver = new StandardMetadataResolver();
-            Metadata.SetResolver(resolver);
+            MetadataDeclaration.SetResolver(resolver);
 
             var subject = new TestSubject();
 
@@ -128,7 +128,7 @@ namespace iSynaptic.Commons.Data
         public void Resolve_AgainstSpecificInstance_WorksCorrectly()
         {
             var resolver = new StandardMetadataResolver();
-            Metadata.SetResolver(resolver);
+            MetadataDeclaration.SetResolver(resolver);
 
             TestSubjectMetadataSurrogate.ShouldYieldInstanceMetadata = true;
 
@@ -140,7 +140,7 @@ namespace iSynaptic.Commons.Data
         public void Resolve_AgainstArbitraryInstance_YieldsAttributeMetadata()
         {
             var resolver = new StandardMetadataResolver();
-            Metadata.SetResolver(resolver);
+            MetadataDeclaration.SetResolver(resolver);
 
             TestSubjectMetadataSurrogate.ShouldYieldInstanceMetadata = false;
 
@@ -152,7 +152,7 @@ namespace iSynaptic.Commons.Data
         public void Resolve_AgainstArbitraryInstance_YieldsSurrogateMetadata()
         {
             var resolver = new StandardMetadataResolver();
-            Metadata.SetResolver(resolver);
+            MetadataDeclaration.SetResolver(resolver);
 
             TestSubjectMetadataSurrogate.ShouldYieldInstanceMetadata = true;
 
@@ -164,7 +164,7 @@ namespace iSynaptic.Commons.Data
         public void Resolve_AgainstSpecificInstanceWhenPredicateReturnsFalse_YieldsAttributeMetadata()
         {
             var resolver = new StandardMetadataResolver();
-            Metadata.SetResolver(resolver);
+            MetadataDeclaration.SetResolver(resolver);
 
             TestSubjectMetadataSurrogate.ShouldYieldInstanceMetadata = false;
 
@@ -176,7 +176,7 @@ namespace iSynaptic.Commons.Data
         public void Resolve_AgainstArbitraryDerivedInstance_YieldsSurrogateMetadata()
         {
             var resolver = new StandardMetadataResolver();
-            Metadata.SetResolver(resolver);
+            MetadataDeclaration.SetResolver(resolver);
 
             TestSubjectMetadataSurrogate.ShouldYieldInstanceMetadata = true;
 
@@ -193,7 +193,7 @@ namespace iSynaptic.Commons.Data
                 .To("Derived Surrogate Description");
 
             var resolver = new StandardMetadataResolver(module);
-            Metadata.SetResolver(resolver);
+            MetadataDeclaration.SetResolver(resolver);
 
             TestSubjectMetadataSurrogate.ShouldYieldInstanceMetadata = true;
 

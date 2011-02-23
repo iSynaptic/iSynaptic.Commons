@@ -10,12 +10,12 @@ namespace iSynaptic.Commons.Data
     public class LazyMetadata<TMetadata> : Lazy<TMetadata>
     {
         public LazyMetadata()
-            : base(Metadata.Get<TMetadata>)
+            : base(MetadataDeclaration.Get<TMetadata>)
         {
         }
 
         public LazyMetadata(IMetadataDeclaration<TMetadata> declaration)
-            : base(() => Metadata.Resolve(declaration, Maybe<object>.NoValue, null))
+            : base(() => declaration.Resolve(Maybe<object>.NoValue, null))
         {
             Guard.NotNull(declaration, "declaration");
         }
@@ -28,21 +28,25 @@ namespace iSynaptic.Commons.Data
 
     public class LazyMetadata<TMetadata, TSubject> : Lazy<TMetadata>
     {
-        public LazyMetadata(IMetadataDeclaration<TMetadata> declaration) : base(() => Metadata.Resolve(declaration, Maybe<TSubject>.NoValue, null))
+        public LazyMetadata(IMetadataDeclaration<TMetadata> declaration)
+            : base(() => declaration.Resolve(Maybe<TSubject>.NoValue, null))
         {
         }
 
-        public LazyMetadata(IMetadataDeclaration<TMetadata> declaration, TSubject subject) : base(() => Metadata.Resolve(declaration, new Maybe<TSubject>(subject), null))
-        {
-            Guard.NotNull(declaration, "declaration");
-        }
-
-        public LazyMetadata(IMetadataDeclaration<TMetadata> declaration, Expression<Func<TSubject, object>> member) : base(() => Metadata.Resolve(declaration, Maybe<TSubject>.NoValue, member))
+        public LazyMetadata(IMetadataDeclaration<TMetadata> declaration, TSubject subject)
+            : base(() => declaration.Resolve(new Maybe<TSubject>(subject), null))
         {
             Guard.NotNull(declaration, "declaration");
         }
 
-        public LazyMetadata(IMetadataDeclaration<TMetadata> declaration, TSubject subject, Expression<Func<TSubject, object>> member) : base(() => Metadata.Resolve(declaration, new Maybe<TSubject>(subject), member))
+        public LazyMetadata(IMetadataDeclaration<TMetadata> declaration, MemberInfo member)
+            : base(() => declaration.Resolve(Maybe<TSubject>.NoValue, member))
+        {
+            Guard.NotNull(declaration, "declaration");
+        }
+
+        public LazyMetadata(IMetadataDeclaration<TMetadata> declaration, TSubject subject, MemberInfo member)
+            : base(() => declaration.Resolve(new Maybe<TSubject>(subject), member))
         {
             Guard.NotNull(declaration, "declaration");
         }

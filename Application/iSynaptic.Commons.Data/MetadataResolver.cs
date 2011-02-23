@@ -29,7 +29,7 @@ namespace iSynaptic.Commons.Data
 
         private HashSet<IMetadataBindingSource> _BindingSources = new HashSet<IMetadataBindingSource>();
 
-        public Maybe<TMetadata> Resolve<TMetadata, TSubject>(IMetadataDeclaration<TMetadata> declaration, Maybe<TSubject> subject, MemberInfo member)
+        public Maybe<TMetadata> Resolve<TMetadata, TSubject>(IMetadataDeclaration declaration, Maybe<TSubject> subject, MemberInfo member)
         {
             Guard.NotNull(declaration, "declaration");
 
