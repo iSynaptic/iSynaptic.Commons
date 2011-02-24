@@ -6,7 +6,7 @@ using System.Text;
 
 namespace iSynaptic.Commons.Data
 {
-    public class MetadataBinding<TMetadata, TSubject> : IMetadataBinding<TMetadata, TSubject>
+    internal class MetadataBinding<TMetadata, TSubject> : IMetadataBinding<TMetadata, TSubject>
     {
         public MetadataBinding(Func<IMetadataRequest<TMetadata, TSubject>, bool> predicate, Func<IMetadataRequest<TMetadata, TSubject>, TMetadata> valueFactory, IMetadataBindingSource source)
         {

@@ -21,12 +21,26 @@ namespace iSynaptic.Commons.Data
         }
 
         [Test]
+        public void Resolve_ThruImplicitCastOperator_ReturnsValue()
+        {
+            var module = new MetadataBindingModule();
+            module.Bind(StringMetadata.MaxLength, 42);
+
+            var resolver = new StandardMetadataResolver(module);
+
+            MetadataDeclaration.SetResolver(resolver);
+
+            int value = StringMetadata.MaxLength;
+            Assert.AreEqual(42, value);
+        }
+
+        [Test]
         public void Get_ByTypeOnly_UsesTypeDeclaration()
         {
-            var resolver = MockRepository.GenerateStub<IMetadataResolver>();
-            resolver.Stub(x => x.Resolve<int, object>(MetadataDeclaration<int>.TypeDeclaration, null, null))
-                .IgnoreArguments()
-                .Return(42);
+            var module = new MetadataBindingModule();
+            module.Bind(MetadataDeclaration<int>.TypeDeclaration, 42);
+
+            var resolver = new StandardMetadataResolver(module);
 
             MetadataDeclaration.SetResolver(resolver);
 
@@ -38,9 +52,10 @@ namespace iSynaptic.Commons.Data
         {
             var maxLength = new MetadataDeclaration<int>(7);
 
-            var resolver = MockRepository.GenerateStub<IMetadataResolver>();
-            resolver.Stub(x => x.Resolve<int, string>(maxLength, Maybe<string>.NoValue, null))
-                .Return(42);
+            var module = new MetadataBindingModule();
+            module.Bind(maxLength, 42);
+
+            var resolver = new StandardMetadataResolver(module);
 
             MetadataDeclaration.SetResolver(resolver);
 
@@ -70,9 +85,10 @@ namespace iSynaptic.Commons.Data
         {
             var maxLength = new MetadataDeclaration<int>(7);
 
-            var metadataResolver = MockRepository.GenerateStub<IMetadataResolver>();
-            metadataResolver.Stub(x => x.Resolve<int, string>(maxLength, Maybe<string>.NoValue, null))
-                .Return(42);
+            var module = new MetadataBindingModule();
+            module.Bind(maxLength, 42);
+
+            var metadataResolver = new StandardMetadataResolver(module);
 
             Ioc.SetDependencyResolver(new DependencyResolver(decl => metadataResolver));
 
@@ -224,10 +240,10 @@ namespace iSynaptic.Commons.Data
         {
             var betweenOneAndTen = new ComparableMetadataDeclaration<int>(1, 10, 5);
 
-            var resolver = MockRepository.GenerateStub<IMetadataResolver>();
-            resolver.Stub(x => x.Resolve<int, object>(betweenOneAndTen, Maybe<object>.NoValue, null))
-                .IgnoreArguments()
-                .Return(7);
+            var module = new MetadataBindingModule();
+            module.Bind(betweenOneAndTen, 7);
+
+            var resolver = new StandardMetadataResolver(module);
 
             MetadataDeclaration.SetResolver(resolver);
             
@@ -239,10 +255,10 @@ namespace iSynaptic.Commons.Data
         {
             var betweenOneAndTen = new ComparableMetadataDeclaration<int>(1, 10, 5);
 
-            var resolver = MockRepository.GenerateStub<IMetadataResolver>();
-            resolver.Stub(x => x.Resolve<int, object>(betweenOneAndTen, Maybe<object>.NoValue, null))
-                .IgnoreArguments()
-                .Return(42);
+            var module = new MetadataBindingModule();
+            module.Bind(betweenOneAndTen, 42);
+
+            var resolver = new StandardMetadataResolver(module);
 
             MetadataDeclaration.SetResolver(resolver);
 

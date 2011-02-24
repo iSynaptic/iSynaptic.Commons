@@ -24,25 +24,6 @@ namespace iSynaptic.Commons.Data
         }
 
         [Test]
-        public void Resolve_ThruImplicitCastOperator_ReturnsValue()
-        {
-            var binding = new MetadataBinding<int, object>(r => r.Declaration == StringMetadata.MaxLength, r => 42, MockRepository.GenerateStub<IMetadataBindingSource>());
-
-            var source = MockRepository.GenerateStub<IMetadataBindingSource>();
-            source.Expect(x => x.GetBindingsFor<int, object>(null))
-                .IgnoreArguments()
-                .Return(new[] { binding });
-
-            var resolver = new MetadataResolver();
-            resolver.AddMetadataBindingSource(source);
-
-            MetadataDeclaration.SetResolver(resolver);
-
-            int value = StringMetadata.MaxLength;
-            Assert.AreEqual(42, value);
-        }
-
-        [Test]
         public void Resolve_WithAmbiguousBindingSelection_ThrowsException()
         {
             var binding1 = MockRepository.GenerateStub<IMetadataBinding<int, object>>();
@@ -74,22 +55,24 @@ namespace iSynaptic.Commons.Data
             int resolveCount = 0;
             var scopeObject = new object();
 
-            var binding = new MetadataBinding<int, object>(r => r.Declaration == StringMetadata.MaxLength, x => { resolveCount++; return 42; }, MockRepository.GenerateStub<IMetadataBindingSource>()) { ScopeFactory = x => scopeObject };
+            var module = new MetadataBindingModule();
+            module.Bind(StringMetadata.MaxLength)
+                .InScope(x => scopeObject)
+                .To(r => { resolveCount++; return 42; });
 
-            var source = MockRepository.GenerateStub<IMetadataBindingSource>();
-            source.Expect(x => x.GetBindingsFor<int, object>(null))
-                .IgnoreArguments()
-                .Return(new[] { binding });
-
-            var resolver = new MetadataResolver();
-            resolver.AddMetadataBindingSource(source);
+            var resolver = new StandardMetadataResolver(module);
 
             MetadataDeclaration.SetResolver(resolver);
 
             int maxLength = StringMetadata.MaxLength;
-            maxLength = StringMetadata.MaxLength;
-            maxLength = StringMetadata.MaxLength;
+            Assert.AreEqual(42, maxLength);
 
+            maxLength = StringMetadata.MaxLength;
+            Assert.AreEqual(42, maxLength);
+
+            maxLength = StringMetadata.MaxLength;
+            Assert.AreEqual(42, maxLength);
+            
             Assert.AreEqual(1, resolveCount);
         }
 
@@ -99,25 +82,26 @@ namespace iSynaptic.Commons.Data
             int resolveCount = 0;
             var scopeObject = new object();
 
-            var binding = new MetadataBinding<int, object>(r => r.Declaration == StringMetadata.MaxLength, x => { resolveCount++; return 42; }, MockRepository.GenerateStub<IMetadataBindingSource>()) { ScopeFactory = x => scopeObject };
+            var module = new MetadataBindingModule();
+            module.Bind(StringMetadata.MaxLength)
+                .InScope(x => scopeObject)
+                .To(r => { resolveCount++; return 42; });
 
-            var source = MockRepository.GenerateStub<IMetadataBindingSource>();
-            source.Expect(x => x.GetBindingsFor<int, object>(null))
-                .IgnoreArguments()
-                .Return(new[] { binding });
-
-            var resolver = new MetadataResolver();
-            resolver.AddMetadataBindingSource(source);
+            var resolver = new StandardMetadataResolver(module);
 
             MetadataDeclaration.SetResolver(resolver);
 
             int maxLength = StringMetadata.MaxLength;
+            Assert.AreEqual(42, maxLength);
+
             maxLength = StringMetadata.MaxLength;
+            Assert.AreEqual(42, maxLength);
 
             scopeObject = null;
             GC.Collect();
 
             maxLength = StringMetadata.MaxLength;
+            Assert.AreEqual(42, maxLength);
             Assert.AreEqual(2, resolveCount);
         }
     }
