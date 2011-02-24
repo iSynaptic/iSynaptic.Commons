@@ -8,10 +8,10 @@ namespace iSynaptic.Commons.Data
 {
     public interface IMetadataBinding
     {
-        bool Matches<TMetadata, TSubject>(IMetadataRequest<TMetadata, TSubject> request);
-        object GetScopeObject<TMetadata, TSubject>(IMetadataRequest<TMetadata, TSubject> request);
+        bool Matches<TMetadata, TSubject>(IMetadataRequest<TSubject> request);
+        object GetScopeObject<TMetadata, TSubject>(IMetadataRequest<TSubject> request);
 
-        TMetadata Resolve<TMetadata, TSubject>(IMetadataRequest<TMetadata, TSubject> request);
+        TMetadata Resolve<TMetadata, TSubject>(IMetadataRequest<TSubject> request);
 
         IMetadataBindingSource Source { get; }
 

@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace iSynaptic.Commons.Data
 {
-    public interface IMetadataRequest<in TMetadata, out TSubject>
+    public interface IMetadataRequest<out TSubject>
     {
         IMetadataDeclaration Declaration { get; }
         IMaybe<TSubject> Subject { get; }

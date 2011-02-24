@@ -34,7 +34,7 @@ namespace iSynaptic.Commons.Data
             return new FluentHelper<TMetadata>(this, declaration);
         }
 
-        public IEnumerable<IMetadataBinding> GetBindingsFor<TMetadata, TSubject>(IMetadataRequest<TMetadata, TSubject> request)
+        public IEnumerable<IMetadataBinding> GetBindingsFor<TMetadata, TSubject>(IMetadataRequest<TSubject> request)
         {
             return _Bindings;
         }

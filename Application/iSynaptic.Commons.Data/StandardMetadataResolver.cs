@@ -19,10 +19,10 @@ namespace iSynaptic.Commons.Data
                 _Parent = parent;
             }
 
-            public IEnumerable<IMetadataBinding> GetBindingsFor<TMetadata, TSubject>(IMetadataRequest<TMetadata, TSubject> request)
+            public IEnumerable<IMetadataBinding> GetBindingsFor<TMetadata, TSubject>(IMetadataRequest<TSubject> request)
             {
                 return _Parent._Modules
-                    .SelectMany(x => x.GetBindingsFor(request));
+                    .SelectMany(x => x.GetBindingsFor<TMetadata, TSubject>(request));
             }
         }
 
@@ -39,7 +39,7 @@ namespace iSynaptic.Commons.Data
             AddMetadataBindingSource<AttributeMetadataBindingSource>();
         }
 
-        protected override IMetadataBinding SelectBinding<TMetadata, TSubject>(IMetadataRequest<TMetadata, TSubject> request, IEnumerable<IMetadataBinding> candidates)
+        protected override IMetadataBinding SelectBinding<TMetadata, TSubject>(IMetadataRequest<TSubject> request, IEnumerable<IMetadataBinding> candidates)
         {
             var bindingList = candidates
                 .ToList();
@@ -51,7 +51,7 @@ namespace iSynaptic.Commons.Data
                     return bindingList[0];
             }
 
-            return base.SelectBinding(request, bindingList);
+            return base.SelectBinding<TMetadata, TSubject>(request, bindingList);
         }
 
         private static int BindingSortPriority(IMetadataBinding left, IMetadataBinding right)

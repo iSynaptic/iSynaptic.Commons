@@ -33,19 +33,19 @@ namespace iSynaptic.Commons.Data
         {
             Guard.NotNull(declaration, "declaration");
 
-            var request = new MetadataRequest<TMetadata, TSubject>(declaration, subject, member);
+            var request = new MetadataRequest<TSubject>(declaration, subject, member);
             int requestHashCode = request.GetHashCode();
 
             var candidateBindings = _BindingSources
-                .SelectMany(x => x.GetBindingsFor(request))
-                .Where(x => x.Matches(request));
-                
-            var selectedBinding = SelectBinding(request, candidateBindings);
+                .SelectMany(x => x.GetBindingsFor<TMetadata, TSubject>(request))
+                .Where(x => x.Matches<TMetadata, TSubject>(request));
+
+            var selectedBinding = SelectBinding<TMetadata, TSubject>(request, candidateBindings);
 
             if(selectedBinding == null)
                 return Maybe<TMetadata>.NoValue;
 
-            object scopeObject = selectedBinding.GetScopeObject(request);
+            object scopeObject = selectedBinding.GetScopeObject<TMetadata, TSubject>(request);
 
             if (scopeObject != null)
             {
@@ -58,7 +58,7 @@ namespace iSynaptic.Commons.Data
                     return cachedValue.Metadata;
             }
 
-            var results = selectedBinding.Resolve(request);
+            var results = selectedBinding.Resolve<TMetadata, TSubject>(request);
 
             if(scopeObject != null)
                 ScopedCache<TMetadata>.Cache.Add(scopeObject, new CacheValue<TMetadata> { Metadata = results, RequestHashCode = requestHashCode });
@@ -66,7 +66,7 @@ namespace iSynaptic.Commons.Data
             return results;
         }
 
-        protected virtual IMetadataBinding SelectBinding<TMetadata, TSubject>(IMetadataRequest<TMetadata, TSubject> request, IEnumerable<IMetadataBinding> candidates)
+        protected virtual IMetadataBinding SelectBinding<TMetadata, TSubject>(IMetadataRequest<TSubject> request, IEnumerable<IMetadataBinding> candidates)
         {
             Guard.NotNull(candidates, "candidates");
 

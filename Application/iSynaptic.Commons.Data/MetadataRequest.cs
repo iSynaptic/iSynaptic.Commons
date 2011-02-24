@@ -7,7 +7,7 @@ using System.Text;
 
 namespace iSynaptic.Commons.Data
 {
-    internal class MetadataRequest<TMetadata, TSubject> : IMetadataRequest<TMetadata, TSubject>, IEquatable<MetadataRequest<TMetadata, TSubject>>
+    internal class MetadataRequest<TSubject> : IMetadataRequest<TSubject>, IEquatable<MetadataRequest<TSubject>>
     {
         public MetadataRequest(IMetadataDeclaration declaration, IMaybe<TSubject> subject, MemberInfo member)
         {
@@ -23,7 +23,7 @@ namespace iSynaptic.Commons.Data
         public IMaybe<TSubject> Subject { get; private set; }
         public MemberInfo Member { get; private set; }
 
-        public bool Equals(MetadataRequest<TMetadata, TSubject> other)
+        public bool Equals(MetadataRequest<TSubject> other)
         {
             if (other == null)
                 return false;
@@ -48,7 +48,7 @@ namespace iSynaptic.Commons.Data
             if (ReferenceEquals(obj, null))
                 return false;
 
-            return Equals(obj as MetadataRequest<TMetadata, TSubject>);
+            return Equals(obj as MetadataRequest<TSubject>);
         }
 
         public override int GetHashCode()

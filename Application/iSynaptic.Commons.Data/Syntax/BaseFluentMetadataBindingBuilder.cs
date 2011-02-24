@@ -24,14 +24,14 @@ namespace iSynaptic.Commons.Data.Syntax
             To(r => value);
         }
 
-        public void To(Func<IMetadataRequest<TMetadata, TSubject>, TMetadata> valueFactory)
+        public void To(Func<IMetadataRequest<TSubject>, TMetadata> valueFactory)
         {
             Guard.NotNull(valueFactory, "valueFactory");
 
             OnBuildComplete(MetadataBinding.Create(Source, Matches, valueFactory, ScopeFactory, Subject.HasValue));
         }
 
-        public IScopeToBinding<TMetadata, TSubject> When(Func<IMetadataRequest<TMetadata, TSubject>, bool> userPredicate)
+        public IScopeToBinding<TMetadata, TSubject> When(Func<IMetadataRequest<TSubject>, bool> userPredicate)
         {
             Guard.NotNull(userPredicate, "userPredicate");
             UserPredicate = userPredicate;
@@ -45,14 +45,14 @@ namespace iSynaptic.Commons.Data.Syntax
             return this;
         }
 
-        public IToBinding<TMetadata, TSubject> InScope(Func<IMetadataRequest<TMetadata, TSubject>, object> scopeFactory)
+        public IToBinding<TMetadata, TSubject> InScope(Func<IMetadataRequest<TSubject>, object> scopeFactory)
         {
             Guard.NotNull(scopeFactory, "scopeFactory");
             ScopeFactory = scopeFactory;
             return this;
         }
 
-        private bool Matches(IMetadataRequest<TMetadata, TSubject> request)
+        private bool Matches(IMetadataRequest<TSubject> request)
         {
             Guard.NotNull(request, "request");
 
@@ -80,8 +80,8 @@ namespace iSynaptic.Commons.Data.Syntax
 
         protected IMetadataDeclaration Declaration { get; set; }
 
-        protected Func<IMetadataRequest<TMetadata, TSubject>, bool> UserPredicate { get; set; }
-        protected Func<IMetadataRequest<TMetadata, TSubject>, object> ScopeFactory { get; set; }
+        protected Func<IMetadataRequest<TSubject>, bool> UserPredicate { get; set; }
+        protected Func<IMetadataRequest<TSubject>, object> ScopeFactory { get; set; }
 
         protected Action<IMetadataBinding> OnBuildComplete { get; set; }
     }

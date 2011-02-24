@@ -9,7 +9,7 @@ namespace iSynaptic.Commons.Data
 {
     public class AttributeMetadataBindingSource : IMetadataBindingSource
     {
-        public IEnumerable<IMetadataBinding> GetBindingsFor<TMetadata, TSubject>(IMetadataRequest<TMetadata, TSubject> request)
+        public IEnumerable<IMetadataBinding> GetBindingsFor<TMetadata, TSubject>(IMetadataRequest<TSubject> request)
         {
             Guard.NotNull(request, "request");
 
