@@ -6,9 +6,23 @@ using System.Text;
 
 namespace iSynaptic.Commons.Data
 {
-    internal class MetadataBinding<TMetadata, TSubject> : IMetadataBinding<TMetadata, TSubject>
+    public class MetadataBinding : IMetadataBinding
     {
-        public MetadataBinding(Func<IMetadataRequest<TMetadata, TSubject>, bool> predicate, Func<IMetadataRequest<TMetadata, TSubject>, TMetadata> valueFactory, IMetadataBindingSource source)
+        public static MetadataBinding Create<TMetadata, TSubject>(IMetadataBindingSource source, Func<IMetadataRequest<TMetadata, TSubject>, bool> predicate, Func<IMetadataRequest<TMetadata, TSubject>, TMetadata> valueFactory, Func<IMetadataRequest<TMetadata, TSubject>, object> scopeFactory = null, bool boundToSubjectInstance = false)
+        {
+            Guard.NotNull(predicate, "predicate");
+            Guard.NotNull(valueFactory, "valueFactory");
+            Guard.NotNull(source, "source");
+
+            return new MetadataBinding(predicate, valueFactory, source)
+                       {
+                           SubjectType = typeof (TSubject),
+                           ScopeFactory = scopeFactory,
+                           BoundToSubjectInstance = boundToSubjectInstance
+                       };
+        }
+
+        private MetadataBinding(Delegate predicate, Delegate valueFactory, IMetadataBindingSource source)
         {
             Guard.NotNull(predicate, "predicate");
             Guard.NotNull(valueFactory, "valueFactory");
@@ -19,33 +33,30 @@ namespace iSynaptic.Commons.Data
             Source = source;
         }
 
-        public bool Matches(IMetadataRequest<TMetadata, TSubject> request)
+        public bool Matches<TMetadata, TSubject>(IMetadataRequest<TMetadata, TSubject> request)
         {
-            return Predicate(request);
+            var predicate = Predicate as Func<IMetadataRequest<TMetadata, TSubject>, bool>;
+            return predicate != null && predicate(request);
         }
 
-        public object GetScopeObject(IMetadataRequest<TMetadata, TSubject> request)
+        public object GetScopeObject<TMetadata, TSubject>(IMetadataRequest<TMetadata, TSubject> request)
         {
-            if (ScopeFactory != null)
-                return ScopeFactory(request);
-
-            return null;
+            var scopeFactory = ScopeFactory as Func<IMetadataRequest<TMetadata, TSubject>, object>;
+            return scopeFactory != null ? scopeFactory(request) : null;
         }
 
-        public TMetadata Resolve(IMetadataRequest<TMetadata, TSubject> request)
+        public TMetadata Resolve<TMetadata, TSubject>(IMetadataRequest<TMetadata, TSubject> request)
         {
-            return ValueFactory(request);
+            return ((Func<IMetadataRequest<TMetadata, TSubject>, TMetadata>) ValueFactory)(request);
         }
 
-        public bool BoundToSubjectInstance { get; set; }
-
-        public Func<IMetadataRequest<TMetadata, TSubject>, object> ScopeFactory { get; set; }
-
-        public Func<IMetadataRequest<TMetadata, TSubject>, bool> Predicate { get; private set; }
-        public Func<IMetadataRequest<TMetadata, TSubject>, TMetadata> ValueFactory { get; private set; }
-
+        public Type SubjectType { get; private set; }
         public IMetadataBindingSource Source { get; private set; }
 
-        public Type SubjectType { get { return typeof (TSubject); } }
+        public bool BoundToSubjectInstance { get; private set; }
+
+        private Delegate ScopeFactory { get; set; }
+        private Delegate Predicate { get; set; }
+        private Delegate ValueFactory { get; set; }
     }
 }

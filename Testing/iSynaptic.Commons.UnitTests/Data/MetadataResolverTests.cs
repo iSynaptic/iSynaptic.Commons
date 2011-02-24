@@ -26,11 +26,11 @@ namespace iSynaptic.Commons.Data
         [Test]
         public void Resolve_WithAmbiguousBindingSelection_ThrowsException()
         {
-            var binding1 = MockRepository.GenerateStub<IMetadataBinding<int, object>>();
-            var binding2 = MockRepository.GenerateStub<IMetadataBinding<int, object>>();
+            var binding1 = MockRepository.GenerateStub<IMetadataBinding>();
+            var binding2 = MockRepository.GenerateStub<IMetadataBinding>();
 
-            Action<IMetadataBinding<int, object>> expectations = b =>
-                b.Expect(x => x.Matches(null))
+            Action<IMetadataBinding> expectations = b =>
+                b.Expect(x => x.Matches<int, object>(null))
                     .IgnoreArguments()
                     .Return(true);
 

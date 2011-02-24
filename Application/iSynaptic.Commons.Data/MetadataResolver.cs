@@ -27,7 +27,7 @@ namespace iSynaptic.Commons.Data
             }
         }
 
-        private HashSet<IMetadataBindingSource> _BindingSources = new HashSet<IMetadataBindingSource>();
+        private readonly HashSet<IMetadataBindingSource> _BindingSources = new HashSet<IMetadataBindingSource>();
 
         public Maybe<TMetadata> Resolve<TMetadata, TSubject>(IMetadataDeclaration declaration, Maybe<TSubject> subject, MemberInfo member)
         {
@@ -66,7 +66,7 @@ namespace iSynaptic.Commons.Data
             return results;
         }
 
-        protected virtual IMetadataBinding<TMetadata, TSubject> SelectBinding<TMetadata, TSubject>(IMetadataRequest<TMetadata, TSubject> request, IEnumerable<IMetadataBinding<TMetadata, TSubject>> candidates)
+        protected virtual IMetadataBinding SelectBinding<TMetadata, TSubject>(IMetadataRequest<TMetadata, TSubject> request, IEnumerable<IMetadataBinding> candidates)
         {
             Guard.NotNull(candidates, "candidates");
 

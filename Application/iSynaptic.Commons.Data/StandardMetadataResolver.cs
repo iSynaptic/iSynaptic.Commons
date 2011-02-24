@@ -19,10 +19,10 @@ namespace iSynaptic.Commons.Data
                 _Parent = parent;
             }
 
-            public IEnumerable<IMetadataBinding<TMetadata, TSubject>> GetBindingsFor<TMetadata, TSubject>(IMetadataRequest<TMetadata, TSubject> request)
+            public IEnumerable<IMetadataBinding> GetBindingsFor<TMetadata, TSubject>(IMetadataRequest<TMetadata, TSubject> request)
             {
                 return _Parent._Modules
-                    .SelectMany(x => x.GetBindingsFor<TMetadata, TSubject>(request));
+                    .SelectMany(x => x.GetBindingsFor(request));
             }
         }
 
@@ -39,7 +39,7 @@ namespace iSynaptic.Commons.Data
             AddMetadataBindingSource<AttributeMetadataBindingSource>();
         }
 
-        protected override IMetadataBinding<TMetadata, TSubject> SelectBinding<TMetadata, TSubject>(IMetadataRequest<TMetadata, TSubject> request, IEnumerable<IMetadataBinding<TMetadata, TSubject>> candidates)
+        protected override IMetadataBinding SelectBinding<TMetadata, TSubject>(IMetadataRequest<TMetadata, TSubject> request, IEnumerable<IMetadataBinding> candidates)
         {
             var bindingList = candidates
                 .ToList();
@@ -54,7 +54,7 @@ namespace iSynaptic.Commons.Data
             return base.SelectBinding(request, bindingList);
         }
 
-        private static int BindingSortPriority<TMetadata, TSubject>(IMetadataBinding<TMetadata, TSubject> left, IMetadataBinding<TMetadata, TSubject> right)
+        private static int BindingSortPriority(IMetadataBinding left, IMetadataBinding right)
         {
             if (!(left.Source is AttributeMetadataBindingSource) && right.Source is AttributeMetadataBindingSource)
                 return -1;

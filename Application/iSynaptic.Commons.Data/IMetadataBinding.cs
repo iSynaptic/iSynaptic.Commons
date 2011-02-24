@@ -6,12 +6,12 @@ using System.Text;
 
 namespace iSynaptic.Commons.Data
 {
-    public interface IMetadataBinding<out TMetadata, in TSubject>
+    public interface IMetadataBinding
     {
-        bool Matches(IMetadataRequest<TMetadata, TSubject> request);
-        object GetScopeObject(IMetadataRequest<TMetadata, TSubject> request);
+        bool Matches<TMetadata, TSubject>(IMetadataRequest<TMetadata, TSubject> request);
+        object GetScopeObject<TMetadata, TSubject>(IMetadataRequest<TMetadata, TSubject> request);
 
-        TMetadata Resolve(IMetadataRequest<TMetadata, TSubject> request);
+        TMetadata Resolve<TMetadata, TSubject>(IMetadataRequest<TMetadata, TSubject> request);
 
         IMetadataBindingSource Source { get; }
 

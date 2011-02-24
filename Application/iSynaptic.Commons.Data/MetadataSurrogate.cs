@@ -9,7 +9,7 @@ namespace iSynaptic.Commons.Data
 {
     public abstract class MetadataSurrogate<TSubject> : IMetadataBindingSource, IFluentInterface
     {
-        private readonly HashSet<object> _Bindings = new HashSet<object>();
+        private readonly HashSet<IMetadataBinding> _Bindings = new HashSet<IMetadataBinding>();
 
         public void Bind<TMetadata>(IMetadataDeclaration<TMetadata> declaration, TMetadata value)
         {
@@ -24,7 +24,7 @@ namespace iSynaptic.Commons.Data
         public void Bind<TMetadata>(IMetadataDeclaration declaration, TMetadata value)
         {
             Guard.NotNull(declaration, "declaration");
-            _Bindings.Add(new MetadataBinding<TMetadata, object>(r => r.Declaration == declaration, r => value, this));
+            _Bindings.Add(MetadataBinding.Create<TMetadata, TSubject>(this, r => r.Declaration == declaration, r => value));
         }
 
         public ISpecificSubjectPredicateScopeToBinding<TMetadata, TSubject> Bind<TMetadata>(IMetadataDeclaration declaration)
@@ -33,10 +33,9 @@ namespace iSynaptic.Commons.Data
             return new FluentMetadataBindingBuilder<TMetadata, TSubject>(this, declaration, x => _Bindings.Add(x));
         }
 
-        IEnumerable<IMetadataBinding<TMetadata, TBindingSubject>> IMetadataBindingSource.GetBindingsFor<TMetadata, TBindingSubject>(IMetadataRequest<TMetadata, TBindingSubject> request)
+        IEnumerable<IMetadataBinding> IMetadataBindingSource.GetBindingsFor<TMetadata, TBindingSubject>(IMetadataRequest<TMetadata, TBindingSubject> request)
         {
-            return _Bindings
-                .OfType<IMetadataBinding<TMetadata, TBindingSubject>>();
+            return _Bindings;
         }
     }
 }

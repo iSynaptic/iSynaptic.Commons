@@ -10,7 +10,7 @@ namespace iSynaptic.Commons.Data
 {
     public class MetadataBindingModule : IMetadataBindingSource, IFluentInterface
     {
-        private readonly HashSet<object> _Bindings = new HashSet<object>();
+        private readonly HashSet<IMetadataBinding> _Bindings = new HashSet<IMetadataBinding>();
 
         public void Bind<TMetadata>(IMetadataDeclaration<TMetadata> declaration, TMetadata value)
         {
@@ -25,7 +25,7 @@ namespace iSynaptic.Commons.Data
         public void Bind<TMetadata>(IMetadataDeclaration declaration, TMetadata value)
         {
             Guard.NotNull(declaration, "declaration");
-            _Bindings.Add(new MetadataBinding<TMetadata, object>(r => r.Declaration == declaration, r => value, this));
+            _Bindings.Add(MetadataBinding.Create<TMetadata, object>(this, r => r.Declaration == declaration, r => value));
         }
 
         public ISubjectPredicateScopeToBinding<TMetadata> Bind<TMetadata>(IMetadataDeclaration declaration)
@@ -34,10 +34,9 @@ namespace iSynaptic.Commons.Data
             return new FluentHelper<TMetadata>(this, declaration);
         }
 
-        public IEnumerable<IMetadataBinding<TMetadata, TSubject>> GetBindingsFor<TMetadata, TSubject>(IMetadataRequest<TMetadata, TSubject> request)
+        public IEnumerable<IMetadataBinding> GetBindingsFor<TMetadata, TSubject>(IMetadataRequest<TMetadata, TSubject> request)
         {
-            return _Bindings
-                .OfType<IMetadataBinding<TMetadata, TSubject>>();
+            return _Bindings;
         }
 
         private class FluentHelper<TMetadata> : BaseFluentMetadataBindingBuilder<TMetadata, object>, ISubjectPredicateScopeToBinding<TMetadata>
