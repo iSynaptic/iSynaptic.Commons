@@ -53,7 +53,9 @@ namespace iSynaptic.Commons.Data
             var maxLength = new MetadataDeclaration<int>(7);
 
             var module = new MetadataBindingModule();
-            module.Bind(maxLength, 42);
+            module.Bind(maxLength)
+                .For<string>()
+                .To(42);
 
             var resolver = new StandardMetadataResolver(module);
 
@@ -86,7 +88,9 @@ namespace iSynaptic.Commons.Data
             var maxLength = new MetadataDeclaration<int>(7);
 
             var module = new MetadataBindingModule();
-            module.Bind(maxLength, 42);
+            module.Bind(maxLength)
+                .For<string>()
+                .To(42);
 
             var metadataResolver = new StandardMetadataResolver(module);
 
