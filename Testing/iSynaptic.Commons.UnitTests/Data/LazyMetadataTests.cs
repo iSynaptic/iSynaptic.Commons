@@ -21,9 +21,8 @@ namespace iSynaptic.Commons.Data
         [Test]
         public void LazyMetadata_ViaParameterlessConstructor_UsesTypeDeclaration()
         {
-            var resolver = MockRepository.GenerateStub<IMetadataResolver>();
-            resolver.Stub(x => x.Resolve<int, object>(MetadataDeclaration<int>.TypeDeclaration, Maybe<object>.NoValue, null))
-                .Return(42);
+            var resolver = new StandardMetadataResolver();
+            resolver.Bind(MetadataDeclaration<int>.TypeDeclaration, 42);
 
             MetadataDeclaration.SetResolver(resolver);
 
@@ -36,9 +35,8 @@ namespace iSynaptic.Commons.Data
         [Test]
         public void LazyMetadata_ViaDeclaration()
         {
-            var resolver = MockRepository.GenerateStub<IMetadataResolver>();
-            resolver.Stub(x => x.Resolve<int, object>(StringMetadata.MaxLength, Maybe<object>.NoValue, null))
-                .Return(42);
+            var resolver = new StandardMetadataResolver();
+            resolver.Bind(StringMetadata.MaxLength, 42);
 
             MetadataDeclaration.SetResolver(resolver);
 
@@ -48,9 +46,10 @@ namespace iSynaptic.Commons.Data
         [Test]
         public void LazyMetadata_ViaDeclarationSubjectType()
         {
-            var resolver = MockRepository.GenerateStub<IMetadataResolver>();
-            resolver.Stub(x => x.Resolve<int, string>(StringMetadata.MaxLength, Maybe<string>.NoValue, null))
-                .Return(42);
+            var resolver = new StandardMetadataResolver();
+            resolver.Bind(StringMetadata.MaxLength)
+                .For<string>()
+                .To(42);
 
             MetadataDeclaration.SetResolver(resolver);
 
@@ -62,9 +61,10 @@ namespace iSynaptic.Commons.Data
         {
             string subject = "Hello, World!";
 
-            var resolver = MockRepository.GenerateStub<IMetadataResolver>();
-            resolver.Stub(x => x.Resolve<int, string>(StringMetadata.MaxLength, new Maybe<string>(subject), null))
-                .Return(42);
+            var resolver = new StandardMetadataResolver();
+            resolver.Bind(StringMetadata.MaxLength)
+                .For(subject)
+                .To(42);
 
             MetadataDeclaration.SetResolver(resolver);
 
@@ -76,18 +76,14 @@ namespace iSynaptic.Commons.Data
         {
             Expression<Func<string, object>> expression = x => x.Length;
 
-            var member = expression.ExtractMemberInfoForMetadata();
-
-            var resolver = MockRepository.GenerateStrictMock<IMetadataResolver>();
-            resolver.Expect(x => x.Resolve<int, string>(IntegerMetadata.MinValue, Maybe<string>.NoValue, member))
-                .Return(42);
-
-            resolver.Replay();
+            var resolver = new StandardMetadataResolver();
+            resolver.Bind(IntegerMetadata.MinValue)
+                .For(expression)
+                .To(42);
 
             MetadataDeclaration.SetResolver(resolver);
 
             Assert.AreEqual(42, IntegerMetadata.MinValue.LazyFor(expression));
-
         }
 
         [Test]
@@ -96,11 +92,10 @@ namespace iSynaptic.Commons.Data
             string subject = "Hello, World!";
             Expression<Func<string, object>> expression = x => x.Length;
 
-            var member = expression.ExtractMemberInfoForMetadata();
-
-            var resolver = MockRepository.GenerateStub<IMetadataResolver>();
-            resolver.Stub(x => x.Resolve<int, string>(IntegerMetadata.MinValue, subject, member))
-                .Return(42);
+            var resolver = new StandardMetadataResolver();
+            resolver.Bind(IntegerMetadata.MinValue)
+                .For(subject, expression)
+                .To(42);
 
             MetadataDeclaration.SetResolver(resolver);
 

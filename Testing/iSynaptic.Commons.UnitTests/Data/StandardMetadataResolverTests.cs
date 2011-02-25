@@ -187,12 +187,11 @@ namespace iSynaptic.Commons.Data
         [Test]
         public void Resolve_WithDerivedInstance_YieldsMostDerivedBindingsMetadata()
         {
-            var module = new MetadataBindingModule();
-            module.Bind(CommonMetadata.Description)
+            var resolver = new StandardMetadataResolver();
+            resolver.Bind(CommonMetadata.Description)
                 .For<DerivedTestSubject>()
                 .To("Derived Surrogate Description");
 
-            var resolver = new StandardMetadataResolver(module);
             MetadataDeclaration.SetResolver(resolver);
 
             TestSubjectMetadataSurrogate.ShouldYieldInstanceMetadata = true;

@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using iSynaptic.Commons.Data.Syntax;
 
 namespace iSynaptic.Commons.Data
 {
-    public class StandardMetadataResolver : MetadataResolver
+    public class StandardMetadataResolver : MetadataResolver, IFluentMetadataBindingRoot
     {
         private readonly List<MetadataBindingModule> _Modules = new List<MetadataBindingModule>();
+        private readonly MetadataBindingModule _ResolverModule = new MetadataBindingModule();
 
         private class ModuleMetadataBindingSource : IMetadataBindingSource
         {
@@ -28,6 +30,8 @@ namespace iSynaptic.Commons.Data
 
         public StandardMetadataResolver(params MetadataBindingModule[] modules)
         {
+            LoadModule(_ResolverModule);
+
             if (modules != null && modules.Length > 0)
             {
                 foreach (var module in modules)
@@ -35,7 +39,7 @@ namespace iSynaptic.Commons.Data
             }
 
             AddMetadataBindingSource(new ModuleMetadataBindingSource(this));
-            AddMetadataBindingSource<MetadataSurrogateBindingSource>();
+            AddMetadataBindingSource<SurrogateMetadataBindingSource>();
             AddMetadataBindingSource<AttributeMetadataBindingSource>();
         }
 
@@ -89,6 +93,26 @@ namespace iSynaptic.Commons.Data
         {
             Guard.NotNull(module, "module");
             _Modules.Remove(module);
+        }
+
+        public IFluentMetadataBindingSubjectPredicateScopeTo<TMetadata> Bind<TMetadata>(IMetadataDeclaration declaration)
+        {
+            return _ResolverModule.Bind<TMetadata>(declaration);
+        }
+
+        public IFluentMetadataBindingSubjectPredicateScopeTo<TMetadata> Bind<TMetadata>(IMetadataDeclaration<TMetadata> declaration)
+        {
+            return _ResolverModule.Bind(declaration);
+        }
+
+        public void Bind<TMetadata>(IMetadataDeclaration<TMetadata> declaration, TMetadata value)
+        {
+            _ResolverModule.Bind(declaration, value);
+        }
+
+        public void Bind<TMetadata>(IMetadataDeclaration declaration, TMetadata value)
+        {
+            _ResolverModule.Bind(declaration, value);
         }
     }
 }

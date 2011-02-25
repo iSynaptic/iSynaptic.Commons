@@ -18,7 +18,7 @@ namespace iSynaptic.Commons.Data
             MetadataDeclaration.SetResolver(resolver);
 
             var declaration = new ComparableMetadataDeclaration<int>(-1, 42, 7);
-            var value = declaration.For<object>();
+            var value = declaration.Get();
 
             Assert.AreEqual(7, value);
         }
@@ -55,12 +55,10 @@ namespace iSynaptic.Commons.Data
             int resolveCount = 0;
             var scopeObject = new object();
 
-            var module = new MetadataBindingModule();
-            module.Bind(StringMetadata.MaxLength)
+            var resolver = new StandardMetadataResolver();
+            resolver.Bind(StringMetadata.MaxLength)
                 .InScope(x => scopeObject)
                 .To(r => { resolveCount++; return 42; });
-
-            var resolver = new StandardMetadataResolver(module);
 
             MetadataDeclaration.SetResolver(resolver);
 
@@ -82,12 +80,10 @@ namespace iSynaptic.Commons.Data
             int resolveCount = 0;
             var scopeObject = new object();
 
-            var module = new MetadataBindingModule();
-            module.Bind(StringMetadata.MaxLength)
+            var resolver = new StandardMetadataResolver();
+            resolver.Bind(StringMetadata.MaxLength)
                 .InScope(x => scopeObject)
                 .To(r => { resolveCount++; return 42; });
-
-            var resolver = new StandardMetadataResolver(module);
 
             MetadataDeclaration.SetResolver(resolver);
 

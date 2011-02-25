@@ -23,10 +23,8 @@ namespace iSynaptic.Commons.Data
         [Test]
         public void Resolve_ThruImplicitCastOperator_ReturnsValue()
         {
-            var module = new MetadataBindingModule();
-            module.Bind(StringMetadata.MaxLength, 42);
-
-            var resolver = new StandardMetadataResolver(module);
+            var resolver = new StandardMetadataResolver();
+            resolver.Bind(StringMetadata.MaxLength, 42);
 
             MetadataDeclaration.SetResolver(resolver);
 
@@ -37,10 +35,8 @@ namespace iSynaptic.Commons.Data
         [Test]
         public void Get_ByTypeOnly_UsesTypeDeclaration()
         {
-            var module = new MetadataBindingModule();
-            module.Bind(MetadataDeclaration<int>.TypeDeclaration, 42);
-
-            var resolver = new StandardMetadataResolver(module);
+            var resolver = new StandardMetadataResolver();
+            resolver.Bind(MetadataDeclaration<int>.TypeDeclaration, 42);
 
             MetadataDeclaration.SetResolver(resolver);
 
@@ -52,12 +48,10 @@ namespace iSynaptic.Commons.Data
         {
             var maxLength = new MetadataDeclaration<int>(7);
 
-            var module = new MetadataBindingModule();
-            module.Bind(maxLength)
+            var resolver = new StandardMetadataResolver();
+            resolver.Bind(maxLength)
                 .For<string>()
                 .To(42);
-
-            var resolver = new StandardMetadataResolver(module);
 
             MetadataDeclaration.SetResolver(resolver);
 
@@ -87,12 +81,10 @@ namespace iSynaptic.Commons.Data
         {
             var maxLength = new MetadataDeclaration<int>(7);
 
-            var module = new MetadataBindingModule();
-            module.Bind(maxLength)
+            var metadataResolver = new StandardMetadataResolver();
+            metadataResolver.Bind(maxLength)
                 .For<string>()
                 .To(42);
-
-            var metadataResolver = new StandardMetadataResolver(module);
 
             Ioc.SetDependencyResolver(new DependencyResolver(decl => metadataResolver));
 
@@ -244,10 +236,8 @@ namespace iSynaptic.Commons.Data
         {
             var betweenOneAndTen = new ComparableMetadataDeclaration<int>(1, 10, 5);
 
-            var module = new MetadataBindingModule();
-            module.Bind(betweenOneAndTen, 7);
-
-            var resolver = new StandardMetadataResolver(module);
+            var resolver = new StandardMetadataResolver();
+            resolver.Bind(betweenOneAndTen, 7);
 
             MetadataDeclaration.SetResolver(resolver);
             
@@ -259,10 +249,8 @@ namespace iSynaptic.Commons.Data
         {
             var betweenOneAndTen = new ComparableMetadataDeclaration<int>(1, 10, 5);
 
-            var module = new MetadataBindingModule();
-            module.Bind(betweenOneAndTen, 42);
-
-            var resolver = new StandardMetadataResolver(module);
+            var resolver = new StandardMetadataResolver();
+            resolver.Bind(betweenOneAndTen, 42);
 
             MetadataDeclaration.SetResolver(resolver);
 

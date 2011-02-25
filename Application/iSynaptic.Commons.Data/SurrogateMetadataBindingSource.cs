@@ -7,7 +7,7 @@ using iSynaptic.Commons.Collections.Generic;
 
 namespace iSynaptic.Commons.Data
 {
-    public class MetadataSurrogateBindingSource : IMetadataBindingSource
+    public class SurrogateMetadataBindingSource : IMetadataBindingSource
     {
         private static Lazy<IDictionary<Type, object>> _Surrogates = new Lazy<IDictionary<Type, object>>(() =>
         {
