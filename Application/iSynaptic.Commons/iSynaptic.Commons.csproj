@@ -93,6 +93,7 @@
     <Compile Include="Convert.cs" />
     <Compile Include="DataEventArgs.cs" />
     <Compile Include="Data\IMetadataDeclaration.cs" />
+    <Compile Include="Data\IMetadataRequest.cs" />
     <Compile Include="Data\IMetadataResolver.cs" />
     <Compile Include="Data\LazyMetadata.cs" />
     <Compile Include="Data\MetadataDeclaration.cs" />
@@ -100,6 +101,7 @@
     <Compile Include="Data\MetadataDeclarations\ComparableMetadataDeclaration.cs" />
     <Compile Include="Data\MetadataDeclarations\StringMetadataDeclaration.cs" />
     <Compile Include="Data\MetadataHelper.cs" />
+    <Compile Include="Data\MetadataRequest.cs" />
     <Compile Include="Data\MetadataValidationException.cs" />
     <Compile Include="DependencyResolver.cs" />
     <Compile Include="DependencyResolverExtensions.cs" />

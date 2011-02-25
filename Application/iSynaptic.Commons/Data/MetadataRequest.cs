@@ -7,7 +7,7 @@ using System.Text;
 
 namespace iSynaptic.Commons.Data
 {
-    internal class MetadataRequest<TSubject> : IMetadataRequest<TSubject>, IEquatable<MetadataRequest<TSubject>>
+    public class MetadataRequest<TSubject> : IMetadataRequest<TSubject>, IEquatable<IMetadataRequest<TSubject>>
     {
         public MetadataRequest(IMetadataDeclaration declaration, IMaybe<TSubject> subject, MemberInfo member)
         {
@@ -23,7 +23,7 @@ namespace iSynaptic.Commons.Data
         public IMaybe<TSubject> Subject { get; private set; }
         public MemberInfo Member { get; private set; }
 
-        public bool Equals(MetadataRequest<TSubject> other)
+        public bool Equals(IMetadataRequest<TSubject> other)
         {
             if (other == null)
                 return false;
