@@ -92,7 +92,7 @@ namespace iSynaptic.Commons.Data
                 return resolvedResult.Value;
             }
 
-            var @default = GetDefault();
+            var @default = GetDefault(subject, member);
             OnValidateValue(@default, "default");
 
             return @default;
@@ -135,7 +135,7 @@ namespace iSynaptic.Commons.Data
             return declaration.Get();
         }
 
-        protected virtual TMetadata GetDefault()
+        protected virtual TMetadata GetDefault<TSubject>(Maybe<TSubject> subject, MemberInfo memberInfo)
         {
             if (_Default.HasValue)
                 return _Default.Value;
@@ -147,7 +147,7 @@ namespace iSynaptic.Commons.Data
         {
             get
             {
-                TMetadata defaultValue = GetDefault();
+                TMetadata defaultValue = GetDefault(Maybe<object>.NoValue, null);
 
                 OnValidateValue(defaultValue, "default");
 
