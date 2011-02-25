@@ -8,6 +8,6 @@ namespace iSynaptic.Commons.Data
 {
     public interface IMetadataResolver
     {
-        Maybe<TMetadata> Resolve<TMetadata, TSubject>(IMetadataDeclaration declaration, Maybe<TSubject> subject, MemberInfo memberInfo);
+        Maybe<TMetadata> Resolve<TMetadata, TSubject>(IMetadataRequest<TSubject> request);
     }
 }

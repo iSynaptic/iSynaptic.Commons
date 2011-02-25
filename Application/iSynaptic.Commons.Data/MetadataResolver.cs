@@ -29,11 +29,10 @@ namespace iSynaptic.Commons.Data
 
         private readonly HashSet<IMetadataBindingSource> _BindingSources = new HashSet<IMetadataBindingSource>();
 
-        public Maybe<TMetadata> Resolve<TMetadata, TSubject>(IMetadataDeclaration declaration, Maybe<TSubject> subject, MemberInfo member)
+        public Maybe<TMetadata> Resolve<TMetadata, TSubject>(IMetadataRequest<TSubject> request)
         {
-            Guard.NotNull(declaration, "declaration");
+            Guard.NotNull(request, "request");
 
-            var request = new MetadataRequest<TSubject>(declaration, subject, member);
             int requestHashCode = request.GetHashCode();
 
             var candidateBindings = _BindingSources

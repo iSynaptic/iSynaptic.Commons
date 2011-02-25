@@ -84,7 +84,9 @@ namespace iSynaptic.Commons.Data
 
         public TMetadata Resolve<TSubject>(Maybe<TSubject> subject, MemberInfo member)
         {
-            var resolvedResult = TryResolve(subject, member);
+            var request = new MetadataRequest<TSubject>(this, subject, member);
+
+            var resolvedResult = TryResolve(request);
 
             if (resolvedResult.HasValue)
             {
@@ -92,7 +94,7 @@ namespace iSynaptic.Commons.Data
                 return resolvedResult.Value;
             }
 
-            var @default = GetDefault(subject, member);
+            var @default = GetDefault(request);
             OnValidateValue(@default, "default");
 
             return @default;
@@ -105,12 +107,12 @@ namespace iSynaptic.Commons.Data
             return Resolve(subject, memberInfo);
         }
 
-        protected virtual Maybe<TMetadata> TryResolve<TSubject>(Maybe<TSubject> subject, MemberInfo member)
+        protected virtual Maybe<TMetadata> TryResolve<TSubject>(IMetadataRequest<TSubject> request)
         {
             var resolver = MetadataResolver ?? Ioc.Resolve<IMetadataResolver>();
 
             return resolver != null
-                       ? resolver.Resolve<TMetadata, TSubject>(this, subject, member)
+                       ? resolver.Resolve<TMetadata, TSubject>(request)
                        : Maybe<TMetadata>.NoValue;
         }
 
@@ -135,7 +137,7 @@ namespace iSynaptic.Commons.Data
             return declaration.Get();
         }
 
-        protected virtual TMetadata GetDefault<TSubject>(Maybe<TSubject> subject, MemberInfo memberInfo)
+        protected virtual TMetadata GetDefault<TSubject>(IMetadataRequest<TSubject> request)
         {
             if (_Default.HasValue)
                 return _Default.Value;
@@ -147,7 +149,7 @@ namespace iSynaptic.Commons.Data
         {
             get
             {
-                TMetadata defaultValue = GetDefault(Maybe<object>.NoValue, null);
+                TMetadata defaultValue = GetDefault(new MetadataRequest<object>(this, Maybe<object>.NoValue, null));
 
                 OnValidateValue(defaultValue, "default");
 
