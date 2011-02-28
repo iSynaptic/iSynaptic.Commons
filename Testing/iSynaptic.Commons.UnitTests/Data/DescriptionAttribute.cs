@@ -6,7 +6,7 @@ using System.Text;
 namespace iSynaptic.Commons.Data
 {
     [AttributeUsage(AttributeTargets.Class)]
-    public class DescriptionAttribute : Attribute, IMetadataAttribute<string>
+    public class DescriptionAttribute : Attribute, IExodataAttribute<string>
     {
         private readonly string _Description;
 
@@ -15,12 +15,12 @@ namespace iSynaptic.Commons.Data
             _Description = description;
         }
 
-        public bool ProvidesMetadataFor<TSubject>(IMetadataRequest<TSubject> request)
+        public bool ProvidesExodataFor<TSubject>(IExodataRequest<TSubject> request)
         {
-            return request.Declaration == CommonMetadata.Description;
+            return request.Declaration == CommonExodata.Description;
         }
 
-        public string Resolve<TSubject>(IMetadataRequest<TSubject> request)
+        public string Resolve<TSubject>(IExodataRequest<TSubject> request)
         {
             return _Description;
         }

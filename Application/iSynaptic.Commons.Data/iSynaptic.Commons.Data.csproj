@@ -40,25 +40,25 @@
     <Compile Include="..\..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="AttributeMetadataBindingSource.cs" />
-    <Compile Include="Syntax\BaseFluentMetadataBindingBuilder.cs" />
-    <Compile Include="Syntax\FluentMetadataBindingBuilder.cs" />
-    <Compile Include="IMetadataAttribute.cs" />
-    <Compile Include="IMetadataBinding.cs" />
-    <Compile Include="IMetadataBindingSource.cs" />
-    <Compile Include="Syntax\IFluentMetadataBindingRoot.cs" />
-    <Compile Include="Syntax\IFluentMetadataBindingPredicateScopeTo.cs" />
-    <Compile Include="Syntax\IFluentMetadataBindingScopeTo.cs" />
-    <Compile Include="Syntax\IFluentMetadataBindingSpecificSubjectPredicateScopeTo.cs" />
-    <Compile Include="Syntax\IFluentMetadataBindingSubjectPredicateScopeTo.cs" />
-    <Compile Include="Syntax\IFluentMetadataBindingTo.cs" />
-    <Compile Include="MetadataBinding.cs" />
-    <Compile Include="MetadataBindingModule.cs" />
-    <Compile Include="MetadataSurrogate.cs" />
-    <Compile Include="SurrogateMetadataBindingSource.cs" />
-    <Compile Include="MetadataResolver.cs" />
+    <Compile Include="AttributeExodataBindingSource.cs" />
+    <Compile Include="Syntax\BaseFluentExodataBindingBuilder.cs" />
+    <Compile Include="Syntax\FluentExodataBindingBuilder.cs" />
+    <Compile Include="IExodataAttribute.cs" />
+    <Compile Include="IExodataBinding.cs" />
+    <Compile Include="IExodataBindingSource.cs" />
+    <Compile Include="Syntax\IFluentExodataBindingRoot.cs" />
+    <Compile Include="Syntax\IFluentExodataBindingPredicateScopeTo.cs" />
+    <Compile Include="Syntax\IFluentExodataBindingScopeTo.cs" />
+    <Compile Include="Syntax\IFluentExodataBindingSpecificSubjectPredicateScopeTo.cs" />
+    <Compile Include="Syntax\IFluentExodataBindingSubjectPredicateScopeTo.cs" />
+    <Compile Include="Syntax\IFluentExodataBindingTo.cs" />
+    <Compile Include="ExodataBinding.cs" />
+    <Compile Include="ExodataBindingModule.cs" />
+    <Compile Include="ExodataSurrogate.cs" />
+    <Compile Include="SurrogateExodataBindingSource.cs" />
+    <Compile Include="ExodataResolver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StandardMetadataResolver.cs" />
+    <Compile Include="StandardExodataResolver.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\iSynaptic.Commons\iSynaptic.Commons.csproj">
