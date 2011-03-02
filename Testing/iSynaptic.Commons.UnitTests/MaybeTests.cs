@@ -210,6 +210,195 @@ namespace iSynaptic.Commons
             Assert.AreEqual(result.Exception.GetHashCode(), result.GetHashCode());
         }
 
+        [Test]
+        public void NotNull_WithNullReferenceType_ReturnsNoValue()
+        {
+            Assert.IsFalse(Maybe.NotNull((string)null).HasValue);
+        }
+
+        [Test]
+        public void NotNull_WithNullValueType_ReturnsNoValue()
+        {
+            Assert.IsFalse(Maybe.NotNull((int?)null).HasValue);
+        }
+
+        [Test]
+        public void NotNull_WithNonNullReferenceType_ReturnsValue()
+        {
+            var value = Maybe.NotNull("Hello World!");
+
+            Assert.IsTrue(value.HasValue);
+            Assert.AreEqual("Hello World!", value.Value);
+        }
+
+        [Test]
+        public void NotNull_WithNonNullValueType_ReturnsValue()
+        {
+            var value = Maybe.NotNull((int?)42);
+
+            Assert.IsTrue(value.HasValue);
+            Assert.AreEqual(42, value.Value);
+        }
+
+        [Test]
+        public void Value_ReturnsValueWrapedInMaybe()
+        {
+            var value = Maybe.Value("Hello World!");
+
+            Assert.IsTrue(value.HasValue);
+            Assert.AreEqual("Hello World!", value.Value);
+
+            value = Maybe.Value((string)null);
+
+            Assert.IsTrue(value.HasValue);
+            Assert.IsNull(value.Value);
+        }
+
+        [Test]
+        public void Select_ReturnsSelectedValueInMaybe()
+        {
+            string rawValue = "Hello World!";
+
+            var value = Maybe
+                .Value(rawValue)
+                .Select(x => x.Length);
+
+            Assert.IsTrue(value.HasValue);
+            Assert.AreEqual(rawValue.Length, value.Value);
+        }
+
+        [Test]
+        public void Where_ReturnsValueIfPredicateReturnsTrue()
+        {
+            string rawValue = "Hello World!";
+
+            var value = Maybe
+                .Value(rawValue)
+                .Where(x => x.Length == rawValue.Length);
+
+            Assert.IsTrue(value.HasValue);
+            Assert.AreEqual(rawValue, value.Value);
+
+            value = Maybe
+                .Value(rawValue)
+                .Where(x => x.Length == rawValue.Length - 1);
+
+            Assert.IsFalse(value.HasValue);
+        }
+
+        [Test]
+        public void Unless_ReturnsValueIfPredicateReturnsFalse()
+        {
+            string rawValue = "Hello World!";
+
+            var value = Maybe
+                .Value(rawValue)
+                .Unless(x => x.Length == rawValue.Length - 1);
+
+            Assert.IsTrue(value.HasValue);
+            Assert.AreEqual(rawValue, value.Value);
+
+            value = Maybe
+                .Value(rawValue)
+                .Unless(x => x.Length == rawValue.Length);
+
+            Assert.IsFalse(value.HasValue);
+        }
+
+        [Test]
+        public void Return_UnwrapsValueIfItHasAvalue()
+        {
+            var rawValue = "Hello World!";
+            var value = Maybe
+                .NotNull(rawValue)
+                .Return("{default}");
+
+            Assert.AreEqual(rawValue, value);
+
+            value = Maybe<string>.NoValue
+                .Return("{default}");
+
+            Assert.AreEqual("{default}", value);
+        }
+
+        [Test]
+        public void Do_CallsActionIfHasValueIsTrue()
+        {
+            bool didExecute = false;
+
+            var value = Maybe<string>.NoValue
+                .Do(x => didExecute = true);
+
+            Assert.IsFalse(value.HasValue);
+            Assert.IsFalse(didExecute);
+
+            value = Maybe.Value("Hello World!")
+                .Do(x => didExecute = true);
+
+            Assert.IsTrue(value.HasValue);
+            Assert.AreEqual("Hello World!", value.Value);
+            Assert.IsTrue(didExecute);
+        }
+
+        [Test]
+        public void Assign_AssignsValueToReferenceIfHasValue()
+        {
+            string rawValue = "Hello World!";
+
+            string refString = null;
+            int refInt = 0;
+
+            Maybe<string>.NoValue
+                .Assign(ref refString)
+                .Select(x => x.Length)
+                .Assign(ref refInt);
+
+            Assert.IsNull(refString);
+            Assert.AreEqual(0, refInt);
+
+            Maybe.Value(rawValue)
+                .Assign(ref refString)
+                .Select(x => x.Length)
+                .Assign(ref refInt);
+
+            Assert.AreEqual(rawValue, refString);
+            Assert.AreEqual(rawValue.Length, refInt);
+        }
+
+        [Test]
+        public void OnException_ContinuesWithNewValue()
+        {
+            Func<string, string> throwException = x =>
+                { throw new InvalidOperationException(); };
+
+            var value = Maybe<string>.Default
+                .Bind(throwException)
+                .Select(x => x.Length)
+                .Where(x => x > 10)
+                .OnException(42);
+
+            Assert.IsTrue(value.HasValue);
+            Assert.AreEqual(42, value.Value);
+        }
+
+        [Test]
+        public void OnException_WhenHandlerThrowsException_HandlerExceptionPropagates()
+        {
+            Func<string, string> throwException = x =>
+                { throw new InvalidOperationException(); };
+
+            Func<Exception, Maybe<int>> handler = x =>
+                { throw new NullReferenceException(); };
+
+            var value = Maybe<string>.Default
+                .Bind(throwException)
+                .Select(x => x.Length)
+                .Where(x => x > 10)
+                .OnException(handler);
+
+            Assert.IsInstanceOf<NullReferenceException>(value.Exception);
+        }
+
         private static int ThrowsException(int x)
         {
             throw new InvalidOperationException();

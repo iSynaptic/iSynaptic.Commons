@@ -3,6 +3,105 @@ using System.Collections.Generic;
 
 namespace iSynaptic.Commons
 {
+    public static class Maybe
+    {
+        public static Maybe<T> NotNull<T>(T value) where T : class
+        {
+            return Value(value).NotNull();
+        }
+
+        public static Maybe<T> NotNull<T>(T? value) where T : struct
+        {
+            return Value(value)
+                .Where(x => x.HasValue)
+                .Select(x => x.Value);
+        }
+
+        public static Maybe<T> Value<T>(T value)
+        {
+            return new Maybe<T>(value);
+        }
+
+        public static Maybe<TResult> Select<T, TResult>(this Maybe<T> self, Func<T, TResult> selector)
+        {
+            return self.Bind(selector);
+        }
+
+        public static Maybe<TResult> Select<T, TResult>(this Maybe<T> self, Func<T, Maybe<TResult>> selector)
+        {
+            return self.Bind(selector);
+        }
+
+        public static Maybe<T> NotNull<T>(this Maybe<T> self) where T : class
+        {
+            return self.NotNull(x => x);
+        }
+
+        public static Maybe<T?> NotNull<T>(this Maybe<T?> self) where T : struct
+        {
+            return self.NotNull(x => x);
+        }
+
+        public static Maybe<TResult> NotNull<T, TResult>(this Maybe<T> self, Func<T, TResult> selector) where TResult : class
+        {
+            return self
+                .Select(selector)
+                .Where(x => x != null);
+        }
+
+        public static Maybe<TResult?> NotNull<T, TResult>(this Maybe<T> self, Func<T, TResult?> selector) where TResult : struct
+        {
+            return self
+                .Select(selector)
+                .Where(x => x.HasValue);
+        }
+
+        public static Maybe<T> Where<T>(this Maybe<T> self, Func<T, bool> predicate)
+        {
+            return self.Bind(x => predicate(x) ? x : Maybe<T>.NoValue);
+        }
+
+        public static Maybe<T> Unless<T>(this Maybe<T> self, Func<T, bool> predicate)
+        {
+            return self.Bind(x => predicate(x) ? Maybe<T>.NoValue : x);
+        }
+
+        public static T Return<T>(this Maybe<T> self, T @default)
+        {
+            return self.HasValue ? self.Value : @default;
+        }
+
+        public static Maybe<T> Do<T>(this Maybe<T> self, Action<T> action)
+        {
+            return self.Bind(x =>
+                             {
+                                 action(x);
+                                 return x;
+                             });
+        }
+
+        public static Maybe<T> Assign<T>(this Maybe<T> self, ref T target)
+        {
+            if(self.HasValue)
+                target = self.Value;
+
+            return self;
+        }
+
+        public static Maybe<T> OnException<T>(this Maybe<T> self, T value)
+        {
+            return self.OnException(x => Value(value));
+        }
+
+        public static Maybe<T> OnException<T>(this Maybe<T> self, Func<Exception, Maybe<T>> handler)
+        {
+            if (self.Exception != null)
+                return Maybe<T>.Default.Bind(x => handler(self.Exception));
+
+            return self;
+        }
+    }
+
     public struct Maybe<T> : IMaybe<T>, IEquatable<Maybe<T>>, IEquatable<T>
     {
         public static readonly Maybe<T> NoValue = new Maybe<T>();
