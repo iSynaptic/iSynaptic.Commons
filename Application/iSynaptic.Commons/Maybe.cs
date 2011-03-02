@@ -93,6 +93,11 @@ namespace iSynaptic.Commons
             return self.OnException(x => Value(value));
         }
 
+        public static Maybe<T> OnException<T>(this Maybe<T> self, Action<Exception> handler)
+        {
+            return self.OnException(x => { handler(x); return new Maybe<T>(x); });
+        }
+
         public static Maybe<T> OnException<T>(this Maybe<T> self, Func<Exception, Maybe<T>> handler)
         {
             if (self.Exception != null)
