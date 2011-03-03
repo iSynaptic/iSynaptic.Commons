@@ -3,175 +3,66 @@ using System.Collections.Generic;
 
 namespace iSynaptic.Commons
 {
-    public static class Maybe
-    {
-        public static Maybe<T> NotNull<T>(T value) where T : class
-        {
-            return Value(value).NotNull();
-        }
-
-        public static Maybe<T> NotNull<T>(T? value) where T : struct
-        {
-            return Value(value)
-                .Where(x => x.HasValue)
-                .Select(x => x.Value);
-        }
-
-        public static Maybe<T> Value<T>(T value)
-        {
-            return new Maybe<T>(value);
-        }
-
-        public static Maybe<TResult> Select<T, TResult>(this Maybe<T> self, Func<T, TResult> selector)
-        {
-            Guard.NotNull(selector, "selector");
-            return self.Bind(selector);
-        }
-
-        public static Maybe<TResult> Select<T, TResult>(this Maybe<T> self, Func<T, Maybe<TResult>> selector)
-        {
-            Guard.NotNull(selector, "selector");
-            return self.Bind(selector);
-        }
-
-        public static Maybe<T> NotNull<T>(this Maybe<T> self) where T : class
-        {
-            return self.NotNull(x => x);
-        }
-
-        public static Maybe<T?> NotNull<T>(this Maybe<T?> self) where T : struct
-        {
-            return self.NotNull(x => x);
-        }
-
-        public static Maybe<TResult> NotNull<T, TResult>(this Maybe<T> self, Func<T, TResult> selector) where TResult : class
-        {
-            Guard.NotNull(selector, "selector");
-            return self
-                .Select(selector)
-                .Where(x => x != null);
-        }
-
-        public static Maybe<TResult?> NotNull<T, TResult>(this Maybe<T> self, Func<T, TResult?> selector) where TResult : struct
-        {
-            Guard.NotNull(selector, "selector");
-            return self
-                .Select(selector)
-                .Where(x => x.HasValue);
-        }
-
-        public static Maybe<T> Where<T>(this Maybe<T> self, Func<T, bool> predicate)
-        {
-            Guard.NotNull(predicate, "predicate");
-            return self.Bind(x => predicate(x) ? x : Maybe<T>.NoValue);
-        }
-
-        public static Maybe<T> Unless<T>(this Maybe<T> self, Func<T, bool> predicate)
-        {
-            Guard.NotNull(predicate, "predicate");
-            return self.Bind(x => predicate(x) ? Maybe<T>.NoValue : x);
-        }
-
-        public static T Return<T>(this Maybe<T> self)
-        {
-            return self.Return(default(T));
-        }
-
-        public static T Return<T>(this Maybe<T> self, T @default)
-        {
-            return self.HasValue ? self.Value : @default;
-        }
-
-        public static Maybe<T> Do<T>(this Maybe<T> self, Action<T> action)
-        {
-            Guard.NotNull(action, "action");
-            return self.Bind(x =>
-                             {
-                                 action(x);
-                                 return x;
-                             });
-        }
-
-        public static Maybe<T> Assign<T>(this Maybe<T> self, ref T target)
-        {
-            if(self.HasValue)
-                target = self.Value;
-
-            return self;
-        }
-
-        public static Maybe<T> OnException<T>(this Maybe<T> self, T value)
-        {
-            return self.OnException(x => Value(value));
-        }
-
-        public static Maybe<T> OnException<T>(this Maybe<T> self, Action<Exception> handler)
-        {
-            Guard.NotNull(handler, "handler");
-            return self.OnException(x => { handler(x); return new Maybe<T>(x); });
-        }
-
-        public static Maybe<T> OnException<T>(this Maybe<T> self, Func<Exception, Maybe<T>> handler)
-        {
-            Guard.NotNull(handler, "handler");
-            if (self.Exception != null)
-                return Maybe<T>.Default.Bind(x => handler(self.Exception));
-
-            return self;
-        }
-
-        public static Maybe<T> ThrowIfException<T>(this Maybe<T> self)
-        {
-            return self.ThrowIfException(typeof (Exception));
-        }
-
-        public static Maybe<T> ThrowIfException<T>(this Maybe<T> self, Type exceptionType)
-        {
-            Guard.NotNull(exceptionType, "exceptionType");
-
-            if(self.Exception != null && exceptionType.IsAssignableFrom(exceptionType.GetType()))
-                self.Exception.Rethrow();
-
-            return self;
-        }
-    }
-
     public struct Maybe<T> : IMaybe<T>, IEquatable<Maybe<T>>, IEquatable<T>
     {
+        internal struct MaybeResult
+        {
+            public T Value;
+            public bool HasValue;
+            public Exception Exception;
+        }
+
         public static readonly Maybe<T> NoValue = new Maybe<T>();
         public static readonly Maybe<T> Default = new Maybe<T>(default(T));
 
-        private readonly T _Value;
-        private readonly bool _HasValue;
-        private readonly Exception _Exception;
+        private readonly Func<MaybeResult> _Computation;
+
+        public Maybe(Func<T> computation) : this()
+        {
+            _Computation = Default.Bind(x => computation())._Computation;
+        }
 
         public Maybe(T value) : this()
         {
-            _Value = value;
-            _HasValue = true;
+            _Computation = () => new MaybeResult {Value = value, HasValue = true};
         }
 
         internal Maybe(Exception exception) : this()
         {
-            _Exception = exception;
+            _Computation = () => new MaybeResult { Exception = exception };
+        }
+
+        internal Maybe(Func<MaybeResult> computation) : this()
+        {
+            _Computation = computation;
+        }
+
+        private MaybeResult ComputeResult()
+        {
+            if (_Computation != null)
+                return _Computation();
+
+            return new MaybeResult();
         }
 
         public T Value
         {
             get
             {
-                if(Exception != null)
-                    Exception.Rethrow();
+                var result = ComputeResult();
 
-                if(HasValue != true)
+                if(result.Exception != null)
+                    result.Exception.Rethrow();
+
+                if(result.HasValue != true)
                     throw new InvalidOperationException("No value can be provided.");
 
-                return _Value;
+                return result.Value;
             }
         }
 
-        public bool HasValue { get { return _HasValue; } }
-        public Exception Exception { get { return _Exception; } }
+        public bool HasValue { get { return ComputeResult().HasValue; } }
+        public Exception Exception { get { return ComputeResult().Exception; } }
 
         public bool Equals(T other)
         {
@@ -264,20 +155,31 @@ namespace iSynaptic.Commons
 
         public Maybe<TResult> Bind<TResult>(Func<T, Maybe<TResult>> func)
         {
-            if (Exception != null)
-                return new Maybe<TResult>(Exception);
-
-            if (HasValue != true)
-                return Maybe<TResult>.NoValue;
-
-            try
+            var computation = _Computation;
+            
+            Func<Maybe<TResult>.MaybeResult> boundComputation = () =>
             {
-                return func(Value);
-            }
-            catch (Exception ex)
-            {
-                return new Maybe<TResult>(ex);
-            }
+                var result = computation != null
+                    ? computation()
+                    : new MaybeResult();
+
+                if (result.Exception != null)
+                    return new Maybe<TResult>.MaybeResult {Exception = result.Exception};
+
+                if (result.HasValue != true)
+                    return new Maybe<TResult>.MaybeResult();
+
+                try
+                {
+                    return func(result.Value).ComputeResult();
+                }
+                catch (Exception ex)
+                {
+                    return new Maybe<TResult>.MaybeResult {Exception = ex};
+                }
+            };
+
+            return new Maybe<TResult>(boundComputation.Memoize());
         }
 
         public static implicit operator Maybe<T>(T value)
@@ -290,4 +192,138 @@ namespace iSynaptic.Commons
             return value.Value;
         }
     }
+
+    public static class Maybe
+    {
+        public static Maybe<T> NotNull<T>(T value) where T : class
+        {
+            return Value(value).NotNull();
+        }
+
+        public static Maybe<T> NotNull<T>(T? value) where T : struct
+        {
+            return Value(value)
+                .NotNull()
+                .Select(x => x.Value);
+        }
+
+        public static Maybe<T> Value<T>(T value)
+        {
+            return new Maybe<T>(value);
+        }
+
+        public static Maybe<TResult> Select<T, TResult>(this Maybe<T> self, Func<T, TResult> selector)
+        {
+            Guard.NotNull(selector, "selector");
+            return self.Bind(selector);
+        }
+
+        public static Maybe<TResult> Select<T, TResult>(this Maybe<T> self, Func<T, Maybe<TResult>> selector)
+        {
+            Guard.NotNull(selector, "selector");
+            return self.Bind(selector);
+        }
+
+        public static Maybe<T> NotNull<T>(this Maybe<T> self) where T : class
+        {
+            return self.NotNull(x => x);
+        }
+
+        public static Maybe<T?> NotNull<T>(this Maybe<T?> self) where T : struct
+        {
+            return self.NotNull(x => x);
+        }
+
+        public static Maybe<TResult> NotNull<T, TResult>(this Maybe<T> self, Func<T, TResult> selector) where TResult : class
+        {
+            Guard.NotNull(selector, "selector");
+            return self
+                .Select(selector)
+                .Where(x => x != null);
+        }
+
+        public static Maybe<TResult?> NotNull<T, TResult>(this Maybe<T> self, Func<T, TResult?> selector) where TResult : struct
+        {
+            Guard.NotNull(selector, "selector");
+            return self
+                .Select(selector)
+                .Where(x => x.HasValue);
+        }
+
+        public static Maybe<T> Where<T>(this Maybe<T> self, Func<T, bool> predicate)
+        {
+            Guard.NotNull(predicate, "predicate");
+            return self.Bind(x => predicate(x) ? x : Maybe<T>.NoValue);
+        }
+
+        public static Maybe<T> Unless<T>(this Maybe<T> self, Func<T, bool> predicate)
+        {
+            Guard.NotNull(predicate, "predicate");
+            return self.Bind(x => predicate(x) ? Maybe<T>.NoValue : x);
+        }
+
+        public static T Return<T>(this Maybe<T> self)
+        {
+            return self.Return(default(T));
+        }
+
+        public static T Return<T>(this Maybe<T> self, T @default)
+        {
+            return self.HasValue ? self.Value : @default;
+        }
+
+        public static Maybe<T> Do<T>(this Maybe<T> self, Action<T> action)
+        {
+            Guard.NotNull(action, "action");
+            return self.Bind(x =>
+            {
+                action(x);
+                return x;
+            });
+        }
+
+        public static Maybe<T> Assign<T>(this Maybe<T> self, ref T target)
+        {
+            if (self.HasValue)
+                target = self.Value;
+
+            return self;
+        }
+
+        public static Maybe<T> OnException<T>(this Maybe<T> self, T value)
+        {
+            return self.OnException(x => Value(value));
+        }
+
+        public static Maybe<T> OnException<T>(this Maybe<T> self, Action<Exception> handler)
+        {
+            Guard.NotNull(handler, "handler");
+            return self.OnException(x => { handler(x); return new Maybe<T>(x); });
+        }
+
+        public static Maybe<T> OnException<T>(this Maybe<T> self, Func<Exception, Maybe<T>> handler)
+        {
+            Guard.NotNull(handler, "handler");
+            if (self.Exception != null)
+                return Maybe<T>.Default.Bind(x => handler(self.Exception));
+
+            return self;
+        }
+
+        public static Maybe<T> ThrowIfException<T>(this Maybe<T> self)
+        {
+            return self.ThrowIfException(typeof(Exception));
+        }
+
+        public static Maybe<T> ThrowIfException<T>(this Maybe<T> self, Type exceptionType)
+        {
+            Guard.NotNull(exceptionType, "exceptionType");
+
+            if (self.Exception != null && exceptionType.IsAssignableFrom(exceptionType.GetType()))
+                self.Exception.Rethrow();
+
+            return self;
+        }
+    }
+
 }

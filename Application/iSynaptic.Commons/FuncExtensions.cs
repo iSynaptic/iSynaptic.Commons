@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace iSynaptic.Commons
 {
@@ -39,6 +40,37 @@ namespace iSynaptic.Commons
         {
             Guard.NotNull(self, "self");
             return new FuncComparer<T>(self);
+        }
+
+        public static Func<TResult> Memoize<TResult>(this Func<TResult> self)
+        {
+            Guard.NotNull(self, "self");
+
+            TResult result = default(TResult);
+            var spinLock = new SpinLock();
+            bool executed = false;
+
+            return () =>
+            {
+                if(!executed)
+                {
+                    bool lockTaken = false;
+                    try
+                    {
+                        spinLock.Enter(ref lockTaken);
+                        if (!executed)
+                            result = self();
+                    }
+                    finally
+                    {
+                        executed = true;
+                        if(lockTaken)
+                            spinLock.Exit();
+                    }
+                }
+
+                return result;
+            };
         }
 
         private class FuncComparer<T> : IComparer<T>

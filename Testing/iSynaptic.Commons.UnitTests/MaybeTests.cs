@@ -24,13 +24,13 @@ namespace iSynaptic.Commons
         [Test]
         public void HasValueOnAValueReturnsTrue()
         {
-            Assert.IsTrue(new Maybe<string>(null).HasValue);
+            Assert.IsTrue(new Maybe<string>("").HasValue);
         }
 
         [Test]
         public void AccessingValueOnAValueReturnsExpectedValue()
         {
-            Assert.IsNull(new Maybe<string>(null).Value);
+            Assert.IsNull(new Maybe<string>((string)null).Value);
             Assert.AreEqual("Hello, World!", new Maybe<string>("Hello, World!").Value);
         }
 
@@ -51,7 +51,7 @@ namespace iSynaptic.Commons
         [Test]
         public void NullValueDoesNotEqualNoValue()
         {
-            Assert.IsTrue(new Maybe<string>(null) != Maybe<string>.NoValue);
+            Assert.IsTrue(new Maybe<string>((string)null) != Maybe<string>.NoValue);
         }
 
         [Test]
