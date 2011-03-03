@@ -399,6 +399,144 @@ namespace iSynaptic.Commons
             Assert.IsInstanceOf<NullReferenceException>(value.Exception);
         }
 
+        [Test]
+        public void Value_DefersExecutionUntilEvaluated()
+        {
+            bool executed = false;
+            var value = Maybe.Value(() => { executed = true; return 42; });
+
+            Assert.IsFalse(executed);
+
+            Assert.AreEqual(42, value.Value);
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void NotNull_WithReferenceType_DefersExecutionUntilEvaluated()
+        {
+            bool executed = false;
+            var value = Maybe.NotNull(() => { executed = true; return "42"; });
+
+            Assert.IsFalse(executed);
+
+            Assert.AreEqual("42", value.Value);
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void NotNull_WithValueType_DefersExecutionUntilEvaluated()
+        {
+            bool executed = false;
+            var value = Maybe.NotNull(() => { executed = true; return (int?)42; });
+
+            Assert.IsFalse(executed);
+
+            Assert.AreEqual(42, value.Value);
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void Select_DefersExecutionUntilEvaluated()
+        {
+            bool executed = false;
+            var value = Maybe.Value(() => { executed = true; return "42"; })
+                .Select(x => x.Length);
+
+            Assert.IsFalse(executed);
+
+            Assert.AreEqual(2, value.Value);
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void Select_WhenSelectorReturnsMaybe_DefersExecutionUntilEvaluated()
+        {
+            bool executed = false;
+            var value = Maybe.Value(() => { executed = true; return "42"; })
+                .Select(x => Maybe<int>.NoValue);
+
+            Assert.IsFalse(executed);
+
+            Assert.IsFalse(value.HasValue);
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void Where_DefersExecutionUntilEvaluated()
+        {
+            bool executed = false;
+            var value = Maybe.Value(() => { executed = true; return "42"; })
+                .Where(x => x.Length == 2);
+
+            Assert.IsFalse(executed);
+
+            Assert.AreEqual("42", value.Value);
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void Unless_DefersExecutionUntilEvaluated()
+        {
+            bool executed = false;
+            var value = Maybe.Value(() => { executed = true; return "42"; })
+                .Unless(x => x.Length == 2);
+
+            Assert.IsFalse(executed);
+
+            Assert.IsFalse(value.HasValue);
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void Do_DefersExecutionUntilEvaluated()
+        {
+            bool executed = false;
+            var value = Maybe.Value(() => { executed = true; return "42"; })
+                .Do(x => executed = true);
+
+            Assert.IsFalse(executed);
+
+            Assert.AreEqual("42", value.Value);
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void Assign_ExecutesImmediately()
+        {
+            bool executed = false;
+            Maybe.Value(true)
+                .Assign(ref executed);
+
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void OnException_DefersExecutionUntilEvaluated()
+        {
+            bool executed = false;
+            var value = Maybe.Value(() => { executed = true; return "42"; })
+                .OnException("Hello")
+                .OnException(x => executed = true);
+
+            Assert.IsFalse(executed);
+
+            Assert.AreEqual("42", value.Value);
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void ThrowIfException_DefersExecutionUntilEvaluated()
+        {
+            bool executed = false;
+            var value = Maybe.Value<int>(() => { executed = true; throw new InvalidOperationException(); })
+                .ThrowIfException();
+
+            Assert.IsFalse(executed);
+
+            Assert.Throws<InvalidOperationException>(() => { var notAssigned = value.Value; });
+            Assert.IsTrue(executed);
+        }
+
         private static int ThrowsException(int x)
         {
             throw new InvalidOperationException();
