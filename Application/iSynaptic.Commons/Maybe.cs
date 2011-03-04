@@ -32,7 +32,7 @@ namespace iSynaptic.Commons
             _Computation = () => new MaybeResult { Exception = exception };
         }
 
-        internal Maybe(Func<MaybeResult> computation) : this()
+        private Maybe(Func<MaybeResult> computation) : this()
         {
             _Computation = computation;
         }
