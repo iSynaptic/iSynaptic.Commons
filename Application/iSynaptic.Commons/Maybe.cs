@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace iSynaptic.Commons
 {
@@ -19,7 +20,7 @@ namespace iSynaptic.Commons
 
         public Maybe(Func<T> computation) : this()
         {
-            _Computation = Default.Bind(x => computation())._Computation;
+            _Computation = Default.Bind(x => computation()).Computation;
         }
 
         public Maybe(T value) : this()
@@ -32,24 +33,21 @@ namespace iSynaptic.Commons
             _Computation = () => new MaybeResult { Exception = exception };
         }
 
-        private Maybe(Func<MaybeResult> computation) : this()
+        internal Maybe(Func<MaybeResult> computation) : this()
         {
             _Computation = computation;
         }
 
-        private MaybeResult ComputeResult()
+        internal Func<MaybeResult> Computation
         {
-            if (_Computation != null)
-                return _Computation();
-
-            return new MaybeResult();
+            get { return _Computation ?? (() => new MaybeResult()); }
         }
 
         public T Value
         {
             get
             {
-                var result = ComputeResult();
+                var result = Computation();
 
                 if(result.Exception != null)
                     result.Exception.Rethrow();
@@ -61,8 +59,8 @@ namespace iSynaptic.Commons
             }
         }
 
-        public bool HasValue { get { return ComputeResult().HasValue; } }
-        public Exception Exception { get { return ComputeResult().Exception; } }
+        public bool HasValue { get { return Computation().HasValue; } }
+        public Exception Exception { get { return Computation().Exception; } }
 
         public bool Equals(T other)
         {
@@ -175,12 +173,10 @@ namespace iSynaptic.Commons
 
         internal Maybe<TResult> UnsafeBind<TResult>(Func<Maybe<T>, Maybe<TResult>> func)
         {
-            var computation = _Computation;
-            Func<Maybe<TResult>.MaybeResult> boundComputation = () =>
-            {
-                var result = new Maybe<T>(computation);
-                return func(result).ComputeResult();
-            };
+            var computation = Computation;
+
+            Func<Maybe<TResult>.MaybeResult> boundComputation =
+                () => func(new Maybe<T>(computation)).Computation();
 
             return new Maybe<TResult>(boundComputation.Memoize());
         }
@@ -368,7 +364,7 @@ namespace iSynaptic.Commons
                     {
                         return handler(x.Exception);
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         return new Maybe<T>(ex);
                     }
@@ -395,6 +391,13 @@ namespace iSynaptic.Commons
                 return x;
             });
         }
-    }
 
+        public static Maybe<T> ToThreadSafe<T>(this Maybe<T> self)
+        {
+            if(self.Computation != null)
+                return new Maybe<T>(self.Computation.Synchronize());
+
+            return self;
+        }
+    }
 }

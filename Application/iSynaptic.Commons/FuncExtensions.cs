@@ -44,32 +44,70 @@ namespace iSynaptic.Commons
 
         public static Func<TResult> Memoize<TResult>(this Func<TResult> self)
         {
-            Guard.NotNull(self, "self");
+            return Memoize(self, false);
+        }
 
+        public static Func<TResult> Memoize<TResult>(this Func<TResult> self, bool threadSafe)
+        {
+            Guard.NotNull(self, "self");
+            
             TResult result = default(TResult);
-            var spinLock = new SpinLock();
+            Exception exception = null;
             bool executed = false;
 
-            return () =>
+            Func<TResult> memoizedFunc = () =>
             {
-                if(!executed)
+                if (!executed)
                 {
-                    bool lockTaken = false;
                     try
                     {
-                        spinLock.Enter(ref lockTaken);
-                        if (!executed)
-                            result = self();
+                        result = self();
+                    }
+                    catch(Exception ex)
+                    {
+                        exception = ex;
+                        throw;
                     }
                     finally
                     {
                         executed = true;
-                        if(lockTaken)
-                            spinLock.Exit();
                     }
                 }
 
+                if (exception != null)
+                    exception.Rethrow();
+
                 return result;
+            };
+
+            return threadSafe
+                       ? memoizedFunc.Synchronize(() => !executed)
+                       : memoizedFunc;
+        }
+
+        public static Func<TResult> Synchronize<TResult>(this Func<TResult> self)
+        {
+            return self.Synchronize(() => true);
+        }
+
+        public static Func<TResult> Synchronize<TResult>(this Func<TResult> self, Func<bool> needsSynchronizationPredicate)
+        {
+            Guard.NotNull(self, "self");
+            Guard.NotNull(needsSynchronizationPredicate, "needsSynchronizationPredicate");
+
+            var lockObject = new object();
+
+            return () =>
+            {
+                if(needsSynchronizationPredicate())
+                {
+                    lock (lockObject)
+                    {
+                        return self();
+                    }
+                }
+
+                return self();
             };
         }
 

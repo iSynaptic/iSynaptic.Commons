@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using NUnit.Framework;
 
 namespace iSynaptic.Commons
@@ -462,6 +464,24 @@ namespace iSynaptic.Commons
         }
 
         [Test]
+        public void ToThreadSafe_PreventsMultipleEvaluation()
+        {
+            int count = 0;
+            var value = Maybe.Value(() => { count++; Thread.Sleep(250); return "42"; })
+                .ToThreadSafe();
+
+            string results = null;
+
+            var t1 = Task.Factory.StartNew(() => results = value.Value);
+            var t2 = Task.Factory.StartNew(() => results = value.Value);
+
+            Task.WaitAll(t1, t2);
+
+            Assert.AreEqual("42", results);
+            Assert.AreEqual(1, count);
+        }
+
+        [Test]
         public void Where_DefersExecutionUntilEvaluated()
         {
             bool executed = false;
@@ -534,6 +554,19 @@ namespace iSynaptic.Commons
             Assert.IsFalse(executed);
 
             Assert.Throws<InvalidOperationException>(() => { var notAssigned = value.Value; });
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void ToThreadSafe_DeferesExecutionUntilEvaluated()
+        {
+            bool executed = false;
+            var value = Maybe.Value(() => { executed = true; return 42; })
+                .ToThreadSafe();
+
+            Assert.IsFalse(executed);
+
+            Assert.AreEqual(42, value.Value);
             Assert.IsTrue(executed);
         }
 

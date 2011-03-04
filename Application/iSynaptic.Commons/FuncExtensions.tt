@@ -9,6 +9,8 @@
 using System;
 using System.Collections.Generic;
 
+using iSynaptic.Commons.Collections.Generic;
+
 namespace iSynaptic.Commons
 {
 	public static partial class FuncExtensions
@@ -52,32 +54,47 @@ namespace iSynaptic.Commons
             };
         }
 
+		public static Func<<#= typeArgs #>, TResult> Synchronize<<#= typeArgs #>, TResult>(this Func<<#= typeArgs #>, TResult> self)
+        {
+            return self.Synchronize((<#= args #>) => true);
+        }
+
+        public static Func<<#= typeArgs #>, TResult> Synchronize<<#= typeArgs #>, TResult>(this Func<<#= typeArgs #>, TResult> self, Func<<#= typeArgs #>, bool> needsSynchronizationPredicate)
+        {
+            Guard.NotNull(self, "self");
+            Guard.NotNull(needsSynchronizationPredicate, "needsSynchronizationPredicate");
+
+            var lockObject = new object();
+
+            return (<#= args #>) =>
+            {
+                if(needsSynchronizationPredicate(<#= args #>))
+                {
+                    lock (lockObject)
+                    {
+                        return self(<#= args #>);
+                    }
+                }
+
+                return self(<#= args #>);
+            };
+        }
+
 		<# } #>
 
 		<# foreach(var i in Enumerable.Range(1, 7))
 		{
 			string typeArgs = Delimit(Enumerable.Range(1, i), ", ", x => "T" + x.ToString());
 			string args = Delimit(Enumerable.Range(1, i), ", ", x => "t" + x.ToString());
+			string fromTupleArgs = Delimit(Enumerable.Range(1, i), ", ", x => "x.Item" + x.ToString());
 	    #>
 
 		public static Func<<#= typeArgs #>, TResult> Memoize<<#= typeArgs #>, TResult>(this Func<<#= typeArgs #>, TResult> self)
 		{
 			Guard.NotNull(self, "self");
+			var dictionary = new LazyDictionary<Tuple<<#= typeArgs #>>, TResult>(x => self(<#= fromTupleArgs #>));
 
-			var dictionary = new Dictionary<Tuple<<#= typeArgs #>>, TResult>();
-			return (<#= args #>) =>
-			{
-				var key = Tuple.Create(<#= args #>);
-
-				TResult result;
-				if(dictionary.TryGetValue(key, out result))
-					return result;
-
-				result = self(<#= args #>);
-				dictionary.Add(key, result);
-
-				return result;
-			};
+			return (<#= args #>) => dictionary[Tuple.Create(<#= args #>)];
 		}
 		<# } #>
 

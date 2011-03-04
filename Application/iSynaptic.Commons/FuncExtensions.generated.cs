@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 
+using iSynaptic.Commons.Collections.Generic;
+
 namespace iSynaptic.Commons
 {
 	public static partial class FuncExtensions
@@ -40,6 +42,32 @@ namespace iSynaptic.Commons
             };
         }
 
+		public static Func<T1, TResult> Synchronize<T1, TResult>(this Func<T1, TResult> self)
+        {
+            return self.Synchronize((t1) => true);
+        }
+
+        public static Func<T1, TResult> Synchronize<T1, TResult>(this Func<T1, TResult> self, Func<T1, bool> needsSynchronizationPredicate)
+        {
+            Guard.NotNull(self, "self");
+            Guard.NotNull(needsSynchronizationPredicate, "needsSynchronizationPredicate");
+
+            var lockObject = new object();
+
+            return (t1) =>
+            {
+                if(needsSynchronizationPredicate(t1))
+                {
+                    lock (lockObject)
+                    {
+                        return self(t1);
+                    }
+                }
+
+                return self(t1);
+            };
+        }
+
 		
 		public static Action<T1, T2> ToAction<T1, T2, TRet>(this Func<T1, T2, TRet> self)
         {
@@ -71,6 +99,32 @@ namespace iSynaptic.Commons
                     return falseFunc(t1, t2);
                 
                 return default(TResult);
+            };
+        }
+
+		public static Func<T1, T2, TResult> Synchronize<T1, T2, TResult>(this Func<T1, T2, TResult> self)
+        {
+            return self.Synchronize((t1, t2) => true);
+        }
+
+        public static Func<T1, T2, TResult> Synchronize<T1, T2, TResult>(this Func<T1, T2, TResult> self, Func<T1, T2, bool> needsSynchronizationPredicate)
+        {
+            Guard.NotNull(self, "self");
+            Guard.NotNull(needsSynchronizationPredicate, "needsSynchronizationPredicate");
+
+            var lockObject = new object();
+
+            return (t1, t2) =>
+            {
+                if(needsSynchronizationPredicate(t1, t2))
+                {
+                    lock (lockObject)
+                    {
+                        return self(t1, t2);
+                    }
+                }
+
+                return self(t1, t2);
             };
         }
 
@@ -108,6 +162,32 @@ namespace iSynaptic.Commons
             };
         }
 
+		public static Func<T1, T2, T3, TResult> Synchronize<T1, T2, T3, TResult>(this Func<T1, T2, T3, TResult> self)
+        {
+            return self.Synchronize((t1, t2, t3) => true);
+        }
+
+        public static Func<T1, T2, T3, TResult> Synchronize<T1, T2, T3, TResult>(this Func<T1, T2, T3, TResult> self, Func<T1, T2, T3, bool> needsSynchronizationPredicate)
+        {
+            Guard.NotNull(self, "self");
+            Guard.NotNull(needsSynchronizationPredicate, "needsSynchronizationPredicate");
+
+            var lockObject = new object();
+
+            return (t1, t2, t3) =>
+            {
+                if(needsSynchronizationPredicate(t1, t2, t3))
+                {
+                    lock (lockObject)
+                    {
+                        return self(t1, t2, t3);
+                    }
+                }
+
+                return self(t1, t2, t3);
+            };
+        }
+
 		
 		public static Action<T1, T2, T3, T4> ToAction<T1, T2, T3, T4, TRet>(this Func<T1, T2, T3, T4, TRet> self)
         {
@@ -139,6 +219,32 @@ namespace iSynaptic.Commons
                     return falseFunc(t1, t2, t3, t4);
                 
                 return default(TResult);
+            };
+        }
+
+		public static Func<T1, T2, T3, T4, TResult> Synchronize<T1, T2, T3, T4, TResult>(this Func<T1, T2, T3, T4, TResult> self)
+        {
+            return self.Synchronize((t1, t2, t3, t4) => true);
+        }
+
+        public static Func<T1, T2, T3, T4, TResult> Synchronize<T1, T2, T3, T4, TResult>(this Func<T1, T2, T3, T4, TResult> self, Func<T1, T2, T3, T4, bool> needsSynchronizationPredicate)
+        {
+            Guard.NotNull(self, "self");
+            Guard.NotNull(needsSynchronizationPredicate, "needsSynchronizationPredicate");
+
+            var lockObject = new object();
+
+            return (t1, t2, t3, t4) =>
+            {
+                if(needsSynchronizationPredicate(t1, t2, t3, t4))
+                {
+                    lock (lockObject)
+                    {
+                        return self(t1, t2, t3, t4);
+                    }
+                }
+
+                return self(t1, t2, t3, t4);
             };
         }
 
@@ -176,6 +282,32 @@ namespace iSynaptic.Commons
             };
         }
 
+		public static Func<T1, T2, T3, T4, T5, TResult> Synchronize<T1, T2, T3, T4, T5, TResult>(this Func<T1, T2, T3, T4, T5, TResult> self)
+        {
+            return self.Synchronize((t1, t2, t3, t4, t5) => true);
+        }
+
+        public static Func<T1, T2, T3, T4, T5, TResult> Synchronize<T1, T2, T3, T4, T5, TResult>(this Func<T1, T2, T3, T4, T5, TResult> self, Func<T1, T2, T3, T4, T5, bool> needsSynchronizationPredicate)
+        {
+            Guard.NotNull(self, "self");
+            Guard.NotNull(needsSynchronizationPredicate, "needsSynchronizationPredicate");
+
+            var lockObject = new object();
+
+            return (t1, t2, t3, t4, t5) =>
+            {
+                if(needsSynchronizationPredicate(t1, t2, t3, t4, t5))
+                {
+                    lock (lockObject)
+                    {
+                        return self(t1, t2, t3, t4, t5);
+                    }
+                }
+
+                return self(t1, t2, t3, t4, t5);
+            };
+        }
+
 		
 		public static Action<T1, T2, T3, T4, T5, T6> ToAction<T1, T2, T3, T4, T5, T6, TRet>(this Func<T1, T2, T3, T4, T5, T6, TRet> self)
         {
@@ -207,6 +339,32 @@ namespace iSynaptic.Commons
                     return falseFunc(t1, t2, t3, t4, t5, t6);
                 
                 return default(TResult);
+            };
+        }
+
+		public static Func<T1, T2, T3, T4, T5, T6, TResult> Synchronize<T1, T2, T3, T4, T5, T6, TResult>(this Func<T1, T2, T3, T4, T5, T6, TResult> self)
+        {
+            return self.Synchronize((t1, t2, t3, t4, t5, t6) => true);
+        }
+
+        public static Func<T1, T2, T3, T4, T5, T6, TResult> Synchronize<T1, T2, T3, T4, T5, T6, TResult>(this Func<T1, T2, T3, T4, T5, T6, TResult> self, Func<T1, T2, T3, T4, T5, T6, bool> needsSynchronizationPredicate)
+        {
+            Guard.NotNull(self, "self");
+            Guard.NotNull(needsSynchronizationPredicate, "needsSynchronizationPredicate");
+
+            var lockObject = new object();
+
+            return (t1, t2, t3, t4, t5, t6) =>
+            {
+                if(needsSynchronizationPredicate(t1, t2, t3, t4, t5, t6))
+                {
+                    lock (lockObject)
+                    {
+                        return self(t1, t2, t3, t4, t5, t6);
+                    }
+                }
+
+                return self(t1, t2, t3, t4, t5, t6);
             };
         }
 
@@ -244,6 +402,32 @@ namespace iSynaptic.Commons
             };
         }
 
+		public static Func<T1, T2, T3, T4, T5, T6, T7, TResult> Synchronize<T1, T2, T3, T4, T5, T6, T7, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, TResult> self)
+        {
+            return self.Synchronize((t1, t2, t3, t4, t5, t6, t7) => true);
+        }
+
+        public static Func<T1, T2, T3, T4, T5, T6, T7, TResult> Synchronize<T1, T2, T3, T4, T5, T6, T7, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, TResult> self, Func<T1, T2, T3, T4, T5, T6, T7, bool> needsSynchronizationPredicate)
+        {
+            Guard.NotNull(self, "self");
+            Guard.NotNull(needsSynchronizationPredicate, "needsSynchronizationPredicate");
+
+            var lockObject = new object();
+
+            return (t1, t2, t3, t4, t5, t6, t7) =>
+            {
+                if(needsSynchronizationPredicate(t1, t2, t3, t4, t5, t6, t7))
+                {
+                    lock (lockObject)
+                    {
+                        return self(t1, t2, t3, t4, t5, t6, t7);
+                    }
+                }
+
+                return self(t1, t2, t3, t4, t5, t6, t7);
+            };
+        }
+
 		
 		public static Action<T1, T2, T3, T4, T5, T6, T7, T8> ToAction<T1, T2, T3, T4, T5, T6, T7, T8, TRet>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, TRet> self)
         {
@@ -275,6 +459,32 @@ namespace iSynaptic.Commons
                     return falseFunc(t1, t2, t3, t4, t5, t6, t7, t8);
                 
                 return default(TResult);
+            };
+        }
+
+		public static Func<T1, T2, T3, T4, T5, T6, T7, T8, TResult> Synchronize<T1, T2, T3, T4, T5, T6, T7, T8, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, TResult> self)
+        {
+            return self.Synchronize((t1, t2, t3, t4, t5, t6, t7, t8) => true);
+        }
+
+        public static Func<T1, T2, T3, T4, T5, T6, T7, T8, TResult> Synchronize<T1, T2, T3, T4, T5, T6, T7, T8, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, TResult> self, Func<T1, T2, T3, T4, T5, T6, T7, T8, bool> needsSynchronizationPredicate)
+        {
+            Guard.NotNull(self, "self");
+            Guard.NotNull(needsSynchronizationPredicate, "needsSynchronizationPredicate");
+
+            var lockObject = new object();
+
+            return (t1, t2, t3, t4, t5, t6, t7, t8) =>
+            {
+                if(needsSynchronizationPredicate(t1, t2, t3, t4, t5, t6, t7, t8))
+                {
+                    lock (lockObject)
+                    {
+                        return self(t1, t2, t3, t4, t5, t6, t7, t8);
+                    }
+                }
+
+                return self(t1, t2, t3, t4, t5, t6, t7, t8);
             };
         }
 
@@ -312,6 +522,32 @@ namespace iSynaptic.Commons
             };
         }
 
+		public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult> Synchronize<T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult> self)
+        {
+            return self.Synchronize((t1, t2, t3, t4, t5, t6, t7, t8, t9) => true);
+        }
+
+        public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult> Synchronize<T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult> self, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, bool> needsSynchronizationPredicate)
+        {
+            Guard.NotNull(self, "self");
+            Guard.NotNull(needsSynchronizationPredicate, "needsSynchronizationPredicate");
+
+            var lockObject = new object();
+
+            return (t1, t2, t3, t4, t5, t6, t7, t8, t9) =>
+            {
+                if(needsSynchronizationPredicate(t1, t2, t3, t4, t5, t6, t7, t8, t9))
+                {
+                    lock (lockObject)
+                    {
+                        return self(t1, t2, t3, t4, t5, t6, t7, t8, t9);
+                    }
+                }
+
+                return self(t1, t2, t3, t4, t5, t6, t7, t8, t9);
+            };
+        }
+
 		
 		public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> ToAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TRet>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TRet> self)
         {
@@ -343,6 +579,32 @@ namespace iSynaptic.Commons
                     return falseFunc(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10);
                 
                 return default(TResult);
+            };
+        }
+
+		public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult> Synchronize<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult> self)
+        {
+            return self.Synchronize((t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) => true);
+        }
+
+        public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult> Synchronize<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult> self, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, bool> needsSynchronizationPredicate)
+        {
+            Guard.NotNull(self, "self");
+            Guard.NotNull(needsSynchronizationPredicate, "needsSynchronizationPredicate");
+
+            var lockObject = new object();
+
+            return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) =>
+            {
+                if(needsSynchronizationPredicate(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10))
+                {
+                    lock (lockObject)
+                    {
+                        return self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10);
+                    }
+                }
+
+                return self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10);
             };
         }
 
@@ -380,6 +642,32 @@ namespace iSynaptic.Commons
             };
         }
 
+		public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult> Synchronize<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult> self)
+        {
+            return self.Synchronize((t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) => true);
+        }
+
+        public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult> Synchronize<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult> self, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, bool> needsSynchronizationPredicate)
+        {
+            Guard.NotNull(self, "self");
+            Guard.NotNull(needsSynchronizationPredicate, "needsSynchronizationPredicate");
+
+            var lockObject = new object();
+
+            return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) =>
+            {
+                if(needsSynchronizationPredicate(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11))
+                {
+                    lock (lockObject)
+                    {
+                        return self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11);
+                    }
+                }
+
+                return self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11);
+            };
+        }
+
 		
 		public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> ToAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TRet>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TRet> self)
         {
@@ -411,6 +699,32 @@ namespace iSynaptic.Commons
                     return falseFunc(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12);
                 
                 return default(TResult);
+            };
+        }
+
+		public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult> Synchronize<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult> self)
+        {
+            return self.Synchronize((t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) => true);
+        }
+
+        public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult> Synchronize<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult> self, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, bool> needsSynchronizationPredicate)
+        {
+            Guard.NotNull(self, "self");
+            Guard.NotNull(needsSynchronizationPredicate, "needsSynchronizationPredicate");
+
+            var lockObject = new object();
+
+            return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) =>
+            {
+                if(needsSynchronizationPredicate(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12))
+                {
+                    lock (lockObject)
+                    {
+                        return self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12);
+                    }
+                }
+
+                return self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12);
             };
         }
 
@@ -448,6 +762,32 @@ namespace iSynaptic.Commons
             };
         }
 
+		public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TResult> Synchronize<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TResult> self)
+        {
+            return self.Synchronize((t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) => true);
+        }
+
+        public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TResult> Synchronize<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TResult> self, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, bool> needsSynchronizationPredicate)
+        {
+            Guard.NotNull(self, "self");
+            Guard.NotNull(needsSynchronizationPredicate, "needsSynchronizationPredicate");
+
+            var lockObject = new object();
+
+            return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) =>
+            {
+                if(needsSynchronizationPredicate(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13))
+                {
+                    lock (lockObject)
+                    {
+                        return self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13);
+                    }
+                }
+
+                return self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13);
+            };
+        }
+
 		
 		public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> ToAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TRet>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TRet> self)
         {
@@ -479,6 +819,32 @@ namespace iSynaptic.Commons
                     return falseFunc(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14);
                 
                 return default(TResult);
+            };
+        }
+
+		public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult> Synchronize<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult> self)
+        {
+            return self.Synchronize((t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) => true);
+        }
+
+        public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult> Synchronize<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult> self, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, bool> needsSynchronizationPredicate)
+        {
+            Guard.NotNull(self, "self");
+            Guard.NotNull(needsSynchronizationPredicate, "needsSynchronizationPredicate");
+
+            var lockObject = new object();
+
+            return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) =>
+            {
+                if(needsSynchronizationPredicate(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14))
+                {
+                    lock (lockObject)
+                    {
+                        return self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14);
+                    }
+                }
+
+                return self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14);
             };
         }
 
@@ -516,6 +882,32 @@ namespace iSynaptic.Commons
             };
         }
 
+		public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult> Synchronize<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult> self)
+        {
+            return self.Synchronize((t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) => true);
+        }
+
+        public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult> Synchronize<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult> self, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, bool> needsSynchronizationPredicate)
+        {
+            Guard.NotNull(self, "self");
+            Guard.NotNull(needsSynchronizationPredicate, "needsSynchronizationPredicate");
+
+            var lockObject = new object();
+
+            return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) =>
+            {
+                if(needsSynchronizationPredicate(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15))
+                {
+                    lock (lockObject)
+                    {
+                        return self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15);
+                    }
+                }
+
+                return self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15);
+            };
+        }
+
 		
 		public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> ToAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TRet>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TRet> self)
         {
@@ -550,146 +942,88 @@ namespace iSynaptic.Commons
             };
         }
 
+		public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TResult> Synchronize<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TResult> self)
+        {
+            return self.Synchronize((t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) => true);
+        }
+
+        public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TResult> Synchronize<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TResult> self, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, bool> needsSynchronizationPredicate)
+        {
+            Guard.NotNull(self, "self");
+            Guard.NotNull(needsSynchronizationPredicate, "needsSynchronizationPredicate");
+
+            var lockObject = new object();
+
+            return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) =>
+            {
+                if(needsSynchronizationPredicate(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16))
+                {
+                    lock (lockObject)
+                    {
+                        return self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16);
+                    }
+                }
+
+                return self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16);
+            };
+        }
+
 		
 		
 		public static Func<T1, TResult> Memoize<T1, TResult>(this Func<T1, TResult> self)
 		{
 			Guard.NotNull(self, "self");
+			var dictionary = new LazyDictionary<Tuple<T1>, TResult>(x => self(x.Item1));
 
-			var dictionary = new Dictionary<Tuple<T1>, TResult>();
-			return (t1) =>
-			{
-				var key = Tuple.Create(t1);
-
-				TResult result;
-				if(dictionary.TryGetValue(key, out result))
-					return result;
-
-				result = self(t1);
-				dictionary.Add(key, result);
-
-				return result;
-			};
+			return (t1) => dictionary[Tuple.Create(t1)];
 		}
 		
 		public static Func<T1, T2, TResult> Memoize<T1, T2, TResult>(this Func<T1, T2, TResult> self)
 		{
 			Guard.NotNull(self, "self");
+			var dictionary = new LazyDictionary<Tuple<T1, T2>, TResult>(x => self(x.Item1, x.Item2));
 
-			var dictionary = new Dictionary<Tuple<T1, T2>, TResult>();
-			return (t1, t2) =>
-			{
-				var key = Tuple.Create(t1, t2);
-
-				TResult result;
-				if(dictionary.TryGetValue(key, out result))
-					return result;
-
-				result = self(t1, t2);
-				dictionary.Add(key, result);
-
-				return result;
-			};
+			return (t1, t2) => dictionary[Tuple.Create(t1, t2)];
 		}
 		
 		public static Func<T1, T2, T3, TResult> Memoize<T1, T2, T3, TResult>(this Func<T1, T2, T3, TResult> self)
 		{
 			Guard.NotNull(self, "self");
+			var dictionary = new LazyDictionary<Tuple<T1, T2, T3>, TResult>(x => self(x.Item1, x.Item2, x.Item3));
 
-			var dictionary = new Dictionary<Tuple<T1, T2, T3>, TResult>();
-			return (t1, t2, t3) =>
-			{
-				var key = Tuple.Create(t1, t2, t3);
-
-				TResult result;
-				if(dictionary.TryGetValue(key, out result))
-					return result;
-
-				result = self(t1, t2, t3);
-				dictionary.Add(key, result);
-
-				return result;
-			};
+			return (t1, t2, t3) => dictionary[Tuple.Create(t1, t2, t3)];
 		}
 		
 		public static Func<T1, T2, T3, T4, TResult> Memoize<T1, T2, T3, T4, TResult>(this Func<T1, T2, T3, T4, TResult> self)
 		{
 			Guard.NotNull(self, "self");
+			var dictionary = new LazyDictionary<Tuple<T1, T2, T3, T4>, TResult>(x => self(x.Item1, x.Item2, x.Item3, x.Item4));
 
-			var dictionary = new Dictionary<Tuple<T1, T2, T3, T4>, TResult>();
-			return (t1, t2, t3, t4) =>
-			{
-				var key = Tuple.Create(t1, t2, t3, t4);
-
-				TResult result;
-				if(dictionary.TryGetValue(key, out result))
-					return result;
-
-				result = self(t1, t2, t3, t4);
-				dictionary.Add(key, result);
-
-				return result;
-			};
+			return (t1, t2, t3, t4) => dictionary[Tuple.Create(t1, t2, t3, t4)];
 		}
 		
 		public static Func<T1, T2, T3, T4, T5, TResult> Memoize<T1, T2, T3, T4, T5, TResult>(this Func<T1, T2, T3, T4, T5, TResult> self)
 		{
 			Guard.NotNull(self, "self");
+			var dictionary = new LazyDictionary<Tuple<T1, T2, T3, T4, T5>, TResult>(x => self(x.Item1, x.Item2, x.Item3, x.Item4, x.Item5));
 
-			var dictionary = new Dictionary<Tuple<T1, T2, T3, T4, T5>, TResult>();
-			return (t1, t2, t3, t4, t5) =>
-			{
-				var key = Tuple.Create(t1, t2, t3, t4, t5);
-
-				TResult result;
-				if(dictionary.TryGetValue(key, out result))
-					return result;
-
-				result = self(t1, t2, t3, t4, t5);
-				dictionary.Add(key, result);
-
-				return result;
-			};
+			return (t1, t2, t3, t4, t5) => dictionary[Tuple.Create(t1, t2, t3, t4, t5)];
 		}
 		
 		public static Func<T1, T2, T3, T4, T5, T6, TResult> Memoize<T1, T2, T3, T4, T5, T6, TResult>(this Func<T1, T2, T3, T4, T5, T6, TResult> self)
 		{
 			Guard.NotNull(self, "self");
+			var dictionary = new LazyDictionary<Tuple<T1, T2, T3, T4, T5, T6>, TResult>(x => self(x.Item1, x.Item2, x.Item3, x.Item4, x.Item5, x.Item6));
 
-			var dictionary = new Dictionary<Tuple<T1, T2, T3, T4, T5, T6>, TResult>();
-			return (t1, t2, t3, t4, t5, t6) =>
-			{
-				var key = Tuple.Create(t1, t2, t3, t4, t5, t6);
-
-				TResult result;
-				if(dictionary.TryGetValue(key, out result))
-					return result;
-
-				result = self(t1, t2, t3, t4, t5, t6);
-				dictionary.Add(key, result);
-
-				return result;
-			};
+			return (t1, t2, t3, t4, t5, t6) => dictionary[Tuple.Create(t1, t2, t3, t4, t5, t6)];
 		}
 		
 		public static Func<T1, T2, T3, T4, T5, T6, T7, TResult> Memoize<T1, T2, T3, T4, T5, T6, T7, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, TResult> self)
 		{
 			Guard.NotNull(self, "self");
+			var dictionary = new LazyDictionary<Tuple<T1, T2, T3, T4, T5, T6, T7>, TResult>(x => self(x.Item1, x.Item2, x.Item3, x.Item4, x.Item5, x.Item6, x.Item7));
 
-			var dictionary = new Dictionary<Tuple<T1, T2, T3, T4, T5, T6, T7>, TResult>();
-			return (t1, t2, t3, t4, t5, t6, t7) =>
-			{
-				var key = Tuple.Create(t1, t2, t3, t4, t5, t6, t7);
-
-				TResult result;
-				if(dictionary.TryGetValue(key, out result))
-					return result;
-
-				result = self(t1, t2, t3, t4, t5, t6, t7);
-				dictionary.Add(key, result);
-
-				return result;
-			};
+			return (t1, t2, t3, t4, t5, t6, t7) => dictionary[Tuple.Create(t1, t2, t3, t4, t5, t6, t7)];
 		}
 		
 	}
