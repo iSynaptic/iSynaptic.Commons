@@ -107,23 +107,26 @@ namespace iSynaptic.Commons.Data.Syntax
         public IFluentExodataBindingPredicateScopeTo<TExodata, object> For(Expression<Func<object, object>> member)
         {
             Guard.NotNull(member, "member");
-
-            Member = member.ExtractMemberInfoForExodata();
-            return this;
+            return ForCore(Maybe<object>.NoValue, member);
         }
 
         public IFluentExodataBindingPredicateScopeTo<TExodata, object> For(object subject)
         {
-            Subject = subject;
-            return this;
+            return ForCore(subject, null);
         }
 
         public IFluentExodataBindingPredicateScopeTo<TExodata, object> For(object subject, Expression<Func<object, object>> member)
-        {
+        {            
             Guard.NotNull(member, "member");
+            return ForCore(subject, member);
+        }
 
+        private IFluentExodataBindingPredicateScopeTo<TExodata, object> ForCore(Maybe<object> subject, Expression<Func<object, object>> member)
+        {
             Subject = subject;
-            Member = member.ExtractMemberInfoForExodata();
+
+            if(member != null)
+                Member = member.ExtractMemberInfoForExodata();
 
             return this;
         }

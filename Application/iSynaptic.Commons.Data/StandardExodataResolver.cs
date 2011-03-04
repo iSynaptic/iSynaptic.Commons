@@ -45,40 +45,33 @@ namespace iSynaptic.Commons.Data
 
         protected override IExodataBinding SelectBinding<TExodata, TSubject>(IExodataRequest<TSubject> request, IEnumerable<IExodataBinding> candidates)
         {
-            var bindingList = candidates
-                .ToList();
+            var bindingList = candidates.ToList();
 
-            if (bindingList.Count > 1)
-            {
-                bindingList.Sort(BindingSortPriority);
-                if (BindingSortPriority(bindingList[0], bindingList[1]) != 0)
-                    return bindingList[0];
-            }
-
-            return base.SelectBinding<TExodata, TSubject>(request, bindingList);
+            return Maybe.NotNull(bindingList)
+                .Where(x => x.Count > 1)
+                .Do(x => x.Sort(BindingSortPriority))
+                .Where(x => BindingSortPriority(x[0], x[1]) != 0)
+                .Select(x => x[0])
+                .OnNoValue(() => base.SelectBinding<TExodata, TSubject>(request, bindingList))
+                .Return();
         }
 
         private static int BindingSortPriority(IExodataBinding left, IExodataBinding right)
         {
-            if (!(left.Source is AttributeExodataBindingSource) && right.Source is AttributeExodataBindingSource)
-                return -1;
+            bool leftIsAttributeBinding = left.Source is AttributeExodataBindingSource;
+            bool rightIsAttributeBinding = right.Source is AttributeExodataBindingSource;
 
-            if (!(right.Source is AttributeExodataBindingSource) && left.Source is AttributeExodataBindingSource)
-                return 1;
+            if (leftIsAttributeBinding ^ rightIsAttributeBinding)
+                return leftIsAttributeBinding ? 1 : -1;
 
-            if (left.BoundToSubjectInstance && !right.BoundToSubjectInstance)
-                return -1;
+            bool leftBoundToSubject = left.BoundToSubjectInstance;
+            bool rightBoundToSubject = right.BoundToSubjectInstance;
 
-            if (right.BoundToSubjectInstance && !left.BoundToSubjectInstance)
-                return 1;
+            if (leftBoundToSubject ^ rightBoundToSubject)
+                return leftBoundToSubject ? -1 : 1;
 
             if(left.SubjectType != right.SubjectType)
-            {
-                if (left.SubjectType.IsAssignableFrom(right.SubjectType))
-                    return 1;
-
-                return -1;
-            }
+                return left.SubjectType.IsAssignableFrom(right.SubjectType) ? 1 : -1;
 
             return 0;
         }
@@ -102,12 +95,12 @@ namespace iSynaptic.Commons.Data
 
         public IFluentExodataBindingSubjectPredicateScopeTo<TExodata> Bind<TExodata>(IExodataDeclaration<TExodata> declaration)
         {
-            return _ResolverModule.Bind(declaration);
+            return Bind<TExodata>((IExodataDeclaration) declaration);
         }
 
         public void Bind<TExodata>(IExodataDeclaration<TExodata> declaration, TExodata value)
         {
-            _ResolverModule.Bind(declaration, value);
+            Bind((IExodataDeclaration) declaration, value);
         }
 
         public void Bind<TExodata>(IExodataDeclaration declaration, TExodata value)

@@ -199,5 +199,17 @@ namespace iSynaptic.Commons.Data
             var value = CommonExodata.Description.For(new DerivedTestSubject());
             Assert.AreEqual("Derived Surrogate Description", value);
         }
+
+        [Test]
+        public void Resolve_WithSpecificInstanceAgainstMember_YieldsExodataSurrogateMetadata()
+        {
+            var resolver = new StandardExodataResolver();
+            ExodataDeclaration.SetResolver(resolver);
+
+            TestSubjectExodataSurrogate.ShouldYieldInstanceExodata = true;
+
+            var value = CommonExodata.Description.For(TestSubjectExodataSurrogate.Subject, x => x.FirstName);
+            Assert.AreEqual("Special Member Description", value);
+        }
     }
 }

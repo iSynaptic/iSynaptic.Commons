@@ -29,8 +29,7 @@ namespace iSynaptic.Commons.Data
 
         public void Bind<TExodata>(IExodataDeclaration<TExodata> declaration, TExodata value)
         {
-            Bind<TExodata>((IExodataDeclaration)declaration)
-                .To(value);
+            Bind((IExodataDeclaration)declaration, value);
         }
 
         public void Bind<TExodata>(IExodataDeclaration declaration, TExodata value)
