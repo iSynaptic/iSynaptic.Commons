@@ -290,7 +290,10 @@ namespace iSynaptic.Commons
 
         public static T Return<T>(this Maybe<T> self, T @default)
         {
-            return self.HasValue ? self.Value : @default;
+            return self
+                .ThrowIfException()
+                .OnNoValue(@default)
+                .Value;
         }
 
         public static Maybe<T> Do<T>(this Maybe<T> self, Action<T> action)
@@ -309,6 +312,37 @@ namespace iSynaptic.Commons
                 target = self.Value;
 
             return self;
+        }
+
+        public static Maybe<T> OnNoValue<T>(this Maybe<T> self, T value)
+        {
+            return self.OnNoValue(() => value);
+        }
+
+        public static Maybe<T> OnNoValue<T>(this Maybe<T> self, Func<T> valueFactory)
+        {
+            return self.OnNoValue(() => Value(valueFactory));
+        }
+
+        public static Maybe<T> OnNoValue<T>(this Maybe<T> self, Func<Maybe<T>> valueFactory)
+        {
+            Guard.NotNull(valueFactory, "valueFactory");
+            return self.UnsafeBind(x =>
+            {
+                if (x.HasValue != true)
+                {
+                    try
+                    {
+                        return valueFactory();
+                    }
+                    catch (Exception ex)
+                    {
+                        return new Maybe<T>(ex);
+                    }
+                }
+
+                return x;
+            });
         }
 
         public static Maybe<T> OnException<T>(this Maybe<T> self, T value)
@@ -355,7 +389,7 @@ namespace iSynaptic.Commons
 
             return self.UnsafeBind(x =>
             {
-                if (x.Exception != null && exceptionType.IsAssignableFrom(exceptionType.GetType()))
+                if (x.Exception != null && exceptionType.IsAssignableFrom(x.Exception.GetType()))
                     x.Exception.Rethrow();
 
                 return x;

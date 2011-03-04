@@ -21,10 +21,9 @@ namespace iSynaptic.Commons.Collections.Generic
 
             TValue retreivedValue = default(TValue);
 
-            if(self.TryGetValue(key, out retreivedValue))
-                return retreivedValue;
-
-            return Maybe<TValue>.NoValue;
+            return Maybe<TValue>.Default
+                .Where(x => self.TryGetValue(key, out retreivedValue))
+                .Select(x => retreivedValue);
         }
     }
 }

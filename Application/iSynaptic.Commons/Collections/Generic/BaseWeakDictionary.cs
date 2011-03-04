@@ -41,7 +41,7 @@ namespace iSynaptic.Commons.Collections.Generic
                 var weakKey = (WeakKeyReference<T>)obj;
              
                 T target = weakKey.Target;
-                return weakKey.IsAlive ? target : Maybe<T>.NoValue;
+                return Maybe.Value(target).Where(x => weakKey.IsAlive);
             }
         }
 
@@ -69,9 +69,8 @@ namespace iSynaptic.Commons.Collections.Generic
 
         protected static Maybe<T> UnwrapWeakReference<T>(WeakReference<T> value) where T : class
         {
-            var target = value.Target;
-
-            return value.IsAlive ? target : Maybe<T>.NoValue;
+            return Maybe.Value(value.Target)
+                .Where(x => value.IsAlive);
         }
 
         public override int Count

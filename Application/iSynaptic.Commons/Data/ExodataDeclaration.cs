@@ -19,7 +19,7 @@ namespace iSynaptic.Commons.Data
 
         public ExodataDeclaration(TExodata @default) : this()
         {
-            _Default = new Maybe<TExodata>(@default);
+            _Default = Maybe.Value(@default);
         }
 
         #region Get/For Methods
@@ -86,18 +86,13 @@ namespace iSynaptic.Commons.Data
         {
             var request = new ExodataRequest<TSubject>(this, subject, member);
 
-            var resolvedResult = TryResolve(request);
-
-            if (resolvedResult.HasValue)
-            {
-                OnValidateValue(resolvedResult.Value, "bound");
-                return resolvedResult.Value;
-            }
-
-            var @default = GetDefault(request);
-            OnValidateValue(@default, "default");
-
-            return @default;
+            return Maybe.Value(request)
+                .Select(TryResolve)
+                .Do(x => OnValidateValue(x, "bound"))
+                .ThrowIfException()
+                .OnNoValue(() => GetDefault(request))
+                .Do(x => OnValidateValue(x, "default"))
+                .Value;
         }
 
         protected TExodata Resolve<TSubject>(Maybe<TSubject> subject, Expression member)
@@ -109,11 +104,11 @@ namespace iSynaptic.Commons.Data
 
         protected virtual Maybe<TExodata> TryResolve<TSubject>(IExodataRequest<TSubject> request)
         {
-            var resolver = ExodataResolver ?? Ioc.Resolve<IExodataResolver>();
-
-            return resolver != null
-                       ? resolver.Resolve<TExodata, TSubject>(request)
-                       : Maybe<TExodata>.NoValue;
+            return Maybe
+                .NotNull(ExodataResolver)
+                .OnNoValue(() => Ioc.Resolve<IExodataResolver>())
+                .NotNull()
+                .Select(x => x.Resolve<TExodata, TSubject>(request));
         }
 
         #endregion
@@ -139,10 +134,7 @@ namespace iSynaptic.Commons.Data
 
         protected virtual TExodata GetDefault<TSubject>(IExodataRequest<TSubject> request)
         {
-            if (_Default.HasValue)
-                return _Default.Value;
-
-            return default(TExodata);
+            return _Default.Return();
         }
 
         public TExodata Default

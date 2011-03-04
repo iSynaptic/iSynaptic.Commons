@@ -61,7 +61,7 @@ namespace iSynaptic.Commons.Xml
 
             public IAttributeMultiplicity Attribute<T>(string name, Action<T> action)
             {
-                var matcher = new Matcher<T>(_Parent, name, XmlNodeType.Attribute, pc => new Maybe<string>(pc.Token.Value).Bind(Convert<string, T>.From), action);
+                var matcher = new Matcher<T>(_Parent, name, XmlNodeType.Attribute, pc => Maybe.Value(pc.Token.Value).Select(Convert<string, T>.From), action);
                 Matchers.Add(matcher);
 
                 return matcher;
@@ -85,8 +85,9 @@ namespace iSynaptic.Commons.Xml
                         return Maybe<T>.NoValue;
                     }
 
-                    var data = new Maybe<string>(pc.Token.Value)
-                        .Bind(Convert<string, T>.From);
+                    var data = Maybe
+                        .Value(pc.Token.Value)
+                        .Select(Convert<string, T>.From);
 
                     pc.MoveNext();
 
