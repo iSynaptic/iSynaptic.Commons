@@ -6,7 +6,7 @@ namespace iSynaptic.Commons
 {
     public struct Maybe<T> : IMaybe<T>, IEquatable<Maybe<T>>, IEquatable<T>
     {
-        internal struct MaybeResult
+        private struct MaybeResult
         {
             public T Value;
             public bool HasValue;
@@ -28,12 +28,12 @@ namespace iSynaptic.Commons
             _Computation = () => new MaybeResult {Value = value, HasValue = true};
         }
 
-        internal Maybe(Func<MaybeResult> computation) : this()
+        private Maybe(Func<MaybeResult> computation) : this()
         {
             _Computation = computation;
         }
 
-        internal Func<MaybeResult> Computation
+        private Func<MaybeResult> Computation
         {
             get { return _Computation ?? (() => new MaybeResult()); }
         }
@@ -380,7 +380,7 @@ namespace iSynaptic.Commons
 
             return Value(self)
                     .Select(predicate)
-                    .Select(y => y ? computation(self) : self);
+                    .Select(x => x ? computation(self) : self);
         }
 
         public static Maybe<T> When<T>(this Maybe<T> self, Maybe<T> value, Func<T, Maybe<T>> computation)
@@ -411,12 +411,13 @@ namespace iSynaptic.Commons
             return self.HasValue ? self : self;
         }
 
-        public static Maybe<T> ToThreadSafe<T>(this Maybe<T> self)
+        public static Maybe<T> Synchronize<T>(this Maybe<T> self)
         {
-            if(self.Computation != null)
-                return new Maybe<T>(self.Computation.Synchronize());
+            Func<Maybe<T>> synchronizedComputation = () => self.Exception != null ? self : self;
+            synchronizedComputation = synchronizedComputation.Synchronize();
 
-            return self;
+            return Value(synchronizedComputation)
+                .Select(x => x);
         }
     }
 }

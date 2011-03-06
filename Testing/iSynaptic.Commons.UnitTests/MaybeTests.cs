@@ -497,11 +497,11 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void ToThreadSafe_PreventsMultipleEvaluation()
+        public void Synchronize_PreventsMultipleEvaluation()
         {
             int count = 0;
             var value = Maybe.Value(() => { count++; Thread.Sleep(250); return "42"; })
-                .ToThreadSafe();
+                .Synchronize();
 
             string results = null;
 
@@ -591,11 +591,11 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void ToThreadSafe_DeferesExecutionUntilEvaluated()
+        public void Synchronize_DeferesExecutionUntilEvaluated()
         {
             bool executed = false;
             var value = Maybe.Value(() => { executed = true; return 42; })
-                .ToThreadSafe();
+                .Synchronize();
 
             Assert.IsFalse(executed);
 
