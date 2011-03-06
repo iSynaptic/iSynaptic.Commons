@@ -28,11 +28,6 @@ namespace iSynaptic.Commons
             _Computation = () => new MaybeResult {Value = value, HasValue = true};
         }
 
-        internal Maybe(Exception exception) : this()
-        {
-            _Computation = () => new MaybeResult { Exception = exception };
-        }
-
         internal Maybe(Func<MaybeResult> computation) : this()
         {
             _Computation = computation;
@@ -153,30 +148,27 @@ namespace iSynaptic.Commons
 
         public Maybe<TResult> Bind<TResult>(Func<T, Maybe<TResult>> func)
         {
-            return UnsafeBind(x =>
+            var computation = Computation;
+
+            Func<Maybe<TResult>.MaybeResult> boundComputation = () =>
             {
+                var result = computation();
+
+                if (result.Exception != null)
+                    return new Maybe<TResult>.MaybeResult { Exception = result.Exception };
+
+                if (result.HasValue != true)
+                    return new Maybe<TResult>.MaybeResult();
+
                 try
                 {
-                    if (x.Exception != null)
-                        return new Maybe<TResult>(x.Exception);
-
-                    return x.HasValue != true
-                        ? Maybe<TResult>.NoValue
-                        : func(x.Value);
+                    return func(result.Value).Computation();
                 }
                 catch (Exception ex)
                 {
-                    return new Maybe<TResult>(ex);
+                    return new Maybe<TResult>.MaybeResult { Exception = ex };
                 }
-            });
-        }
-
-        internal Maybe<TResult> UnsafeBind<TResult>(Func<Maybe<T>, Maybe<TResult>> func)
-        {
-            var computation = Computation;
-
-            Func<Maybe<TResult>.MaybeResult> boundComputation =
-                () => func(new Maybe<T>(computation)).Computation();
+            };
 
             return new Maybe<TResult>(boundComputation.Memoize());
         }
@@ -287,7 +279,7 @@ namespace iSynaptic.Commons
         public static T Return<T>(this Maybe<T> self, T @default)
         {
             return self
-                .ThrowIfException()
+                .OnException(@default)
                 .OnNoValue(@default)
                 .Value;
         }
@@ -323,22 +315,7 @@ namespace iSynaptic.Commons
         public static Maybe<T> OnNoValue<T>(this Maybe<T> self, Func<Maybe<T>> valueFactory)
         {
             Guard.NotNull(valueFactory, "valueFactory");
-            return self.UnsafeBind(x =>
-            {
-                if (x.HasValue != true)
-                {
-                    try
-                    {
-                        return valueFactory();
-                    }
-                    catch (Exception ex)
-                    {
-                        return new Maybe<T>(ex);
-                    }
-                }
-
-                return x;
-            });
+            return self.When(x => x.HasValue != true, x => valueFactory());
         }
 
         public static Maybe<T> OnException<T>(this Maybe<T> self, T value)
@@ -349,29 +326,13 @@ namespace iSynaptic.Commons
         public static Maybe<T> OnException<T>(this Maybe<T> self, Action<Exception> handler)
         {
             Guard.NotNull(handler, "handler");
-            return self.OnException(x => { handler(x); return new Maybe<T>(x); });
+            return self.When(x => x.Exception != null, x => { handler(x.Exception); return x; });
         }
 
         public static Maybe<T> OnException<T>(this Maybe<T> self, Func<Exception, Maybe<T>> handler)
         {
             Guard.NotNull(handler, "handler");
-
-            return self.UnsafeBind(x =>
-            {
-                if (x.Exception != null)
-                {
-                    try
-                    {
-                        return handler(x.Exception);
-                    }
-                    catch (Exception ex)
-                    {
-                        return new Maybe<T>(ex);
-                    }
-                }
-
-                return x;
-            });
+            return self.When(x => x.Exception != null, x => handler(x.Exception));
         }
 
         public static Maybe<T> ThrowIfException<T>(this Maybe<T> self)
@@ -383,13 +344,71 @@ namespace iSynaptic.Commons
         {
             Guard.NotNull(exceptionType, "exceptionType");
 
-            return self.UnsafeBind(x =>
+            return new Maybe<T>(() => Value(self)
+                                            .Where(y => y.Exception != null)
+                                            .Where(y => exceptionType.IsAssignableFrom(y.GetType()))
+                                            .Value.Value);
+        }
+
+        public static Maybe<T> With<T, TSelected>(this Maybe<T> self, Func<T, TSelected> selector, Action<TSelected> action)
+        {
+            Guard.NotNull(selector, "selector");
+            Guard.NotNull(action, "action");
+
+            return With(self, x => Value(selector(x)), action);
+        }
+
+        public static Maybe<T> With<T, TSelected>(this Maybe<T> self, Func<T, Maybe<TSelected>> selector, Action<TSelected> action)
+        {
+            Guard.NotNull(selector, "selector");
+            Guard.NotNull(action, "action");
+
+            return self.Bind(x =>
             {
-                if (x.Exception != null && exceptionType.IsAssignableFrom(x.Exception.GetType()))
-                    x.Exception.Rethrow();
+                selector(x)
+                    .Do(action)
+                    .Return();
 
                 return x;
             });
+        }
+
+        public static Maybe<T> When<T>(this Maybe<T> self, Func<Maybe<T>, bool> predicate, Func<Maybe<T>, Maybe<T>> computation)
+        {
+            Guard.NotNull(predicate, "predicate");
+            Guard.NotNull(computation, "computation");
+
+            return Value(self)
+                    .Select(predicate)
+                    .Select(y => y ? computation(self) : self);
+        }
+
+        public static Maybe<T> When<T>(this Maybe<T> self, Maybe<T> value, Func<T, Maybe<T>> computation)
+        {
+            Guard.NotNull(computation, "computation");
+            return self.When(x => x.Equals(value), x => x.Bind(computation));
+        }
+
+        public static Maybe<T> When<T>(this Maybe<T> self, Maybe<T> value, Action<T> action)
+        {
+            Guard.NotNull(action, "action");
+            return self.When(value, x => { action(x); return x; });
+        }
+
+        public static Maybe<T> When<T>(this Maybe<T> self, Func<Maybe<T>, bool> predicate, Maybe<T> result)
+        {
+            Guard.NotNull(predicate, "predicate");
+            return self.When(predicate, x => result);
+        }
+
+        public static Maybe<T> When<T>(this Maybe<T> self, Maybe<T> value, Maybe<T> result)
+        {
+            return self.When(value, x => result);
+        }
+
+        public static Maybe<T> Run<T>(this Maybe<T> self)
+        {
+            return self.HasValue ? self : self;
         }
 
         public static Maybe<T> ToThreadSafe<T>(this Maybe<T> self)

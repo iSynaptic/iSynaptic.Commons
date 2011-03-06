@@ -402,6 +402,39 @@ namespace iSynaptic.Commons
         }
 
         [Test]
+        public void With_WhenHasValue_Executes()
+        {
+            int checkValue = 0;
+
+            var value = Maybe.Value("Hello")
+                .With(x => x.Length, x => checkValue = x)
+                .Return();
+
+            Assert.AreEqual("Hello", value);
+            Assert.AreEqual(5, checkValue);
+        }
+
+        [Test]
+        public void When_PredicateIsTrue_UsesComputation()
+        {
+            var value = Maybe.Value("Hello")
+                .When("Hello", "World");
+
+            Assert.IsTrue(value.HasValue);
+            Assert.AreEqual("World", value.Value);
+        }
+
+        [Test]
+        public void When_PredicateIsFalse_UsesOriginalValue()
+        {
+            var value = Maybe.Value("Hello")
+                .When("Goodbye", "World");
+
+            Assert.IsTrue(value.HasValue);
+            Assert.AreEqual("Hello", value.Value);
+        }
+
+        [Test]
         public void Value_DefersExecutionUntilEvaluated()
         {
             bool executed = false;
