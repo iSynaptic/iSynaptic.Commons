@@ -33,6 +33,11 @@ namespace iSynaptic.Commons
             _Computation = computation;
         }
 
+        public static Maybe<T> Unsafe(Func<Maybe<T>> unsafeComputation)
+        {
+            return new Maybe<T>(() => unsafeComputation().Computation());
+        }
+
         private Func<MaybeResult> Computation
         {
             get { return _Computation ?? (() => new MaybeResult()); }
@@ -344,10 +349,15 @@ namespace iSynaptic.Commons
         {
             Guard.NotNull(exceptionType, "exceptionType");
 
-            return new Maybe<T>(() => Value(self)
-                                            .Where(y => y.Exception != null)
-                                            .Where(y => exceptionType.IsAssignableFrom(y.GetType()))
-                                            .Value.Value);
+            Func<Maybe<T>> boundComputation = () =>
+            {
+                if (self.Exception != null && exceptionType.IsAssignableFrom(self.Exception.GetType()))
+                    self.Exception.Rethrow();
+
+                return self;
+            };
+
+            return Maybe<T>.Unsafe(boundComputation.Memoize());
         }
 
         public static Maybe<T> With<T, TSelected>(this Maybe<T> self, Func<T, TSelected> selector, Action<TSelected> action)
