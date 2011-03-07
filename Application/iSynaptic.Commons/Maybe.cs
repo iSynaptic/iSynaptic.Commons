@@ -313,12 +313,12 @@ namespace iSynaptic.Commons
             return self.When(x => x.Exception != null, x => handler(x.Exception));
         }
 
-        public static Maybe<T> ThrowIfException<T>(this Maybe<T> self)
+        public static Maybe<T> ThrowOnException<T>(this Maybe<T> self)
         {
-            return self.ThrowIfException(typeof(Exception));
+            return self.ThrowOnException(typeof(Exception));
         }
 
-        public static Maybe<T> ThrowIfException<T>(this Maybe<T> self, Type exceptionType)
+        public static Maybe<T> ThrowOnException<T>(this Maybe<T> self, Type exceptionType)
         {
             Guard.NotNull(exceptionType, "exceptionType");
 
@@ -350,7 +350,7 @@ namespace iSynaptic.Commons
             {
                 selector(x)
                     .Do(action)
-                    .ThrowIfException()
+                    .ThrowOnException()
                     .Run();
 
                 return x;

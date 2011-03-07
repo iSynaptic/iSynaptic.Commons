@@ -89,7 +89,7 @@ namespace iSynaptic.Commons.Data
             return Maybe.Value(request)
                 .Select(TryResolve)
                 .Do(x => OnValidateValue(x, "bound"))
-                .ThrowIfException()
+                .ThrowOnException()
                 .OnNoValue(() => GetDefault(request))
                 .Do(x => OnValidateValue(x, "default"))
                 .Value;

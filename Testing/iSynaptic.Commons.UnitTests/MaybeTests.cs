@@ -585,7 +585,7 @@ namespace iSynaptic.Commons
         {
             bool executed = false;
             var value = Maybe.Value<int>(() => { executed = true; throw new InvalidOperationException(); })
-                .ThrowIfException();
+                .ThrowOnException();
 
             Assert.IsFalse(executed);
 
