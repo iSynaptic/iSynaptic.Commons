@@ -211,5 +211,14 @@ namespace iSynaptic.Commons.Data
             var value = CommonExodata.Description.For(TestSubjectExodataSurrogate.Subject, x => x.FirstName);
             Assert.AreEqual("Special Member Description", value);
         }
+
+        [Test]
+        public void Resolve_WithSimpleStaticBinding_YieldsExodataSurrogateExodata()
+        {
+            var resolver = new StandardExodataResolver();
+            ExodataDeclaration.SetResolver(resolver);
+
+            Assert.AreEqual("A string...", CommonExodata.Description.For<string>());
+        }
     }
 }

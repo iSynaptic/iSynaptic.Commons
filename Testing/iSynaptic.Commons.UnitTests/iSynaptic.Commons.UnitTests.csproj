@@ -93,6 +93,7 @@
     <Compile Include="Data\IntegerExodata.cs" />
     <Compile Include="Data\LazyExodataTests.cs" />
     <Compile Include="Data\ExodataResolverTests.cs" />
+    <Compile Include="Data\StringExodataSurrogate.cs" />
     <Compile Include="Data\TestExodataBindingModule.cs" />
     <Compile Include="Data\TestSubject.cs" />
     <Compile Include="Data\TestSubjectExodataSurrogate.cs" />

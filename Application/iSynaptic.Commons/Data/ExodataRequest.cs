@@ -25,22 +25,16 @@ namespace iSynaptic.Commons.Data
 
         public bool Equals(IExodataRequest<TSubject> other)
         {
-            if (other == null)
-                return false;
-
-            if (Declaration != other.Declaration)
-                return false;
-
-            if (ReferenceEquals(Subject, null) != ReferenceEquals(other.Subject, null))
-                return false;
-
-            if (!ReferenceEquals(Subject, null) && !Subject.Equals(other.Subject))
-                return false;
-
-            if (Member != other.Member)
-                return false;
-
-            return true;
+            return Maybe
+                .Value(other)
+                .NotNull()
+                .Unless(x => Declaration != x.Declaration)
+                .Unless(x => ReferenceEquals(Subject, null) != ReferenceEquals(x.Subject, null))
+                .Unless(x => !ReferenceEquals(Subject, null) && !Subject.Equals(x.Subject))
+                .Unless(x => Member != x.Member)
+                .Select(x => true)
+                .ThrowOnException()
+                .Return(false);
         }
 
         public override bool Equals(object obj)
