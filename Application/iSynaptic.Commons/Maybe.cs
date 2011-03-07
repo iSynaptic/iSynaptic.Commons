@@ -191,31 +191,6 @@ namespace iSynaptic.Commons
 
     public static class Maybe
     {
-        public static Maybe<T> NotNull<T>(T value) where T : class
-        {
-            return Value(value).NotNull();
-        }
-
-        public static Maybe<T> NotNull<T>(T? value) where T : struct
-        {
-            return Value(value)
-                .NotNull()
-                .Select(x => x.Value);
-        }
-
-        public static Maybe<T> NotNull<T>(Func<T> computation) where T : class
-        {
-            return Value(computation)
-                .NotNull();
-        }
-
-        public static Maybe<T> NotNull<T>(Func<T?> computation) where T : struct
-        {
-            return Value(computation)
-                .NotNull()
-                .Select(x => x.Value);
-        }
-
         public static Maybe<T> Value<T>(T value)
         {
             return new Maybe<T>(value);
@@ -248,20 +223,18 @@ namespace iSynaptic.Commons
             return self.NotNull(x => x);
         }
 
-        public static Maybe<TResult> NotNull<T, TResult>(this Maybe<T> self, Func<T, TResult> selector) where TResult : class
+        public static Maybe<T> NotNull<T, TTarget>(this Maybe<T> self, Func<T, TTarget> selector) where TTarget : class
         {
             Guard.NotNull(selector, "selector");
             return self
-                .Select(selector)
-                .Where(x => x != null);
+                .Where(x => selector(x) != null);
         }
 
-        public static Maybe<TResult?> NotNull<T, TResult>(this Maybe<T> self, Func<T, TResult?> selector) where TResult : struct
+        public static Maybe<T> NotNull<T, TTarget>(this Maybe<T> self, Func<T, TTarget?> selector) where TTarget : struct
         {
             Guard.NotNull(selector, "selector");
             return self
-                .Select(selector)
-                .Where(x => x.HasValue);
+                .Where(x => selector(x).HasValue);
         }
 
         public static Maybe<T> Where<T>(this Maybe<T> self, Func<T, bool> predicate)
@@ -273,7 +246,7 @@ namespace iSynaptic.Commons
         public static Maybe<T> Unless<T>(this Maybe<T> self, Func<T, bool> predicate)
         {
             Guard.NotNull(predicate, "predicate");
-            return self.Bind(x => predicate(x) ? Maybe<T>.NoValue : x);
+            return self.Where(x => !predicate(x));
         }
 
         public static T Return<T>(this Maybe<T> self)
@@ -377,7 +350,8 @@ namespace iSynaptic.Commons
             {
                 selector(x)
                     .Do(action)
-                    .Return();
+                    .ThrowIfException()
+                    .Run();
 
                 return x;
             });

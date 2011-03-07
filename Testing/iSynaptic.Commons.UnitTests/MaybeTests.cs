@@ -215,19 +215,20 @@ namespace iSynaptic.Commons
         [Test]
         public void NotNull_WithNullReferenceType_ReturnsNoValue()
         {
-            Assert.IsFalse(Maybe.NotNull((string)null).HasValue);
+            Assert.IsFalse(Maybe.Value((string)null).NotNull().HasValue);
         }
 
         [Test]
         public void NotNull_WithNullValueType_ReturnsNoValue()
         {
-            Assert.IsFalse(Maybe.NotNull((int?)null).HasValue);
+            Assert.IsFalse(Maybe.Value((int?)null).NotNull().HasValue);
         }
 
         [Test]
         public void NotNull_WithNonNullReferenceType_ReturnsValue()
         {
-            var value = Maybe.NotNull("Hello World!");
+            var value = Maybe.Value("Hello World!")
+                .NotNull();
 
             Assert.IsTrue(value.HasValue);
             Assert.AreEqual("Hello World!", value.Value);
@@ -236,7 +237,8 @@ namespace iSynaptic.Commons
         [Test]
         public void NotNull_WithNonNullValueType_ReturnsValue()
         {
-            var value = Maybe.NotNull((int?)42);
+            var value = Maybe.Value((int?)42)
+                .NotNull();
 
             Assert.IsTrue(value.HasValue);
             Assert.AreEqual(42, value.Value);
@@ -312,7 +314,8 @@ namespace iSynaptic.Commons
         {
             var rawValue = "Hello World!";
             var value = Maybe
-                .NotNull(rawValue)
+                .Value(rawValue)
+                .NotNull()
                 .Return("{default}");
 
             Assert.AreEqual(rawValue, value);
@@ -450,7 +453,7 @@ namespace iSynaptic.Commons
         public void NotNull_WithReferenceType_DefersExecutionUntilEvaluated()
         {
             bool executed = false;
-            var value = Maybe.NotNull(() => { executed = true; return "42"; });
+            var value = Maybe.Value(() => { executed = true; return "42"; }).NotNull();
 
             Assert.IsFalse(executed);
 
@@ -462,7 +465,7 @@ namespace iSynaptic.Commons
         public void NotNull_WithValueType_DefersExecutionUntilEvaluated()
         {
             bool executed = false;
-            var value = Maybe.NotNull(() => { executed = true; return (int?)42; });
+            var value = Maybe.Value(() => { executed = true; return (int?)42; }).NotNull();
 
             Assert.IsFalse(executed);
 

@@ -47,7 +47,8 @@ namespace iSynaptic.Commons.Data
         {
             var bindingList = candidates.ToList();
 
-            return Maybe.NotNull(bindingList)
+            return Maybe.Value(bindingList)
+                .NotNull()
                 .Where(x => x.Count > 1)
                 .Do(x => x.Sort(BindingSortPriority))
                 .Where(x => BindingSortPriority(x[0], x[1]) != 0)
