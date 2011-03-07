@@ -321,10 +321,16 @@ namespace iSynaptic.Commons
         public static Maybe<T> ThrowOnException<T>(this Maybe<T> self, Type exceptionType)
         {
             Guard.NotNull(exceptionType, "exceptionType");
+            return self.ThrowOnException(x => exceptionType.IsAssignableFrom(x.GetType()));
+        }
+
+        public static Maybe<T> ThrowOnException<T>(this Maybe<T> self, Func<Exception, bool> predicate)
+        {
+            Guard.NotNull(predicate, "predicate");
 
             Func<Maybe<T>> boundComputation = () =>
             {
-                if (self.Exception != null && exceptionType.IsAssignableFrom(self.Exception.GetType()))
+                if (self.Exception != null && predicate(self.Exception))
                     self.Exception.Rethrow();
 
                 return self;
