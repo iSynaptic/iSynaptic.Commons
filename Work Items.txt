@@ -25,3 +25,4 @@
 - Collapse all Func/Action Curry extension methods into a methods that takes in a delegate that dispatches to underlying delegate
 - Scan types for Command-Query Seperation opportunities
 - Enhance GetDelegate extension method to work with generic methods
+- Make entire library localizable via Exodata

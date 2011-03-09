@@ -11,11 +11,8 @@ namespace iSynaptic.Commons.AOP
 
         protected Scope(ScopeBounds bounds, ScopeNesting nesting)
         {
-            Guard.MustBeDefined(bounds, "bounds");
-            Guard.MustBeDefined(nesting, "nesting");
-
-            Bounds = bounds;
-            Nesting = nesting;
+            Bounds = Guard.MustBeDefined<ScopeBounds>(bounds, "bounds");
+            Nesting = Guard.MustBeDefined<ScopeNesting>(nesting, "nesting");
 
             Initialize();
         }

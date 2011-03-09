@@ -14,13 +14,13 @@ namespace iSynaptic.Commons
         {
             var dayOfWeek = (DayOfWeek) int.MaxValue - 1;
 
-            Assert.Throws<ArgumentOutOfRangeException>(() => Guard.MustBeDefined(dayOfWeek, "value"));
+            Assert.Throws<ArgumentOutOfRangeException>(() => Guard.MustBeDefined<DayOfWeek>(dayOfWeek, "value"));
         }
 
         [Test]
         public void MustBeDefined_WithDefinedValue_DoesNothing()
         {
-            Guard.MustBeDefined(DayOfWeek.Friday, "value");
+            Guard.MustBeDefined<DayOfWeek>(DayOfWeek.Friday, "value");
         }
 
         [Test]
