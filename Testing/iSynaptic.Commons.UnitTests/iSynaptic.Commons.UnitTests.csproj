@@ -86,6 +86,7 @@
     <Compile Include="AOP\UnitOfWorkStub.cs" />
     <Compile Include="AOP\UnitOfWorkTests.cs" />
     <Compile Include="ArrayIndexTests.cs" />
+    <Compile Include="Collections\Generic\LazyDictionaryTests.cs" />
     <Compile Include="Collections\Generic\LazySelectionDictionaryTests.cs" />
     <Compile Include="Collections\Generic\SmartLoopTests.cs" />
     <Compile Include="Data\CommonExodata.cs" />
@@ -100,6 +101,11 @@
     <Compile Include="Collections\Generic\ProjectionCollectionTests.cs" />
     <Compile Include="ExceptionExtensionsTests.cs" />
     <Compile Include="ExpressionExtensionsTests.cs" />
+    <Compile Include="FuncExtensionsTests.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>FuncExtensionsTests.tt</DependentUpon>
+    </Compile>
     <Compile Include="GuardTests.cs" />
     <Compile Include="CastTests.cs" />
     <Compile Include="Collections\Generic\WeakDictionaryTests.cs" />
@@ -176,6 +182,10 @@
     <None Include="ActionExtensionsTests.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>ActionExtensionsTests.generated.cs</LastGenOutput>
+    </None>
+    <None Include="FuncExtensionsTests.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>FuncExtensionsTests.generated.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup>

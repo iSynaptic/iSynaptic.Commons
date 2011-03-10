@@ -1,5 +1,5 @@
 ﻿<#+
-	public static string Delimit<T>(IEnumerable<T> self, string delimiter, Func<T, string> selector)
+	public static string Delimit<T>(IEnumerable<T> self, string delimiter, Func<T, string> selector, bool outputTrailingDelimiter = false)
 	{
 		var builder = new StringBuilder();
 		bool isFirst = true;
@@ -13,6 +13,9 @@
 
 			builder.Append(selector(item));
 		}
+
+		if(outputTrailingDelimiter)
+			builder.Append(delimiter);
 
         return builder.ToString();
 	}

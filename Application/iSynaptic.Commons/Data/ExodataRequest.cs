@@ -39,10 +39,8 @@ namespace iSynaptic.Commons.Data
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(obj, null))
-                return false;
-
-            return Equals(obj as ExodataRequest<TSubject>);
+            return !ReferenceEquals(obj, null) &&
+                Equals(obj as ExodataRequest<TSubject>);
         }
 
         public override int GetHashCode()

@@ -70,6 +70,7 @@ namespace iSynaptic.Commons
                     }
                     finally
                     {
+                        self = null;
                         executed = true;
                     }
                 }

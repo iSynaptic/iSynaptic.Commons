@@ -44,7 +44,11 @@ namespace iSynaptic.Commons.Collections.Generic
 
         public override bool ContainsKey(TKey key)
         {
-            return _Underlying.ContainsKey(key);
+            if (_Underlying.ContainsKey(key))
+                return true;
+
+            TValue value = default(TValue);
+            return TryGetValue(key, out value);
         }
 
         public override bool TryGetValue(TKey key, out TValue value)

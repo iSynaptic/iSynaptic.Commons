@@ -17,10 +17,11 @@ namespace iSynaptic.Commons.Collections.Generic
         }
 
         [Test]
-        public void ContainsKey_OnlyReturnsTrue_AfterValueIsLoaded()
+        public void ContainsKey_OnlyReturnsTrue_IfValueCanBeLoaded()
         {
-            var dictionary = new LazySelectionDictionary<int, string>(x => x.ToString());
+            var dictionary = new LazySelectionDictionary<int, string>(x => x == 1 ? Maybe<string>.NoValue : x.ToString());
             Assert.IsFalse(dictionary.ContainsKey(1));
+            Assert.IsTrue(dictionary.ContainsKey(42));
         }
 
         [Test]

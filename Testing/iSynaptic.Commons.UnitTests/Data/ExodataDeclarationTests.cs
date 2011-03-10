@@ -69,11 +69,12 @@ namespace iSynaptic.Commons.Data
         }
 
         [Test]
-        public void Get_WithNoExodataResolverAndBadDefault_ThrowsValidationException()
+        public void Get_WithNoExodataResolverAndBadDefault_ThrowsValidationExceptionWithCorrectInvalidValue()
         {
             var maxLengthWithBadDefault = new ComparableExodataDeclaration<int>(1, 10, 42);
 
-            Assert.Throws<ExodataValidationException<int>>(() => maxLengthWithBadDefault.For<string>());
+            var exception = Assert.Throws<ExodataValidationException<int>>(() => maxLengthWithBadDefault.For<string>());
+            Assert.AreEqual(42, exception.InvalidValue);
         }
 
         [Test]
