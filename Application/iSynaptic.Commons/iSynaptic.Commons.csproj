@@ -82,7 +82,7 @@
     <Compile Include="Collections\Generic\BaseReadOnlyDictionary.cs" />
     <Compile Include="Collections\Generic\BaseWeakDictionary.cs" />
     <Compile Include="Collections\Generic\IWeakDictionary.cs" />
-    <Compile Include="Collections\Generic\LazyDictionary.cs" />
+    <Compile Include="Collections\Generic\LazySelectionDictionary.cs" />
     <Compile Include="Collections\Generic\MultiMap.cs" />
     <Compile Include="Collections\Generic\ProjectionCollection.cs" />
     <Compile Include="Collections\Generic\ReadOnlyDictionary.cs" />

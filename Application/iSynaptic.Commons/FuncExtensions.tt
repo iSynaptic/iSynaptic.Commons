@@ -92,7 +92,7 @@ namespace iSynaptic.Commons
 		public static Func<<#= typeArgs #>, TResult> Memoize<<#= typeArgs #>, TResult>(this Func<<#= typeArgs #>, TResult> self)
 		{
 			Guard.NotNull(self, "self");
-			var dictionary = new LazyDictionary<Tuple<<#= typeArgs #>>, TResult>(x => self(<#= fromTupleArgs #>));
+			var dictionary = new LazySelectionDictionary<Tuple<<#= typeArgs #>>, TResult>(x => self(<#= fromTupleArgs #>));
 
 			return (<#= args #>) => dictionary[Tuple.Create(<#= args #>)];
 		}

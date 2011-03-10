@@ -973,7 +973,7 @@ namespace iSynaptic.Commons
 		public static Func<T1, TResult> Memoize<T1, TResult>(this Func<T1, TResult> self)
 		{
 			Guard.NotNull(self, "self");
-			var dictionary = new LazyDictionary<Tuple<T1>, TResult>(x => self(x.Item1));
+			var dictionary = new LazySelectionDictionary<Tuple<T1>, TResult>(x => self(x.Item1));
 
 			return (t1) => dictionary[Tuple.Create(t1)];
 		}
@@ -981,7 +981,7 @@ namespace iSynaptic.Commons
 		public static Func<T1, T2, TResult> Memoize<T1, T2, TResult>(this Func<T1, T2, TResult> self)
 		{
 			Guard.NotNull(self, "self");
-			var dictionary = new LazyDictionary<Tuple<T1, T2>, TResult>(x => self(x.Item1, x.Item2));
+			var dictionary = new LazySelectionDictionary<Tuple<T1, T2>, TResult>(x => self(x.Item1, x.Item2));
 
 			return (t1, t2) => dictionary[Tuple.Create(t1, t2)];
 		}
@@ -989,7 +989,7 @@ namespace iSynaptic.Commons
 		public static Func<T1, T2, T3, TResult> Memoize<T1, T2, T3, TResult>(this Func<T1, T2, T3, TResult> self)
 		{
 			Guard.NotNull(self, "self");
-			var dictionary = new LazyDictionary<Tuple<T1, T2, T3>, TResult>(x => self(x.Item1, x.Item2, x.Item3));
+			var dictionary = new LazySelectionDictionary<Tuple<T1, T2, T3>, TResult>(x => self(x.Item1, x.Item2, x.Item3));
 
 			return (t1, t2, t3) => dictionary[Tuple.Create(t1, t2, t3)];
 		}
@@ -997,7 +997,7 @@ namespace iSynaptic.Commons
 		public static Func<T1, T2, T3, T4, TResult> Memoize<T1, T2, T3, T4, TResult>(this Func<T1, T2, T3, T4, TResult> self)
 		{
 			Guard.NotNull(self, "self");
-			var dictionary = new LazyDictionary<Tuple<T1, T2, T3, T4>, TResult>(x => self(x.Item1, x.Item2, x.Item3, x.Item4));
+			var dictionary = new LazySelectionDictionary<Tuple<T1, T2, T3, T4>, TResult>(x => self(x.Item1, x.Item2, x.Item3, x.Item4));
 
 			return (t1, t2, t3, t4) => dictionary[Tuple.Create(t1, t2, t3, t4)];
 		}
@@ -1005,7 +1005,7 @@ namespace iSynaptic.Commons
 		public static Func<T1, T2, T3, T4, T5, TResult> Memoize<T1, T2, T3, T4, T5, TResult>(this Func<T1, T2, T3, T4, T5, TResult> self)
 		{
 			Guard.NotNull(self, "self");
-			var dictionary = new LazyDictionary<Tuple<T1, T2, T3, T4, T5>, TResult>(x => self(x.Item1, x.Item2, x.Item3, x.Item4, x.Item5));
+			var dictionary = new LazySelectionDictionary<Tuple<T1, T2, T3, T4, T5>, TResult>(x => self(x.Item1, x.Item2, x.Item3, x.Item4, x.Item5));
 
 			return (t1, t2, t3, t4, t5) => dictionary[Tuple.Create(t1, t2, t3, t4, t5)];
 		}
@@ -1013,7 +1013,7 @@ namespace iSynaptic.Commons
 		public static Func<T1, T2, T3, T4, T5, T6, TResult> Memoize<T1, T2, T3, T4, T5, T6, TResult>(this Func<T1, T2, T3, T4, T5, T6, TResult> self)
 		{
 			Guard.NotNull(self, "self");
-			var dictionary = new LazyDictionary<Tuple<T1, T2, T3, T4, T5, T6>, TResult>(x => self(x.Item1, x.Item2, x.Item3, x.Item4, x.Item5, x.Item6));
+			var dictionary = new LazySelectionDictionary<Tuple<T1, T2, T3, T4, T5, T6>, TResult>(x => self(x.Item1, x.Item2, x.Item3, x.Item4, x.Item5, x.Item6));
 
 			return (t1, t2, t3, t4, t5, t6) => dictionary[Tuple.Create(t1, t2, t3, t4, t5, t6)];
 		}
@@ -1021,7 +1021,7 @@ namespace iSynaptic.Commons
 		public static Func<T1, T2, T3, T4, T5, T6, T7, TResult> Memoize<T1, T2, T3, T4, T5, T6, T7, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, TResult> self)
 		{
 			Guard.NotNull(self, "self");
-			var dictionary = new LazyDictionary<Tuple<T1, T2, T3, T4, T5, T6, T7>, TResult>(x => self(x.Item1, x.Item2, x.Item3, x.Item4, x.Item5, x.Item6, x.Item7));
+			var dictionary = new LazySelectionDictionary<Tuple<T1, T2, T3, T4, T5, T6, T7>, TResult>(x => self(x.Item1, x.Item2, x.Item3, x.Item4, x.Item5, x.Item6, x.Item7));
 
 			return (t1, t2, t3, t4, t5, t6, t7) => dictionary[Tuple.Create(t1, t2, t3, t4, t5, t6, t7)];
 		}

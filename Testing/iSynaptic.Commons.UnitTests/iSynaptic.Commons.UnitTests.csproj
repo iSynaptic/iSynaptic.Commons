@@ -86,7 +86,7 @@
     <Compile Include="AOP\UnitOfWorkStub.cs" />
     <Compile Include="AOP\UnitOfWorkTests.cs" />
     <Compile Include="ArrayIndexTests.cs" />
-    <Compile Include="Collections\Generic\LazyDictionaryTests.cs" />
+    <Compile Include="Collections\Generic\LazySelectionDictionaryTests.cs" />
     <Compile Include="Collections\Generic\SmartLoopTests.cs" />
     <Compile Include="Data\CommonExodata.cs" />
     <Compile Include="Data\DescriptionAttribute.cs" />

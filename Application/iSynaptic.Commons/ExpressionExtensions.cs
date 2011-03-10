@@ -8,7 +8,7 @@ namespace iSynaptic.Commons
 {
     public static class ExpressionExtensions
     {
-        public static Expression<Func<T1, TCovariantResult>> ToCovariantExpression<T1, TResult, TCovariantResult>(this Expression<Func<T1, TResult>> self)
+        public static Expression<Func<T1, TCovariantResult>> ToCovariant<T1, TResult, TCovariantResult>(this Expression<Func<T1, TResult>> self)
             where TResult : TCovariantResult
         {
             return Expression.Lambda<Func<T1, TCovariantResult>>(self.Body, self.Parameters);

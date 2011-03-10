@@ -14,7 +14,7 @@ namespace iSynaptic.Commons
         public void ToCovariant_WhenCompiled_ExecutesCorrectly()
         {
             Expression<Func<string, string>> expr = x => x.ToUpper();
-            Expression<Func<string, object>> covariantExpr = expr.ToCovariantExpression<string, string, object>();
+            Expression<Func<string, object>> covariantExpr = expr.ToCovariant<string, string, object>();
 
             Func<string, object> covariantFunc = covariantExpr.Compile();
             Assert.AreEqual("HELLO", covariantFunc("hello"));
