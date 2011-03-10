@@ -27,7 +27,13 @@ namespace iSynaptic.Commons.Data
         private static KeyValuePair<Type, object> InstantiateSurrogate(Type type)
         {
             var surrogatesFor = type.BaseType.GetGenericArguments()[0];
-            object surrogate = Activator.CreateInstance(type);
+            object surrogate = Ioc.Resolve(type);
+            
+            if(surrogate == null && type.GetConstructors().Any(x => x.GetParameters().Length == 0))
+                surrogate = Activator.CreateInstance(type);
+
+            if (surrogate == null)
+                throw new InvalidOperationException(string.Format("Unable to instantiate Exodata surrogate '{0}'.", type.FullName));
 
             return new KeyValuePair<Type, object>(surrogatesFor, surrogate);
         }
