@@ -81,12 +81,12 @@ namespace iSynaptic.Commons.Data
         {
             var maxLength = new ExodataDeclaration<int>(7);
 
-            var ExodataResolver = new StandardExodataResolver();
-            ExodataResolver.Bind(maxLength)
+            var exodataResolver = new StandardExodataResolver();
+            exodataResolver.Bind(maxLength)
                 .For<string>()
                 .To(42);
 
-            Ioc.SetDependencyResolver(new DependencyResolver(decl => ExodataResolver));
+            Ioc.SetDependencyResolver(new DependencyResolver(decl => decl.DependencyType == typeof(IExodataResolver) ? exodataResolver : null));
 
             var value = maxLength.For<string>();
             Assert.AreEqual(42, value);

@@ -9,7 +9,7 @@ namespace iSynaptic.Commons.Data
 {
     public class SurrogateExodataBindingSource : IExodataBindingSource
     {
-        private static Lazy<IDictionary<Type, object>> _Surrogates = new Lazy<IDictionary<Type, object>>(() =>
+        private Lazy<IDictionary<Type, object>> _Surrogates = new Lazy<IDictionary<Type, object>>(() =>
         {
             Type bindingSourceType = typeof(IExodataBindingSource);
 
