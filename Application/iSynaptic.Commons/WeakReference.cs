@@ -11,7 +11,7 @@ namespace iSynaptic.Commons
 
         private class WeakNullReference : WeakReference<T>
         {
-            public WeakNullReference() : base(null) { }
+            public WeakNullReference() : base(null, null) { }
 
             public override bool IsAlive
             {
@@ -21,18 +21,31 @@ namespace iSynaptic.Commons
 
         public static WeakReference<T> Create(T target)
         {
+            return Create(target, EqualityComparer<T>.Default);
+        }
+
+        public static WeakReference<T> Create(T target, IEqualityComparer<T> comparer)
+        {
             if (target == null)
                 return Null;
 
-            return new WeakReference<T>(target);
+            Guard.NotNull(comparer, "comparer");
+            return new WeakReference<T>(target, comparer);
         }
 
-        protected WeakReference(T target)
-            : base(target, false) { }
+        protected WeakReference(T target, IEqualityComparer<T> comparer)
+            : base(target, false)
+        {
+            HashCode = target != null
+                ? comparer.GetHashCode(target)
+                : 0;
+        }
 
         public new T Target
         {
             get { return (T)base.Target; }
         }
+
+        public int HashCode { get; private set; }
     }
 }

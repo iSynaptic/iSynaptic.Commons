@@ -29,7 +29,7 @@ namespace iSynaptic.Commons.Collections.Generic
 
         protected override WeakReference<TKey> WrapKey(TKey key, IEqualityComparer<TKey> comparer)
         {
-            return new WeakKeyReference<TKey>(key, comparer);
+            return WeakReference<TKey>.Create(key, comparer);
         }
 
         protected override Maybe<TKey> UnwrapKey(WeakReference<TKey> key)

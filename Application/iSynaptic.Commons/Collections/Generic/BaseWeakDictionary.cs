@@ -24,7 +24,7 @@ namespace iSynaptic.Commons.Collections.Generic
 
             public int GetHashCode(object obj)
             {
-                var weakKey = (WeakKeyReference<T>) obj;
+                var weakKey = (WeakReference<T>) obj;
                 return weakKey.HashCode;
             }
 
@@ -38,7 +38,7 @@ namespace iSynaptic.Commons.Collections.Generic
 
             private static Maybe<T> GetTarget(object obj)
             {
-                var weakKey = (WeakKeyReference<T>)obj;
+                var weakKey = (WeakReference<T>)obj;
              
                 T target = weakKey.Target;
                 return Maybe.Value(target).Where(x => weakKey.IsAlive);

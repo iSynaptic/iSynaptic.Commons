@@ -153,7 +153,6 @@
     <Compile Include="Transactions\TransactionalBase.cs" />
     <Compile Include="Transactions\TransactionalConcurrencyException.cs" />
     <Compile Include="Transactions\TransactionalGateway.cs" />
-    <Compile Include="WeakKeyReference.cs" />
     <Compile Include="WeakReference.cs" />
     <Compile Include="Xml\DeclarativeXmlParser.cs" />
     <Compile Include="Xml\XmlToken.cs" />
