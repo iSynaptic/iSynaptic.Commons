@@ -13,7 +13,32 @@ namespace iSynaptic.Commons.Data
         [SetUp]
         public void BeforeTest()
         {
+            Ioc.SetDependencyResolver(null);
             TestSubjectExodataSurrogate.ShouldYieldInstanceExodata = false;
+        }
+
+        [Test]
+        public void Resolve_UsesIocToCreateSurrogates()
+        {
+            bool executed = false;
+
+            Ioc.SetDependencyResolver(new DependencyResolver(x =>
+            {
+                if (x.DependencyType == typeof(TestSubjectExodataSurrogate))
+                {
+                    executed = true;
+                    return new TestSubjectExodataSurrogate();
+                }
+
+                return null;
+            }));
+
+            var resolver = new StandardExodataResolver();
+            ExodataDeclaration.SetResolver(resolver);
+
+            var value = StringExodata.MaxLength.For<TestSubject>(x => x.MiddleName);
+            Assert.AreEqual(74088, value);
+            Assert.IsTrue(executed);
         }
 
         [Test]

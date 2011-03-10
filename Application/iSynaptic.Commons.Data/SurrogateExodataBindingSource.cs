@@ -19,7 +19,6 @@ namespace iSynaptic.Commons.Data
                 .SelectMany(x => x.GetExportedTypes())
                 .Where(bindingSourceType.IsAssignableFrom)
                 .Where(x => x.BaseType != null && x.BaseType.IsGenericType && x.BaseType.GetGenericTypeDefinition() == typeof(ExodataSurrogate<>))
-                .Where(x => x.GetConstructors().Any(y => y.GetParameters().Length == 0))
                 .Select(InstantiateSurrogate)
                 .ToReadOnlyDictionary();
         });
