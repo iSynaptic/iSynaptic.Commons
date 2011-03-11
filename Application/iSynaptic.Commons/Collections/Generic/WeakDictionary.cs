@@ -30,7 +30,7 @@ namespace iSynaptic.Commons.Collections.Generic
 
         protected override Maybe<TKey> UnwrapKey(WeakReference<TKey> key)
         {
-            return UnwrapWeakReference(key);
+            return key.TryGetTarget();
         }
 
         protected override WeakReference<TValue> WrapValue(TValue value)
@@ -40,7 +40,7 @@ namespace iSynaptic.Commons.Collections.Generic
 
         protected override Maybe<TValue> UnwrapValue(WeakReference<TValue> value)
         {
-            return UnwrapWeakReference(value);
+            return value.TryGetTarget();
         }
     } 
 }

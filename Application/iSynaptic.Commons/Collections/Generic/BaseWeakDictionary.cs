@@ -26,12 +26,6 @@ namespace iSynaptic.Commons.Collections.Generic
         protected abstract TWrappedValue WrapValue(TValue value);
         protected abstract Maybe<TValue> UnwrapValue(TWrappedValue value);
 
-        protected static Maybe<T> UnwrapWeakReference<T>(WeakReference<T> value) where T : class
-        {
-            return Maybe.Value(value.Target)
-                .Where(x => value.IsAlive);
-        }
-
         public override int Count
         {
             get { return _Dictionary.Count; }

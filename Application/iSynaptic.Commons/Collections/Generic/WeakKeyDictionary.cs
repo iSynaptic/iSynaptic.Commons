@@ -29,7 +29,7 @@ namespace iSynaptic.Commons.Collections.Generic
 
         protected override Maybe<TKey> UnwrapKey(WeakReference<TKey> key)
         {
-            return UnwrapWeakReference(key);
+            return key.TryGetTarget();
         }
 
         protected override TValue WrapValue(TValue value)

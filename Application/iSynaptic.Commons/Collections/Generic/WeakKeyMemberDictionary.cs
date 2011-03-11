@@ -35,7 +35,7 @@ namespace iSynaptic.Commons.Collections.Generic
         {
             return Maybe.Value(key)
                 .Select(x => _MemberSelector(x))
-                .Select(UnwrapWeakReference)
+                .Select(x => x.TryGetTarget())
                 .Select(x => key);
         }
 

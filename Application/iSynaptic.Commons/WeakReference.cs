@@ -60,10 +60,14 @@ namespace iSynaptic.Commons
             if (HashCode != other.HashCode)
                 return false;
 
-            var target = Target;
-            var otherTarget = other.Target;
+            return TryGetTarget()
+                .Equals(other.TryGetTarget());
+        }
 
-            return IsAlive == other.IsAlive && (!IsAlive || target.Equals(otherTarget));
+        public Maybe<T> TryGetTarget()
+        {
+            return Maybe.Value(() => Target)
+                .Where(x => IsAlive);
         }
 
         public override bool Equals(object obj)
