@@ -5,7 +5,8 @@ using System.Text;
 
 namespace iSynaptic.Commons
 {
-    public class WeakReference<T> : WeakReference where T : class
+    public class WeakReference<T> : WeakReference, IEquatable<WeakReference<T>>
+        where T : class
     {
         public static readonly WeakReference<T> Null = new WeakNullReference();
 
@@ -47,5 +48,35 @@ namespace iSynaptic.Commons
         }
 
         public int HashCode { get; private set; }
+
+        public bool Equals(WeakReference<T> other)
+        {
+            if (ReferenceEquals(other, null))
+                return false;
+
+            if (ReferenceEquals(this, Null))
+                return ReferenceEquals(other, Null);
+
+            if (HashCode != other.HashCode)
+                return false;
+
+            var target = Target;
+            var otherTarget = other.Target;
+
+            return IsAlive == other.IsAlive && (!IsAlive || target.Equals(otherTarget));
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(obj, null))
+                return false;
+
+            return Equals(obj as WeakReference<T>);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode;
+        }
     }
 }

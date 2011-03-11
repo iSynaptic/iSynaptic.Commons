@@ -30,5 +30,34 @@ namespace iSynaptic.Commons
         {
             Assert.IsTrue(WeakReference<object>.Null.IsAlive);
         }
+
+        [Test]
+        public void Equals_WithSameUnderlyingObject_ReturnsTrue()
+        {
+            string target = "Hello, World!";
+
+            var ref1 = WeakReference<string>.Create(target);
+            var ref2 = WeakReference<string>.Create(target);
+
+            Assert.IsTrue(ref1.Equals(ref2));
+        }
+
+        [Test]
+        public void Equals_WithDifferentUnderlyingObject_ReturnsFalse()
+        {
+            var ref1 = WeakReference<string>.Create("Hello");
+            var ref2 = WeakReference<string>.Create("World!");
+
+            Assert.IsFalse(ref1.Equals(ref2));
+        }
+
+        [Test]
+        public void Equals_WithNull_ReturnsTrue()
+        {
+            var ref1 = WeakReference<string>.Create(null);
+            var ref2 = WeakReference<string>.Create(null);
+
+            Assert.IsTrue(ref1.Equals(ref2));
+        }
     }
 }
