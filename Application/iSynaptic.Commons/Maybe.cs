@@ -342,7 +342,14 @@ namespace iSynaptic.Commons
         public static Maybe<T> ThrowOnNoValue<T>(this Maybe<T> self, Exception exception)
         {
             Guard.NotNull(exception, "exception");
-            return self.OnNoValue((Func<T>)(() => { throw exception; }))
+            return self.ThrowOnNoValue(x => exception);
+        }
+
+        public static Maybe<T> ThrowOnNoValue<T>(this Maybe<T> self, Func<Exception, Exception> exceptionSelector)
+        {
+            Guard.NotNull(exceptionSelector, "exceptionSelector");
+            return self
+                .When(x => !x.HasValue, x => { throw exceptionSelector(x.Exception); })
                 .ThrowOnException();
         }
 
