@@ -8,21 +8,24 @@ using Rhino.Mocks;
 
 namespace iSynaptic.Commons.Collections.Generic
 {
-    public abstract class WeakDictionaryTestsBase
+    public abstract class WeakDictionaryTestsBase<TKey, TValue>
     {
-        protected abstract IWeakDictionary<object, object> CreateDictionary();
-        protected abstract IWeakDictionary<object, object> CreateDictionary(IEqualityComparer<object> comparer);
+        protected abstract TKey CreateKey(bool keepReference = false);
+        protected abstract TValue CreateValue(bool keepReference = false);
+
+        protected abstract IWeakDictionary<TKey, TValue> CreateDictionary();
+        protected abstract IWeakDictionary<TKey, TValue> CreateDictionary(IEqualityComparer<TKey> comparer);
 
         [Test]
         public void PurgeGarbage_RemovesEntriesForGarbageCollectedKeys()
         {
             var dictionary = CreateDictionary();
 
-            var key = new object();
-            var value = new object();
+            var key = CreateKey(true);
+            var value = CreateValue(true);
 
             dictionary.Add(key, value);
-            dictionary.Add(new object(), new object());
+            dictionary.Add(CreateKey(), CreateValue());
 
             GC.Collect();
             dictionary.PurgeGarbage();
@@ -38,8 +41,8 @@ namespace iSynaptic.Commons.Collections.Generic
             var dictionary = CreateDictionary();
             var keys = dictionary.Keys;
 
-            var key = new object();
-            var value = new object();
+            var key = CreateKey(true);
+            var value = CreateValue(true);
 
             dictionary.Add(key, value);
 
@@ -52,8 +55,8 @@ namespace iSynaptic.Commons.Collections.Generic
             var dictionary = CreateDictionary();
             var values = dictionary.Values;
 
-            var key = new object();
-            var value = new object();
+            var key = CreateKey(true);
+            var value = CreateValue(true);
 
             dictionary.Add(key, value);
 
@@ -64,9 +67,9 @@ namespace iSynaptic.Commons.Collections.Generic
         public void Count_ReturnsCorrectly()
         {
             var dictionary = CreateDictionary();
-            dictionary.Add(new object(), new object());
-            dictionary.Add(new object(), new object());
-            dictionary.Add(new object(), new object());
+            dictionary.Add(CreateKey(true), CreateValue(true));
+            dictionary.Add(CreateKey(true), CreateValue(true));
+            dictionary.Add(CreateKey(true), CreateValue(true));
 
             Assert.AreEqual(3, dictionary.Count);
         }
@@ -76,8 +79,8 @@ namespace iSynaptic.Commons.Collections.Generic
         {
             var dictionary = CreateDictionary();
 
-            var key = new object();
-            var value = new object();
+            var key = CreateKey(true);
+            var value = CreateValue(true);
 
             dictionary.Add(key, value);
             Assert.AreEqual(value, dictionary[key]);
@@ -87,7 +90,7 @@ namespace iSynaptic.Commons.Collections.Generic
         public void Indexer_WithInvalidKey_ThrowsException()
         {
             var dictionary = CreateDictionary();
-            var key = new object();
+            var key = CreateKey(true);
 
             Assert.Throws<KeyNotFoundException>(() => { var result = dictionary[key]; });
         }
@@ -97,13 +100,13 @@ namespace iSynaptic.Commons.Collections.Generic
         {
             var dictionary = CreateDictionary();
 
-            var key = new object();
-            var value = new object();
+            var key = CreateKey(true);
+            var value = CreateValue(true);
 
             dictionary.Add(key, value);
 
             Assert.IsTrue(dictionary.ContainsKey(key));
-            Assert.IsFalse(dictionary.ContainsKey(new object()));
+            Assert.IsFalse(dictionary.ContainsKey(CreateKey()));
         }
 
         [Test]
@@ -111,13 +114,13 @@ namespace iSynaptic.Commons.Collections.Generic
         {
             var dictionary = CreateDictionary();
 
-            var key = new object();
-            var value = new object();
+            var key = CreateKey(true);
+            var value = CreateValue(true);
 
             dictionary.Add(key, value);
 
-            Assert.IsTrue(dictionary.Contains(new KeyValuePair<object, object>(key, value)));
-            Assert.IsFalse(dictionary.Contains(new KeyValuePair<object, object>(new object(), new object())));
+            Assert.IsTrue(dictionary.Contains(new KeyValuePair<TKey, TValue>(key, value)));
+            Assert.IsFalse(dictionary.Contains(new KeyValuePair<TKey, TValue>(CreateKey(), CreateValue())));
         }
 
         [Test]
@@ -125,11 +128,11 @@ namespace iSynaptic.Commons.Collections.Generic
         {
             var dictionary = CreateDictionary();
 
-            var key = new object();
-            var value = new object();
+            var key = CreateKey(true);
+            var value = CreateValue(true);
 
             dictionary.Add(key, value);
-            ((ICollection<KeyValuePair<object, object>>)dictionary).Remove(new KeyValuePair<object, object>(key, value));
+            dictionary.Remove(new KeyValuePair<TKey, TValue>(key, value));
 
             Assert.IsFalse(dictionary.ContainsKey(key));
             Assert.AreEqual(0, dictionary.Count);
@@ -140,8 +143,8 @@ namespace iSynaptic.Commons.Collections.Generic
         {
             var dictionary = CreateDictionary();
 
-            var key = new object();
-            var value = new object();
+            var key = CreateKey(true);
+            var value = CreateValue(true);
 
             dictionary.Add(key, value);
             dictionary.Remove(key);
@@ -162,8 +165,8 @@ namespace iSynaptic.Commons.Collections.Generic
         {
             var dictionary = CreateDictionary();
 
-            var key = new object();
-            var value = new object();
+            var key = CreateKey(true);
+            var value = CreateValue(true);
 
             dictionary[key] = value;
 
@@ -175,8 +178,8 @@ namespace iSynaptic.Commons.Collections.Generic
         {
             var dictionary = CreateDictionary();
 
-            var key = new object();
-            var value = new object();
+            var key = CreateKey(true);
+            var value = CreateValue(true);
 
             dictionary.Add(key, value);
 
@@ -191,10 +194,10 @@ namespace iSynaptic.Commons.Collections.Generic
         {
             var dictionary = CreateDictionary();
 
-            var key = new object();
-            var value = new object();
+            var key = CreateKey(true);
+            var value = CreateValue(true);
 
-            dictionary.Add(new KeyValuePair<object, object>(key, value));
+            dictionary.Add(new KeyValuePair<TKey, TValue>(key, value));
 
             Assert.AreEqual(value, dictionary[key]);
         }
@@ -204,12 +207,12 @@ namespace iSynaptic.Commons.Collections.Generic
         {
             var dictionary = CreateDictionary();
 
-            var key = new object();
-            var value = new object();
+            var key = CreateKey(true);
+            var value = CreateValue(true);
 
             dictionary.Add(key, value);
 
-            var array = new KeyValuePair<object, object>[1];
+            var array = new KeyValuePair<TKey, TValue>[1];
             dictionary.CopyTo(array, 0);
 
             Assert.AreEqual(key, array[0].Key);
@@ -221,13 +224,13 @@ namespace iSynaptic.Commons.Collections.Generic
         {
             var dictionary = CreateDictionary();
 
-            var key = new object();
-            var value = new object();
+            var key = CreateKey(true);
+            var value = CreateValue(true);
 
             dictionary.Add(key, value);
             Assert.AreEqual(1, dictionary.Count);
 
-            ((ICollection<KeyValuePair<object, object>>)dictionary).Remove(new KeyValuePair<object, object>(key, value));
+            dictionary.Remove(new KeyValuePair<TKey, TValue>(key, value));
             Assert.AreEqual(0, dictionary.Count);
         }
 
@@ -236,13 +239,13 @@ namespace iSynaptic.Commons.Collections.Generic
         {
             var dictionary = CreateDictionary();
 
-            var key = new object();
-            var value = new object();
+            var key = CreateKey(true);
+            var value = CreateValue(true);
 
             dictionary.Add(key, value);
 
-            var array = ((IEnumerable) dictionary)
-                .OfType<KeyValuePair<object, object>>()
+            var array = dictionary
+                .OfType<KeyValuePair<TKey, TValue>>()
                 .ToArray();
 
             Assert.AreEqual(key, array[0].Key);
@@ -252,15 +255,17 @@ namespace iSynaptic.Commons.Collections.Generic
         [Test]
         public void DictionaryUsesProvidedEqualityComparerToGetHashCodes()
         {
-            var key = new object();
-            var comparer = MockRepository.GenerateMock<IEqualityComparer<object>>();
+            var key = CreateKey(true);
+            var value = CreateValue(true);
+
+            var comparer = MockRepository.GenerateMock<IEqualityComparer<TKey>>();
             comparer.Expect(x => x.GetHashCode(key))
                 .Return(42)
                 .Repeat.AtLeastOnce();
 
             var dictionary = CreateDictionary(comparer);
 
-            dictionary.Add(key, key);
+            dictionary.Add(key, value);
 
             comparer.VerifyAllExpectations();
         }

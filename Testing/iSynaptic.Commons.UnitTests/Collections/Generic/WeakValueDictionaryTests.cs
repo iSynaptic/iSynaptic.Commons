@@ -7,8 +7,18 @@ using NUnit.Framework;
 namespace iSynaptic.Commons.Collections.Generic
 {
     [TestFixture]
-    public class WeakValueDictionaryTests : WeakDictionaryTestsBase
+    public class WeakValueDictionaryTests : WeakDictionaryTestsBase<object, object>
     {
+        protected override object CreateKey(bool keepReference = false)
+        {
+            return new object();
+        }
+
+        protected override object CreateValue(bool keepReference = false)
+        {
+            return new object();
+        }
+
         protected override IWeakDictionary<object, object> CreateDictionary()
         {
             return new WeakValueDictionary<object, object>();

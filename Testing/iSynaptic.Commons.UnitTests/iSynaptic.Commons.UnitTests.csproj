@@ -89,6 +89,7 @@
     <Compile Include="Collections\Generic\LazyDictionaryTests.cs" />
     <Compile Include="Collections\Generic\LazySelectionDictionaryTests.cs" />
     <Compile Include="Collections\Generic\SmartLoopTests.cs" />
+    <Compile Include="Collections\Generic\WeakKeyMemberDictionaryTests.cs" />
     <Compile Include="Data\CommonExodata.cs" />
     <Compile Include="Data\DescriptionAttribute.cs" />
     <Compile Include="Data\IntegerExodata.cs" />

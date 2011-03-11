@@ -22,11 +22,6 @@ namespace iSynaptic.Commons.Collections.Generic
         {
         }
 
-        protected override IEqualityComparer<TKey> BuildComparer(IEqualityComparer<TKey> comparer)
-        {
-            return comparer;
-        }
-
         protected override TKey WrapKey(TKey key, IEqualityComparer<TKey> comparer)
         {
             return key;

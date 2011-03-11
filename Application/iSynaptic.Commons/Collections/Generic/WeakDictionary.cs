@@ -23,11 +23,6 @@ namespace iSynaptic.Commons.Collections.Generic
         {
         }
 
-        protected override IEqualityComparer<WeakReference<TKey>> BuildComparer(IEqualityComparer<TKey> comparer)
-        {
-            return new WeakKeyComparer<TKey>(comparer);
-        }
-
         protected override WeakReference<TKey> WrapKey(TKey key, IEqualityComparer<TKey> comparer)
         {
             return WeakReference<TKey>.Create(key, comparer);
