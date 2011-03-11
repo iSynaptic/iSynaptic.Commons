@@ -581,11 +581,25 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void ThrowIfException_DefersExecutionUntilEvaluated()
+        public void ThrowOnException_DefersExecutionUntilEvaluated()
         {
             bool executed = false;
             var value = Maybe.Value<int>(() => { executed = true; throw new InvalidOperationException(); })
                 .ThrowOnException();
+
+            Assert.IsFalse(executed);
+
+            Assert.Throws<InvalidOperationException>(() => { var notAssigned = value.Value; });
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void ThrowOnNoValue_DefersExecutionUntilEvaluated()
+        {
+            bool executed = false;
+            var value = Maybe.Value(() => { executed = true; return 42; })
+                .Select(x => Maybe<int>.NoValue)
+                .ThrowOnNoValue(new InvalidOperationException());
 
             Assert.IsFalse(executed);
 

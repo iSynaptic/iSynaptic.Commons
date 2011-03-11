@@ -70,12 +70,12 @@ namespace iSynaptic.Commons.Data
 
         public LazyExodata<TExodata, TSubject> LazyFor<TSubject>(Expression<Func<TSubject, object>> member)
         {
-            return new LazyExodata<TExodata, TSubject>(this, GetMemberInfoFromExpression(member));
+            return new LazyExodata<TExodata, TSubject>(this, member.ExtractMemberInfoForExodata<TSubject>());
         }
 
         public LazyExodata<TExodata, TSubject> LazyFor<TSubject>(TSubject subject, Expression<Func<TSubject, object>> member)
         {
-            return new LazyExodata<TExodata, TSubject>(this, subject, GetMemberInfoFromExpression(member));
+            return new LazyExodata<TExodata, TSubject>(this, subject, member.ExtractMemberInfoForExodata<TSubject>());
         }
 
         #endregion
@@ -97,7 +97,7 @@ namespace iSynaptic.Commons.Data
 
         protected TExodata Resolve<TSubject>(Maybe<TSubject> subject, Expression member)
         {
-            MemberInfo memberInfo = GetMemberInfoFromExpression(member);
+            MemberInfo memberInfo = member.ExtractMemberInfoForExodata<TSubject>();
 
             return Resolve(subject, memberInfo);
         }
@@ -111,16 +111,6 @@ namespace iSynaptic.Commons.Data
         }
 
         #endregion
-
-        protected virtual MemberInfo GetMemberInfoFromExpression(Expression member)
-        {
-            MemberInfo memberInfo = null;
-
-            if (member != null)
-                memberInfo = member.ExtractMemberInfoForExodata();
-
-            return memberInfo;
-        }
 
         protected virtual void OnValidateValue(TExodata value, string valueName)
         {

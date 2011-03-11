@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 
 namespace iSynaptic.Commons
@@ -12,6 +13,35 @@ namespace iSynaptic.Commons
             where TResult : TCovariantResult
         {
             return Expression.Lambda<Func<T1, TCovariantResult>>(self.Body, self.Parameters);
+        }
+
+        public static Maybe<MemberInfo> ExtractMemberInfoFromMemberExpression(this Expression expression)
+        {
+            Guard.NotNull(expression, "expression");
+
+            return Maybe.Value(expression)
+                .Select(x =>
+                        {
+                            var memberInfo = Maybe<MemberInfo>.NoValue;
+                            new ExtractMemberInfoFromMemberExpressionVisitor(y => memberInfo = y).Visit(x);
+                            return memberInfo;
+                        });
+        }
+
+        private class ExtractMemberInfoFromMemberExpressionVisitor : ExpressionVisitor
+        {
+            private readonly Action<MemberInfo> _Action;
+
+            public ExtractMemberInfoFromMemberExpressionVisitor(Action<MemberInfo> action)
+            {
+                _Action = action;
+            }
+
+            protected override Expression VisitMember(MemberExpression node)
+            {
+                _Action(node.Member);
+                return node;
+            }
         }
     }
 }

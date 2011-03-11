@@ -9,30 +9,15 @@ namespace iSynaptic.Commons.Data
 {
     public static class ExodataHelper
     {
-        public static MemberInfo ExtractMemberInfoForExodata(this Expression member)
+        public static MemberInfo ExtractMemberInfoForExodata<TSubject>(this Expression member)
         {
             Guard.NotNull(member, "member");
 
-            var lambda = member as LambdaExpression;
-            if (lambda != null)
-            {
-                var body = lambda.Body;
-
-                if (body.NodeType == ExpressionType.Convert)
-                    body = ((UnaryExpression)body).Operand;
-
-                if (body is MemberExpression)
-                {
-                    var memberExpression = (MemberExpression)body;
-
-                    if (memberExpression.Expression is ParameterExpression && memberExpression.Member is PropertyInfo ||
-                        memberExpression.Member is FieldInfo)
-                        return memberExpression.Member;
-                }
-            }
-
-            throw new ArgumentException("You can only retreive member metatdata for properties and fields.", "member");
+            return member.ExtractMemberInfoFromMemberExpression()
+                .Where(x => x.DeclaringType.IsAssignableFrom(typeof(TSubject)))
+                .Where(x => x is PropertyInfo || x is FieldInfo)
+                .ThrowOnNoValue(new ArgumentException("You can only retreive member metatdata for properties and fields.", "member"))
+                .Value;
         }
-
     }
 }

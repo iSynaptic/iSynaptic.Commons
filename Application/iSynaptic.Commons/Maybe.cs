@@ -339,6 +339,13 @@ namespace iSynaptic.Commons
             return Maybe<T>.Unsafe(boundComputation.Memoize());
         }
 
+        public static Maybe<T> ThrowOnNoValue<T>(this Maybe<T> self, Exception exception)
+        {
+            Guard.NotNull(exception, "exception");
+            return self.OnNoValue((Func<T>)(() => { throw exception; }))
+                .ThrowOnException();
+        }
+
         public static Maybe<T> With<T, TSelected>(this Maybe<T> self, Func<T, TSelected> selector, Action<TSelected> action)
         {
             Guard.NotNull(selector, "selector");

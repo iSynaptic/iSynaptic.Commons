@@ -13,7 +13,7 @@ namespace iSynaptic.Commons.Data.Syntax
         public IFluentExodataBindingPredicateScopeTo<TExodata, TSubject> For(Expression<Func<TSubject, object>> member)
         {
             Guard.NotNull(member, "member");
-            Member = member.ExtractMemberInfoForExodata();
+            Member = member.ExtractMemberInfoForExodata<TSubject>();
 
             return this;
         }
@@ -30,7 +30,7 @@ namespace iSynaptic.Commons.Data.Syntax
             Guard.NotNull(member, "member");
 
             Subject = subject;
-            Member = member.ExtractMemberInfoForExodata();
+            Member = member.ExtractMemberInfoForExodata<TSubject>();
 
             return this;
         }
@@ -126,7 +126,7 @@ namespace iSynaptic.Commons.Data.Syntax
             Subject = subject;
 
             if(member != null)
-                Member = member.ExtractMemberInfoForExodata();
+                Member = member.ExtractMemberInfoForExodata<object>();
 
             return this;
         }

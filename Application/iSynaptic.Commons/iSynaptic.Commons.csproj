@@ -94,6 +94,7 @@
     <Compile Include="Collections\Generic\WeakValueDictionary.cs" />
     <Compile Include="Convert.cs" />
     <Compile Include="DataEventArgs.cs" />
+    <Compile Include="Data\ExodataHelper.cs" />
     <Compile Include="Data\IExodataDeclaration.cs" />
     <Compile Include="Data\IExodataRequest.cs" />
     <Compile Include="Data\IExodataResolver.cs" />
@@ -102,7 +103,6 @@
     <Compile Include="Data\ExodataDeclarations\GuidExodataDeclaration.cs" />
     <Compile Include="Data\ExodataDeclarations\ComparableExodataDeclaration.cs" />
     <Compile Include="Data\ExodataDeclarations\StringExodataDeclaration.cs" />
-    <Compile Include="Data\ExodataHelper.cs" />
     <Compile Include="Data\ExodataRequest.cs" />
     <Compile Include="Data\ExodataValidationException.cs" />
     <Compile Include="DependencyResolver.cs" />

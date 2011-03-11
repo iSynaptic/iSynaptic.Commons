@@ -143,7 +143,7 @@ namespace iSynaptic.Commons.Data
         public void Get_OnGenericExodataWithDeclarationAndMember_ProvidesAllArgumentsToResolver()
         {
             Expression<Func<string, object>> expression = x => x.Length;
-            var member = expression.ExtractMemberInfoForExodata();
+            var member = expression.ExtractMemberInfoForExodata<string>();
 
             var maxLength = new ExodataDeclaration<int>(7);
 
@@ -164,7 +164,7 @@ namespace iSynaptic.Commons.Data
             string subject = "Hello, World!";
 
             Expression<Func<string, object>> expression = x => x.Length;
-            var member = expression.ExtractMemberInfoForExodata();
+            var member = expression.ExtractMemberInfoForExodata<string>();
 
             var resolver = MockRepository.GenerateMock<IExodataResolver>();
             resolver.Expect(x => x.Resolve<int, string>(new ExodataRequest<string>(maxLength, new Maybe<string>(subject), member)))
