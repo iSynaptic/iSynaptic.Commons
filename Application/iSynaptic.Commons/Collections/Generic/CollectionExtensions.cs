@@ -6,6 +6,15 @@ namespace iSynaptic.Commons.Collections.Generic
 {
     public static class CollectionExtensions
     {
+        public static void AddRange<T>(this ICollection<T> self, IEnumerable<T> items)
+        {
+            Guard.NotNull(self, "self");
+            Guard.NotNull(items, "items");
+
+            foreach(var item in items)
+                self.Add(item);
+        }
+
         public static void Remove<T>(this ICollection<T> self, params T[] itemsToRemove)
         {
             Guard.NotNull(self, "self");

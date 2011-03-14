@@ -88,6 +88,7 @@
     <Compile Include="ArrayIndexTests.cs" />
     <Compile Include="Collections\Generic\LazyDictionaryTests.cs" />
     <Compile Include="Collections\Generic\LazySelectionDictionaryTests.cs" />
+    <Compile Include="Collections\Generic\MultiMapTests.cs" />
     <Compile Include="Collections\Generic\SmartLoopTests.cs" />
     <Compile Include="Collections\Generic\WeakKeyMemberDictionaryTests.cs" />
     <Compile Include="Data\CommonExodata.cs" />

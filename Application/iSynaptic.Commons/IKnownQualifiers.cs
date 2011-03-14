@@ -2,8 +2,8 @@
 
 namespace iSynaptic.Commons
 {
-    public interface IKnownQualifiers<T>
+    public interface IKnownQualifiers<out TQualifier>
     {
-        IEnumerable<T> GetQualifiers();
+        IEnumerable<TQualifier> GetQualifiers();
     }
 }
