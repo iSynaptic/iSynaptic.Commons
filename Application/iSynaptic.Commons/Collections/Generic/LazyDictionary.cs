@@ -52,20 +52,17 @@ namespace iSynaptic.Commons.Collections.Generic
 
         public override bool TryGetValue(TKey key, out TValue value)
         {
-            Lazy<TValue> lazyValue = null;
-            if (_Underlying.TryGetValue(key, out lazyValue))
-            {
-                value = lazyValue.Value;
-                return true;
-            }
+            var results = _Underlying
+                .TryGetValue(key)
+                .Select(x => x.Value);
 
-            value = default(TValue);
-            return false;
+            value = results.Return();
+            return results.HasValue;
         }
 
         public override IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
-            return _Underlying.Select(x => new KeyValuePair<TKey, TValue>(x.Key, x.Value.Value)).GetEnumerator();
+            return _Underlying.Select(x => KeyValuePair.Create(x.Key, x.Value.Value)).GetEnumerator();
         }
 
         protected override void SetValue(TKey key, TValue value)

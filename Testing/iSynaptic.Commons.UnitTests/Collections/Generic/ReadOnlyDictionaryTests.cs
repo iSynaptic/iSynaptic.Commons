@@ -120,7 +120,7 @@ namespace iSynaptic.Commons.Collections.Generic
             IDictionary<string, string> dict = new Dictionary<string, string>();
             dict = dict.ToReadOnlyDictionary();
 
-            Assert.Throws<NotSupportedException>(() => dict.Add(new KeyValuePair<string,string>("Key", "Value")));
+            Assert.Throws<NotSupportedException>(() => dict.Add(KeyValuePair.Create("Key", "Value")));
         }
 
         [Test]
@@ -141,10 +141,10 @@ namespace iSynaptic.Commons.Collections.Generic
 
             dict = dict.ToReadOnlyDictionary();
 
-            Assert.IsTrue(dict.Contains(new KeyValuePair<string,string>("Key", "Value")));
-            Assert.IsTrue(dict.Contains(new KeyValuePair<string,string>("OtherKey", "OtherValue")));
+            Assert.IsTrue(dict.Contains(KeyValuePair.Create("Key", "Value")));
+            Assert.IsTrue(dict.Contains(KeyValuePair.Create("OtherKey", "OtherValue")));
 
-            Assert.IsFalse(dict.Contains(new KeyValuePair<string, string>("NonExistent", "NonExistentValue")));
+            Assert.IsFalse(dict.Contains(KeyValuePair.Create("NonExistent", "NonExistentValue")));
         }
 
         [Test]
@@ -158,10 +158,10 @@ namespace iSynaptic.Commons.Collections.Generic
 
             var values = new KeyValuePair<string, string>[3];
 
-            var expectedValues = new KeyValuePair<string, string>[]
+            var expectedValues = new[]
             {
-                new KeyValuePair<string, string>("Key", "Value"),
-                new KeyValuePair<string, string>("OtherKey", "OtherValue"),
+                KeyValuePair.Create("Key", "Value"),
+                KeyValuePair.Create("OtherKey", "OtherValue"),
                 default(KeyValuePair<string, string>)
             };
 
@@ -205,7 +205,7 @@ namespace iSynaptic.Commons.Collections.Generic
 
             dict = dict.ToReadOnlyDictionary();
 
-            Assert.Throws<NotSupportedException>(() => dict.Remove(new KeyValuePair<string, string>("Key", "Value")));
+            Assert.Throws<NotSupportedException>(() => dict.Remove(KeyValuePair.Create("Key", "Value")));
         }
 
         [Test]
@@ -217,10 +217,10 @@ namespace iSynaptic.Commons.Collections.Generic
 
             dict = dict.ToReadOnlyDictionary();
 
-            var values = new KeyValuePair<string, string>[]
+            var values = new[]
             {
-                new KeyValuePair<string, string>("Key", "Value"),
-                new KeyValuePair<string, string>("OtherKey", "OtherValue")
+                KeyValuePair.Create("Key", "Value"),
+                KeyValuePair.Create("OtherKey", "OtherValue")
             };
 
             Assert.IsTrue(dict.SequenceEqual(values));
@@ -235,10 +235,10 @@ namespace iSynaptic.Commons.Collections.Generic
 
             dict = dict.ToReadOnlyDictionary();
 
-            var values = new KeyValuePair<string, string>[]
+            var values = new[]
             {
-                new KeyValuePair<string, string>("Key", "Value"),
-                new KeyValuePair<string, string>("OtherKey", "OtherValue")
+                KeyValuePair.Create("Key", "Value"),
+                KeyValuePair.Create("OtherKey", "OtherValue")
             };
 
             IEnumerable enumerable = dict;

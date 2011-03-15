@@ -36,8 +36,7 @@ namespace iSynaptic.Commons.Collections.Generic
         {
             int index = 0;
 
-            foreach (T item in self)
-                yield return new IndexedValue<T>(index++, item);
+            return self.Select(x => new IndexedValue<T>(index++, x));
         }
 
         public static IEnumerable<LookAheadableValue<T>> AsLookAheadable<T>(this IEnumerable<T> self)

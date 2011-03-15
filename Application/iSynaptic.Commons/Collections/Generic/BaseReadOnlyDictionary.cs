@@ -55,12 +55,9 @@ namespace iSynaptic.Commons.Collections.Generic
         {
             get
             {
-                TValue value;
-
-                if (!TryGetValue(key, out value))
-                    throw new KeyNotFoundException();
-
-                return value;
+                return this.TryGetValue(key)
+                    .ThrowOnNoValue(new KeyNotFoundException())
+                    .Value;
             }
             set
             {
@@ -75,12 +72,9 @@ namespace iSynaptic.Commons.Collections.Generic
 
         public bool Contains(KeyValuePair<TKey, TValue> item)
         {
-            TValue value;
-
-            if (!TryGetValue(item.Key, out value))
-                return false;
-
-            return EqualityComparer<TValue>.Default.Equals(value, item.Value);
+            return this.TryGetValue(item.Key)
+                .Select(x => EqualityComparer<TValue>.Default.Equals(x, item.Value))
+                .Return(false);
         }
 
         public void CopyTo(KeyValuePair<TKey, TValue>[] destination, int index)

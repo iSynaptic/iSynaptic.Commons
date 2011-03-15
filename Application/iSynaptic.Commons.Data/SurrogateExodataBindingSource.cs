@@ -34,7 +34,7 @@ namespace iSynaptic.Commons.Data
             if (surrogate == null)
                 throw new InvalidOperationException(string.Format("Unable to instantiate Exodata surrogate '{0}'.", type.FullName));
 
-            return new KeyValuePair<Type, object>(surrogatesFor, surrogate);
+            return KeyValuePair.Create(surrogatesFor, surrogate);
         }
 
         public IEnumerable<IExodataBinding> GetBindingsFor<TExodata, TSubject>(IExodataRequest<TSubject> request)

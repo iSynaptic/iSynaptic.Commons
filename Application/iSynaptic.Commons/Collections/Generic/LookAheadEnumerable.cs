@@ -14,11 +14,11 @@ namespace iSynaptic.Commons.Collections.Generic
 
         public IEnumerator<LookAheadableValue<T>> GetEnumerator()
         {
-            IEnumerator<T> innerEnumerator = _InnerEnumerable.GetEnumerator();
-            if (innerEnumerator == null)
-                return null;
-
-            return new LookAheadEnumerator<T>(innerEnumerator);
+            return Maybe.Value(_InnerEnumerable)
+                .Select(x => x.GetEnumerator())
+                .NotNull()
+                .Select(x => new LookAheadEnumerator<T>(x))
+                .Return();
         }
 
         IEnumerator IEnumerable.GetEnumerator()

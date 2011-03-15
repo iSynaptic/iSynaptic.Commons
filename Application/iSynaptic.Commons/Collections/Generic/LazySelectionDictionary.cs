@@ -44,28 +44,18 @@ namespace iSynaptic.Commons.Collections.Generic
 
         public override bool ContainsKey(TKey key)
         {
-            if (_Underlying.ContainsKey(key))
-                return true;
-
-            TValue value = default(TValue);
-            return TryGetValue(key, out value);
+            return this.TryGetValue(key).HasValue;
         }
 
         public override bool TryGetValue(TKey key, out TValue value)
         {
-            if (_Underlying.TryGetValue(key, out value))
-                return true;
+            var results = _Underlying
+                .TryGetValue(key)
+                .OnNoValue(() => _Selector(key)
+                                    .Do(x => _Underlying.Add(key, x)));
 
-            var results = _Selector(key);
-            if(results.HasValue)
-            {
-                value = results.Value;
-                _Underlying.Add(key, value);
-                return true;
-            }
-
-            value = default(TValue);
-            return false;
+            value = results.Return();
+            return results.HasValue;
         }
 
         public override IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()

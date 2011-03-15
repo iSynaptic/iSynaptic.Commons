@@ -17,10 +17,7 @@ namespace iSynaptic.Commons.AOP
             if (Disposed)
                 throw new ObjectDisposedException(GetType().Name);
 
-            if (_Items.Contains(item))
-                return true;
-
-            return false;
+            return _Items.Contains(item);
         }
 
         public void Enlist(params TItem[] items)

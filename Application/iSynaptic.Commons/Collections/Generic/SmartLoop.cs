@@ -77,7 +77,6 @@ namespace iSynaptic.Commons.Collections.Generic
             Guard.NotNull(action, "action");
 
             action = action.MakeConditional(predicate);
-
             _Action = _Action.FollowedBy((l, x) => action(x));
 
             return this;

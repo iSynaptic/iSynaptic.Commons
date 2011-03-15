@@ -119,8 +119,8 @@ namespace iSynaptic.Commons.Collections.Generic
 
             dictionary.Add(key, value);
 
-            Assert.IsTrue(dictionary.Contains(new KeyValuePair<TKey, TValue>(key, value)));
-            Assert.IsFalse(dictionary.Contains(new KeyValuePair<TKey, TValue>(CreateKey(), CreateValue())));
+            Assert.IsTrue(dictionary.Contains(KeyValuePair.Create(key, value)));
+            Assert.IsFalse(dictionary.Contains(KeyValuePair.Create(CreateKey(), CreateValue())));
         }
 
         [Test]
@@ -132,7 +132,7 @@ namespace iSynaptic.Commons.Collections.Generic
             var value = CreateValue(true);
 
             dictionary.Add(key, value);
-            dictionary.Remove(new KeyValuePair<TKey, TValue>(key, value));
+            dictionary.Remove(KeyValuePair.Create(key, value));
 
             Assert.IsFalse(dictionary.ContainsKey(key));
             Assert.AreEqual(0, dictionary.Count);
@@ -197,7 +197,7 @@ namespace iSynaptic.Commons.Collections.Generic
             var key = CreateKey(true);
             var value = CreateValue(true);
 
-            dictionary.Add(new KeyValuePair<TKey, TValue>(key, value));
+            dictionary.Add(KeyValuePair.Create(key, value));
 
             Assert.AreEqual(value, dictionary[key]);
         }
@@ -230,7 +230,7 @@ namespace iSynaptic.Commons.Collections.Generic
             dictionary.Add(key, value);
             Assert.AreEqual(1, dictionary.Count);
 
-            dictionary.Remove(new KeyValuePair<TKey, TValue>(key, value));
+            dictionary.Remove(KeyValuePair.Create(key, value));
             Assert.AreEqual(0, dictionary.Count);
         }
 

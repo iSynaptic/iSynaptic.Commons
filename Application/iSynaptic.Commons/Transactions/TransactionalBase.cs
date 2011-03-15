@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Transactions;
+using iSynaptic.Commons.Collections.Generic;
 using iSynaptic.Commons.Runtime.Serialization;
 
 namespace iSynaptic.Commons.Transactions
@@ -176,7 +177,7 @@ namespace iSynaptic.Commons.Transactions
 
         protected static KeyValuePair<Guid, T> CreatePair(Guid id, T value)
         {
-            return new KeyValuePair<Guid, T>(id, value);
+            return KeyValuePair.Create(id, value);
         }
 
         public T Value

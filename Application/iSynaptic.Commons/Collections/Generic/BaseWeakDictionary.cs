@@ -57,7 +57,7 @@ namespace iSynaptic.Commons.Collections.Generic
                 .TryGetValue(WrapKey(key, _Comparer))
                 .Bind(UnwrapValue);
 
-            value = result.HasValue ? result.Value : default(TValue);
+            value = result.Return();
             return result.HasValue;
         }
 
@@ -74,26 +74,21 @@ namespace iSynaptic.Commons.Collections.Generic
 
         public override IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
-            foreach (KeyValuePair<TWrappedKey, TWrappedValue> pair in _Dictionary)
-            {
-                var key = UnwrapKey(pair.Key);
-                var value = UnwrapValue(pair.Value);
-
-                if (key.HasValue && value.HasValue)
-                    yield return new KeyValuePair<TKey, TValue>(key.Value, value.Value);
-            }
+            return (_Dictionary
+                .Select(pair => UnwrapKey(pair.Key)
+                    .Select(k => UnwrapValue(pair.Value)
+                        .Select(v => KeyValuePair.Create(k, v))))
+                .Where(x => x.HasValue)
+                .Select(x => x.Value))
+                .GetEnumerator();
         }
 
         public void PurgeGarbage()
         {
             _Dictionary.RemoveAll(pair =>
-            {
-                var key = UnwrapKey(pair.Key);
-                var value = UnwrapValue(pair.Value);
-
-                return !key.HasValue || !value.HasValue;
-            });
+                !(UnwrapKey(pair.Key)
+                    .Select(k => UnwrapValue(pair.Value))
+                    .HasValue));
         }
     } 
-
 }
