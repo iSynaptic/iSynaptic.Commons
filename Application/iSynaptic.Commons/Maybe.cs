@@ -268,7 +268,7 @@ namespace iSynaptic.Commons
         public static T Return<T>(this Maybe<T> self, T @default)
         {
             return self
-                .OnException(@default)
+                .ThrowOnException()
                 .OnNoValue(@default)
                 .Value;
         }
@@ -304,7 +304,7 @@ namespace iSynaptic.Commons
         public static Maybe<T> OnNoValue<T>(this Maybe<T> self, Func<Maybe<T>> valueFactory)
         {
             Guard.NotNull(valueFactory, "valueFactory");
-            return self.When(x => x.HasValue != true, x => valueFactory());
+            return self.When(x => x.Exception == null && x.HasValue != true, x => valueFactory());
         }
 
         public static Maybe<T> OnException<T>(this Maybe<T> self, T value)

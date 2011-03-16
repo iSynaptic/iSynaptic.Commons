@@ -93,7 +93,7 @@ namespace iSynaptic.Commons
             Assert.IsFalse(left.Equals(null));
             Assert.IsFalse(left.Equals(7));
         }
-        
+
         [Test]
         public void GetHashCodeReturnsNegativeOneForNoValue()
         {
@@ -154,7 +154,7 @@ namespace iSynaptic.Commons
 
             var results = Maybe<int>
                 .Default
-                .Bind(x => 7/x)
+                .Bind(x => 7 / x)
                 .Bind(x => executed = true);
 
             Assert.Throws<DivideByZeroException>(() => { var x = results.Value; });
@@ -181,7 +181,7 @@ namespace iSynaptic.Commons
         {
             var results = Maybe<int>
                 .Default
-                .Bind(x => 7/x);
+                .Bind(x => 7 / x);
 
             Assert.IsTrue(results.Equals(results));
         }
@@ -336,6 +336,24 @@ namespace iSynaptic.Commons
         }
 
         [Test]
+        public void Return_RethrowsExistingException()
+        {
+            Assert.Throws<InvalidOperationException>(() =>
+                Maybe.Value<int>(() => { throw new InvalidOperationException(); })
+                    .Return(42));
+        }
+
+        [Test]
+        public void Return_WhereExceptionExists_CanBeAbsorbedByOnException()
+        {
+            var value = Maybe.Value<int>(() => { throw new InvalidOperationException(); })
+                .OnException(27)
+                .Return(42);
+
+            Assert.AreEqual(27, value);
+        }
+
+        [Test]
         public void Do_CallsActionIfHasValueIsTrue()
         {
             bool didExecute = false;
@@ -377,6 +395,27 @@ namespace iSynaptic.Commons
 
             Assert.AreEqual(rawValue, refString);
             Assert.AreEqual(rawValue.Length, refInt);
+        }
+
+        [Test]
+        public void OnNoValue_ContinuesWithNewValue()
+        {
+            var value = Maybe<int>.NoValue
+                .OnNoValue(42)
+                .Value;
+
+            Assert.AreEqual(42, value);
+        }
+
+        [Test]
+        public void OnNoValue_DoesNotHandleExceptions()
+        {
+            Assert.Throws<InvalidOperationException>(() =>
+            {
+                var x = new Maybe<int>(new InvalidOperationException())
+                    .OnNoValue(42)
+                    .Value;
+            });
         }
 
         [Test]
@@ -635,4 +674,3 @@ namespace iSynaptic.Commons
         }
     }
 }
- 
