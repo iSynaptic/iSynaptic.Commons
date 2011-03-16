@@ -76,7 +76,7 @@ namespace iSynaptic.Commons
                 }
 
                 if (exception != null)
-                    exception.Rethrow();
+                    exception.ThrowPreservingCallStack();
 
                 return result;
             };

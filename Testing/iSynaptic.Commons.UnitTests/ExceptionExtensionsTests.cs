@@ -10,7 +10,7 @@ namespace iSynaptic.Commons
     public class ExceptionExtensionsTests
     {
         [Test]
-        public void Rethrow_UsesOriginalCallStack()
+        public void ThrowPreservingCallStack_PreservesOriginalCallStack()
         {
             try
             {
@@ -20,14 +20,19 @@ namespace iSynaptic.Commons
                 }
                 catch (Exception ex)
                 {
-                    ex.Rethrow();
+                    ex.ThrowPreservingCallStack();
                 }
             }
             catch (Exception ex)
             {
-                Assert.IsFalse(ex.StackTrace.Substring(0, ex.StackTrace.IndexOf(Environment.NewLine)).Contains("ExceptionExtensions.Rethrow"));   
+                Assert.IsFalse(ex.StackTrace.Substring(0, ex.StackTrace.IndexOf(Environment.NewLine)).Contains("ExceptionExtensions.ThrowPreservingCallStack"));   
             }
-            
+        }
+
+        [Test]
+        public void ThrowPreserviceCallStack_ThrowsPreviouslyUnthrownException()
+        {
+            Assert.Throws<InvalidOperationException>(() => new InvalidOperationException().ThrowPreservingCallStack());
         }
     }
 }

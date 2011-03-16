@@ -37,6 +37,15 @@ namespace iSynaptic.Commons
         }
 
         [Test]
+        public void AccessingValueOnAnException_ThrowsException()
+        {
+            var value = new Maybe<string>(new InvalidOperationException("42"));
+
+            var exception = Assert.Throws<InvalidOperationException>(() => { var x = value.Value; });
+            Assert.AreEqual("42", exception.Message);
+        }
+
+        [Test]
         public void DefaultValueHasNoValue()
         {
             Maybe<int> val = default(Maybe<int>);

@@ -16,10 +16,14 @@ namespace iSynaptic.Commons
             _RethrowAction = new Lazy<Action<Exception>>(BuildRethrower);
         }
 
-        public static void Rethrow(this Exception self)
+        public static void ThrowPreservingCallStack(this Exception self)
         {
             Guard.NotNull(self, "self");
-            _RethrowAction.Value(self);
+
+            if(!string.IsNullOrWhiteSpace(self.StackTrace))
+                _RethrowAction.Value(self);
+
+            throw self;
         }
 
         private static Action<Exception> BuildRethrower()

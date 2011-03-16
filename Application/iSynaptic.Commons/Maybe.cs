@@ -20,6 +20,7 @@ namespace iSynaptic.Commons
 
         public Maybe(Func<T> computation) : this()
         {
+            Guard.NotNull(computation, "computation");
             _Computation = Default.Bind(x => computation()).Computation;
         }
 
@@ -28,13 +29,21 @@ namespace iSynaptic.Commons
             _Computation = () => new MaybeResult {Value = value, HasValue = true};
         }
 
+        public Maybe(Exception exception)
+        {
+            Guard.NotNull(exception, "exception");
+            _Computation = () => new MaybeResult {Exception = exception};
+        }
+
         private Maybe(Func<MaybeResult> computation) : this()
         {
+            Guard.NotNull(computation, "computation");
             _Computation = computation;
         }
 
         public static Maybe<T> Unsafe(Func<Maybe<T>> unsafeComputation)
         {
+            Guard.NotNull(unsafeComputation, "unsafeComputation");
             return new Maybe<T>(() => unsafeComputation().Computation());
         }
 
@@ -50,7 +59,7 @@ namespace iSynaptic.Commons
                 var result = Computation();
 
                 if(result.Exception != null)
-                    result.Exception.Rethrow();
+                    result.Exception.ThrowPreservingCallStack();
 
                 if(result.HasValue != true)
                     throw new InvalidOperationException("No value can be provided.");
@@ -153,6 +162,8 @@ namespace iSynaptic.Commons
 
         public Maybe<TResult> Bind<TResult>(Func<T, Maybe<TResult>> func)
         {
+            Guard.NotNull(func, "func");
+
             var computation = Computation;
 
             Func<Maybe<TResult>.MaybeResult> boundComputation = () =>
@@ -331,7 +342,7 @@ namespace iSynaptic.Commons
             Func<Maybe<T>> boundComputation = () =>
             {
                 if (self.Exception != null && predicate(self.Exception))
-                    self.Exception.Rethrow();
+                    self.Exception.ThrowPreservingCallStack();
 
                 return self;
             };
