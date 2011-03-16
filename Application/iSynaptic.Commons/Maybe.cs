@@ -157,6 +157,7 @@ namespace iSynaptic.Commons
 
         public Maybe<TResult> Bind<TResult>(Func<T, TResult> func)
         {
+            Guard.NotNull(func, "func");
             return Bind(x => new Maybe<TResult>(func(x)));
         }
 
@@ -209,6 +210,7 @@ namespace iSynaptic.Commons
 
         public static Maybe<T> Value<T>(Func<T> computation)
         {
+            Guard.NotNull(computation, "computation");
             return new Maybe<T>(computation);
         }
 
@@ -237,15 +239,13 @@ namespace iSynaptic.Commons
         public static Maybe<T> NotNull<T, TTarget>(this Maybe<T> self, Func<T, TTarget> selector) where TTarget : class
         {
             Guard.NotNull(selector, "selector");
-            return self
-                .Where(x => selector(x) != null);
+            return self.Where(x => selector(x) != null);
         }
 
         public static Maybe<T> NotNull<T, TTarget>(this Maybe<T> self, Func<T, TTarget?> selector) where TTarget : struct
         {
             Guard.NotNull(selector, "selector");
-            return self
-                .Where(x => selector(x).HasValue);
+            return self.Where(x => selector(x).HasValue);
         }
 
         public static Maybe<T> Where<T>(this Maybe<T> self, Func<T, bool> predicate)
@@ -298,6 +298,7 @@ namespace iSynaptic.Commons
 
         public static Maybe<T> OnNoValue<T>(this Maybe<T> self, Func<T> valueFactory)
         {
+            Guard.NotNull(valueFactory, "valueFactory");
             return self.OnNoValue(() => Value(valueFactory));
         }
 
