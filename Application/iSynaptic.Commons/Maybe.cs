@@ -44,7 +44,11 @@ namespace iSynaptic.Commons
         public static Maybe<T> Unsafe(Func<Maybe<T>> unsafeComputation)
         {
             Guard.NotNull(unsafeComputation, "unsafeComputation");
-            return new Maybe<T>(() => unsafeComputation().Computation());
+
+            Func<MaybeResult> finalComputation =
+                () => unsafeComputation().Computation();
+
+            return new Maybe<T>(finalComputation.Memoize());
         }
 
         private Func<MaybeResult> Computation
@@ -348,7 +352,7 @@ namespace iSynaptic.Commons
                 return self;
             };
 
-            return Maybe<T>.Unsafe(boundComputation.Memoize());
+            return Maybe<T>.Unsafe(boundComputation);
         }
 
         public static Maybe<T> ThrowOnNoValue<T>(this Maybe<T> self, Exception exception)
