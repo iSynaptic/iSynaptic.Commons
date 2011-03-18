@@ -127,22 +127,24 @@ namespace iSynaptic.Commons
             return value;
         }
 
-        public static void NotNullOrEmpty(string value, string valueName)
+        public static string NotNullOrEmpty(string value, string valueName)
         {
             NotNull(value, valueName);
             NotEmpty(value, valueName);
+
+            return value;
         }
 
-        public static void NotNullOrEmpty<T>(IEnumerable<T> value, string valueName)
+        public static IEnumerable<T> NotNullOrEmpty<T>(IEnumerable<T> value, string valueName)
         {
             NotNull(value, valueName);
-            NotEmpty(value, valueName);
+            return NotEmpty(value, valueName);
         }
 
-        public static void NotNullOrWhiteSpace(string value, string valueName)
+        public static string NotNullOrWhiteSpace(string value, string valueName)
         {
             NotNull(value, valueName);
-            NotWhiteSpace(value, valueName);
+            return NotWhiteSpace(value, valueName);
         }
 
         private static void GuardClassRequires(Func<bool> predicate, string name, string message)
