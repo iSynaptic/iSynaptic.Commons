@@ -668,6 +668,44 @@ namespace iSynaptic.Commons
             Assert.IsTrue(executed);
         }
 
+        [Test]
+        public void Cast_ReturnsCastedType()
+        {
+            ICollection<string> foo = new List<string>();
+
+            ICollection<string> value = Maybe.Value<object>(foo)
+                .Cast<object, ICollection<string>>()
+                .Value;
+
+            Assert.IsTrue(ReferenceEquals(foo, value));
+        }
+
+        [Test]
+        public void Cast_ReturnsNoValue_WhenCastIsNotPossible()
+        {
+            ICollection<string> foo = new List<string>();
+
+            var value = Maybe.Value<object>(foo)
+                .Cast<object, DateTime>();
+
+            Assert.IsFalse(value.HasValue);
+        }
+
+        [Test]
+        public void Cast_DeferesExecutionUntilEvaluated()
+        {
+            ICollection<string> foo = new List<string>();
+
+            bool executed = false;
+            var value = Maybe.Value<object>(() => { executed = true; return foo; })
+                .Cast<object, ICollection<string>>();
+
+            Assert.IsFalse(executed);
+
+            Assert.IsTrue(ReferenceEquals(foo, value.Value));
+            Assert.IsTrue(executed);
+        }
+
         private static int ThrowsException(int x)
         {
             throw new InvalidOperationException();

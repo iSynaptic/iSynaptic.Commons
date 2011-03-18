@@ -271,6 +271,11 @@ namespace iSynaptic.Commons
 
         public static T Return<T>(this Maybe<T> self, T @default)
         {
+            return self.Return(() => @default);
+        }
+
+        public static T Return<T>(this Maybe<T> self, Func<T> @default)
+        {
             return self
                 .ThrowOnException()
                 .OnNoValue(@default)
@@ -438,6 +443,17 @@ namespace iSynaptic.Commons
 
             return Value(synchronizedComputation)
                 .Select(x => x);
+        }
+
+        public static Maybe<TResult> Cast<T, TResult>(this Maybe<T> self)
+        {
+            return self.Where(x => x is TResult)
+                .Select(x => (TResult)(object)x);
+        }
+
+        public static Maybe<T> Or<T>(this Maybe<T> self, Maybe<T> other)
+        {
+            return self.OnNoValue(() => other);
         }
     }
 }
