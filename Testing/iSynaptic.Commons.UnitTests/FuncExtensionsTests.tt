@@ -8,6 +8,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+
 using NUnit.Framework;
 
 namespace iSynaptic.Commons
@@ -36,6 +39,49 @@ namespace iSynaptic.Commons
 			int expected = <#= Delimit(Enumerable.Range(1, i), " + ", x => x.ToString()) #>;
             Assert.AreEqual(expected, val);
         }
+
+		[Test]
+		public void SynchronizeOf<#= nameSuffix #>()
+		{
+			int count = 0;
+            Func<<#= fixedTypes #>, int> func = (<#= args #>) => { count++; Thread.Sleep(150); return count-- + <#= Delimit(Enumerable.Range(1, i), " + ", x => "t" + x.ToString()) #>;};
+			func = func.Synchronize();
+
+            var task1 = Task.Factory.StartNew(() => func(<#= fixedArgs #>));
+            var task2 = Task.Factory.StartNew(() => func(<#= fixedArgs #>));
+
+			int expected = 1 + <#= Delimit(Enumerable.Range(1, i), " + ", x => x.ToString()) #>;
+
+			Assert.AreEqual(expected, task1.Result);
+			Assert.AreEqual(expected, task2.Result);
+		}
+
+		[Test]
+		public void MakeConditionalOf<#= nameSuffix #>()
+		{
+			<# string halvedFixedArgs = Delimit(Enumerable.Range(1, i), ", ", x => (x / 2).ToString()); #>
+
+			Func<<#= fixedTypes #>, int> func = null;
+
+            Assert.Throws<ArgumentNullException>(() => { func.MakeConditional((<#= args #>) => true); });
+
+            func = (<#= args #>) => <#= Delimit(Enumerable.Range(1, i), " + ", x => "t" + x.ToString()) #>;
+            Assert.Throws<ArgumentNullException>(() => { func.MakeConditional(null); });
+
+			int expected = <#= Delimit(Enumerable.Range(1, i), " + ", x => x.ToString()) #>;
+
+            var simpleConditionalFunc = func.MakeConditional((<#= args #>) => <#= Delimit(Enumerable.Range(1, i), " + ", x => "t" + x.ToString()) #> == expected);
+            Assert.AreEqual(0, simpleConditionalFunc(<#= halvedFixedArgs #>));
+            Assert.AreEqual(expected, simpleConditionalFunc(<#= fixedArgs #>));
+
+            var withDefaultValueFunc = func.MakeConditional((<#= args #>) => <#= Delimit(Enumerable.Range(1, i), " + ", x => "t" + x.ToString()) #> == expected, -1);
+            Assert.AreEqual(-1, withDefaultValueFunc(<#= halvedFixedArgs #>));
+            Assert.AreEqual(expected, withDefaultValueFunc(<#= fixedArgs #>));
+
+            var withFalseFunc = func.MakeConditional((<#= args #>) => <#= Delimit(Enumerable.Range(1, i), " + ", x => "t" + x.ToString()) #> == expected, (<#= args #>) => 42);
+            Assert.AreEqual(42, withFalseFunc(<#= halvedFixedArgs #>));
+            Assert.AreEqual(expected, withFalseFunc(<#= fixedArgs #>));
+		}
 
 		<# } #>
 	}
