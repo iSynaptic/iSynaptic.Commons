@@ -30,18 +30,25 @@ namespace iSynaptic.Commons
             GuardClassNotNull(value, "value");
             GuardClassNotNullOrEmpty(name, "name");
 
-            if (typeof(T).IsAssignableFrom(value.GetType()) != true)
-            {
-                throw string.IsNullOrWhiteSpace(message)
-                    ? new ArgumentException(string.Format("{0} must be of type '{1}'", name, typeof(T).FullName), name)
-                    : new ArgumentException(message, name);
-            }
+            return (T) MustSatisfy(value, x => typeof(T).IsAssignableFrom(x.GetType()), name,
+                string.IsNullOrWhiteSpace(message)
+                    ? string.Format("{0} must be of type '{1}'", name, typeof(T).FullName)
+                    : message);
+        }
 
-            return (T) value;
+        public static string Matches(string value, string pattern, string name, string message = null)
+        {
+            GuardClassNotNull(value, "value");
+            GuardClassNotNullOrEmpty(pattern, "pattern");
+
+            return Matches(value, new Regex(pattern), name, message);
         }
 
         public static string Matches(string value, Regex validation, string name, string message = null)
         {
+            GuardClassNotNull(value, "value");
+            GuardClassNotNull(validation, "validation");
+
             return MustSatisfy(value, validation.IsMatch, name,
                                string.IsNullOrWhiteSpace(message)
                                    ? string.Format("{0} does not match the required pattern.", name)
@@ -114,10 +121,7 @@ namespace iSynaptic.Commons
 
         public static IEnumerable<T> NotEmpty<T>(IEnumerable<T> value, string name, string message = null)
         {
-            if (ReferenceEquals(value, null))
-                return value;
-
-            if (value.Any() != true)
+            if (!ReferenceEquals(value, null) && value.Any() != true)
             {
                 throw string.IsNullOrWhiteSpace(message)
                     ? new ArgumentException(string.Format("{0} must not be empty.", name), name)

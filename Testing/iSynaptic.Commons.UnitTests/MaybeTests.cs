@@ -486,6 +486,18 @@ namespace iSynaptic.Commons
         }
 
         [Test]
+        public void When_WithAction_ExecutesAction()
+        {
+            string output = null;
+
+            var value = Maybe.Value("Hello")
+                .When("Hello", (Action<string>)(x => output = x))
+                .Run();
+
+            Assert.AreEqual("Hello", output);
+        }
+
+        [Test]
         public void Value_DefersExecutionUntilEvaluated()
         {
             bool executed = false;
@@ -704,6 +716,149 @@ namespace iSynaptic.Commons
 
             Assert.IsTrue(ReferenceEquals(foo, value.Value));
             Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void Or_ReturnsFirstValueIfHasValue()
+        {
+            var value = Maybe.Value(1)
+                .Or(Maybe.Value(42))
+                .Return();
+
+            Assert.AreEqual(1, value);
+        }
+
+        [Test]
+        public void Or_ReturnsSecondValueIfFirstDoesNotHaveValue()
+        {
+            var value = Maybe<int>.NoValue
+                .Or(Maybe.Value(42))
+                .Return();
+
+            Assert.AreEqual(42, value);
+        }
+
+        [Test]
+        public void Or_YieldsExceptionIfFirstValueHasException()
+        {
+            var value = new Maybe<int>(new InvalidOperationException())
+                .Or(Maybe.Value(42));
+
+            Assert.Throws<InvalidOperationException>(() => value.Return());
+        }
+
+        [Test]
+        public void Or_YieldsExceptionIfSecondValueHasExceptionAndFirstHasNoValue()
+        {
+            var value = Maybe<int>.NoValue
+                .Or(new Maybe<int>(new InvalidOperationException()));
+
+            Assert.Throws<InvalidOperationException>(() => value.Return());
+        }
+
+        [Test]
+        public void Or_YieldsExceptionFromFirstValueIgnoringExceptionFromSecondValue()
+        {
+            var value = new Maybe<int>(new InvalidOperationException())
+                .Or(new Maybe<int>(new NotSupportedException()));
+
+            Assert.Throws<InvalidOperationException>(() => value.Return());
+        }
+
+        [Test]
+        public void Or_YieldsExceptionFromFirstValueAndDoesNotEvaluateSecondValue()
+        {
+            bool executed = false;
+
+            var value = new Maybe<int>(new InvalidOperationException())
+                .Or(Maybe.Value(() => { executed = true; return 42; }));
+
+            Assert.Throws<InvalidOperationException>(() => value.Return());
+            Assert.IsFalse(executed);
+        }
+
+        [Test]
+        public void Join_ReturnsBothValueIfHasValue()
+        {
+            var value = Maybe.Value(1)
+                .Join(Maybe.Value(42))
+                .Return();
+
+            Assert.AreEqual(Tuple.Create(1, 42), value);
+        }
+
+        [Test]
+        public void Join_ReturnsNoValueIfFirstDoesNotHaveValue()
+        {
+            var value = Maybe<int>.NoValue
+                .Join(Maybe.Value(42));
+                
+            Assert.IsFalse(value.HasValue);
+        }
+
+        [Test]
+        public void Join_YieldsExceptionIfFirstValueHasException()
+        {
+            var value = new Maybe<int>(new InvalidOperationException())
+                .Join(Maybe.Value(42));
+
+            Assert.Throws<InvalidOperationException>(() => value.Return());
+        }
+
+        [Test]
+        public void Join_YieldsExceptionIfSecondValueHasExceptionAndFirstHasValue()
+        {
+            var value = Maybe.Value(1)
+                .Join(new Maybe<int>(new InvalidOperationException()));
+
+            Assert.Throws<InvalidOperationException>(() => value.Return());
+        }
+
+        [Test]
+        public void Join_YieldsExceptionFromFirstValueIgnoringExceptionFromSecondValue()
+        {
+            var value = new Maybe<int>(new InvalidOperationException())
+                .Join(new Maybe<int>(new NotSupportedException()));
+
+            Assert.Throws<InvalidOperationException>(() => value.Return());
+        }
+
+        [Test]
+        public void Join_YieldsExceptionFromFirstValueAndDoesNotEvaluateSecondValue()
+        {
+            bool executed = false;
+
+            var value = new Maybe<int>(new InvalidOperationException())
+                .Join(Maybe.Value(() => { executed = true; return 42; }));
+
+            Assert.Throws<InvalidOperationException>(() => value.Return());
+            Assert.IsFalse(executed);
+        }
+
+        [Test]
+        public void ToNullable_WithNoValue_ReturnsNull()
+        {
+            var value = Maybe<int>.NoValue
+                .ToNullable();
+
+            Assert.IsFalse(value.HasValue);
+        }
+
+        [Test]
+        public void ToNullable_WithValue_ReturnsValue()
+        {
+            var value = Maybe.Value(42)
+                .ToNullable();
+
+            Assert.AreEqual(42, value.Value);
+        }
+
+        [Test]
+        public void ToNullable_WithException_ThrowsException()
+        {
+            var value = new Maybe<int>(new InvalidOperationException());
+
+            Assert.Throws<InvalidOperationException>(() => value.ToNullable());
         }
 
         private static int ThrowsException(int x)

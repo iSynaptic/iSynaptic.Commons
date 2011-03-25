@@ -408,13 +408,13 @@ namespace iSynaptic.Commons
                     .Select(x => x ? computation(self) : self);
         }
 
-        public static Maybe<T> When<T>(this Maybe<T> self, Maybe<T> value, Func<T, Maybe<T>> computation)
+        public static Maybe<T> When<T>(this Maybe<T> self, T value, Func<T, Maybe<T>> computation)
         {
             Guard.NotNull(computation, "computation");
             return self.When(x => x.Equals(value), x => x.Bind(computation));
         }
 
-        public static Maybe<T> When<T>(this Maybe<T> self, Maybe<T> value, Action<T> action)
+        public static Maybe<T> When<T>(this Maybe<T> self, T value, Action<T> action)
         {
             Guard.NotNull(action, "action");
             return self.When(value, x => { action(x); return x; });
@@ -428,7 +428,7 @@ namespace iSynaptic.Commons
 
         public static Maybe<T> When<T>(this Maybe<T> self, Maybe<T> value, Maybe<T> result)
         {
-            return self.When(value, x => result);
+            return self.When(x => x.Equals(value), result);
         }
 
         public static Maybe<T> Run<T>(this Maybe<T> self)
@@ -454,6 +454,23 @@ namespace iSynaptic.Commons
         public static Maybe<T> Or<T>(this Maybe<T> self, Maybe<T> other)
         {
             return self.OnNoValue(() => other);
+        }
+
+        public static Maybe<TResult> Join<T, U, TResult>(this Maybe<T> self, Maybe<U> other, Func<T, U, TResult> selector)
+        {
+            return self.Select(t => other.Select(r => selector(t, r)));
+        }
+
+        public static Maybe<Tuple<T, U>> Join<T, U>(this Maybe<T> self, Maybe<U> other)
+        {
+            return self.Join(other, Tuple.Create);
+        }
+
+        public static T? ToNullable<T>(this Maybe<T> self) where T : struct
+        {
+            return self.Select(x => (T?) x)
+                .OnNoValue(() => (T?)null)
+                .Return();
         }
     }
 }

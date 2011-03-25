@@ -19,12 +19,12 @@ namespace iSynaptic.Commons.Collections.Generic
             return new object();
         }
 
-        protected override IWeakDictionary<object, object> CreateDictionary()
+        protected override IWeakDictionary<object, object> CreateWeakDictionary()
         {
             return new WeakKeyDictionary<object, object>();
         }
 
-        protected override IWeakDictionary<object, object> CreateDictionary(IEqualityComparer<object> comparer)
+        protected override IWeakDictionary<object, object> CreateWeakDictionary(IEqualityComparer<object> comparer)
         {
             return new WeakKeyDictionary<object, object>(comparer);
         }

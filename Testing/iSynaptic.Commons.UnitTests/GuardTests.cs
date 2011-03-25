@@ -18,6 +18,12 @@ namespace iSynaptic.Commons
         }
 
         [Test]
+        public void MustBeDefined_CannotBeUsedWithNonEnumTypeArgument()
+        {
+            Assert.Throws<ArgumentException>(() => Guard.MustBeDefined<int>(DayOfWeek.Wednesday, "value"));
+        }
+
+        [Test]
         public void MustBeDefined_WithDefinedValue_DoesNothing()
         {
             Guard.MustBeDefined<DayOfWeek>(DayOfWeek.Friday, "value");
@@ -175,6 +181,18 @@ namespace iSynaptic.Commons
         {
             Assert.AreEqual(42, Guard.MustBeLessThanOrEqual(42, 43, "value"));
             Assert.AreEqual(42, Guard.MustBeLessThanOrEqual(42, 42, "value"));
+        }
+
+        [Test]
+        public void Matches_WithMatch_DoesNothing()
+        {
+            Assert.AreEqual("Hello", Guard.Matches("Hello", @"^H\w+$", "value"));
+        }
+
+        [Test]
+        public void Matches_WithoutMatch_ThrowsException()
+        {
+            Assert.Throws<ArgumentException>(() => Guard.Matches("Bye", @"^H\w+$", "value"));
         }
     }
 }

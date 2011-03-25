@@ -13,7 +13,7 @@ namespace iSynaptic.Commons
 
             Type delegateType = typeof (T);
             Type[] parameterTypes = delegateType.GetGenericArguments();
-            
+
             if (delegateType.Name.StartsWith("Func"))
             {
                 parameterTypes = parameterTypes
@@ -23,21 +23,18 @@ namespace iSynaptic.Commons
 
             Type targetType = target.GetType();
 
-            MethodInfo info = targetType.GetMethod(methodName,
+            var info = Maybe.Value(() =>targetType.GetMethod(methodName,
                BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.FlattenHierarchy,
                null,
                parameterTypes,
-               null);
+               null)).NotNull();
 
-            if (info != null)
-            {
-                if(info.IsStatic)
-                    return (T)(object)Delegate.CreateDelegate(typeof(T), info);
-
-                return (T)(object)Delegate.CreateDelegate(typeof(T), target, info);
-            }
-
-            return default(T);
+            return info
+                .Where(x => x.IsStatic)
+                .Select(x => Delegate.CreateDelegate(typeof (T), x))
+                .Or(info.Select(x => Delegate.CreateDelegate(typeof (T), target, x)))
+                .Cast<Delegate, T>()
+                .Return();
         }
     }
 }

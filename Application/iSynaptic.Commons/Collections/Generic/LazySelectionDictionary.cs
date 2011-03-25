@@ -10,11 +10,17 @@ namespace iSynaptic.Commons.Collections.Generic
         private readonly Func<TKey, Maybe<TValue>> _Selector;
         private readonly IDictionary<TKey, TValue> _Underlying = null;
 
-        public LazySelectionDictionary(Func<TKey, Maybe<TValue>> selector) : this(new Dictionary<TKey, TValue>(), selector)
+        public LazySelectionDictionary(Func<TKey, Maybe<TValue>> selector)
+            : this(selector, EqualityComparer<TKey>.Default)
         {
         }
 
-        public LazySelectionDictionary(IDictionary<TKey, TValue> underlying, Func<TKey, Maybe<TValue>> selector)
+        public LazySelectionDictionary(Func<TKey, Maybe<TValue>> selector, IEqualityComparer<TKey> comparer)
+            : this(selector, new Dictionary<TKey, TValue>(comparer))
+        {
+        }
+
+        public LazySelectionDictionary(Func<TKey, Maybe<TValue>> selector, IDictionary<TKey, TValue> underlying)
         {
             _Selector = Guard.NotNull(selector, "selector");
 

@@ -7,13 +7,28 @@ using NUnit.Framework;
 namespace iSynaptic.Commons.Collections.Generic
 {
     [TestFixture]
-    public class LazyDictionaryTests
+    public class LazyDictionaryTests : DictionaryTestsBase<int, string>
     {
-        [Test]
-        public void Count_Initially_IsZero()
+        private readonly Random _Random = new Random();
+
+        protected override int CreateKey(bool keepReference = false)
         {
-            var dictionary = new LazyDictionary<int, string>();
-            Assert.AreEqual(0, dictionary.Count);
+            return _Random.Next();
+        }
+
+        protected override string CreateValue(bool keepReference = false)
+        {
+            return _Random.Next().ToString();
+        }
+
+        protected override IDictionary<int, string> CreateDictionary()
+        {
+            return new LazyDictionary<int, string>();
+        }
+
+        protected override IDictionary<int, string> CreateDictionary(IEqualityComparer<int> comparer)
+        {
+            return new LazyDictionary<int, string>(comparer);
         }
 
         [Test]
@@ -37,17 +52,6 @@ namespace iSynaptic.Commons.Collections.Generic
                                  };
 
             Assert.AreEqual("42", dictionary[42]);
-        }
-
-        [Test]
-        public void Enumerator_IsInitialyEmpty()
-        {
-            var dictionary = new LazyDictionary<int, string>();
-            var array = dictionary
-                .Select(x => x)
-                .ToArray();
-
-            Assert.AreEqual(0, array.Length);
         }
 
         [Test]

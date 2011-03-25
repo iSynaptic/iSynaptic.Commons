@@ -7,13 +7,28 @@ using NUnit.Framework;
 namespace iSynaptic.Commons.Collections.Generic
 {
     [TestFixture]
-    public class LazySelectionDictionaryTests
+    public class LazySelectionDictionaryTests : DictionaryTestsBase<int, string>
     {
-        [Test]
-        public void Count_Initially_IsZero()
+        private readonly Random _Random = new Random();
+
+        protected override int CreateKey(bool keepReference = false)
         {
-            var dictionary = new LazySelectionDictionary<int, string>(x => x.ToString());
-            Assert.AreEqual(0, dictionary.Count);
+            return _Random.Next();
+        }
+
+        protected override string CreateValue(bool keepReference = false)
+        {
+            return _Random.Next().ToString();
+        }
+
+        protected override IDictionary<int, string> CreateDictionary()
+        {
+            return new LazySelectionDictionary<int, string>(x => Maybe<string>.NoValue);
+        }
+
+        protected override IDictionary<int, string> CreateDictionary(IEqualityComparer<int> comparer)
+        {
+            return new LazySelectionDictionary<int, string>(x => Maybe<string>.NoValue, comparer);
         }
 
         [Test]
@@ -25,20 +40,11 @@ namespace iSynaptic.Commons.Collections.Generic
         }
 
         [Test]
-        public void GetValue_ReturnsCorrectly()
-        {
-            var dictionary = new LazySelectionDictionary<int, string>(x => x.ToString());
-            string value = dictionary[1];
-
-            Assert.AreEqual("1", value);
-        }
-
-        [Test]
         public void GetValue_EvaluatesOnce()
         {
             int executed = 0;
             var dictionary = new LazySelectionDictionary<int, string>(x => { executed++; return x.ToString(); });
-            
+
             string value = dictionary[1];
             value = dictionary[1];
 
@@ -47,18 +53,7 @@ namespace iSynaptic.Commons.Collections.Generic
         }
 
         [Test]
-        public void Enumerator_IsInitialyEmpty()
-        {
-            var dictionary = new LazySelectionDictionary<int, string>(x => x.ToString());
-            var array = dictionary
-                .Select(x => x)
-                .ToArray();
-
-            Assert.AreEqual(0, array.Length);
-        }
-
-        [Test]
-        public void TryGetValue_ReturnsCorrectly()
+        public void TryGetValue_InvokesSelectionFunc()
         {
             var dictionary = new LazySelectionDictionary<int, string>(x => x % 2 == 0 ? x.ToString() : Maybe<string>.NoValue);
             string value = null;
@@ -66,65 +61,6 @@ namespace iSynaptic.Commons.Collections.Generic
             Assert.IsFalse(dictionary.TryGetValue(1, out value));
             Assert.IsTrue(dictionary.TryGetValue(2, out value));
             Assert.AreEqual("2", value);
-        }
-
-        [Test]
-        public void Add_StoresValueInDictionary()
-        {
-            var dictionary = new LazySelectionDictionary<int, string>(x => Maybe<string>.NoValue);
-            dictionary.Add(42, "42");
-
-            Assert.AreEqual(1, dictionary.Count);
-            Assert.AreEqual("42", dictionary[42]);
-        }
-
-        [Test]
-        public void Remove_TakesValueOutOfDictionary()
-        {
-            var dictionary = new LazySelectionDictionary<int, string>(x => Maybe<string>.NoValue)
-                                 {
-                                     {1, "1"},
-                                     {2, "2"},
-                                     {42, "42"}
-                                 };
-
-            Assert.AreEqual(3, dictionary.Count);
-            
-            dictionary.Remove(2);
-
-            Assert.AreEqual(2, dictionary.Count);
-            Assert.IsFalse(dictionary.ContainsKey(2));
-        }
-
-        [Test]
-        public void Clear_RemovesAllItemsFromDictionary()
-        {
-            var dictionary = new LazySelectionDictionary<int, string>(x => Maybe<string>.NoValue)
-                                 {
-                                     {1, "1"},
-                                     {2, "2"},
-                                     {42, "42"}
-                                 };
-
-            Assert.AreEqual(3, dictionary.Count);
-
-            dictionary.Clear();
-            Assert.AreEqual(0, dictionary.Count);
-
-            Assert.IsFalse(dictionary.TryGetValue(1)
-                       .Or(dictionary.TryGetValue(2))
-                       .Or(dictionary.TryGetValue(42))
-                       .HasValue);
-        }
-
-        [Test]
-        public void Indexer_AddsValueToDictionary()
-        {
-            var dictionary = new LazySelectionDictionary<int, string>(x => Maybe<string>.NoValue);
-            dictionary[42] = "42";
-
-            Assert.AreEqual(1, dictionary.Count);
-            Assert.AreEqual("42", dictionary[42]);
         }
     }
 }

@@ -32,12 +32,12 @@ namespace iSynaptic.Commons.Collections.Generic
             return new object();
         }
 
-        protected override IWeakDictionary<TestKey, object> CreateDictionary()
+        protected override IWeakDictionary<TestKey, object> CreateWeakDictionary()
         {
             return new WeakKeyMemberDictionary<TestKey, object, object>(x => x.WeakObject);
         }
 
-        protected override IWeakDictionary<TestKey, object> CreateDictionary(IEqualityComparer<TestKey> comparer)
+        protected override IWeakDictionary<TestKey, object> CreateWeakDictionary(IEqualityComparer<TestKey> comparer)
         {
             return new WeakKeyMemberDictionary<TestKey, object, object>(x => x.WeakObject, comparer);
         }

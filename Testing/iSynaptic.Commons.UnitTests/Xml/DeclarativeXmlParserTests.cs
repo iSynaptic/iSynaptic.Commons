@@ -72,7 +72,7 @@ namespace iSynaptic.Commons.Xml
                 Upon(b =>
                 {
                     b.Attribute<string>("owner", x => library.Owner = x);
-                    b.Attribute<string>("location", x => library.Location = x);
+                    b.Attribute<string>("location", x => { if(x == "throw") throw new InvalidOperationException("Bad stuff here!"); library.Location = x; });
 
                     b.ContentElement<string>("comment", x => library.Comment = x)
                         .ZeroOrOne();
@@ -364,6 +364,21 @@ namespace iSynaptic.Commons.Xml
             Assert.AreEqual(firstCategory.Element("name").Value, library.Categories[0].Name);
 
             AssertErrorCount(0, results.Item2);
+        }
+
+        [Test]
+        public void ExceptionLogsErrorAndContinuesParsing()
+        {
+            var xml = BuildValidXml();
+            xml.Attribute("location").SetValue("throw");
+
+            var r = XmlReader.Create(new StringReader(xml.ToString()));
+            var results = TestParser.Parse(r);
+            var library = results.Item1;
+
+            Assert.IsTrue(library.Categories.Count >= 1);
+
+            AssertErrorCount(1, results.Item2);
         }
 
         private void AssertErrorCount(int count, IEnumerable<DeclarativeXmlParser.ParseError> errors)

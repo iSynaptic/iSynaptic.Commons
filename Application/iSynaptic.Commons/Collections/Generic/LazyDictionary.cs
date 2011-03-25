@@ -9,7 +9,12 @@ namespace iSynaptic.Commons.Collections.Generic
     {
         private readonly IDictionary<TKey, Lazy<TValue>> _Underlying;
 
-        public LazyDictionary() : this(new Dictionary<TKey, Lazy<TValue>>())
+        public LazyDictionary() : this(EqualityComparer<TKey>.Default)
+        {
+        }
+
+        public LazyDictionary(IEqualityComparer<TKey> comparer)
+            : this(new Dictionary<TKey, Lazy<TValue>>(comparer))
         {
         }
 
