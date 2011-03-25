@@ -9,23 +9,17 @@ namespace iSynaptic.Commons
         public static IDisposable ToDisposable(this Action self)
         {
             Guard.NotNull(self, "self");
-            return new ActionDisposer(self);
+            return ToDisposable(disposing => self());
         }
 
         public static IDisposable ToDisposable(this Action<bool> self)
         {
-            Guard.NotNull(self, "self");
-            return new ActionDisposer(self);
+            return new ActionDisposer(Guard.NotNull(self, "self"));
         }
 
         private sealed class ActionDisposer : IDisposable
         {
             private readonly Action<bool> _Action = null;
-            public ActionDisposer(Action action)
-            {
-                Guard.NotNull(action, "action");
-                _Action = disposing => action();
-            }
 
             public ActionDisposer(Action<bool> action)
             {
@@ -64,12 +58,13 @@ namespace iSynaptic.Commons
 
             return () =>
             {
-                int previousValue = Interlocked.Increment(ref beenExecuted);
+                int previousValue = Interlocked.CompareExchange(ref beenExecuted, 1, 0);
 
                 if (previousValue == 0)
+                {
                     self();
-                else
-                    beenExecuted = 1;
+                    self = null;
+                }
             };
         }
 

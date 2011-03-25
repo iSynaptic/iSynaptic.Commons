@@ -127,24 +127,71 @@ namespace iSynaptic.Commons
             return value;
         }
 
-        public static string NotNullOrEmpty(string value, string valueName)
+        public static string NotNullOrEmpty(string value, string name)
         {
-            NotNull(value, valueName);
-            NotEmpty(value, valueName);
+            NotNull(value, name);
+            NotEmpty(value, name);
 
             return value;
         }
 
-        public static IEnumerable<T> NotNullOrEmpty<T>(IEnumerable<T> value, string valueName)
+        public static IEnumerable<T> NotNullOrEmpty<T>(IEnumerable<T> value, string name)
         {
-            NotNull(value, valueName);
-            return NotEmpty(value, valueName);
+            NotNull(value, name);
+            return NotEmpty(value, name);
         }
 
-        public static string NotNullOrWhiteSpace(string value, string valueName)
+        public static T MustBeGreaterThan<T>(T value, T compareTo, string name, string message = null)
+            where T : IComparable<T>
         {
-            NotNull(value, valueName);
-            return NotWhiteSpace(value, valueName);
+            return Compare(value, compareTo, x => x > 0, name, string.IsNullOrWhiteSpace(message)
+                ? string.Format("{0} must be greater than {1}.", name, compareTo)
+                : message);
+        }
+
+        public static T MustBeGreaterThanOrEqual<T>(T value, T compareTo, string name, string message = null)
+            where T : IComparable<T>
+        {
+            return Compare(value, compareTo, x => x >= 0, name, string.IsNullOrWhiteSpace(message)
+                ? string.Format("{0} must be greater than or equal to {1}.", name, compareTo)
+                : message);
+        }
+
+        public static T MustBeLessThan<T>(T value, T compareTo, string name, string message = null)
+            where T : IComparable<T>
+        {
+            return Compare(value, compareTo, x => x < 0, name, string.IsNullOrWhiteSpace(message)
+                ? string.Format("{0} must be less than {1}.", name, compareTo)
+                : message);
+        }
+
+        public static T MustBeLessThanOrEqual<T>(T value, T compareTo, string name, string message = null)
+            where T : IComparable<T>
+        {
+            return Compare(value, compareTo, x => x <= 0, name, string.IsNullOrWhiteSpace(message)
+                ? string.Format("{0} must be less than or equal to {1}.", name, compareTo)
+                : message);
+        }
+
+        private static T Compare<T>(T value, T compareTo, Func<int, bool> rule, string name, string message)
+            where T : IComparable<T>
+        {
+            GuardClassNotNull(value, "value");
+            GuardClassNotNull(compareTo, "compareTo");
+            GuardClassNotNull(rule, "rule");
+            GuardClassNotNullOrWhiteSpace(name, "name");
+            GuardClassNotNullOrWhiteSpace(message, "message");
+
+            if (rule(value.CompareTo(compareTo)) != true)
+                throw new ArgumentOutOfRangeException(name, value, message);
+
+            return value;
+        }
+
+        public static string NotNullOrWhiteSpace(string value, string name)
+        {
+            NotNull(value, name);
+            return NotWhiteSpace(value, name);
         }
 
         private static void GuardClassRequires(Func<bool> predicate, string name, string message)

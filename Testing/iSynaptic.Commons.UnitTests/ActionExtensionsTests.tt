@@ -112,6 +112,68 @@ namespace iSynaptic.Commons
             Assert.IsTrue(exceptions[0].GetType() == typeof(InvalidOperationException));
         }
 
+		[Test]
+        public void MakeIdempotentOf<#= nameSuffix #>_EnsuresActionsExecuteOnlyOnce()
+        {
+            int count = 0;
+            Action<<#= fixedTypes #>> action = (<#= args #>) => count++;
+            action = action.MakeIdempotent();
+
+            action(<#= fixedArgs #>);
+            action(<#= fixedArgs #>);
+            action(<#= fixedArgs #>);
+
+            Assert.AreEqual(1, count);
+        }
+
+        [Test]
+        public void MakeIdempotentOf<#= nameSuffix #>_WithNullArgument_ThrowsException()
+        {
+            Action<<#= fixedTypes #>> action = null;
+            Assert.Throws<ArgumentNullException>(() => action.MakeIdempotent());
+        }
+
+		[Test]
+        public void FollowedByOf<#= nameSuffix #>_WithNullArgument_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<<#= fixedTypes #>> originalAction = (<#= args #>) => executed = true;
+            Action<<#= fixedTypes #>> action = originalAction.FollowedBy(null);
+
+            action(<#= fixedArgs #>);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void FollowedByOf<#= nameSuffix #>_ExtendingNullAction_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<<#= fixedTypes #>> originalAction = (<#= args #>) => executed = true;
+            Action<<#= fixedTypes #>> action = ((Action<<#= fixedTypes #>>)null).FollowedBy(originalAction);
+
+            action(<#= fixedArgs #>);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void FollowedByOf<#= nameSuffix #>_CallsBothActionsInSuccession()
+        {
+            bool leftExecuted = false;
+            bool rightExecuted = false;
+
+            Action<<#= fixedTypes #>> left = (<#= args #>) => leftExecuted = true;
+            Action<<#= fixedTypes #>> right = (<#= args #>) => rightExecuted = true;
+
+            var action = left.FollowedBy(right);
+
+            action(<#= fixedArgs #>);
+            Assert.IsTrue(leftExecuted && rightExecuted);
+        }
+
 		<# } #>
 	}
 }

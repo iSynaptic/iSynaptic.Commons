@@ -1,4 +1,5 @@
 ﻿
+
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -47,12 +48,13 @@ namespace iSynaptic.Commons
 
             return (t1) =>
             {
-                int previousValue = Interlocked.Increment(ref beenExecuted);
+                int previousValue = Interlocked.CompareExchange(ref beenExecuted, 1, 0);
 
                 if(previousValue == 0)
+				{
                     self(t1);
-                else
-                    beenExecuted = 1;
+					self = null;
+				}
             };
         }
 
@@ -114,12 +116,13 @@ namespace iSynaptic.Commons
 
             return (t1, t2) =>
             {
-                int previousValue = Interlocked.Increment(ref beenExecuted);
+                int previousValue = Interlocked.CompareExchange(ref beenExecuted, 1, 0);
 
                 if(previousValue == 0)
+				{
                     self(t1, t2);
-                else
-                    beenExecuted = 1;
+					self = null;
+				}
             };
         }
 
@@ -181,12 +184,13 @@ namespace iSynaptic.Commons
 
             return (t1, t2, t3) =>
             {
-                int previousValue = Interlocked.Increment(ref beenExecuted);
+                int previousValue = Interlocked.CompareExchange(ref beenExecuted, 1, 0);
 
                 if(previousValue == 0)
+				{
                     self(t1, t2, t3);
-                else
-                    beenExecuted = 1;
+					self = null;
+				}
             };
         }
 
@@ -248,12 +252,13 @@ namespace iSynaptic.Commons
 
             return (t1, t2, t3, t4) =>
             {
-                int previousValue = Interlocked.Increment(ref beenExecuted);
+                int previousValue = Interlocked.CompareExchange(ref beenExecuted, 1, 0);
 
                 if(previousValue == 0)
+				{
                     self(t1, t2, t3, t4);
-                else
-                    beenExecuted = 1;
+					self = null;
+				}
             };
         }
 
@@ -315,12 +320,13 @@ namespace iSynaptic.Commons
 
             return (t1, t2, t3, t4, t5) =>
             {
-                int previousValue = Interlocked.Increment(ref beenExecuted);
+                int previousValue = Interlocked.CompareExchange(ref beenExecuted, 1, 0);
 
                 if(previousValue == 0)
+				{
                     self(t1, t2, t3, t4, t5);
-                else
-                    beenExecuted = 1;
+					self = null;
+				}
             };
         }
 
@@ -382,12 +388,13 @@ namespace iSynaptic.Commons
 
             return (t1, t2, t3, t4, t5, t6) =>
             {
-                int previousValue = Interlocked.Increment(ref beenExecuted);
+                int previousValue = Interlocked.CompareExchange(ref beenExecuted, 1, 0);
 
                 if(previousValue == 0)
+				{
                     self(t1, t2, t3, t4, t5, t6);
-                else
-                    beenExecuted = 1;
+					self = null;
+				}
             };
         }
 
@@ -449,12 +456,13 @@ namespace iSynaptic.Commons
 
             return (t1, t2, t3, t4, t5, t6, t7) =>
             {
-                int previousValue = Interlocked.Increment(ref beenExecuted);
+                int previousValue = Interlocked.CompareExchange(ref beenExecuted, 1, 0);
 
                 if(previousValue == 0)
+				{
                     self(t1, t2, t3, t4, t5, t6, t7);
-                else
-                    beenExecuted = 1;
+					self = null;
+				}
             };
         }
 
@@ -516,12 +524,13 @@ namespace iSynaptic.Commons
 
             return (t1, t2, t3, t4, t5, t6, t7, t8) =>
             {
-                int previousValue = Interlocked.Increment(ref beenExecuted);
+                int previousValue = Interlocked.CompareExchange(ref beenExecuted, 1, 0);
 
                 if(previousValue == 0)
+				{
                     self(t1, t2, t3, t4, t5, t6, t7, t8);
-                else
-                    beenExecuted = 1;
+					self = null;
+				}
             };
         }
 
@@ -583,12 +592,13 @@ namespace iSynaptic.Commons
 
             return (t1, t2, t3, t4, t5, t6, t7, t8, t9) =>
             {
-                int previousValue = Interlocked.Increment(ref beenExecuted);
+                int previousValue = Interlocked.CompareExchange(ref beenExecuted, 1, 0);
 
                 if(previousValue == 0)
+				{
                     self(t1, t2, t3, t4, t5, t6, t7, t8, t9);
-                else
-                    beenExecuted = 1;
+					self = null;
+				}
             };
         }
 
@@ -650,12 +660,13 @@ namespace iSynaptic.Commons
 
             return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) =>
             {
-                int previousValue = Interlocked.Increment(ref beenExecuted);
+                int previousValue = Interlocked.CompareExchange(ref beenExecuted, 1, 0);
 
                 if(previousValue == 0)
+				{
                     self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10);
-                else
-                    beenExecuted = 1;
+					self = null;
+				}
             };
         }
 
@@ -717,12 +728,13 @@ namespace iSynaptic.Commons
 
             return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) =>
             {
-                int previousValue = Interlocked.Increment(ref beenExecuted);
+                int previousValue = Interlocked.CompareExchange(ref beenExecuted, 1, 0);
 
                 if(previousValue == 0)
+				{
                     self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11);
-                else
-                    beenExecuted = 1;
+					self = null;
+				}
             };
         }
 
@@ -784,12 +796,13 @@ namespace iSynaptic.Commons
 
             return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) =>
             {
-                int previousValue = Interlocked.Increment(ref beenExecuted);
+                int previousValue = Interlocked.CompareExchange(ref beenExecuted, 1, 0);
 
                 if(previousValue == 0)
+				{
                     self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12);
-                else
-                    beenExecuted = 1;
+					self = null;
+				}
             };
         }
 
@@ -851,12 +864,13 @@ namespace iSynaptic.Commons
 
             return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) =>
             {
-                int previousValue = Interlocked.Increment(ref beenExecuted);
+                int previousValue = Interlocked.CompareExchange(ref beenExecuted, 1, 0);
 
                 if(previousValue == 0)
+				{
                     self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13);
-                else
-                    beenExecuted = 1;
+					self = null;
+				}
             };
         }
 
@@ -918,12 +932,13 @@ namespace iSynaptic.Commons
 
             return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) =>
             {
-                int previousValue = Interlocked.Increment(ref beenExecuted);
+                int previousValue = Interlocked.CompareExchange(ref beenExecuted, 1, 0);
 
                 if(previousValue == 0)
+				{
                     self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14);
-                else
-                    beenExecuted = 1;
+					self = null;
+				}
             };
         }
 
@@ -985,12 +1000,13 @@ namespace iSynaptic.Commons
 
             return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) =>
             {
-                int previousValue = Interlocked.Increment(ref beenExecuted);
+                int previousValue = Interlocked.CompareExchange(ref beenExecuted, 1, 0);
 
                 if(previousValue == 0)
+				{
                     self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15);
-                else
-                    beenExecuted = 1;
+					self = null;
+				}
             };
         }
 
@@ -1052,12 +1068,13 @@ namespace iSynaptic.Commons
 
             return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) =>
             {
-                int previousValue = Interlocked.Increment(ref beenExecuted);
+                int previousValue = Interlocked.CompareExchange(ref beenExecuted, 1, 0);
 
                 if(previousValue == 0)
+				{
                     self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16);
-                else
-                    beenExecuted = 1;
+					self = null;
+				}
             };
         }
 

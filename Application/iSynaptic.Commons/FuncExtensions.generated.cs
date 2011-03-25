@@ -1,4 +1,5 @@
 ﻿
+
 using System;
 using System.Collections.Generic;
 
@@ -975,7 +976,7 @@ namespace iSynaptic.Commons
 			Guard.NotNull(self, "self");
 			var dictionary = new LazySelectionDictionary<Tuple<T1>, TResult>(x => self(x.Item1));
 
-			return (t1) => dictionary[Tuple.Create(t1)];
+			return (t1) => dictionary[new Tuple<T1>(t1)];
 		}
 		
 		public static Func<T1, T2, TResult> Memoize<T1, T2, TResult>(this Func<T1, T2, TResult> self)
@@ -983,7 +984,7 @@ namespace iSynaptic.Commons
 			Guard.NotNull(self, "self");
 			var dictionary = new LazySelectionDictionary<Tuple<T1, T2>, TResult>(x => self(x.Item1, x.Item2));
 
-			return (t1, t2) => dictionary[Tuple.Create(t1, t2)];
+			return (t1, t2) => dictionary[new Tuple<T1, T2>(t1, t2)];
 		}
 		
 		public static Func<T1, T2, T3, TResult> Memoize<T1, T2, T3, TResult>(this Func<T1, T2, T3, TResult> self)
@@ -991,7 +992,7 @@ namespace iSynaptic.Commons
 			Guard.NotNull(self, "self");
 			var dictionary = new LazySelectionDictionary<Tuple<T1, T2, T3>, TResult>(x => self(x.Item1, x.Item2, x.Item3));
 
-			return (t1, t2, t3) => dictionary[Tuple.Create(t1, t2, t3)];
+			return (t1, t2, t3) => dictionary[new Tuple<T1, T2, T3>(t1, t2, t3)];
 		}
 		
 		public static Func<T1, T2, T3, T4, TResult> Memoize<T1, T2, T3, T4, TResult>(this Func<T1, T2, T3, T4, TResult> self)
@@ -999,7 +1000,7 @@ namespace iSynaptic.Commons
 			Guard.NotNull(self, "self");
 			var dictionary = new LazySelectionDictionary<Tuple<T1, T2, T3, T4>, TResult>(x => self(x.Item1, x.Item2, x.Item3, x.Item4));
 
-			return (t1, t2, t3, t4) => dictionary[Tuple.Create(t1, t2, t3, t4)];
+			return (t1, t2, t3, t4) => dictionary[new Tuple<T1, T2, T3, T4>(t1, t2, t3, t4)];
 		}
 		
 		public static Func<T1, T2, T3, T4, T5, TResult> Memoize<T1, T2, T3, T4, T5, TResult>(this Func<T1, T2, T3, T4, T5, TResult> self)
@@ -1007,7 +1008,7 @@ namespace iSynaptic.Commons
 			Guard.NotNull(self, "self");
 			var dictionary = new LazySelectionDictionary<Tuple<T1, T2, T3, T4, T5>, TResult>(x => self(x.Item1, x.Item2, x.Item3, x.Item4, x.Item5));
 
-			return (t1, t2, t3, t4, t5) => dictionary[Tuple.Create(t1, t2, t3, t4, t5)];
+			return (t1, t2, t3, t4, t5) => dictionary[new Tuple<T1, T2, T3, T4, T5>(t1, t2, t3, t4, t5)];
 		}
 		
 		public static Func<T1, T2, T3, T4, T5, T6, TResult> Memoize<T1, T2, T3, T4, T5, T6, TResult>(this Func<T1, T2, T3, T4, T5, T6, TResult> self)
@@ -1015,7 +1016,7 @@ namespace iSynaptic.Commons
 			Guard.NotNull(self, "self");
 			var dictionary = new LazySelectionDictionary<Tuple<T1, T2, T3, T4, T5, T6>, TResult>(x => self(x.Item1, x.Item2, x.Item3, x.Item4, x.Item5, x.Item6));
 
-			return (t1, t2, t3, t4, t5, t6) => dictionary[Tuple.Create(t1, t2, t3, t4, t5, t6)];
+			return (t1, t2, t3, t4, t5, t6) => dictionary[new Tuple<T1, T2, T3, T4, T5, T6>(t1, t2, t3, t4, t5, t6)];
 		}
 		
 		public static Func<T1, T2, T3, T4, T5, T6, T7, TResult> Memoize<T1, T2, T3, T4, T5, T6, T7, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, TResult> self)
@@ -1023,8 +1024,79 @@ namespace iSynaptic.Commons
 			Guard.NotNull(self, "self");
 			var dictionary = new LazySelectionDictionary<Tuple<T1, T2, T3, T4, T5, T6, T7>, TResult>(x => self(x.Item1, x.Item2, x.Item3, x.Item4, x.Item5, x.Item6, x.Item7));
 
-			return (t1, t2, t3, t4, t5, t6, t7) => dictionary[Tuple.Create(t1, t2, t3, t4, t5, t6, t7)];
+			return (t1, t2, t3, t4, t5, t6, t7) => dictionary[new Tuple<T1, T2, T3, T4, T5, T6, T7>(t1, t2, t3, t4, t5, t6, t7)];
 		}
 		
-	}
+		public static Func<T1, T2, T3, T4, T5, T6, T7, T8, TResult> Memoize<T1, T2, T3, T4, T5, T6, T7, T8, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, TResult> self)
+		{
+			Guard.NotNull(self, "self");
+			var dictionary = new LazySelectionDictionary<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8>>, TResult>(x => self(x.Item1, x.Item2, x.Item3, x.Item4, x.Item5, x.Item6, x.Item7, x.Rest.Item1));
+
+			return (t1, t2, t3, t4, t5, t6, t7, t8) => dictionary[new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8>>(t1, t2, t3, t4, t5, t6, t7, new Tuple<T8>(t8))];
+		}
+		
+		public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult> Memoize<T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult> self)
+		{
+			Guard.NotNull(self, "self");
+			var dictionary = new LazySelectionDictionary<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9>>, TResult>(x => self(x.Item1, x.Item2, x.Item3, x.Item4, x.Item5, x.Item6, x.Item7, x.Rest.Item1, x.Rest.Item2));
+
+			return (t1, t2, t3, t4, t5, t6, t7, t8, t9) => dictionary[new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9>>(t1, t2, t3, t4, t5, t6, t7, new Tuple<T8, T9>(t8, t9))];
+		}
+		
+		public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult> Memoize<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult> self)
+		{
+			Guard.NotNull(self, "self");
+			var dictionary = new LazySelectionDictionary<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10>>, TResult>(x => self(x.Item1, x.Item2, x.Item3, x.Item4, x.Item5, x.Item6, x.Item7, x.Rest.Item1, x.Rest.Item2, x.Rest.Item3));
+
+			return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) => dictionary[new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10>>(t1, t2, t3, t4, t5, t6, t7, new Tuple<T8, T9, T10>(t8, t9, t10))];
+		}
+		
+		public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult> Memoize<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult> self)
+		{
+			Guard.NotNull(self, "self");
+			var dictionary = new LazySelectionDictionary<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11>>, TResult>(x => self(x.Item1, x.Item2, x.Item3, x.Item4, x.Item5, x.Item6, x.Item7, x.Rest.Item1, x.Rest.Item2, x.Rest.Item3, x.Rest.Item4));
+
+			return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) => dictionary[new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11>>(t1, t2, t3, t4, t5, t6, t7, new Tuple<T8, T9, T10, T11>(t8, t9, t10, t11))];
+		}
+		
+		public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult> Memoize<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult> self)
+		{
+			Guard.NotNull(self, "self");
+			var dictionary = new LazySelectionDictionary<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12>>, TResult>(x => self(x.Item1, x.Item2, x.Item3, x.Item4, x.Item5, x.Item6, x.Item7, x.Rest.Item1, x.Rest.Item2, x.Rest.Item3, x.Rest.Item4, x.Rest.Item5));
+
+			return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) => dictionary[new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12>>(t1, t2, t3, t4, t5, t6, t7, new Tuple<T8, T9, T10, T11, T12>(t8, t9, t10, t11, t12))];
+		}
+		
+		public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TResult> Memoize<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TResult> self)
+		{
+			Guard.NotNull(self, "self");
+			var dictionary = new LazySelectionDictionary<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13>>, TResult>(x => self(x.Item1, x.Item2, x.Item3, x.Item4, x.Item5, x.Item6, x.Item7, x.Rest.Item1, x.Rest.Item2, x.Rest.Item3, x.Rest.Item4, x.Rest.Item5, x.Rest.Item6));
+
+			return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) => dictionary[new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13>>(t1, t2, t3, t4, t5, t6, t7, new Tuple<T8, T9, T10, T11, T12, T13>(t8, t9, t10, t11, t12, t13))];
+		}
+		
+		public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult> Memoize<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult> self)
+		{
+			Guard.NotNull(self, "self");
+			var dictionary = new LazySelectionDictionary<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14>>, TResult>(x => self(x.Item1, x.Item2, x.Item3, x.Item4, x.Item5, x.Item6, x.Item7, x.Rest.Item1, x.Rest.Item2, x.Rest.Item3, x.Rest.Item4, x.Rest.Item5, x.Rest.Item6, x.Rest.Item7));
+
+			return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) => dictionary[new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14>>(t1, t2, t3, t4, t5, t6, t7, new Tuple<T8, T9, T10, T11, T12, T13, T14>(t8, t9, t10, t11, t12, t13, t14))];
+		}
+		
+		public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult> Memoize<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult> self)
+		{
+			Guard.NotNull(self, "self");
+			var dictionary = new LazySelectionDictionary<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15>>>, TResult>(x => self(x.Item1, x.Item2, x.Item3, x.Item4, x.Item5, x.Item6, x.Item7, x.Rest.Item1, x.Rest.Item2, x.Rest.Item3, x.Rest.Item4, x.Rest.Item5, x.Rest.Item6, x.Rest.Item7, x.Rest.Rest.Item1));
+
+			return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) => dictionary[new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15>>>(t1, t2, t3, t4, t5, t6, t7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15>>(t8, t9, t10, t11, t12, t13, t14, new Tuple<T15>(t15)))];
+		}
+		
+		public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TResult> Memoize<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TResult> self)
+		{
+			Guard.NotNull(self, "self");
+			var dictionary = new LazySelectionDictionary<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16>>>, TResult>(x => self(x.Item1, x.Item2, x.Item3, x.Item4, x.Item5, x.Item6, x.Item7, x.Rest.Item1, x.Rest.Item2, x.Rest.Item3, x.Rest.Item4, x.Rest.Item5, x.Rest.Item6, x.Rest.Item7, x.Rest.Rest.Item1, x.Rest.Rest.Item2));
+
+			return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) => dictionary[new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16>>>(t1, t2, t3, t4, t5, t6, t7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16>>(t8, t9, t10, t11, t12, t13, t14, new Tuple<T15, T16>(t15, t16)))];
+		}
+			}
 }

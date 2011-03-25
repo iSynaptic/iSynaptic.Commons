@@ -124,5 +124,57 @@ namespace iSynaptic.Commons
         {
             Guard.NotNullOrEmpty(Enumerable.Range(1,1), "value");
         }
+
+        [Test]
+        public void MustBeGreaterThan_WhenValueLessThanOrEqualToComparisionValue_ThrowsException()
+        {
+            Assert.Throws<ArgumentOutOfRangeException>(() => Guard.MustBeGreaterThan(42, 42, "value"));
+            Assert.Throws<ArgumentOutOfRangeException>(() => Guard.MustBeGreaterThan(42, 43, "value"));
+        }
+
+        [Test]
+        public void MustBeGreaterThan_WhenValueIsGreater_ReturnsValue()
+        {
+            Assert.AreEqual(42, Guard.MustBeGreaterThan(42, 0, "value"));
+        }
+
+        [Test]
+        public void MustBeGreaterThanOrEqual_WhenValueLessThanComparisionValue_ThrowsException()
+        {
+            Assert.Throws<ArgumentOutOfRangeException>(() => Guard.MustBeGreaterThanOrEqual(42, 43, "value"));
+        }
+
+        [Test]
+        public void MustBeGreaterThanOrEqual_WhenValueIsGreaterOrEqual_ReturnsValue()
+        {
+            Assert.AreEqual(42, Guard.MustBeGreaterThanOrEqual(42, 41, "value"));
+            Assert.AreEqual(42, Guard.MustBeGreaterThanOrEqual(42, 42, "value"));
+        }
+
+        [Test]
+        public void MustBeLessThan_WhenValueGreaterThanOrEqualToComparisionValue_ThrowsException()
+        {
+            Assert.Throws<ArgumentOutOfRangeException>(() => Guard.MustBeLessThan(42, 42, "value"));
+            Assert.Throws<ArgumentOutOfRangeException>(() => Guard.MustBeLessThan(42, 41, "value"));
+        }
+
+        [Test]
+        public void MustBeLessThan_WhenValueIsLessThan_ReturnsValue()
+        {
+            Assert.AreEqual(42, Guard.MustBeLessThan(42, 43, "value"));
+        }
+
+        [Test]
+        public void MustBeLessThanOrEqual_WhenValueGreaterThanComparisionValue_ThrowsException()
+        {
+            Assert.Throws<ArgumentOutOfRangeException>(() => Guard.MustBeLessThanOrEqual(42, 41, "value"));
+        }
+
+        [Test]
+        public void MustBeLessThanOrEqual_WhenValueIsLessOrEqual_ReturnsValue()
+        {
+            Assert.AreEqual(42, Guard.MustBeLessThanOrEqual(42, 43, "value"));
+            Assert.AreEqual(42, Guard.MustBeLessThanOrEqual(42, 42, "value"));
+        }
     }
 }

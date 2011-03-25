@@ -82,21 +82,47 @@ namespace iSynaptic.Commons
 
 		<# } #>
 
-		<# foreach(var i in Enumerable.Range(1, 7))
+		<# foreach(var i in Enumerable.Range(1, 16))
 		{
-			string typeArgs = Delimit(Enumerable.Range(1, i), ", ", x => "T" + x.ToString());
-			string args = Delimit(Enumerable.Range(1, i), ", ", x => "t" + x.ToString());
-			string fromTupleArgs = Delimit(Enumerable.Range(1, i), ", ", x => "x.Item" + x.ToString());
+			string fullTypeArgs = Delimit(Enumerable.Range(1, i), ", ", x => "T" + x.ToString());
+			string fullArgs = Delimit(Enumerable.Range(1, i), ", ", x => "t" + x.ToString());
+
+			string nestedTupleType = "";
+			string nestedTupleCreate = "";
+			string nestedArgs = "";
+
+			foreach(var batch in Batch(Enumerable.Range(1, i), 7).Reverse())
+			{
+				string typePrefix = "Tuple<" + Delimit(batch, ", ", x => "T" + x.ToString());
+
+				string createPrefix = "new Tuple<" + Delimit(batch, ", ", x => "T" + x.ToString());
+				string argCreatePrefix = ">(" + Delimit(batch, ", ", x => "t" + x.ToString());
+				string argsList = "x" + string.Join("", Enumerable.Repeat(".Rest", batch.Index)) + Delimit(batch.Select(x => ((x - 1) % 7) + 1), ", x" + string.Join("", Enumerable.Repeat(".Rest", batch.Index)), x => ".Item" + x.ToString());
+
+
+				if(string.IsNullOrWhiteSpace(nestedTupleType))
+				{
+					nestedTupleType = typePrefix + ">";
+					nestedTupleCreate = createPrefix + argCreatePrefix + ")";
+					nestedArgs = argsList;
+				}
+				else
+				{
+					nestedTupleCreate = createPrefix + ", " + nestedTupleType + argCreatePrefix + ", " + nestedTupleCreate + ")";
+					nestedTupleType = typePrefix + ", " + nestedTupleType + ">";
+					nestedArgs = argsList + ", " + nestedArgs;
+
+				}
+			}
 	    #>
 
-		public static Func<<#= typeArgs #>, TResult> Memoize<<#= typeArgs #>, TResult>(this Func<<#= typeArgs #>, TResult> self)
+		public static Func<<#= fullTypeArgs #>, TResult> Memoize<<#= fullTypeArgs #>, TResult>(this Func<<#= fullTypeArgs #>, TResult> self)
 		{
 			Guard.NotNull(self, "self");
-			var dictionary = new LazySelectionDictionary<Tuple<<#= typeArgs #>>, TResult>(x => self(<#= fromTupleArgs #>));
+			var dictionary = new LazySelectionDictionary<<#= nestedTupleType #>, TResult>(x => self(<#= nestedArgs #>));
 
-			return (<#= args #>) => dictionary[Tuple.Create(<#= args #>)];
+			return (<#= fullArgs #>) => dictionary[<#= nestedTupleCreate #>];
 		}
 		<# } #>
-
 	}
 }

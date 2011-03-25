@@ -1,4 +1,5 @@
 ﻿
+
 using System;
 using System.Collections.Generic;
 using NUnit.Framework;
@@ -97,6 +98,68 @@ namespace iSynaptic.Commons
             Assert.IsTrue(exceptions[0].GetType() == typeof(InvalidOperationException));
         }
 
+		[Test]
+        public void MakeIdempotentOfT1_EnsuresActionsExecuteOnlyOnce()
+        {
+            int count = 0;
+            Action<int> action = (t1) => count++;
+            action = action.MakeIdempotent();
+
+            action(1);
+            action(1);
+            action(1);
+
+            Assert.AreEqual(1, count);
+        }
+
+        [Test]
+        public void MakeIdempotentOfT1_WithNullArgument_ThrowsException()
+        {
+            Action<int> action = null;
+            Assert.Throws<ArgumentNullException>(() => action.MakeIdempotent());
+        }
+
+		[Test]
+        public void FollowedByOfT1_WithNullArgument_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int> originalAction = (t1) => executed = true;
+            Action<int> action = originalAction.FollowedBy(null);
+
+            action(1);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void FollowedByOfT1_ExtendingNullAction_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int> originalAction = (t1) => executed = true;
+            Action<int> action = ((Action<int>)null).FollowedBy(originalAction);
+
+            action(1);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void FollowedByOfT1_CallsBothActionsInSuccession()
+        {
+            bool leftExecuted = false;
+            bool rightExecuted = false;
+
+            Action<int> left = (t1) => leftExecuted = true;
+            Action<int> right = (t1) => rightExecuted = true;
+
+            var action = left.FollowedBy(right);
+
+            action(1);
+            Assert.IsTrue(leftExecuted && rightExecuted);
+        }
+
 		
 		[Test]
         public void MakeConditional_WithNullAction_ForActionOfT1T2()
@@ -185,6 +248,68 @@ namespace iSynaptic.Commons
             
             Assert.AreEqual(1, exceptions.Count);
             Assert.IsTrue(exceptions[0].GetType() == typeof(InvalidOperationException));
+        }
+
+		[Test]
+        public void MakeIdempotentOfT1T2_EnsuresActionsExecuteOnlyOnce()
+        {
+            int count = 0;
+            Action<int, int> action = (t1, t2) => count++;
+            action = action.MakeIdempotent();
+
+            action(1, 2);
+            action(1, 2);
+            action(1, 2);
+
+            Assert.AreEqual(1, count);
+        }
+
+        [Test]
+        public void MakeIdempotentOfT1T2_WithNullArgument_ThrowsException()
+        {
+            Action<int, int> action = null;
+            Assert.Throws<ArgumentNullException>(() => action.MakeIdempotent());
+        }
+
+		[Test]
+        public void FollowedByOfT1T2_WithNullArgument_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int> originalAction = (t1, t2) => executed = true;
+            Action<int, int> action = originalAction.FollowedBy(null);
+
+            action(1, 2);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void FollowedByOfT1T2_ExtendingNullAction_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int> originalAction = (t1, t2) => executed = true;
+            Action<int, int> action = ((Action<int, int>)null).FollowedBy(originalAction);
+
+            action(1, 2);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void FollowedByOfT1T2_CallsBothActionsInSuccession()
+        {
+            bool leftExecuted = false;
+            bool rightExecuted = false;
+
+            Action<int, int> left = (t1, t2) => leftExecuted = true;
+            Action<int, int> right = (t1, t2) => rightExecuted = true;
+
+            var action = left.FollowedBy(right);
+
+            action(1, 2);
+            Assert.IsTrue(leftExecuted && rightExecuted);
         }
 
 		
@@ -277,6 +402,68 @@ namespace iSynaptic.Commons
             Assert.IsTrue(exceptions[0].GetType() == typeof(InvalidOperationException));
         }
 
+		[Test]
+        public void MakeIdempotentOfT1T2T3_EnsuresActionsExecuteOnlyOnce()
+        {
+            int count = 0;
+            Action<int, int, int> action = (t1, t2, t3) => count++;
+            action = action.MakeIdempotent();
+
+            action(1, 2, 3);
+            action(1, 2, 3);
+            action(1, 2, 3);
+
+            Assert.AreEqual(1, count);
+        }
+
+        [Test]
+        public void MakeIdempotentOfT1T2T3_WithNullArgument_ThrowsException()
+        {
+            Action<int, int, int> action = null;
+            Assert.Throws<ArgumentNullException>(() => action.MakeIdempotent());
+        }
+
+		[Test]
+        public void FollowedByOfT1T2T3_WithNullArgument_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int> originalAction = (t1, t2, t3) => executed = true;
+            Action<int, int, int> action = originalAction.FollowedBy(null);
+
+            action(1, 2, 3);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void FollowedByOfT1T2T3_ExtendingNullAction_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int> originalAction = (t1, t2, t3) => executed = true;
+            Action<int, int, int> action = ((Action<int, int, int>)null).FollowedBy(originalAction);
+
+            action(1, 2, 3);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void FollowedByOfT1T2T3_CallsBothActionsInSuccession()
+        {
+            bool leftExecuted = false;
+            bool rightExecuted = false;
+
+            Action<int, int, int> left = (t1, t2, t3) => leftExecuted = true;
+            Action<int, int, int> right = (t1, t2, t3) => rightExecuted = true;
+
+            var action = left.FollowedBy(right);
+
+            action(1, 2, 3);
+            Assert.IsTrue(leftExecuted && rightExecuted);
+        }
+
 		
 		[Test]
         public void MakeConditional_WithNullAction_ForActionOfT1T2T3T4()
@@ -365,6 +552,68 @@ namespace iSynaptic.Commons
             
             Assert.AreEqual(1, exceptions.Count);
             Assert.IsTrue(exceptions[0].GetType() == typeof(InvalidOperationException));
+        }
+
+		[Test]
+        public void MakeIdempotentOfT1T2T3T4_EnsuresActionsExecuteOnlyOnce()
+        {
+            int count = 0;
+            Action<int, int, int, int> action = (t1, t2, t3, t4) => count++;
+            action = action.MakeIdempotent();
+
+            action(1, 2, 3, 4);
+            action(1, 2, 3, 4);
+            action(1, 2, 3, 4);
+
+            Assert.AreEqual(1, count);
+        }
+
+        [Test]
+        public void MakeIdempotentOfT1T2T3T4_WithNullArgument_ThrowsException()
+        {
+            Action<int, int, int, int> action = null;
+            Assert.Throws<ArgumentNullException>(() => action.MakeIdempotent());
+        }
+
+		[Test]
+        public void FollowedByOfT1T2T3T4_WithNullArgument_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int> originalAction = (t1, t2, t3, t4) => executed = true;
+            Action<int, int, int, int> action = originalAction.FollowedBy(null);
+
+            action(1, 2, 3, 4);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void FollowedByOfT1T2T3T4_ExtendingNullAction_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int> originalAction = (t1, t2, t3, t4) => executed = true;
+            Action<int, int, int, int> action = ((Action<int, int, int, int>)null).FollowedBy(originalAction);
+
+            action(1, 2, 3, 4);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void FollowedByOfT1T2T3T4_CallsBothActionsInSuccession()
+        {
+            bool leftExecuted = false;
+            bool rightExecuted = false;
+
+            Action<int, int, int, int> left = (t1, t2, t3, t4) => leftExecuted = true;
+            Action<int, int, int, int> right = (t1, t2, t3, t4) => rightExecuted = true;
+
+            var action = left.FollowedBy(right);
+
+            action(1, 2, 3, 4);
+            Assert.IsTrue(leftExecuted && rightExecuted);
         }
 
 		
@@ -457,6 +706,68 @@ namespace iSynaptic.Commons
             Assert.IsTrue(exceptions[0].GetType() == typeof(InvalidOperationException));
         }
 
+		[Test]
+        public void MakeIdempotentOfT1T2T3T4T5_EnsuresActionsExecuteOnlyOnce()
+        {
+            int count = 0;
+            Action<int, int, int, int, int> action = (t1, t2, t3, t4, t5) => count++;
+            action = action.MakeIdempotent();
+
+            action(1, 2, 3, 4, 5);
+            action(1, 2, 3, 4, 5);
+            action(1, 2, 3, 4, 5);
+
+            Assert.AreEqual(1, count);
+        }
+
+        [Test]
+        public void MakeIdempotentOfT1T2T3T4T5_WithNullArgument_ThrowsException()
+        {
+            Action<int, int, int, int, int> action = null;
+            Assert.Throws<ArgumentNullException>(() => action.MakeIdempotent());
+        }
+
+		[Test]
+        public void FollowedByOfT1T2T3T4T5_WithNullArgument_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int, int> originalAction = (t1, t2, t3, t4, t5) => executed = true;
+            Action<int, int, int, int, int> action = originalAction.FollowedBy(null);
+
+            action(1, 2, 3, 4, 5);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void FollowedByOfT1T2T3T4T5_ExtendingNullAction_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int, int> originalAction = (t1, t2, t3, t4, t5) => executed = true;
+            Action<int, int, int, int, int> action = ((Action<int, int, int, int, int>)null).FollowedBy(originalAction);
+
+            action(1, 2, 3, 4, 5);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void FollowedByOfT1T2T3T4T5_CallsBothActionsInSuccession()
+        {
+            bool leftExecuted = false;
+            bool rightExecuted = false;
+
+            Action<int, int, int, int, int> left = (t1, t2, t3, t4, t5) => leftExecuted = true;
+            Action<int, int, int, int, int> right = (t1, t2, t3, t4, t5) => rightExecuted = true;
+
+            var action = left.FollowedBy(right);
+
+            action(1, 2, 3, 4, 5);
+            Assert.IsTrue(leftExecuted && rightExecuted);
+        }
+
 		
 		[Test]
         public void MakeConditional_WithNullAction_ForActionOfT1T2T3T4T5T6()
@@ -545,6 +856,68 @@ namespace iSynaptic.Commons
             
             Assert.AreEqual(1, exceptions.Count);
             Assert.IsTrue(exceptions[0].GetType() == typeof(InvalidOperationException));
+        }
+
+		[Test]
+        public void MakeIdempotentOfT1T2T3T4T5T6_EnsuresActionsExecuteOnlyOnce()
+        {
+            int count = 0;
+            Action<int, int, int, int, int, int> action = (t1, t2, t3, t4, t5, t6) => count++;
+            action = action.MakeIdempotent();
+
+            action(1, 2, 3, 4, 5, 6);
+            action(1, 2, 3, 4, 5, 6);
+            action(1, 2, 3, 4, 5, 6);
+
+            Assert.AreEqual(1, count);
+        }
+
+        [Test]
+        public void MakeIdempotentOfT1T2T3T4T5T6_WithNullArgument_ThrowsException()
+        {
+            Action<int, int, int, int, int, int> action = null;
+            Assert.Throws<ArgumentNullException>(() => action.MakeIdempotent());
+        }
+
+		[Test]
+        public void FollowedByOfT1T2T3T4T5T6_WithNullArgument_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int, int, int> originalAction = (t1, t2, t3, t4, t5, t6) => executed = true;
+            Action<int, int, int, int, int, int> action = originalAction.FollowedBy(null);
+
+            action(1, 2, 3, 4, 5, 6);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void FollowedByOfT1T2T3T4T5T6_ExtendingNullAction_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int, int, int> originalAction = (t1, t2, t3, t4, t5, t6) => executed = true;
+            Action<int, int, int, int, int, int> action = ((Action<int, int, int, int, int, int>)null).FollowedBy(originalAction);
+
+            action(1, 2, 3, 4, 5, 6);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void FollowedByOfT1T2T3T4T5T6_CallsBothActionsInSuccession()
+        {
+            bool leftExecuted = false;
+            bool rightExecuted = false;
+
+            Action<int, int, int, int, int, int> left = (t1, t2, t3, t4, t5, t6) => leftExecuted = true;
+            Action<int, int, int, int, int, int> right = (t1, t2, t3, t4, t5, t6) => rightExecuted = true;
+
+            var action = left.FollowedBy(right);
+
+            action(1, 2, 3, 4, 5, 6);
+            Assert.IsTrue(leftExecuted && rightExecuted);
         }
 
 		
@@ -637,6 +1010,68 @@ namespace iSynaptic.Commons
             Assert.IsTrue(exceptions[0].GetType() == typeof(InvalidOperationException));
         }
 
+		[Test]
+        public void MakeIdempotentOfT1T2T3T4T5T6T7_EnsuresActionsExecuteOnlyOnce()
+        {
+            int count = 0;
+            Action<int, int, int, int, int, int, int> action = (t1, t2, t3, t4, t5, t6, t7) => count++;
+            action = action.MakeIdempotent();
+
+            action(1, 2, 3, 4, 5, 6, 7);
+            action(1, 2, 3, 4, 5, 6, 7);
+            action(1, 2, 3, 4, 5, 6, 7);
+
+            Assert.AreEqual(1, count);
+        }
+
+        [Test]
+        public void MakeIdempotentOfT1T2T3T4T5T6T7_WithNullArgument_ThrowsException()
+        {
+            Action<int, int, int, int, int, int, int> action = null;
+            Assert.Throws<ArgumentNullException>(() => action.MakeIdempotent());
+        }
+
+		[Test]
+        public void FollowedByOfT1T2T3T4T5T6T7_WithNullArgument_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int, int, int, int> originalAction = (t1, t2, t3, t4, t5, t6, t7) => executed = true;
+            Action<int, int, int, int, int, int, int> action = originalAction.FollowedBy(null);
+
+            action(1, 2, 3, 4, 5, 6, 7);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void FollowedByOfT1T2T3T4T5T6T7_ExtendingNullAction_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int, int, int, int> originalAction = (t1, t2, t3, t4, t5, t6, t7) => executed = true;
+            Action<int, int, int, int, int, int, int> action = ((Action<int, int, int, int, int, int, int>)null).FollowedBy(originalAction);
+
+            action(1, 2, 3, 4, 5, 6, 7);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void FollowedByOfT1T2T3T4T5T6T7_CallsBothActionsInSuccession()
+        {
+            bool leftExecuted = false;
+            bool rightExecuted = false;
+
+            Action<int, int, int, int, int, int, int> left = (t1, t2, t3, t4, t5, t6, t7) => leftExecuted = true;
+            Action<int, int, int, int, int, int, int> right = (t1, t2, t3, t4, t5, t6, t7) => rightExecuted = true;
+
+            var action = left.FollowedBy(right);
+
+            action(1, 2, 3, 4, 5, 6, 7);
+            Assert.IsTrue(leftExecuted && rightExecuted);
+        }
+
 		
 		[Test]
         public void MakeConditional_WithNullAction_ForActionOfT1T2T3T4T5T6T7T8()
@@ -725,6 +1160,68 @@ namespace iSynaptic.Commons
             
             Assert.AreEqual(1, exceptions.Count);
             Assert.IsTrue(exceptions[0].GetType() == typeof(InvalidOperationException));
+        }
+
+		[Test]
+        public void MakeIdempotentOfT1T2T3T4T5T6T7T8_EnsuresActionsExecuteOnlyOnce()
+        {
+            int count = 0;
+            Action<int, int, int, int, int, int, int, int> action = (t1, t2, t3, t4, t5, t6, t7, t8) => count++;
+            action = action.MakeIdempotent();
+
+            action(1, 2, 3, 4, 5, 6, 7, 8);
+            action(1, 2, 3, 4, 5, 6, 7, 8);
+            action(1, 2, 3, 4, 5, 6, 7, 8);
+
+            Assert.AreEqual(1, count);
+        }
+
+        [Test]
+        public void MakeIdempotentOfT1T2T3T4T5T6T7T8_WithNullArgument_ThrowsException()
+        {
+            Action<int, int, int, int, int, int, int, int> action = null;
+            Assert.Throws<ArgumentNullException>(() => action.MakeIdempotent());
+        }
+
+		[Test]
+        public void FollowedByOfT1T2T3T4T5T6T7T8_WithNullArgument_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int, int, int, int, int> originalAction = (t1, t2, t3, t4, t5, t6, t7, t8) => executed = true;
+            Action<int, int, int, int, int, int, int, int> action = originalAction.FollowedBy(null);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void FollowedByOfT1T2T3T4T5T6T7T8_ExtendingNullAction_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int, int, int, int, int> originalAction = (t1, t2, t3, t4, t5, t6, t7, t8) => executed = true;
+            Action<int, int, int, int, int, int, int, int> action = ((Action<int, int, int, int, int, int, int, int>)null).FollowedBy(originalAction);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void FollowedByOfT1T2T3T4T5T6T7T8_CallsBothActionsInSuccession()
+        {
+            bool leftExecuted = false;
+            bool rightExecuted = false;
+
+            Action<int, int, int, int, int, int, int, int> left = (t1, t2, t3, t4, t5, t6, t7, t8) => leftExecuted = true;
+            Action<int, int, int, int, int, int, int, int> right = (t1, t2, t3, t4, t5, t6, t7, t8) => rightExecuted = true;
+
+            var action = left.FollowedBy(right);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8);
+            Assert.IsTrue(leftExecuted && rightExecuted);
         }
 
 		
@@ -817,6 +1314,68 @@ namespace iSynaptic.Commons
             Assert.IsTrue(exceptions[0].GetType() == typeof(InvalidOperationException));
         }
 
+		[Test]
+        public void MakeIdempotentOfT1T2T3T4T5T6T7T8T9_EnsuresActionsExecuteOnlyOnce()
+        {
+            int count = 0;
+            Action<int, int, int, int, int, int, int, int, int> action = (t1, t2, t3, t4, t5, t6, t7, t8, t9) => count++;
+            action = action.MakeIdempotent();
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9);
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9);
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9);
+
+            Assert.AreEqual(1, count);
+        }
+
+        [Test]
+        public void MakeIdempotentOfT1T2T3T4T5T6T7T8T9_WithNullArgument_ThrowsException()
+        {
+            Action<int, int, int, int, int, int, int, int, int> action = null;
+            Assert.Throws<ArgumentNullException>(() => action.MakeIdempotent());
+        }
+
+		[Test]
+        public void FollowedByOfT1T2T3T4T5T6T7T8T9_WithNullArgument_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int, int, int, int, int, int> originalAction = (t1, t2, t3, t4, t5, t6, t7, t8, t9) => executed = true;
+            Action<int, int, int, int, int, int, int, int, int> action = originalAction.FollowedBy(null);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void FollowedByOfT1T2T3T4T5T6T7T8T9_ExtendingNullAction_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int, int, int, int, int, int> originalAction = (t1, t2, t3, t4, t5, t6, t7, t8, t9) => executed = true;
+            Action<int, int, int, int, int, int, int, int, int> action = ((Action<int, int, int, int, int, int, int, int, int>)null).FollowedBy(originalAction);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void FollowedByOfT1T2T3T4T5T6T7T8T9_CallsBothActionsInSuccession()
+        {
+            bool leftExecuted = false;
+            bool rightExecuted = false;
+
+            Action<int, int, int, int, int, int, int, int, int> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9) => leftExecuted = true;
+            Action<int, int, int, int, int, int, int, int, int> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9) => rightExecuted = true;
+
+            var action = left.FollowedBy(right);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9);
+            Assert.IsTrue(leftExecuted && rightExecuted);
+        }
+
 		
 		[Test]
         public void MakeConditional_WithNullAction_ForActionOfT1T2T3T4T5T6T7T8T9T10()
@@ -905,6 +1464,68 @@ namespace iSynaptic.Commons
             
             Assert.AreEqual(1, exceptions.Count);
             Assert.IsTrue(exceptions[0].GetType() == typeof(InvalidOperationException));
+        }
+
+		[Test]
+        public void MakeIdempotentOfT1T2T3T4T5T6T7T8T9T10_EnsuresActionsExecuteOnlyOnce()
+        {
+            int count = 0;
+            Action<int, int, int, int, int, int, int, int, int, int> action = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) => count++;
+            action = action.MakeIdempotent();
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+
+            Assert.AreEqual(1, count);
+        }
+
+        [Test]
+        public void MakeIdempotentOfT1T2T3T4T5T6T7T8T9T10_WithNullArgument_ThrowsException()
+        {
+            Action<int, int, int, int, int, int, int, int, int, int> action = null;
+            Assert.Throws<ArgumentNullException>(() => action.MakeIdempotent());
+        }
+
+		[Test]
+        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10_WithNullArgument_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int, int, int, int, int, int, int> originalAction = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) => executed = true;
+            Action<int, int, int, int, int, int, int, int, int, int> action = originalAction.FollowedBy(null);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10_ExtendingNullAction_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int, int, int, int, int, int, int> originalAction = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) => executed = true;
+            Action<int, int, int, int, int, int, int, int, int, int> action = ((Action<int, int, int, int, int, int, int, int, int, int>)null).FollowedBy(originalAction);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10_CallsBothActionsInSuccession()
+        {
+            bool leftExecuted = false;
+            bool rightExecuted = false;
+
+            Action<int, int, int, int, int, int, int, int, int, int> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) => leftExecuted = true;
+            Action<int, int, int, int, int, int, int, int, int, int> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) => rightExecuted = true;
+
+            var action = left.FollowedBy(right);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+            Assert.IsTrue(leftExecuted && rightExecuted);
         }
 
 		
@@ -997,6 +1618,68 @@ namespace iSynaptic.Commons
             Assert.IsTrue(exceptions[0].GetType() == typeof(InvalidOperationException));
         }
 
+		[Test]
+        public void MakeIdempotentOfT1T2T3T4T5T6T7T8T9T10T11_EnsuresActionsExecuteOnlyOnce()
+        {
+            int count = 0;
+            Action<int, int, int, int, int, int, int, int, int, int, int> action = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) => count++;
+            action = action.MakeIdempotent();
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11);
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11);
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11);
+
+            Assert.AreEqual(1, count);
+        }
+
+        [Test]
+        public void MakeIdempotentOfT1T2T3T4T5T6T7T8T9T10T11_WithNullArgument_ThrowsException()
+        {
+            Action<int, int, int, int, int, int, int, int, int, int, int> action = null;
+            Assert.Throws<ArgumentNullException>(() => action.MakeIdempotent());
+        }
+
+		[Test]
+        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11_WithNullArgument_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int, int, int, int, int, int, int, int> originalAction = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) => executed = true;
+            Action<int, int, int, int, int, int, int, int, int, int, int> action = originalAction.FollowedBy(null);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11_ExtendingNullAction_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int, int, int, int, int, int, int, int> originalAction = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) => executed = true;
+            Action<int, int, int, int, int, int, int, int, int, int, int> action = ((Action<int, int, int, int, int, int, int, int, int, int, int>)null).FollowedBy(originalAction);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11_CallsBothActionsInSuccession()
+        {
+            bool leftExecuted = false;
+            bool rightExecuted = false;
+
+            Action<int, int, int, int, int, int, int, int, int, int, int> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) => leftExecuted = true;
+            Action<int, int, int, int, int, int, int, int, int, int, int> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) => rightExecuted = true;
+
+            var action = left.FollowedBy(right);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11);
+            Assert.IsTrue(leftExecuted && rightExecuted);
+        }
+
 		
 		[Test]
         public void MakeConditional_WithNullAction_ForActionOfT1T2T3T4T5T6T7T8T9T10T11T12()
@@ -1085,6 +1768,68 @@ namespace iSynaptic.Commons
             
             Assert.AreEqual(1, exceptions.Count);
             Assert.IsTrue(exceptions[0].GetType() == typeof(InvalidOperationException));
+        }
+
+		[Test]
+        public void MakeIdempotentOfT1T2T3T4T5T6T7T8T9T10T11T12_EnsuresActionsExecuteOnlyOnce()
+        {
+            int count = 0;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int> action = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) => count++;
+            action = action.MakeIdempotent();
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
+
+            Assert.AreEqual(1, count);
+        }
+
+        [Test]
+        public void MakeIdempotentOfT1T2T3T4T5T6T7T8T9T10T11T12_WithNullArgument_ThrowsException()
+        {
+            Action<int, int, int, int, int, int, int, int, int, int, int, int> action = null;
+            Assert.Throws<ArgumentNullException>(() => action.MakeIdempotent());
+        }
+
+		[Test]
+        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11T12_WithNullArgument_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int> originalAction = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) => executed = true;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int> action = originalAction.FollowedBy(null);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11T12_ExtendingNullAction_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int> originalAction = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) => executed = true;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int> action = ((Action<int, int, int, int, int, int, int, int, int, int, int, int>)null).FollowedBy(originalAction);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11T12_CallsBothActionsInSuccession()
+        {
+            bool leftExecuted = false;
+            bool rightExecuted = false;
+
+            Action<int, int, int, int, int, int, int, int, int, int, int, int> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) => leftExecuted = true;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) => rightExecuted = true;
+
+            var action = left.FollowedBy(right);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
+            Assert.IsTrue(leftExecuted && rightExecuted);
         }
 
 		
@@ -1177,6 +1922,68 @@ namespace iSynaptic.Commons
             Assert.IsTrue(exceptions[0].GetType() == typeof(InvalidOperationException));
         }
 
+		[Test]
+        public void MakeIdempotentOfT1T2T3T4T5T6T7T8T9T10T11T12T13_EnsuresActionsExecuteOnlyOnce()
+        {
+            int count = 0;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int> action = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) => count++;
+            action = action.MakeIdempotent();
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13);
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13);
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13);
+
+            Assert.AreEqual(1, count);
+        }
+
+        [Test]
+        public void MakeIdempotentOfT1T2T3T4T5T6T7T8T9T10T11T12T13_WithNullArgument_ThrowsException()
+        {
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int> action = null;
+            Assert.Throws<ArgumentNullException>(() => action.MakeIdempotent());
+        }
+
+		[Test]
+        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11T12T13_WithNullArgument_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int> originalAction = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) => executed = true;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int> action = originalAction.FollowedBy(null);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11T12T13_ExtendingNullAction_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int> originalAction = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) => executed = true;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int> action = ((Action<int, int, int, int, int, int, int, int, int, int, int, int, int>)null).FollowedBy(originalAction);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11T12T13_CallsBothActionsInSuccession()
+        {
+            bool leftExecuted = false;
+            bool rightExecuted = false;
+
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) => leftExecuted = true;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) => rightExecuted = true;
+
+            var action = left.FollowedBy(right);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13);
+            Assert.IsTrue(leftExecuted && rightExecuted);
+        }
+
 		
 		[Test]
         public void MakeConditional_WithNullAction_ForActionOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14()
@@ -1265,6 +2072,68 @@ namespace iSynaptic.Commons
             
             Assert.AreEqual(1, exceptions.Count);
             Assert.IsTrue(exceptions[0].GetType() == typeof(InvalidOperationException));
+        }
+
+		[Test]
+        public void MakeIdempotentOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14_EnsuresActionsExecuteOnlyOnce()
+        {
+            int count = 0;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int> action = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) => count++;
+            action = action.MakeIdempotent();
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14);
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14);
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14);
+
+            Assert.AreEqual(1, count);
+        }
+
+        [Test]
+        public void MakeIdempotentOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14_WithNullArgument_ThrowsException()
+        {
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int> action = null;
+            Assert.Throws<ArgumentNullException>(() => action.MakeIdempotent());
+        }
+
+		[Test]
+        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14_WithNullArgument_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int> originalAction = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) => executed = true;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int> action = originalAction.FollowedBy(null);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14_ExtendingNullAction_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int> originalAction = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) => executed = true;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int> action = ((Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int>)null).FollowedBy(originalAction);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14_CallsBothActionsInSuccession()
+        {
+            bool leftExecuted = false;
+            bool rightExecuted = false;
+
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) => leftExecuted = true;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) => rightExecuted = true;
+
+            var action = left.FollowedBy(right);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14);
+            Assert.IsTrue(leftExecuted && rightExecuted);
         }
 
 		
@@ -1357,6 +2226,68 @@ namespace iSynaptic.Commons
             Assert.IsTrue(exceptions[0].GetType() == typeof(InvalidOperationException));
         }
 
+		[Test]
+        public void MakeIdempotentOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15_EnsuresActionsExecuteOnlyOnce()
+        {
+            int count = 0;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int> action = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) => count++;
+            action = action.MakeIdempotent();
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
+
+            Assert.AreEqual(1, count);
+        }
+
+        [Test]
+        public void MakeIdempotentOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15_WithNullArgument_ThrowsException()
+        {
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int> action = null;
+            Assert.Throws<ArgumentNullException>(() => action.MakeIdempotent());
+        }
+
+		[Test]
+        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15_WithNullArgument_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int> originalAction = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) => executed = true;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int> action = originalAction.FollowedBy(null);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15_ExtendingNullAction_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int> originalAction = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) => executed = true;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int> action = ((Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int>)null).FollowedBy(originalAction);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15_CallsBothActionsInSuccession()
+        {
+            bool leftExecuted = false;
+            bool rightExecuted = false;
+
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) => leftExecuted = true;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) => rightExecuted = true;
+
+            var action = left.FollowedBy(right);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
+            Assert.IsTrue(leftExecuted && rightExecuted);
+        }
+
 		
 		[Test]
         public void MakeConditional_WithNullAction_ForActionOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15T16()
@@ -1445,6 +2376,68 @@ namespace iSynaptic.Commons
             
             Assert.AreEqual(1, exceptions.Count);
             Assert.IsTrue(exceptions[0].GetType() == typeof(InvalidOperationException));
+        }
+
+		[Test]
+        public void MakeIdempotentOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15T16_EnsuresActionsExecuteOnlyOnce()
+        {
+            int count = 0;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int> action = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) => count++;
+            action = action.MakeIdempotent();
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
+
+            Assert.AreEqual(1, count);
+        }
+
+        [Test]
+        public void MakeIdempotentOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15T16_WithNullArgument_ThrowsException()
+        {
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int> action = null;
+            Assert.Throws<ArgumentNullException>(() => action.MakeIdempotent());
+        }
+
+		[Test]
+        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15T16_WithNullArgument_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int> originalAction = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) => executed = true;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int> action = originalAction.FollowedBy(null);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15T16_ExtendingNullAction_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int> originalAction = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) => executed = true;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int> action = ((Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int>)null).FollowedBy(originalAction);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15T16_CallsBothActionsInSuccession()
+        {
+            bool leftExecuted = false;
+            bool rightExecuted = false;
+
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) => leftExecuted = true;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) => rightExecuted = true;
+
+            var action = left.FollowedBy(right);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
+            Assert.IsTrue(leftExecuted && rightExecuted);
         }
 
 			}

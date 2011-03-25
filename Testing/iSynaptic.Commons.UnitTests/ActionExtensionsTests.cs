@@ -66,5 +66,67 @@ namespace iSynaptic.Commons
             Assert.AreEqual(1, exceptions.Count);
             Assert.IsTrue(exceptions[0].GetType() == typeof(InvalidOperationException));
         }
+
+        [Test]
+        public void MakeIdempotent_EnsuresActionsExecuteOnlyOnce()
+        {
+            int count = 0;
+            Action action = () => count++;
+            action = action.MakeIdempotent();
+
+            action();
+            action();
+            action();
+
+            Assert.AreEqual(1, count);
+        }
+
+        [Test]
+        public void MakeIdempotent_WithNullArgument_ThrowsException()
+        {
+            Action action = null;
+            Assert.Throws<ArgumentNullException>(() => action.MakeIdempotent());
+        }
+
+        [Test]
+        public void FollowedBy_WithNullArgument_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action originalAction = () => executed = true;
+            Action action = originalAction.FollowedBy(null);
+
+            action();
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void FollowedBy_ExtendingNullAction_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action originalAction = () => executed = true;
+            Action action = ((Action)null).FollowedBy(originalAction);
+
+            action();
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void FollowedBy_CallsBothActionsInSuccession()
+        {
+            bool leftExecuted = false;
+            bool rightExecuted = false;
+
+            Action left = () => leftExecuted = true;
+            Action right = () => rightExecuted = true;
+
+            var action = left.FollowedBy(right);
+
+            action();
+            Assert.IsTrue(leftExecuted && rightExecuted);
+        }
     }
 }

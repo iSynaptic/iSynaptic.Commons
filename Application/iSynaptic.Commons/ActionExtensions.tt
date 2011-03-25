@@ -59,12 +59,13 @@ namespace iSynaptic.Commons
 
             return (<#= args #>) =>
             {
-                int previousValue = Interlocked.Increment(ref beenExecuted);
+                int previousValue = Interlocked.CompareExchange(ref beenExecuted, 1, 0);
 
                 if(previousValue == 0)
+				{
                     self(<#= args #>);
-                else
-                    beenExecuted = 1;
+					self = null;
+				}
             };
         }
 

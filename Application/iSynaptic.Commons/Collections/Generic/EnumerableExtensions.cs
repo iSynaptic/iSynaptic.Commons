@@ -52,6 +52,39 @@ namespace iSynaptic.Commons.Collections.Generic
             return self.ToArray();
         }
 
+        public static IEnumerable<Batch<T>> Batch<T>(this IEnumerable<T> self, int batchSize)
+        {
+            Guard.NotNull(self, "self");
+            Guard.MustBeGreaterThan(batchSize, 0, "batchSize");
+
+            return BatchCore(self, batchSize);
+        }
+
+        private static IEnumerable<Batch<T>> BatchCore<T>(IEnumerable<T> self, int batchSize)
+        {
+            using(var enumerator = self.GetEnumerator())
+            {
+                int batchIndex = 0;
+                int count = 0;
+                T[] buffer = new T[batchSize];
+
+                while(enumerator.MoveNext())
+                {
+                    buffer[count++] = enumerator.Current;
+                    if (count == batchSize)
+                    {
+                        yield return new Batch<T>(batchIndex, batchSize, buffer);
+                        count = 0; 
+                        batchIndex++;
+                        buffer = new T[batchSize];
+                    }
+                }
+
+                if(count != 0)
+                    yield return new Batch<T>(batchIndex, count, buffer.Take(count));
+            }
+        }
+
         public static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> self)
         {
             Guard.NotNull(self, "self");

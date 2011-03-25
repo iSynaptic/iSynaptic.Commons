@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -41,19 +42,39 @@ namespace iSynaptic.Commons
         }
 
 		[Test]
-		public void SynchronizeOf<#= nameSuffix #>()
+		public void SynchronizeOf<#= nameSuffix #>_PreventsConcurrentAccess()
 		{
+			bool shouldSync = true;
+
 			int count = 0;
-            Func<<#= fixedTypes #>, int> func = (<#= args #>) => { count++; Thread.Sleep(150); return count-- + <#= Delimit(Enumerable.Range(1, i), " + ", x => "t" + x.ToString()) #>;};
-			func = func.Synchronize();
+            Func<<#= fixedTypes #>, int> func = (<#= args #>) => { count++; if(count == 1) { Thread.Sleep(100); } return count; };
+			func = func.Synchronize((<#= args #>) => shouldSync);
 
             var task1 = Task.Factory.StartNew(() => func(<#= fixedArgs #>));
             var task2 = Task.Factory.StartNew(() => func(<#= fixedArgs #>));
 
-			int expected = 1 + <#= Delimit(Enumerable.Range(1, i), " + ", x => x.ToString()) #>;
+			var results = new[]{task1, task2}.Select(x => x.Result).OrderBy(x => x);
+			Assert.IsTrue(results.SequenceEqual(new[]{1, 2}));
 
-			Assert.AreEqual(expected, task1.Result);
-			Assert.AreEqual(expected, task2.Result);
+			shouldSync = false;
+			count = 0;
+
+			task1 = Task.Factory.StartNew(() => func(<#= fixedArgs #>));
+            task2 = Task.Factory.StartNew(() => func(<#= fixedArgs #>));
+
+			results = new[]{task1, task2}.Select(x => x.Result).OrderBy(x => x);
+			Assert.IsTrue(results.SequenceEqual(new[]{2, 2}));
+		}
+
+		[Test]
+		public void SynchronizeOf<#= nameSuffix #>_UsesCorrectArguments()
+		{
+            Func<<#= fixedTypes #>, int> func = (<#= args #>) => <#= Delimit(Enumerable.Range(1, i), " + ", x => "t" + x.ToString()) #>;
+			func = func.Synchronize();
+
+			int expected = <#= Enumerable.Range(1, i).Sum().ToString() #>;
+			
+			Assert.AreEqual(expected, func(<#= fixedArgs #>));
 		}
 
 		[Test]
@@ -81,6 +102,36 @@ namespace iSynaptic.Commons
             var withFalseFunc = func.MakeConditional((<#= args #>) => <#= Delimit(Enumerable.Range(1, i), " + ", x => "t" + x.ToString()) #> == expected, (<#= args #>) => 42);
             Assert.AreEqual(42, withFalseFunc(<#= halvedFixedArgs #>));
             Assert.AreEqual(expected, withFalseFunc(<#= fixedArgs #>));
+		}
+
+		[Test]
+		public void MemoizeOf<#= nameSuffix #>()
+		{
+			Func<<#= fixedTypes #>, int> func = null;
+
+			Assert.Throws<ArgumentNullException>(() => { func.Memoize(); });
+
+			int count = 0;
+
+			int firstExpected = <#= Delimit(Enumerable.Range(1, i), " + ", x => x.ToString()) #>;
+			int secondExpected = <#= Delimit(Enumerable.Range(1, i), " + ", x => (x * 2).ToString()) #>;
+
+            func = (<#= args #>) => { count++; return <#= Delimit(Enumerable.Range(1, i), " + ", x => "t" + x.ToString()) #>; };
+			func = func.Memoize();
+
+			Assert.AreEqual(firstExpected, func(<#= fixedArgs #>));
+			Assert.AreEqual(firstExpected, func(<#= fixedArgs #>));
+			Assert.AreEqual(firstExpected, func(<#= fixedArgs #>));
+
+			<# string secondFixedArgs = Delimit(Enumerable.Range(1, i), ", ", x => (x * 2).ToString()); #>
+
+			Assert.AreEqual(secondExpected, func(<#= secondFixedArgs #>));
+			Assert.AreEqual(secondExpected, func(<#= secondFixedArgs #>));
+			Assert.AreEqual(secondExpected, func(<#= secondFixedArgs #>));
+
+
+			Assert.AreEqual(2, count);
+
 		}
 
 		<# } #>

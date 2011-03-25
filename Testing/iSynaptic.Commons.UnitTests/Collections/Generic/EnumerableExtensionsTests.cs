@@ -306,6 +306,61 @@ namespace iSynaptic.Commons.Collections.Generic
             Assert.Throws<ArgumentNullException>(() => pairs.ToDictionary());
         }
 
+        [Test]
+        public void Batch_WithBalancedBatches_ReturnsAllItems()
+        {
+            var batches = Enumerable.Range(0, 9).Batch(3).ToArray();
+
+            Assert.AreEqual(3, batches.Length);
+
+            Assert.AreEqual(0, batches[0].Index);
+            Assert.AreEqual(1, batches[1].Index);
+            Assert.AreEqual(2, batches[2].Index);
+
+            Assert.AreEqual(3, batches[0].Size);
+            Assert.AreEqual(3, batches[1].Size);
+            Assert.AreEqual(3, batches[2].Size);
+
+            Assert.IsTrue(batches[0].SequenceEqual(new[] { 0, 1, 2 }));
+            Assert.IsTrue(batches[1].SequenceEqual(new[] { 3, 4, 5 }));
+            Assert.IsTrue(batches[2].SequenceEqual(new[] { 6, 7, 8 }));
+        }
+
+        [Test]
+        public void Batch_WithUnbalancedBatches_ReturnsAllItemsAndLastBatchContainsOnlyRemainingItems()
+        {
+            var batches = Enumerable.Range(0, 10).Batch(3).ToArray();
+
+            Assert.AreEqual(4, batches.Length);
+
+            Assert.AreEqual(0, batches[0].Index);
+            Assert.AreEqual(1, batches[1].Index);
+            Assert.AreEqual(2, batches[2].Index);
+            Assert.AreEqual(3, batches[3].Index);
+
+            Assert.AreEqual(3, batches[0].Size);
+            Assert.AreEqual(3, batches[1].Size);
+            Assert.AreEqual(3, batches[2].Size);
+            Assert.AreEqual(1, batches[3].Size);
+
+            Assert.IsTrue(batches[0].SequenceEqual(new[] { 0, 1, 2 }));
+            Assert.IsTrue(batches[1].SequenceEqual(new[] { 3, 4, 5 }));
+            Assert.IsTrue(batches[2].SequenceEqual(new[] { 6, 7, 8 }));
+            Assert.IsTrue(batches[3].SequenceEqual(new[] { 9 }));
+        }
+
+        [Test]
+        public void Batch_ViaNonGenericEnumerator_ReturnsAllItems()
+        {
+            var batches = Enumerable.Range(0, 9)
+                .Batch(3)
+                .Cast<IEnumerable>()
+                .SelectMany(x => x.OfType<int>().ToArray())
+                .ToArray();
+
+            Assert.IsTrue(batches.SequenceEqual(Enumerable.Range(0, 9)));
+        }
+
         private static IEnumerable<int> GetRange(int start, int end, Action after)
         {
             foreach (int i in Enumerable.Range(start, end))

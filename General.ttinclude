@@ -1,4 +1,6 @@
-﻿<#+
+﻿<#@ import namespace="System.Collections" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#+
 	public static string Delimit<T>(IEnumerable<T> self, string delimiter, Func<T, string> selector, bool outputTrailingDelimiter = false)
 	{
 		var builder = new StringBuilder();
@@ -19,4 +21,54 @@
 
         return builder.ToString();
 	}
+
+	public class BatchData<T> : IEnumerable<T>
+    {
+        private readonly IEnumerable<T> _Batch = null;
+
+        public BatchData(int index, int size, IEnumerable<T> batch)
+        {
+            Index = index;
+            Size = size;
+            _Batch = batch;
+        }
+
+        public int Index { get; private set; }
+        public int Size { get; private set; }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            return _Batch.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+    }
+
+    public static IEnumerable<BatchData<T>> Batch<T>(IEnumerable<T> self, int batchSize)
+    {
+        using(var enumerator = self.GetEnumerator())
+        {
+            int batchIndex = 0;
+            int count = 0;
+            T[] buffer = new T[batchSize];
+
+            while(enumerator.MoveNext())
+            {
+                buffer[count++] = enumerator.Current;
+                if (count == batchSize)
+                {
+                    yield return new BatchData<T>(batchIndex, batchSize, buffer);
+                    count = 0; 
+                    batchIndex++;
+                    buffer = new T[batchSize];
+                }
+            }
+
+            if(count != 0)
+                yield return new BatchData<T>(batchIndex, count, buffer.Take(count));
+        }
+    }
 #>

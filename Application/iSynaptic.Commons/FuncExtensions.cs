@@ -44,18 +44,13 @@ namespace iSynaptic.Commons
 
         public static Func<TResult> Memoize<TResult>(this Func<TResult> self)
         {
-            return Memoize(self, false);
-        }
-
-        public static Func<TResult> Memoize<TResult>(this Func<TResult> self, bool threadSafe)
-        {
             Guard.NotNull(self, "self");
             
             TResult result = default(TResult);
             Exception exception = null;
             bool executed = false;
 
-            Func<TResult> memoizedFunc = () =>
+            return () =>
             {
                 if (!executed)
                 {
@@ -80,10 +75,6 @@ namespace iSynaptic.Commons
 
                 return result;
             };
-
-            return threadSafe
-                       ? memoizedFunc.Synchronize(() => !executed)
-                       : memoizedFunc;
         }
 
         public static Func<TResult> Synchronize<TResult>(this Func<TResult> self)

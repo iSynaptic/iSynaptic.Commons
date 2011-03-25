@@ -81,6 +81,7 @@
     <Compile Include="Collections\Generic\BaseDictionary.cs" />
     <Compile Include="Collections\Generic\BaseReadOnlyDictionary.cs" />
     <Compile Include="Collections\Generic\BaseWeakDictionary.cs" />
+    <Compile Include="Collections\Generic\Batch.cs" />
     <Compile Include="Collections\Generic\IWeakDictionary.cs" />
     <Compile Include="Collections\Generic\KeyValuePair.cs" />
     <Compile Include="Collections\Generic\LazyDictionary.cs" />

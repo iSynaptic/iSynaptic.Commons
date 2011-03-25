@@ -51,17 +51,13 @@ namespace iSynaptic.Commons
 
         public bool Equals(WeakReference<T> other)
         {
-            if (ReferenceEquals(other, null))
-                return false;
-
-            if (ReferenceEquals(this, Null))
-                return ReferenceEquals(other, Null);
-
-            if (HashCode != other.HashCode)
-                return false;
-
-            return TryGetTarget()
-                .Equals(other.TryGetTarget());
+            return Maybe
+                .Value(true)
+                .Unless(x => ReferenceEquals(this, Null))
+                .When(true, x => HashCode == other.HashCode)
+                .When(true, x => TryGetTarget().Equals(other.TryGetTarget()))
+                .OnNoValue(() => ReferenceEquals(other, Null))
+                .Return(false);
         }
 
         public Maybe<T> TryGetTarget()
@@ -72,10 +68,7 @@ namespace iSynaptic.Commons
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(obj, null))
-                return false;
-
-            return Equals(obj as WeakReference<T>);
+            return !ReferenceEquals(obj, null) && Equals(obj as WeakReference<T>);
         }
 
         public override int GetHashCode()
