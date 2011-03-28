@@ -218,6 +218,35 @@ namespace iSynaptic.Commons
             return new Maybe<T>(computation);
         }
 
+        public static Maybe<T> Using<T, TResource>(TResource resource, Func<TResource, Maybe<T>> selector) where TResource : IDisposable
+        {
+            Guard.NotNull(resource, "resource");
+            Guard.NotNull(selector, "selector");
+
+            return Using(() => resource, selector);
+        }
+
+        public static Maybe<T> Using<T, TResource>(Func<TResource> computation, Func<TResource, Maybe<T>> selector) where TResource : IDisposable
+        {
+            Guard.NotNull(computation, "computation");
+            Guard.NotNull(selector, "selector");
+            
+            return Maybe<TResource>.Default
+                .Using(x => computation(), selector);
+        }
+
+        public static Maybe<TResult> Using<T, TResource, TResult>(this Maybe<T> self, Func<T, TResource> resourceSelector, Func<TResource, Maybe<TResult>> selector) where TResource : IDisposable
+        {
+            Guard.NotNull(resourceSelector, "resourceSelector");
+            Guard.NotNull(selector, "selector");
+
+            return self.Select(x =>
+            {
+                using (var resource = resourceSelector(x))
+                    return selector(resource);
+            });
+        }
+
         public static Maybe<TResult> Select<T, TResult>(this Maybe<T> self, Func<T, TResult> selector)
         {
             Guard.NotNull(selector, "selector");

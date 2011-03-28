@@ -861,6 +861,36 @@ namespace iSynaptic.Commons
             Assert.Throws<InvalidOperationException>(() => value.ToNullable());
         }
 
+        [Test]
+        public void Using_DisposesResource()
+        {
+            bool disposed = false;
+            Action disposer = () => disposed = true;
+            var disposable = disposer.ToDisposable();
+
+            Maybe
+                .Using(disposable, x => Maybe<int>.NoValue)
+                .Run();
+
+            Assert.IsTrue(disposed);
+        }
+
+        [Test]
+        public void Using_DefersExecution()
+        {
+            bool disposed = false;
+            Action disposer = () => disposed = true;
+            var disposable = disposer.ToDisposable();
+
+            var value = Maybe
+                .Using(disposable, x => Maybe<int>.NoValue);
+
+            Assert.IsFalse(disposed);
+
+            value.Run();
+            Assert.IsTrue(disposed);
+        }
+
         private static int ThrowsException(int x)
         {
             throw new InvalidOperationException();
