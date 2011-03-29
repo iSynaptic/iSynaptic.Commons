@@ -891,6 +891,35 @@ namespace iSynaptic.Commons
             Assert.IsTrue(disposed);
         }
 
+        [Test]
+        public void RunAsync_ReturnsImmediately()
+        {
+            bool started = false;
+            bool ended = false;
+
+            var waitEvent = new ManualResetEventSlim();
+            var value = Maybe.Value(42)
+                .Do(x => started = true)
+                .Select(x =>
+                        {
+                            waitEvent.Wait();
+                            return x;
+                        })
+                .Do(x => ended = true)
+                .RunAsync();
+
+            while(!started)
+                continue;
+
+            Assert.IsFalse(ended);
+            waitEvent.Set();
+
+            while (!ended)
+                continue;
+
+            Assert.AreEqual(42, value.Value);
+        }
+
         private static int ThrowsException(int x)
         {
             throw new InvalidOperationException();

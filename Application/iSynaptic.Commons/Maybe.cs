@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace iSynaptic.Commons
 {
@@ -463,6 +464,12 @@ namespace iSynaptic.Commons
         public static Maybe<T> Run<T>(this Maybe<T> self)
         {
             return self.HasValue ? self : self;
+        }
+
+        public static Maybe<T> RunAsync<T>(this Maybe<T> self)
+        {
+            var task = Task.Factory.StartNew(() => self.Run());
+            return Maybe<T>.Default.Bind(x => task.Result);
         }
 
         public static Maybe<T> Synchronize<T>(this Maybe<T> self)
