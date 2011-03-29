@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -894,28 +895,28 @@ namespace iSynaptic.Commons
         [Test]
         public void RunAsync_ReturnsImmediately()
         {
-            bool started = false;
-            bool ended = false;
+            int started = 0;
+            int ended = 0;
 
             var waitEvent = new ManualResetEventSlim();
             var value = Maybe.Value(42)
-                .Do(x => started = true)
+                .Do(x => started = 1)
                 .Select(x =>
                         {
                             waitEvent.Wait();
                             return x;
                         })
-                .Do(x => ended = true)
+                .Do(x => ended = 1)
                 .RunAsync();
 
-            while(!started)
-                continue;
+            var waitForStarted = Task.Factory.StartNew(() => { while (Thread.VolatileRead(ref started) != 1) continue; });
+            Assert.IsTrue(waitForStarted.Wait(TimeSpan.FromSeconds(0.5)), "Wait for started failed.");
 
-            Assert.IsFalse(ended);
+            Assert.AreEqual(0, ended);
             waitEvent.Set();
 
-            while (!ended)
-                continue;
+            var waitForEnded = Task.Factory.StartNew(() => { while (Thread.VolatileRead(ref ended) != 1) continue; });
+            Assert.IsTrue(waitForEnded.Wait(TimeSpan.FromSeconds(0.5)), "Wait for ended failed.");
 
             Assert.AreEqual(42, value.Value);
         }

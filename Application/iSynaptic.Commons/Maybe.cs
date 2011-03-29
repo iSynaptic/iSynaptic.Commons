@@ -466,9 +466,9 @@ namespace iSynaptic.Commons
             return self.HasValue ? self : self;
         }
 
-        public static Maybe<T> RunAsync<T>(this Maybe<T> self)
+        public static Maybe<T> RunAsync<T>(this Maybe<T> self, CancellationToken cancellationToken = default(CancellationToken), TaskCreationOptions taskCreationOptions = TaskCreationOptions.None, TaskScheduler taskScheduler = default(TaskScheduler))
         {
-            var task = Task.Factory.StartNew(() => self.Run());
+            var task = Task.Factory.StartNew(() => self.Run(), cancellationToken, taskCreationOptions, taskScheduler ?? TaskScheduler.Default);
             return Maybe<T>.Default.Bind(x => task.Result);
         }
 
