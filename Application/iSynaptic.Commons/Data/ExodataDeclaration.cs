@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace iSynaptic.Commons.Data
 {
-    public class ExodataDeclaration<TExodata> : ExodataDeclaration, IExodataDeclaration<TExodata>
+    public class ExodataDeclaration<TExodata> : ExodataDeclaration, IExodataDeclaration<TExodata>, IExodataResolutionRoot<TExodata>
     {
         public static readonly ExodataDeclaration<TExodata> TypeDeclaration = new ExodataDeclaration<TExodata>();
 
@@ -19,60 +19,66 @@ namespace iSynaptic.Commons.Data
             _Default = @default;
         }
 
-        #region Get/For Methods
+        #region Resolution Methods
+
+        public IExodataResolutionSubject<TExodata> Given<TContext>()
+        {
+            return new ExodataResolutionRoot<TExodata, TContext>(this);
+        }
+
+        public IExodataResolutionSubject<TExodata> Given<TContext>(TContext context)
+        {
+            return new ExodataResolutionRoot<TExodata, TContext>(this, context);
+        }
 
         public TExodata Get()
         {
-            return Resolve(Maybe<object>.NoValue, Maybe<object>.NoValue, (MemberInfo)null);
+            return Given<object>().Get();
         }
 
         public TExodata For<TSubject>()
         {
-            return Resolve(Maybe<object>.NoValue, Maybe<TSubject>.NoValue, (MemberInfo)null);
+            return Given<object>().For<TSubject>();
         }
 
         public TExodata For<TSubject>(TSubject subject)
         {
-            return Resolve(Maybe<object>.NoValue, new Maybe<TSubject>(subject), (MemberInfo)null);
+            return Given<object>().For(subject);
         }
 
         public TExodata For<TSubject>(Expression<Func<TSubject, object>> member)
         {
-            return Resolve(Maybe<object>.NoValue, Maybe<TSubject>.NoValue, member);
+            return Given<object>().For(member);
         }
 
         public TExodata For<TSubject>(TSubject subject, Expression<Func<TSubject, object>> member)
         {
-            return Resolve(Maybe<object>.NoValue, new Maybe<TSubject>(subject), member);
+            return Given<object>().For(subject, member);
         }
-
-        #endregion
-
-        #region Lazy Get/For Methods
 
         public LazyExodata<TExodata> LazyGet()
         {
-            return new LazyExodata<TExodata>(this);
+            return Given<object>().LazyGet();
         }
 
-        public LazyExodata<TExodata, TSubject> LazyFor<TSubject>()
+        public LazyExodata<TExodata> LazyFor<TSubject>()
         {
-            return new LazyExodata<TExodata, TSubject>(this);
+            return Given<object>().LazyFor<TSubject>();
         }
 
-        public LazyExodata<TExodata, TSubject> LazyFor<TSubject>(TSubject subject)
+        public LazyExodata<TExodata> LazyFor<TSubject>(TSubject subject)
         {
-            return new LazyExodata<TExodata, TSubject>(this, subject);
+            return Given<object>().LazyFor(subject);
         }
 
-        public LazyExodata<TExodata, TSubject> LazyFor<TSubject>(Expression<Func<TSubject, object>> member)
+        public LazyExodata<TExodata> LazyFor<TSubject>(Expression<Func<TSubject, object>> member)
         {
-            return new LazyExodata<TExodata, TSubject>(this, member.ExtractMemberInfoForExodata<TSubject>());
+            return Given<object>().LazyFor(member);
         }
 
-        public LazyExodata<TExodata, TSubject> LazyFor<TSubject>(TSubject subject, Expression<Func<TSubject, object>> member)
+        public LazyExodata<TExodata> LazyFor<TSubject>(TSubject subject, Expression<Func<TSubject, object>> member)
         {
-            return new LazyExodata<TExodata, TSubject>(this, subject, member.ExtractMemberInfoForExodata<TSubject>());
+            return Given<object>().LazyFor(subject, member);
         }
 
         #endregion
@@ -94,13 +100,6 @@ namespace iSynaptic.Commons.Data
             return resolvedValue
                 .Or(defaultValue)
                 .Return();
-        }
-
-        protected TExodata Resolve<TContext, TSubject>(Maybe<TContext> context, Maybe<TSubject> subject, Expression member)
-        {
-            MemberInfo memberInfo = member.ExtractMemberInfoForExodata<TSubject>();
-
-            return Resolve(context, subject, memberInfo);
         }
 
         protected virtual Maybe<TExodata> TryResolve<TContext, TSubject>(IExodataRequest<TContext, TSubject> request)

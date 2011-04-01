@@ -22,9 +22,7 @@ namespace iSynaptic.Commons
 
         public DepencencyDeclaration(Type dependencyType, string name)
         {
-            Guard.NotNull(dependencyType, "dependencyType");
-
-            DependencyType = dependencyType;
+            DependencyType = Guard.NotNull(dependencyType, "dependencyType");
             Name = name;
         }
 

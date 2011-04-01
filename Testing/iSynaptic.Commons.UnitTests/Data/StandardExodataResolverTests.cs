@@ -245,5 +245,27 @@ namespace iSynaptic.Commons.Data
 
             Assert.AreEqual("A string...", CommonExodata.Description.For<string>());
         }
+
+        [Test]
+        public void Resolve_WithContext_YieldsContextualExodataSurrogateExodata()
+        {
+            var resolver = new StandardExodataResolver();
+            ExodataDeclaration.SetResolver(resolver);
+
+            TestSubjectExodataSurrogate.ShouldYieldInstanceExodata = true;
+
+            Assert.AreEqual("Contextual Member Description", CommonExodata.Description.Given<string>().For<TestSubject>(x => x.FirstName));
+        }
+
+        [Test]
+        public void Resolve_WithSpecificContext_YieldsSpecificContextualExodataSurrogateExodata()
+        {
+            var resolver = new StandardExodataResolver();
+            ExodataDeclaration.SetResolver(resolver);
+
+            TestSubjectExodataSurrogate.ShouldYieldInstanceExodata = true;
+
+            Assert.AreEqual("Specific Contextual Member Description", CommonExodata.Description.Given("Context").For<TestSubject>(x => x.FirstName));
+        }
     }
 }

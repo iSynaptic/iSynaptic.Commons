@@ -15,8 +15,10 @@ namespace iSynaptic.Commons.Data
 
         IExodataBindingSource Source { get; }
 
+        bool BoundToContextInstance { get; }
         bool BoundToSubjectInstance { get; }
 
+        Type ContextType { get; }
         Type SubjectType { get; }
     }
 }

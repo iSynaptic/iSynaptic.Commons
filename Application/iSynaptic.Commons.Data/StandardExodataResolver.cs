@@ -65,11 +65,20 @@ namespace iSynaptic.Commons.Data
             if (leftIsAttributeBinding ^ rightIsAttributeBinding)
                 return leftIsAttributeBinding ? 1 : -1;
 
+            bool leftBoundToContext = left.BoundToContextInstance;
+            bool rightBoundToContext = right.BoundToContextInstance;
+
+            if (leftBoundToContext ^ rightBoundToContext)
+                return leftBoundToContext ? -1 : 1;
+
             bool leftBoundToSubject = left.BoundToSubjectInstance;
             bool rightBoundToSubject = right.BoundToSubjectInstance;
 
             if (leftBoundToSubject ^ rightBoundToSubject)
                 return leftBoundToSubject ? -1 : 1;
+
+            if (left.ContextType != right.ContextType)
+                return left.ContextType.IsAssignableFrom(right.ContextType) ? 1 : -1;
 
             if(left.SubjectType != right.SubjectType)
                 return left.SubjectType.IsAssignableFrom(right.SubjectType) ? 1 : -1;
@@ -89,12 +98,12 @@ namespace iSynaptic.Commons.Data
             _Modules.Remove(module);
         }
 
-        public IFluentExodataBindingSubjectGivenWhenScopeTo<TExodata, object, object> Bind<TExodata>(IExodataDeclaration declaration)
+        public IFluentExodataBindingGivenSubjectWhenScopeTo<TExodata, object, object> Bind<TExodata>(IExodataDeclaration declaration)
         {
             return _ResolverModule.Bind<TExodata>(declaration);
         }
 
-        public IFluentExodataBindingSubjectGivenWhenScopeTo<TExodata, object, object> Bind<TExodata>(IExodataDeclaration<TExodata> declaration)
+        public IFluentExodataBindingGivenSubjectWhenScopeTo<TExodata, object, object> Bind<TExodata>(IExodataDeclaration<TExodata> declaration)
         {
             return Bind<TExodata>((IExodataDeclaration)declaration);
         }

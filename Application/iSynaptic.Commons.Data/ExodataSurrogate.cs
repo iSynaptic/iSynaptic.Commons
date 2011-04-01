@@ -16,13 +16,13 @@ namespace iSynaptic.Commons.Data
             return _Bindings;
         }
 
-        public IFluentExodataBindingSubjectGivenWhenScopeTo<TExodata, object, TSubject> Bind<TExodata>(IExodataDeclaration declaration)
+        public IFluentExodataBindingGivenSubjectWhenScopeTo<TExodata, object, TSubject> Bind<TExodata>(IExodataDeclaration declaration)
         {
             Guard.NotNull(declaration, "declaration");
             return new FluentExodataBindingBuilder<TExodata, object, TSubject>(this, declaration, b => _Bindings.Add(b));
         }
 
-        public IFluentExodataBindingSubjectGivenWhenScopeTo<TExodata, object, TSubject> Bind<TExodata>(IExodataDeclaration<TExodata> declaration)
+        public IFluentExodataBindingGivenSubjectWhenScopeTo<TExodata, object, TSubject> Bind<TExodata>(IExodataDeclaration<TExodata> declaration)
         {
             return Bind<TExodata>((IExodataDeclaration)declaration);
         }

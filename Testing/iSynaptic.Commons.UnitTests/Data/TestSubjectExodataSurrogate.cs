@@ -30,6 +30,20 @@ namespace iSynaptic.Commons.Data
                 .When(r => ShouldYieldInstanceExodata)
                 .InScope(r => ScopeObject)
                 .To("Special Member Description");
+
+            Bind(CommonExodata.Description)
+                .Given<string>()
+                .For(x => x.FirstName)
+                .When(r => ShouldYieldInstanceExodata)
+                .InScope(r => ScopeObject)
+                .To("Contextual Member Description");
+
+            Bind(CommonExodata.Description)
+                .Given("Context")
+                .For(x => x.FirstName)
+                .When(r => ShouldYieldInstanceExodata)
+                .InScope(r => ScopeObject)
+                .To("Specific Contextual Member Description");
         }
 
         public static bool ShouldYieldInstanceExodata { get; set; }

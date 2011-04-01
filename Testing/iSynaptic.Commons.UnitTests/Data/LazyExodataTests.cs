@@ -21,20 +21,6 @@ namespace iSynaptic.Commons.Data
         }
 
         [Test]
-        public void LazyExodata_ViaParameterlessConstructor_UsesTypeDeclaration()
-        {
-            var resolver = new StandardExodataResolver();
-            resolver.Bind(ExodataDeclaration<int>.TypeDeclaration, 42);
-
-            ExodataDeclaration.SetResolver(resolver);
-
-            var lazy = new LazyExodata<int>();
-            int value = lazy;
-
-            Assert.AreEqual(42, value);
-        }
-
-        [Test]
         public void LazyExodata_ViaDeclaration()
         {
             var resolver = new StandardExodataResolver();

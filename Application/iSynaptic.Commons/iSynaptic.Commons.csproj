@@ -97,8 +97,10 @@
     <Compile Include="Convert.cs" />
     <Compile Include="DataEventArgs.cs" />
     <Compile Include="Data\ExodataHelper.cs" />
+    <Compile Include="Data\ExodataResolutionRoot.cs" />
     <Compile Include="Data\IExodataDeclaration.cs" />
     <Compile Include="Data\IExodataRequest.cs" />
+    <Compile Include="Data\IExodataResolutionRoot.cs" />
     <Compile Include="Data\IExodataResolver.cs" />
     <Compile Include="Data\LazyExodata.cs" />
     <Compile Include="Data\ExodataDeclaration.cs" />

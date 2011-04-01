@@ -16,6 +16,7 @@ namespace iSynaptic.Commons.Data
 
             return new ExodataBinding(predicate, valueFactory, source)
                        {
+                           ContextType = typeof(TContext),
                            SubjectType = typeof (TSubject),
                            ScopeFactory = scopeFactory,
                            BoundToContextInstance = boundToContextInstance,
@@ -51,6 +52,7 @@ namespace iSynaptic.Commons.Data
             return ((Func<IExodataRequest<TContext, TSubject>, TExodata>)ValueFactory)(request);
         }
 
+        public Type ContextType { get; private set; }
         public Type SubjectType { get; private set; }
         public IExodataBindingSource Source { get; private set; }
 
