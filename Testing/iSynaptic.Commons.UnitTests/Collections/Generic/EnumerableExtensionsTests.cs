@@ -361,6 +361,20 @@ namespace iSynaptic.Commons.Collections.Generic
             Assert.IsTrue(batches.SequenceEqual(Enumerable.Range(0, 9)));
         }
 
+        [Test]
+        public void TestRecursivePopulationThreeLevel()
+        {
+            var r1 = new Recursive(1,
+                        new Recursive(2,
+                            new Recursive(4)),
+                        new Recursive(3));
+
+            var flatten = r1.Flatten(r => r.Recursives).ToArray();
+
+            Assert.AreEqual(4, flatten.Count());
+            Assert.IsTrue(flatten.Select(x => x.Value).SequenceEqual(new[] { 1, 2, 4, 3 }));
+        }
+
         private static IEnumerable<int> GetRange(int start, int end, Action after)
         {
             foreach (int i in Enumerable.Range(start, end))
@@ -368,6 +382,18 @@ namespace iSynaptic.Commons.Collections.Generic
 
             if (after != null)
                 after();
+        }
+
+        public class Recursive
+        {
+            public Recursive(int value, params Recursive[] recursives)
+            {
+                Value = value;
+                Recursives = recursives;
+            }
+
+            public int Value { get; private set; }
+            public Recursive[] Recursives { get; private set; }
         }
     }
 }

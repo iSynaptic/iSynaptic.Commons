@@ -201,5 +201,13 @@ namespace iSynaptic.Commons.Collections.Generic
             Guard.NotNull(items, "items");
             return new SmartLoop<T>(items);
         }
+
+        public static IEnumerable<T> Flatten<T>(this T root, Func<T, IEnumerable<T>> selector)
+        {
+            Guard.NotNull(root, "root");
+            Guard.NotNull(selector, "selector");
+            
+            return new [] {root}.Concat((selector(root) ?? new T[0]).SelectMany(x => Flatten(x, selector)));
+        }
     }
 }
