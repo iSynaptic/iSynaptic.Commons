@@ -64,7 +64,7 @@ namespace iSynaptic.Commons.Data
             resolver.UnloadModule(module);
             
             value = StringExodata.MaxLength;
-            Assert.AreEqual(StringExodata.MaxLength.Default, value);
+            Assert.AreEqual(int.MaxValue, value);
         }
 
         [Test]

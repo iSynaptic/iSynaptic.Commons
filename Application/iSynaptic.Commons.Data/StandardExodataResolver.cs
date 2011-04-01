@@ -6,7 +6,7 @@ using iSynaptic.Commons.Data.Syntax;
 
 namespace iSynaptic.Commons.Data
 {
-    public class StandardExodataResolver : ExodataResolver, IFluentExodataBindingRoot
+    public class StandardExodataResolver : ExodataResolver, IFluentExodataBindingRoot<object, object>
     {
         private readonly List<ExodataBindingModule> _Modules = new List<ExodataBindingModule>();
         private readonly ExodataBindingModule _ResolverModule = new ExodataBindingModule();
@@ -21,10 +21,10 @@ namespace iSynaptic.Commons.Data
                 _Parent = parent;
             }
 
-            public IEnumerable<IExodataBinding> GetBindingsFor<TExodata, TSubject>(IExodataRequest<TSubject> request)
+            public IEnumerable<IExodataBinding> GetBindingsFor<TExodata, TContext, TSubject>(IExodataRequest<TContext, TSubject> request)
             {
                 return _Parent._Modules
-                    .SelectMany(x => x.GetBindingsFor<TExodata, TSubject>(request));
+                    .SelectMany(x => x.GetBindingsFor<TExodata, TContext, TSubject>(request));
             }
         }
 
@@ -43,7 +43,7 @@ namespace iSynaptic.Commons.Data
             AddExodataBindingSource<AttributeExodataBindingSource>();
         }
 
-        protected override IExodataBinding SelectBinding<TExodata, TSubject>(IExodataRequest<TSubject> request, IEnumerable<IExodataBinding> candidates)
+        protected override IExodataBinding SelectBinding<TExodata, TContext, TSubject>(IExodataRequest<TContext, TSubject> request, IEnumerable<IExodataBinding> candidates)
         {
             var bindingList = candidates.ToList();
 
@@ -53,7 +53,7 @@ namespace iSynaptic.Commons.Data
                 .Do(x => x.Sort(BindingSortPriority))
                 .Where(x => BindingSortPriority(x[0], x[1]) != 0)
                 .Select(x => x[0])
-                .OnNoValue(() => base.SelectBinding<TExodata, TSubject>(request, bindingList))
+                .OnNoValue(() => base.SelectBinding<TExodata, TContext, TSubject>(request, bindingList))
                 .Return();
         }
 
@@ -89,24 +89,24 @@ namespace iSynaptic.Commons.Data
             _Modules.Remove(module);
         }
 
-        public IFluentExodataBindingSubjectPredicateScopeTo<TExodata> Bind<TExodata>(IExodataDeclaration declaration)
+        public IFluentExodataBindingSubjectGivenWhenScopeTo<TExodata, object, object> Bind<TExodata>(IExodataDeclaration declaration)
         {
             return _ResolverModule.Bind<TExodata>(declaration);
         }
 
-        public IFluentExodataBindingSubjectPredicateScopeTo<TExodata> Bind<TExodata>(IExodataDeclaration<TExodata> declaration)
+        public IFluentExodataBindingSubjectGivenWhenScopeTo<TExodata, object, object> Bind<TExodata>(IExodataDeclaration<TExodata> declaration)
         {
-            return Bind<TExodata>((IExodataDeclaration) declaration);
+            return Bind<TExodata>((IExodataDeclaration)declaration);
         }
 
         public void Bind<TExodata>(IExodataDeclaration<TExodata> declaration, TExodata value)
         {
-            Bind((IExodataDeclaration) declaration, value);
+            Bind(declaration).To(value);
         }
 
         public void Bind<TExodata>(IExodataDeclaration declaration, TExodata value)
         {
-            _ResolverModule.Bind(declaration, value);
+            Bind<TExodata>(declaration).To(value);
         }
     }
 }

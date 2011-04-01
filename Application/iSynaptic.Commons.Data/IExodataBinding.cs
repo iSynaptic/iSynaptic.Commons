@@ -8,10 +8,10 @@ namespace iSynaptic.Commons.Data
 {
     public interface IExodataBinding
     {
-        bool Matches<TExodata, TSubject>(IExodataRequest<TSubject> request);
-        object GetScopeObject<TExodata, TSubject>(IExodataRequest<TSubject> request);
+        bool Matches<TExodata, TContext, TSubject>(IExodataRequest<TContext, TSubject> request);
+        object GetScopeObject<TExodata, TContext, TSubject>(IExodataRequest<TContext, TSubject> request);
 
-        TExodata Resolve<TExodata, TSubject>(IExodataRequest<TSubject> request);
+        TExodata Resolve<TExodata, TContext, TSubject>(IExodataRequest<TContext, TSubject> request);
 
         IExodataBindingSource Source { get; }
 

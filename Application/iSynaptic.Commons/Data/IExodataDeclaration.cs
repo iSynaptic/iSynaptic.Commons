@@ -10,6 +10,6 @@ namespace iSynaptic.Commons.Data
 
     public interface IExodataDeclaration<out TExodata> : IExodataDeclaration
     {
-        TExodata Resolve<TSubject>(Maybe<TSubject> subject, MemberInfo member);
+        TExodata Resolve<TContext, TSubject>(Maybe<TContext> context, Maybe<TSubject> subject, MemberInfo member);
     }
 }

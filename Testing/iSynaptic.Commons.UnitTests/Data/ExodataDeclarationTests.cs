@@ -99,7 +99,7 @@ namespace iSynaptic.Commons.Data
             var maxLength = new ExodataDeclaration<int>(7);
 
             var resolver = MockRepository.GenerateMock<IExodataResolver>();
-            resolver.Expect(x => x.Resolve<int, object>(new ExodataRequest<object>(maxLength, Maybe<object>.NoValue, null)))
+            resolver.Expect(x => x.Resolve<int, object, object>(new ExodataRequest<object, object>(maxLength, Maybe<object>.NoValue, Maybe<object>.NoValue, null)))
                 .Return(42);
 
             ExodataDeclaration.SetResolver(resolver);
@@ -114,7 +114,7 @@ namespace iSynaptic.Commons.Data
             var maxLength = new ExodataDeclaration<int>(7);
 
             var resolver = MockRepository.GenerateMock<IExodataResolver>();
-            resolver.Expect(x => x.Resolve<int, string>(new ExodataRequest<string>(maxLength, Maybe<string>.NoValue, null)))
+            resolver.Expect(x => x.Resolve<int, object, string>(new ExodataRequest<object, string>(maxLength, Maybe<object>.NoValue, Maybe<string>.NoValue, null)))
                 .Return(42);
 
             ExodataDeclaration.SetResolver(resolver);
@@ -130,7 +130,7 @@ namespace iSynaptic.Commons.Data
             string subject = "Hello, World!";
 
             var resolver = MockRepository.GenerateMock<IExodataResolver>();
-            resolver.Expect(x => x.Resolve<int, string>(new ExodataRequest<string>(maxLength, new Maybe<string>(subject), null)))
+            resolver.Expect(x => x.Resolve<int, object, string>(new ExodataRequest<object, string>(maxLength, Maybe<object>.NoValue, new Maybe<string>(subject), null)))
                 .Return(42);
 
             ExodataDeclaration.SetResolver(resolver);
@@ -148,7 +148,7 @@ namespace iSynaptic.Commons.Data
             var maxLength = new ExodataDeclaration<int>(7);
 
             var resolver = MockRepository.GenerateMock<IExodataResolver>();
-            resolver.Expect(x => x.Resolve<int, string>(new ExodataRequest<string>(maxLength, Maybe<string>.NoValue, member)))
+            resolver.Expect(x => x.Resolve<int, object, string>(new ExodataRequest<object, string>(maxLength, Maybe<object>.NoValue, Maybe<string>.NoValue, member)))
                 .Return(42);
 
             ExodataDeclaration.SetResolver(resolver);
@@ -167,7 +167,7 @@ namespace iSynaptic.Commons.Data
             var member = expression.ExtractMemberInfoForExodata<string>();
 
             var resolver = MockRepository.GenerateMock<IExodataResolver>();
-            resolver.Expect(x => x.Resolve<int, string>(new ExodataRequest<string>(maxLength, new Maybe<string>(subject), member)))
+            resolver.Expect(x => x.Resolve<int, object, string>(new ExodataRequest<object, string>(maxLength, Maybe<object>.NoValue, new Maybe<string>(subject), member)))
                 .Return(42);
 
             ExodataDeclaration.SetResolver(resolver);
@@ -198,38 +198,6 @@ namespace iSynaptic.Commons.Data
             Assert.Throws<ArgumentException>(() =>
                 StringExodata.MinLength
                     .For<TestSubject>(x => x.ToString().Length));
-        }
-
-        [Test]
-        public void Default_WhenExplicit_ReturnsCorrectly()
-        {
-            Assert.AreEqual(5, new ComparableExodataDeclaration<int>(1, 10, 5).Default);
-        }
-
-        [Test]
-        public void Default_WithExplicitInvalidDefault_ThrowsException()
-        {
-            var declaration = new ComparableExodataDeclaration<int>(1, 10, 42);
-            Assert.Throws<ExodataValidationException<int>>(() => { var x = declaration.Default; });
-        }
-
-        [Test]
-        public void Default_WithImplicitInvalidDefault_ThrowsException()
-        {
-            var declaration = new ComparableExodataDeclaration<int>(1, 10);
-            Assert.Throws<ExodataValidationException<int>>(() => { var x = declaration.Default; });
-        }
-
-        [Test]
-        public void Default_WhenImplicitForReferenceType_ReturnsCorrectly()
-        {
-            Assert.IsNull(new ExodataDeclaration<string>().Default);
-        }
-
-        [Test]
-        public void Default_WhenImplicitForValueType_ReturnsCorrectly()
-        {
-            Assert.AreEqual(0, new ExodataDeclaration<int>().Default);
         }
 
         [Test]

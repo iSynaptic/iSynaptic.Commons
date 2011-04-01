@@ -8,7 +8,7 @@ namespace iSynaptic.Commons.Data
 {
     public class ExodataBinding : IExodataBinding
     {
-        public static ExodataBinding Create<TExodata, TSubject>(IExodataBindingSource source, Func<IExodataRequest<TSubject>, bool> predicate, Func<IExodataRequest<TSubject>, TExodata> valueFactory, Func<IExodataRequest<TSubject>, object> scopeFactory = null, bool boundToSubjectInstance = false)
+        public static ExodataBinding Create<TExodata, TContext, TSubject>(IExodataBindingSource source, Func<IExodataRequest<TContext, TSubject>, bool> predicate, Func<IExodataRequest<TContext, TSubject>, TExodata> valueFactory, Func<IExodataRequest<TContext, TSubject>, object> scopeFactory = null, bool boundToContextInstance = false, bool boundToSubjectInstance = false)
         {
             Guard.NotNull(predicate, "predicate");
             Guard.NotNull(valueFactory, "valueFactory");
@@ -18,6 +18,7 @@ namespace iSynaptic.Commons.Data
                        {
                            SubjectType = typeof (TSubject),
                            ScopeFactory = scopeFactory,
+                           BoundToContextInstance = boundToContextInstance,
                            BoundToSubjectInstance = boundToSubjectInstance
                        };
         }
@@ -33,26 +34,27 @@ namespace iSynaptic.Commons.Data
             Source = source;
         }
 
-        public bool Matches<TExodata, TSubject>(IExodataRequest<TSubject> request)
+        public bool Matches<TExodata, TContext, TSubject>(IExodataRequest<TContext, TSubject> request)
         {
-            var predicate = Predicate as Func<IExodataRequest<TSubject>, bool>;
+            var predicate = Predicate as Func<IExodataRequest<TContext,TSubject>, bool>;
             return predicate != null && predicate(request);
         }
 
-        public object GetScopeObject<TExodata, TSubject>(IExodataRequest<TSubject> request)
+        public object GetScopeObject<TExodata, TContext, TSubject>(IExodataRequest<TContext, TSubject> request)
         {
-            var scopeFactory = ScopeFactory as Func<IExodataRequest<TSubject>, object>;
+            var scopeFactory = ScopeFactory as Func<IExodataRequest<TContext, TSubject>, object>;
             return scopeFactory != null ? scopeFactory(request) : null;
         }
 
-        public TExodata Resolve<TExodata, TSubject>(IExodataRequest<TSubject> request)
+        public TExodata Resolve<TExodata, TContext, TSubject>(IExodataRequest<TContext, TSubject> request)
         {
-            return ((Func<IExodataRequest<TSubject>, TExodata>) ValueFactory)(request);
+            return ((Func<IExodataRequest<TContext, TSubject>, TExodata>)ValueFactory)(request);
         }
 
         public Type SubjectType { get; private set; }
         public IExodataBindingSource Source { get; private set; }
 
+        public bool BoundToContextInstance { get; private set; }
         public bool BoundToSubjectInstance { get; private set; }
 
         private Delegate ScopeFactory { get; set; }

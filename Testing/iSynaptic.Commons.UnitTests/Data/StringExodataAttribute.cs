@@ -16,7 +16,7 @@ namespace iSynaptic.Commons.Data
             _Description = description;
         }
 
-        public bool ProvidesExodataFor<TSubject>(IExodataRequest<TSubject> request)
+        public bool ProvidesExodataFor<TContext, TSubject>(IExodataRequest<TContext, TSubject> request)
         {
             return
                 request.Declaration == StringExodata.All ||
@@ -26,17 +26,17 @@ namespace iSynaptic.Commons.Data
                 request.Declaration == CommonExodata.Description;
         }
 
-        int IExodataAttribute<int>.Resolve<TSubject>(IExodataRequest<TSubject> request)
+        int IExodataAttribute<int>.Resolve<TContext, TSubject>(IExodataRequest<TContext, TSubject> request)
         {
             return request.Declaration == StringExodata.MinLength ? _MinLength : _MaxLength;
         }
 
-        string IExodataAttribute<string>.Resolve<TSubject>(IExodataRequest<TSubject> request)
+        string IExodataAttribute<string>.Resolve<TContext, TSubject>(IExodataRequest<TContext, TSubject> request)
         {
             return _Description;
         }
 
-        StringExodataDefinition IExodataAttribute<StringExodataDefinition>.Resolve<TSubject>(IExodataRequest<TSubject> request)
+        StringExodataDefinition IExodataAttribute<StringExodataDefinition>.Resolve<TContext, TSubject>(IExodataRequest<TContext, TSubject> request)
         {
             return new StringExodataDefinition(_MinLength, _MaxLength, _Description);
         }

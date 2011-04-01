@@ -23,27 +23,27 @@ namespace iSynaptic.Commons.Data
 
         public TExodata Get()
         {
-            return Resolve(Maybe<object>.NoValue, (MemberInfo)null);
+            return Resolve(Maybe<object>.NoValue, Maybe<object>.NoValue, (MemberInfo)null);
         }
 
         public TExodata For<TSubject>()
         {
-            return Resolve(Maybe<TSubject>.NoValue, (MemberInfo)null);
+            return Resolve(Maybe<object>.NoValue, Maybe<TSubject>.NoValue, (MemberInfo)null);
         }
 
         public TExodata For<TSubject>(TSubject subject)
         {
-            return Resolve(new Maybe<TSubject>(subject), (MemberInfo)null);
+            return Resolve(Maybe<object>.NoValue, new Maybe<TSubject>(subject), (MemberInfo)null);
         }
 
         public TExodata For<TSubject>(Expression<Func<TSubject, object>> member)
         {
-            return Resolve(Maybe<TSubject>.NoValue, member);
+            return Resolve(Maybe<object>.NoValue, Maybe<TSubject>.NoValue, member);
         }
 
         public TExodata For<TSubject>(TSubject subject, Expression<Func<TSubject, object>> member)
         {
-            return Resolve(new Maybe<TSubject>(subject), member);
+            return Resolve(Maybe<object>.NoValue, new Maybe<TSubject>(subject), member);
         }
 
         #endregion
@@ -79,32 +79,36 @@ namespace iSynaptic.Commons.Data
 
         #region Resolution Logic
 
-        public TExodata Resolve<TSubject>(Maybe<TSubject> subject, MemberInfo member)
+        public TExodata Resolve<TContext, TSubject>(Maybe<TContext> context, Maybe<TSubject> subject, MemberInfo member)
         {
-            var request = new ExodataRequest<TSubject>(this, subject, member);
+            var request = Maybe.Value(new ExodataRequest<TContext, TSubject>(this, context, subject, member));
 
-            return Maybe.Value(request)
+            var resolvedValue = request
                 .Select(TryResolve)
-                .Do(x => OnValidateValue(x, "bound"))
-                .ThrowOnException()
-                .OnNoValue(() => GetDefault(request))
-                .Do(x => OnValidateValue(x, "default"))
-                .Value;
+                .Do(x => OnValidateValue(x, "bound"));
+
+            var defaultValue = request
+                .Select(GetDefault)
+                .Do(x => OnValidateValue(x, "default"));
+
+            return resolvedValue
+                .Or(defaultValue)
+                .Return();
         }
 
-        protected TExodata Resolve<TSubject>(Maybe<TSubject> subject, Expression member)
+        protected TExodata Resolve<TContext, TSubject>(Maybe<TContext> context, Maybe<TSubject> subject, Expression member)
         {
             MemberInfo memberInfo = member.ExtractMemberInfoForExodata<TSubject>();
 
-            return Resolve(subject, memberInfo);
+            return Resolve(context, subject, memberInfo);
         }
 
-        protected virtual Maybe<TExodata> TryResolve<TSubject>(IExodataRequest<TSubject> request)
+        protected virtual Maybe<TExodata> TryResolve<TContext, TSubject>(IExodataRequest<TContext, TSubject> request)
         {
             return Maybe
                 .Value(ExodataResolver).NotNull()
                 .OnNoValue(() => Ioc.Resolve<IExodataResolver>()).NotNull()
-                .Select(x => x.Resolve<TExodata, TSubject>(request));
+                .Select(x => x.Resolve<TExodata, TContext, TSubject>(request));
         }
 
         #endregion
@@ -118,21 +122,9 @@ namespace iSynaptic.Commons.Data
             return declaration.Get();
         }
 
-        protected virtual TExodata GetDefault<TSubject>(IExodataRequest<TSubject> request)
+        protected virtual TExodata GetDefault<TContext, TSubject>(IExodataRequest<TContext, TSubject> request)
         {
             return _Default.Return();
-        }
-
-        public TExodata Default
-        {
-            get
-            {
-                TExodata defaultValue = GetDefault<object>(null);
-
-                OnValidateValue(defaultValue, "default");
-
-                return defaultValue;
-            }
         }
     }
 

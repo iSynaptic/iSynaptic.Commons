@@ -30,7 +30,7 @@ namespace iSynaptic.Commons.Data
             var binding2 = MockRepository.GenerateStub<IExodataBinding>();
 
             Action<IExodataBinding> expectations = b =>
-                b.Expect(x => x.Matches<int, object>(null))
+                b.Expect(x => x.Matches<int, object, object>(null))
                     .IgnoreArguments()
                     .Return(true);
 
@@ -38,7 +38,7 @@ namespace iSynaptic.Commons.Data
             expectations(binding2);
 
             var source = MockRepository.GenerateStub<IExodataBindingSource>();
-            source.Expect(x => x.GetBindingsFor<int, object>(null))
+            source.Expect(x => x.GetBindingsFor<int, object, object>(null))
                 .IgnoreArguments()
                 .Return(new[] { binding1, binding2 });
 

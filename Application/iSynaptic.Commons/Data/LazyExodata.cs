@@ -15,7 +15,7 @@ namespace iSynaptic.Commons.Data
         }
 
         public LazyExodata(IExodataDeclaration<TExodata> declaration)
-            : base(() => declaration.Resolve(Maybe<object>.NoValue, null))
+            : base(() => declaration.Resolve(Maybe<object>.NoValue, Maybe<object>.NoValue, null))
         {
             Guard.NotNull(declaration, "declaration");
         }
@@ -29,24 +29,24 @@ namespace iSynaptic.Commons.Data
     public class LazyExodata<TExodata, TSubject> : Lazy<TExodata>
     {
         public LazyExodata(IExodataDeclaration<TExodata> declaration)
-            : base(() => declaration.Resolve(Maybe<TSubject>.NoValue, null))
+            : base(() => declaration.Resolve(Maybe<object>.NoValue, Maybe<TSubject>.NoValue, null))
         {
         }
 
         public LazyExodata(IExodataDeclaration<TExodata> declaration, TSubject subject)
-            : base(() => declaration.Resolve(new Maybe<TSubject>(subject), null))
+            : base(() => declaration.Resolve(Maybe<object>.NoValue, Maybe.Value(subject), null))
         {
             Guard.NotNull(declaration, "declaration");
         }
 
         public LazyExodata(IExodataDeclaration<TExodata> declaration, MemberInfo member)
-            : base(() => declaration.Resolve(Maybe<TSubject>.NoValue, member))
+            : base(() => declaration.Resolve(Maybe<object>.NoValue, Maybe<TSubject>.NoValue, member))
         {
             Guard.NotNull(declaration, "declaration");
         }
 
         public LazyExodata(IExodataDeclaration<TExodata> declaration, TSubject subject, MemberInfo member)
-            : base(() => declaration.Resolve(new Maybe<TSubject>(subject), member))
+            : base(() => declaration.Resolve(Maybe<object>.NoValue, Maybe.Value(subject), member))
         {
             Guard.NotNull(declaration, "declaration");
         }

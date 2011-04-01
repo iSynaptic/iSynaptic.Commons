@@ -29,22 +29,22 @@ namespace iSynaptic.Commons.Data
 
         private readonly HashSet<IExodataBindingSource> _BindingSources = new HashSet<IExodataBindingSource>();
 
-        public Maybe<TExodata> Resolve<TExodata, TSubject>(IExodataRequest<TSubject> request)
+        public Maybe<TExodata> Resolve<TExodata, TContext, TSubject>(IExodataRequest<TContext, TSubject> request)
         {
             Guard.NotNull(request, "request");
 
             int requestHashCode = request.GetHashCode();
 
             var candidateBindings = _BindingSources
-                .SelectMany(x => x.GetBindingsFor<TExodata, TSubject>(request))
-                .Where(x => x.Matches<TExodata, TSubject>(request));
+                .SelectMany(x => x.GetBindingsFor<TExodata, TContext, TSubject>(request))
+                .Where(x => x.Matches<TExodata, TContext, TSubject>(request));
 
-            var selectedBinding = SelectBinding<TExodata, TSubject>(request, candidateBindings);
+            var selectedBinding = SelectBinding<TExodata, TContext, TSubject>(request, candidateBindings);
 
             if(selectedBinding == null)
                 return Maybe<TExodata>.NoValue;
 
-            object scopeObject = selectedBinding.GetScopeObject<TExodata, TSubject>(request);
+            object scopeObject = selectedBinding.GetScopeObject<TExodata, TContext, TSubject>(request);
 
             if (scopeObject != null)
             {
@@ -57,7 +57,7 @@ namespace iSynaptic.Commons.Data
                     return cachedValue.Exodata;
             }
 
-            var results = selectedBinding.Resolve<TExodata, TSubject>(request);
+            var results = selectedBinding.Resolve<TExodata, TContext, TSubject>(request);
 
             if(scopeObject != null)
                 ScopedCache<TExodata>.Cache.Add(scopeObject, new CacheValue<TExodata> { Exodata = results, RequestHashCode = requestHashCode });
@@ -65,7 +65,7 @@ namespace iSynaptic.Commons.Data
             return results;
         }
 
-        protected virtual IExodataBinding SelectBinding<TExodata, TSubject>(IExodataRequest<TSubject> request, IEnumerable<IExodataBinding> candidates)
+        protected virtual IExodataBinding SelectBinding<TExodata, TContext, TSubject>(IExodataRequest<TContext, TSubject> request, IEnumerable<IExodataBinding> candidates)
         {
             Guard.NotNull(candidates, "candidates");
 

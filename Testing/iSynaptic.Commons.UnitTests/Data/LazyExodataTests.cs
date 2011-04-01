@@ -6,6 +6,8 @@ using System.Text;
 using NUnit.Framework;
 using Rhino.Mocks;
 
+using iSynaptic.Commons.Data.Syntax;
+
 namespace iSynaptic.Commons.Data
 {
     [TestFixture]

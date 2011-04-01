@@ -8,6 +8,6 @@ namespace iSynaptic.Commons.Data
 {
     public interface IExodataResolver
     {
-        Maybe<TExodata> Resolve<TExodata, TSubject>(IExodataRequest<TSubject> request);
+        Maybe<TExodata> Resolve<TExodata, TContext, TSubject>(IExodataRequest<TContext, TSubject> request);
     }
 }
