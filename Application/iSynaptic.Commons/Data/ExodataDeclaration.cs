@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
 
 namespace iSynaptic.Commons.Data
 {
@@ -19,7 +16,7 @@ namespace iSynaptic.Commons.Data
 
         public ExodataDeclaration(TExodata @default) : this()
         {
-            _Default = Maybe.Value(@default);
+            _Default = @default;
         }
 
         #region Get/For Methods
@@ -130,7 +127,7 @@ namespace iSynaptic.Commons.Data
         {
             get
             {
-                TExodata defaultValue = GetDefault(new ExodataRequest<object>(this, Maybe<object>.NoValue, null));
+                TExodata defaultValue = GetDefault<object>(null);
 
                 OnValidateValue(defaultValue, "default");
 

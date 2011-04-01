@@ -9,9 +9,7 @@ namespace iSynaptic.Commons.Data
     {
         public ExodataValidationException(IExodataDeclaration declaration, object invalidValue, string message) : base(message)
         {
-            Guard.NotNull(declaration, "declaration");
-            
-            Declaration = declaration;
+            Declaration = Guard.NotNull(declaration, "declaration");
             InvalidValue = invalidValue;
         }
 

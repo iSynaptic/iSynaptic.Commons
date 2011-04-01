@@ -11,9 +11,7 @@ namespace iSynaptic.Commons.Data
     {
         public ExodataRequest(IExodataDeclaration declaration, IMaybe<TSubject> subject, MemberInfo member)
         {
-            Guard.NotNull(declaration, "declaration");
-
-            Declaration = declaration;
+            Declaration = Guard.NotNull(declaration, "declaration");
             Subject = subject;
             Member = member;
         }
