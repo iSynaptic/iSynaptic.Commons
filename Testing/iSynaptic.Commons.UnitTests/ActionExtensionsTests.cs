@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 
 namespace iSynaptic.Commons
@@ -115,18 +116,59 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedBy_CallsBothActionsInSuccession()
+        public void FollowedBy_CallsBothActionsInCorrectOrder()
         {
-            bool leftExecuted = false;
-            bool rightExecuted = false;
+            var results = new List<string>();
 
-            Action left = () => leftExecuted = true;
-            Action right = () => rightExecuted = true;
+            Action left = () => results.Add("left");
+            Action right = () => results.Add("right");
 
             var action = left.FollowedBy(right);
 
             action();
-            Assert.IsTrue(leftExecuted && rightExecuted);
+
+            Assert.IsTrue(results.SequenceEqual(new []{"left", "right"}));
+        }
+
+        [Test]
+        public void PrecededBy_WithNullArgument_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action originalAction = () => executed = true;
+            Action action = originalAction.PrecededBy(null);
+
+            action();
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void PrecededBy_ExtendingNullAction_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action originalAction = () => executed = true;
+            Action action = ((Action)null).PrecededBy(originalAction);
+
+            action();
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void PrecededBy_CallsBothActionsInCorrectOrder()
+        {
+            var results = new List<string>();
+
+            Action left = () => results.Add("left");
+            Action right = () => results.Add("right");
+
+            var action = left.PrecededBy(right);
+
+            action();
+
+            Assert.IsTrue(results.SequenceEqual(new[] { "right", "left" }));
         }
     }
 }

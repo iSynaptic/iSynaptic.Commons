@@ -42,72 +42,103 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void And_WithNullFuncs_ThrowsArgumentNullException()
+        public void FollowedBy_WithNullArgument_ReturnsOriginal()
         {
-            Func<int, bool> nullFunc = null;
-            Func<int, bool> notNullFunc = x => true;
+            Func<Maybe<int>> originalFunc = () => 42;
+            var func = originalFunc.FollowedBy(null);
 
-            Assert.Throws<ArgumentNullException>(() => nullFunc.And(notNullFunc));
-            Assert.Throws<ArgumentNullException>(() => notNullFunc.And(nullFunc));
+            var result = func();
+
+            Assert.IsTrue(ReferenceEquals(originalFunc, func));
+            Assert.AreEqual(42, result.Value);
         }
 
         [Test]
-        public void And_WithValidFuncs_ComposesCorrectly()
+        public void FollowedBy_ExtendingNullFunc_ReturnsOriginal()
         {
-            Func<int, bool> isEven = x => x%2 == 0;
-            Func<int, bool> isGreaterThanEight = x => x > 8;
+            Func<Maybe<int>> originalFunc = () => 42;
+            var func = ((Func<Maybe<int>>)null).FollowedBy(originalFunc);
 
-            var andFunc = isEven.And(isGreaterThanEight);
+            var result = func();
 
-            Assert.IsTrue(andFunc(10));
-            Assert.IsFalse(andFunc(8));
-            Assert.IsFalse(andFunc(11));
+            Assert.IsTrue(ReferenceEquals(originalFunc, func));
+            Assert.AreEqual(42, result.Value);
         }
 
         [Test]
-        public void Or_WithNullFuncs_ThrowsArgumentNullException()
+        public void FollowedBy_CallsFirstFunc()
         {
-            Func<int, bool> nullFunc = null;
-            Func<int, bool> notNullFunc = x => true;
+            Func<Maybe<int>> left = () => 42;
+            Func<Maybe<int>> right = () => 7;
 
-            Assert.Throws<ArgumentNullException>(() => nullFunc.Or(notNullFunc));
-            Assert.Throws<ArgumentNullException>(() => notNullFunc.Or(nullFunc));
+            var func = left.FollowedBy(right);
+
+            var results = func();
+
+            Assert.AreEqual(42, results.Value);
         }
 
         [Test]
-        public void Or_WithValidFuncs_ComposesCorrectly()
+        public void FollowedBy_CallsSecondFunc()
         {
-            Func<int, bool> isEven = x => x % 2 == 0;
-            Func<int, bool> isGreaterThanEight = x => x > 8;
+            Func<Maybe<int>> left = () => Maybe<int>.NoValue;
+            Func<Maybe<int>> right = () => 42;
 
-            var andFunc = isEven.Or(isGreaterThanEight);
+            var func = left.FollowedBy(right);
 
-            Assert.IsTrue(andFunc(10));
-            Assert.IsTrue(andFunc(8));
-            Assert.IsTrue(andFunc(11));
+            var results = func();
+
+            Assert.AreEqual(42, results.Value);
         }
 
         [Test]
-        public void XOr_WithNullFuncs_ThrowsArgumentNullException()
+        public void PrecededBy_WithNullArgument_ReturnsOriginal()
         {
-            Func<int, bool> nullFunc = null;
-            Func<int, bool> notNullFunc = x => true;
+            Func<Maybe<int>> originalFunc = () => 42;
+            var func = originalFunc.PrecededBy(null);
 
-            Assert.Throws<ArgumentNullException>(() => nullFunc.XOr(notNullFunc));
-            Assert.Throws<ArgumentNullException>(() => notNullFunc.XOr(nullFunc));
+            var result = func();
+
+            Assert.IsTrue(ReferenceEquals(originalFunc, func));
+            Assert.AreEqual(42, result.Value);
         }
 
         [Test]
-        public void XOr_WithValidFuncs_ComposesCorrectly()
+        public void PrecededBy_ExtendingNullAction_ReturnsOriginal()
         {
-            Func<int, bool> isEven = x => x % 2 == 0;
-            Func<int, bool> isGreaterThanEight = x => x > 8;
+            Func<Maybe<int>> originalFunc = () => 42;
+            var func = ((Func<Maybe<int>>)null).PrecededBy(originalFunc);
 
-            var andFunc = isEven.XOr(isGreaterThanEight);
+            var result = func();
 
-            Assert.IsFalse(andFunc(10));
-            Assert.IsTrue(andFunc(8));
-            Assert.IsTrue(andFunc(11));
+            Assert.IsTrue(ReferenceEquals(originalFunc, func));
+            Assert.AreEqual(42, result.Value);
+        }
+
+        [Test]
+        public void PrecededBy_CallsFirstFunc()
+        {
+            Func<Maybe<int>> left = () => 42;
+            Func<Maybe<int>> right = () => Maybe<int>.NoValue;
+
+            var func = left.PrecededBy(right);
+
+            var results = func();
+
+            Assert.AreEqual(42, results.Value);
+        }
+
+        [Test]
+        public void PrecededBy_CallsSecondFunc()
+        {
+            Func<Maybe<int>> left = () => 7;
+            Func<Maybe<int>> right = () => 42;
+
+            var func = left.PrecededBy(right);
+
+            var results = func();
+
+            Assert.AreEqual(42, results.Value);
         }
     }
 }

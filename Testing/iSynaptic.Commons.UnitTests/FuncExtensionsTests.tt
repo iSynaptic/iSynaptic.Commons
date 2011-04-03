@@ -42,6 +42,101 @@ namespace iSynaptic.Commons
         }
 
 		[Test]
+        public void AndOf<#= nameSuffix #>_WithNullFuncs_ThrowsArgumentNullException()
+        {
+            Func<<#= fixedTypes #>, bool> nullFunc = null;
+            Func<<#= fixedTypes #>, bool> notNullFunc = (<#= args #>) => true;
+
+            Assert.Throws<ArgumentNullException>(() => nullFunc.And(notNullFunc));
+            Assert.Throws<ArgumentNullException>(() => notNullFunc.And(nullFunc));
+        }
+
+        [Test]
+        public void AndOf<#= nameSuffix #>_WithValidFuncs_ComposesCorrectly()
+        {
+			bool leftResult = true;
+			bool rightResult = true;
+
+            Func<<#= fixedTypes #>, bool> left = (<#= args #>) => leftResult;
+            Func<<#= fixedTypes #>, bool> right = (<#= args #>) => rightResult;
+
+            var andFunc = left.And(right);
+
+            Assert.IsTrue(andFunc(<#= fixedArgs #>));
+
+			leftResult = false;
+            Assert.IsFalse(andFunc(<#= fixedArgs #>));
+
+			leftResult = true;
+			rightResult = false;
+            Assert.IsFalse(andFunc(<#= fixedArgs #>));
+        }
+
+        [Test]
+        public void OrOf<#= nameSuffix #>_WithNullFuncs_ThrowsArgumentNullException()
+        {
+            Func<<#= fixedTypes #>, bool> nullFunc = null;
+            Func<<#= fixedTypes #>, bool> notNullFunc = (<#= args #>) => true;
+
+            Assert.Throws<ArgumentNullException>(() => nullFunc.Or(notNullFunc));
+            Assert.Throws<ArgumentNullException>(() => notNullFunc.Or(nullFunc));
+        }
+
+        [Test]
+        public void OrOf<#= nameSuffix #>_WithValidFuncs_ComposesCorrectly()
+        {
+            bool leftResult = true;
+			bool rightResult = true;
+
+            Func<<#= fixedTypes #>, bool> left = (<#= args #>) => leftResult;
+            Func<<#= fixedTypes #>, bool> right = (<#= args #>) => rightResult;
+
+            var orFunc = left.Or(right);
+
+            Assert.IsTrue(orFunc(<#= fixedArgs #>));
+
+			leftResult = false;
+            Assert.IsTrue(orFunc(<#= fixedArgs #>));
+
+			rightResult = false;
+            Assert.IsFalse(orFunc(<#= fixedArgs #>));
+        }
+
+        [Test]
+        public void XOrOf<#= nameSuffix #>_WithNullFuncs_ThrowsArgumentNullException()
+        {
+            Func<<#= fixedTypes #>, bool> nullFunc = null;
+            Func<<#= fixedTypes #>, bool> notNullFunc = (<#= args #>) => true;
+
+            Assert.Throws<ArgumentNullException>(() => nullFunc.XOr(notNullFunc));
+            Assert.Throws<ArgumentNullException>(() => notNullFunc.XOr(nullFunc));
+        }
+
+        [Test]
+        public void XOrOf<#= nameSuffix #>_WithValidFuncs_ComposesCorrectly()
+        {
+            bool leftResult = true;
+			bool rightResult = true;
+
+            Func<<#= fixedTypes #>, bool> left = (<#= args #>) => leftResult;
+            Func<<#= fixedTypes #>, bool> right = (<#= args #>) => rightResult;
+
+            var orFunc = left.XOr(right);
+
+            Assert.IsFalse(orFunc(<#= fixedArgs #>));
+
+			leftResult = false;
+            Assert.IsTrue(orFunc(<#= fixedArgs #>));
+
+			leftResult = true;
+			rightResult = false;
+            Assert.IsTrue(orFunc(<#= fixedArgs #>));
+
+			leftResult = false;
+            Assert.IsFalse(orFunc(<#= fixedArgs #>));
+        }
+
+		[Test]
 		public void SynchronizeOf<#= nameSuffix #>_PreventsConcurrentAccess()
 		{
 			bool shouldSync = true;
@@ -133,6 +228,106 @@ namespace iSynaptic.Commons
 			Assert.AreEqual(2, count);
 
 		}
+
+		[Test]
+        public void FollowedByOf<#= nameSuffix #>_WithNullArgument_ReturnsOriginal()
+        {
+            Func<<#= fixedTypes #>, Maybe<int>> originalFunc = (<#= args #>) => 42;
+            var func = originalFunc.FollowedBy(null);
+
+            var result = func(<#= fixedArgs #>);
+
+            Assert.IsTrue(ReferenceEquals(originalFunc, func));
+            Assert.AreEqual(42, result.Value);
+        }
+
+        [Test]
+        public void FollowedByOf<#= nameSuffix #>_ExtendingNullFunc_ReturnsOriginal()
+        {
+            Func<<#= fixedTypes #>, Maybe<int>> originalFunc = (<#= args #>) => 42;
+            var func = ((Func<<#= fixedTypes #>, Maybe<int>>)null).FollowedBy(originalFunc);
+
+            var result = func(<#= fixedArgs #>);
+
+            Assert.IsTrue(ReferenceEquals(originalFunc, func));
+            Assert.AreEqual(42, result.Value);
+        }
+
+        [Test]
+        public void FollowedByOf<#= nameSuffix #>_CallsFirstFunc()
+        {
+            Func<<#= fixedTypes #>, Maybe<int>> left = (<#= args #>) => 42;
+            Func<<#= fixedTypes #>, Maybe<int>> right = (<#= args #>) => 7;
+
+            var func = left.FollowedBy(right);
+
+            var results = func(<#= fixedArgs #>);
+
+            Assert.AreEqual(42, results.Value);
+        }
+
+        [Test]
+        public void FollowedByOf<#= nameSuffix #>_CallsSecondFunc()
+        {
+            Func<<#= fixedTypes #>, Maybe<int>> left = (<#= args #>) => Maybe<int>.NoValue;
+            Func<<#= fixedTypes #>, Maybe<int>> right = (<#= args #>) => 42;
+
+            var func = left.FollowedBy(right);
+
+            var results = func(<#= fixedArgs #>);
+
+            Assert.AreEqual(42, results.Value);
+        }
+
+        [Test]
+        public void PrecededByOf<#= nameSuffix #>_WithNullArgument_ReturnsOriginal()
+        {
+            Func<<#= fixedTypes #>, Maybe<int>> originalFunc = (<#= args #>) => 42;
+            var func = originalFunc.PrecededBy(null);
+
+            var result = func(<#= fixedArgs #>);
+
+            Assert.IsTrue(ReferenceEquals(originalFunc, func));
+            Assert.AreEqual(42, result.Value);
+        }
+
+        [Test]
+        public void PrecededByOf<#= nameSuffix #>_ExtendingNullAction_ReturnsOriginal()
+        {
+            Func<<#= fixedTypes #>, Maybe<int>> originalFunc = (<#= args #>) => 42;
+            var func = ((Func<<#= fixedTypes #>, Maybe<int>>)null).PrecededBy(originalFunc);
+
+            var result = func(<#= fixedArgs #>);
+
+            Assert.IsTrue(ReferenceEquals(originalFunc, func));
+            Assert.AreEqual(42, result.Value);
+        }
+
+        [Test]
+        public void PrecededByOf<#= nameSuffix #>_CallsFirstFunc()
+        {
+            Func<<#= fixedTypes #>, Maybe<int>> left = (<#= args #>) => 42;
+            Func<<#= fixedTypes #>, Maybe<int>> right = (<#= args #>) => Maybe<int>.NoValue;
+
+            var func = left.PrecededBy(right);
+
+            var results = func(<#= fixedArgs #>);
+
+            Assert.AreEqual(42, results.Value);
+        }
+
+        [Test]
+        public void PrecededByOf<#= nameSuffix #>_CallsSecondFunc()
+        {
+            Func<<#= fixedTypes #>, Maybe<int>> left = (<#= args #>) => 7;
+            Func<<#= fixedTypes #>, Maybe<int>> right = (<#= args #>) => 42;
+
+            var func = left.PrecededBy(right);
+
+            var results = func(<#= fixedArgs #>);
+
+            Assert.AreEqual(42, results.Value);
+        }
 
 		<# } #>
 	}

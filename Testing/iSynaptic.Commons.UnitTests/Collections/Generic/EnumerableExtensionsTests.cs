@@ -371,7 +371,7 @@ namespace iSynaptic.Commons.Collections.Generic
 
             var flatten = r1.Flatten(r => r.Recursives).ToArray();
 
-            Assert.AreEqual(4, flatten.Count());
+            Assert.AreEqual(4, flatten.Length);
             Assert.IsTrue(flatten.Select(x => x.Value).SequenceEqual(new[] { 1, 2, 4, 3 }));
         }
 

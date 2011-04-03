@@ -22,8 +22,8 @@ namespace iSynaptic.Commons.Runtime.Serialization
             var clone = Cloneable<CloneTestClass>.Clone(source);
             var shallowClone = Cloneable<CloneTestClass>.ShallowClone(source);
 
-            Assert.IsFalse(object.ReferenceEquals(source, clone));
-            Assert.IsFalse(object.ReferenceEquals(source, shallowClone));
+            Assert.IsFalse(ReferenceEquals(source, clone));
+            Assert.IsFalse(ReferenceEquals(source, shallowClone));
 
             Assert.AreEqual("John", clone.FirstName);
             Assert.AreEqual("Doe", clone.LastName);
@@ -433,8 +433,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
         {
             var source = new ParentClass();
 
-            var destination = new ParentClass();
-            var destinationChild = new ChildClass {Name = "Jim Cox"};
+            var destination = new ParentClass {Child = new ChildClass {Name = "John Doe"}};
 
             Cloneable<ParentClass>.CloneTo(source, destination);
 
@@ -480,8 +479,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
         {
             var source = new ParentClass();
 
-            var destination = new ParentClass();
-            var destinationChild = new ChildClass { Name = "Jim Cox" };
+            var destination = new ParentClass {Child = new ChildClass {Name = "John Doe"}};
 
             Cloneable<ParentClass>.ShallowCloneTo(source, destination);
 

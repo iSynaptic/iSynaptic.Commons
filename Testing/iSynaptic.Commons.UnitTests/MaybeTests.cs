@@ -694,14 +694,14 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void Cast_ReturnsNoValue_WhenCastIsNotPossible()
+        public void Cast_ThrowsException_WhenCastIsNotPossible()
         {
             ICollection<string> foo = new List<string>();
 
             var value = Maybe.Value<object>(foo)
                 .Cast<object, DateTime>();
 
-            Assert.IsFalse(value.HasValue);
+            Assert.Throws<InvalidCastException>(() => value.Return());
         }
 
         [Test]

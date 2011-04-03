@@ -202,12 +202,28 @@ namespace iSynaptic.Commons.Collections.Generic
             return new SmartLoop<T>(items);
         }
 
-        public static IEnumerable<T> Flatten<T>(this T root, Func<T, IEnumerable<T>> selector)
+        public static IEnumerable<T> Flatten<T>(this IEnumerable<T> self, Func<T, IEnumerable<T>> selector)
         {
-            Guard.NotNull(root, "root");
+            Guard.NotNull(self, "self");
             Guard.NotNull(selector, "selector");
-            
-            return new [] {root}.Concat((selector(root) ?? new T[0]).SelectMany(x => Flatten(x, selector)));
+
+            return self.SelectMany(x => new[]{x}.Concat((selector(x) ?? Enumerable.Empty<T>()).Flatten(selector)));
+        }
+
+        public static IEnumerable<T> Flatten<T>(this T self, Func<T, IEnumerable<T>> selector)
+        {
+            Guard.NotNull(self, "self");
+            Guard.NotNull(selector, "selector");
+
+            return new[] {self}.Flatten(selector);
+        }
+
+        public static IEnumerable<T> Flatten<T>(this T self, Func<T, Maybe<T>> selector)
+        {
+            Guard.NotNull(self, "self");
+            Guard.NotNull(selector, "selector");
+
+            return new[] {self}.Concat(selector(self).Select(x => Flatten(x, selector)).Return(Enumerable.Empty<T>()));
         }
     }
 }

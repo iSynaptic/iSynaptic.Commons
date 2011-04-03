@@ -65,22 +65,15 @@ namespace iSynaptic.Commons.Reflection
 
         private static IEnumerable<FieldInfo> GetFieldsDeeplyCore(this Type source, Func<FieldInfo, bool> filter)
         {
-            Type currentType = source;
-            while (currentType != null)
-            {
-                foreach (var fieldInfo in currentType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
-                {
-                    if (filter != null && filter(fieldInfo) != true)
-                        continue;
+            var bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 
-                    yield return fieldInfo;
-                }
-
-                if (currentType.BaseType != null)
-                    currentType = currentType.BaseType;
-                else
-                    currentType = null;
-            }
+            var results = source
+                .Flatten(x => Maybe.Value(x.BaseType).NotNull())
+                .SelectMany(x => x.GetFields(bindingFlags).Where(y => y.DeclaringType == x));
+            
+            return filter != null
+                ? results.Where(filter)
+                : results;
         }
     }
 }

@@ -90,6 +90,18 @@ namespace iSynaptic.Commons
             };
         }
 
+        public static Action PrecededBy(this Action self, Action precededBy)
+        {
+            if (self == null || precededBy == null)
+                return self ?? precededBy;
+
+            return () =>
+            {
+                precededBy();
+                self();
+            };
+        }
+
         public static Action FollowedBy(this Action self, Action followedBy)
         {
             if(self == null || followedBy == null)

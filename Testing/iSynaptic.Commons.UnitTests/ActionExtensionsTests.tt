@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 
 namespace iSynaptic.Commons
@@ -160,18 +161,57 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOf<#= nameSuffix #>_CallsBothActionsInSuccession()
+        public void FollowedByOf<#= nameSuffix #>_CallsBothActionsInCorrectOrder()
         {
-            bool leftExecuted = false;
-            bool rightExecuted = false;
+            var results = new List<string>();
 
-            Action<<#= fixedTypes #>> left = (<#= args #>) => leftExecuted = true;
-            Action<<#= fixedTypes #>> right = (<#= args #>) => rightExecuted = true;
+            Action<<#= fixedTypes #>> left = (<#= args #>) => results.Add("left");
+            Action<<#= fixedTypes #>> right = (<#= args #>) => results.Add("right");
 
             var action = left.FollowedBy(right);
 
             action(<#= fixedArgs #>);
-            Assert.IsTrue(leftExecuted && rightExecuted);
+            Assert.IsTrue(results.SequenceEqual(new []{"left", "right"}));
+        }
+
+		[Test]
+        public void PrecededByOf<#= nameSuffix #>_WithNullArgument_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<<#= fixedTypes #>> originalAction = (<#= args #>) => executed = true;
+            Action<<#= fixedTypes #>> action = originalAction.PrecededBy(null);
+
+            action(<#= fixedArgs #>);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void PrecededByOf<#= nameSuffix #>_ExtendingNullAction_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<<#= fixedTypes #>> originalAction = (<#= args #>) => executed = true;
+            Action<<#= fixedTypes #>> action = ((Action<<#= fixedTypes #>>)null).PrecededBy(originalAction);
+
+            action(<#= fixedArgs #>);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void PrecededByOf<#= nameSuffix #>_CallsBothActionsInCorrectOrder()
+        {
+            var results = new List<string>();
+
+            Action<<#= fixedTypes #>> left = (<#= args #>) => results.Add("left");
+            Action<<#= fixedTypes #>> right = (<#= args #>) => results.Add("right");
+
+            var action = left.PrecededBy(right);
+
+            action(<#= fixedArgs #>);
+            Assert.IsTrue(results.SequenceEqual(new []{"right", "left"}));
         }
 
 		<# } #>

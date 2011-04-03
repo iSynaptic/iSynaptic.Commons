@@ -31,5 +31,46 @@ namespace iSynaptic.Commons.Reflection
         {
             Assert.Throws<ArgumentNullException>(() => ReflectionExtensions.GetFieldsDeeply(null));
         }
+
+        [Test]
+        public void GetFieldsDeeply_WorksRecursively()
+        {
+            var fields = typeof (FurtherDerived).GetFieldsDeeply()
+                .Select(x => x.Name)
+                .OrderBy(x => x);
+
+            Assert.IsTrue(fields.SequenceEqual(new []{"Bar", "Baz", "Foo", "Quux"}));
+        }
+
+        [Test]
+        public void GetFieldsDeeply_WithFilter_WorksRecursively()
+        {
+            var fields = typeof(FurtherDerived).GetFieldsDeeply(x => !x.Name.StartsWith("B"))
+                .Select(x => x.Name)
+                .OrderBy(x => x);
+
+            Assert.IsTrue(fields.SequenceEqual(new[] { "Foo", "Quux" }));
+        }
+
+        private class Base
+        {
+            public Guid Quux = Guid.Empty;
+        }
+
+        private class Derived : Base
+        {
+            protected int Baz = 42;
+            public DateTime Bar = DateTime.Now;
+       }
+
+        private class FurtherDerived : Derived
+        {
+            private string Foo = "Foo";
+
+            public FurtherDerived()
+            {
+                Console.WriteLine(Foo);
+            }
+        }
     }
 }

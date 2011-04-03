@@ -12,30 +12,6 @@ namespace iSynaptic.Commons
             return () => self();
         }
 
-        public static Func<T, bool> And<T>(this Func<T, bool> self, Func<T, bool> right)
-        {
-            Guard.NotNull(self, "self");
-            Guard.NotNull(right, "right");
-
-            return input => self(input) && right(input);
-        }
-
-        public static Func<T, bool> Or<T>(this Func<T, bool> self, Func<T, bool> right)
-        {
-            Guard.NotNull(self, "self");
-            Guard.NotNull(right, "right");
-            
-            return input => self(input) || right(input);
-        }
-
-        public static Func<T, bool> XOr<T>(this Func<T, bool> self, Func<T, bool> right)
-        {
-            Guard.NotNull(self, "self");
-            Guard.NotNull(right, "right");
-
-            return input => self(input) ^ right(input);
-        }
-
         public static IComparer<T> ToComparer<T>(this Func<T, T, int> self)
         {
             Guard.NotNull(self, "self");
@@ -101,6 +77,22 @@ namespace iSynaptic.Commons
 
                 return self();
             };
+        }
+
+        public static Func<Maybe<TResult>> PrecededBy<TResult>(this Func<Maybe<TResult>> self, Func<Maybe<TResult>> precededBy)
+        {
+            if (self == null || precededBy == null)
+                return self ?? precededBy;
+
+            return () => precededBy().Or(self());
+        }
+
+        public static Func<Maybe<TResult>> FollowedBy<TResult>(this Func<Maybe<TResult>> self, Func<Maybe<TResult>> followedBy)
+        {
+            if (self == null || followedBy == null)
+                return self ?? followedBy;
+
+            return () => self().Or(followedBy());
         }
 
         private class FuncComparer<T> : IComparer<T>

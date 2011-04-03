@@ -27,6 +27,30 @@ namespace iSynaptic.Commons
             return (<#= args #>) => self(<#= args #>);
         }
 
+		public static Func<<#= typeArgs #>, bool> And<<#= typeArgs #>>(this Func<<#= typeArgs #>, bool> self, Func<<#= typeArgs #>, bool> right)
+        {
+            Guard.NotNull(self, "self");
+            Guard.NotNull(right, "right");
+
+            return (<#= args #>) => self(<#= args #>) && right(<#= args #>);
+        }
+
+        public static Func<<#= typeArgs #>, bool> Or<<#= typeArgs #>>(this Func<<#= typeArgs #>, bool> self, Func<<#= typeArgs #>, bool> right)
+        {
+            Guard.NotNull(self, "self");
+            Guard.NotNull(right, "right");
+            
+            return (<#= args #>) => self(<#= args #>) || right(<#= args #>);
+        }
+
+        public static Func<<#= typeArgs #>, bool> XOr<<#= typeArgs #>>(this Func<<#= typeArgs #>, bool> self, Func<<#= typeArgs #>, bool> right)
+        {
+            Guard.NotNull(self, "self");
+            Guard.NotNull(right, "right");
+
+            return (<#= args #>) => self(<#= args #>) ^ right(<#= args #>);
+        }
+
 		public static Func<<#= typeArgs #>, TResult> MakeConditional<<#= typeArgs #>, TResult>(this Func<<#= typeArgs #>, TResult> self, Func<<#= typeArgs #>, bool> condition)
         {
             return MakeConditional(self, condition, null);
@@ -52,6 +76,22 @@ namespace iSynaptic.Commons
                 
                 return default(TResult);
             };
+        }
+
+		public static Func<<#= typeArgs #>, Maybe<TResult>> PrecededBy<<#= typeArgs #>, TResult>(this Func<<#= typeArgs #>, Maybe<TResult>> self, Func<<#= typeArgs #>, Maybe<TResult>> precededBy)
+        {
+            if (self == null || precededBy == null)
+                return self ?? precededBy;
+
+            return (<#= args #>) => precededBy(<#= args #>).Or(self(<#= args #>));
+        }
+
+        public static Func<<#= typeArgs #>, Maybe<TResult>> FollowedBy<<#= typeArgs #>, TResult>(this Func<<#= typeArgs #>, Maybe<TResult>> self, Func<<#= typeArgs #>, Maybe<TResult>> followedBy)
+        {
+            if (self == null || followedBy == null)
+                return self ?? followedBy;
+
+            return (<#= args #>) => self(<#= args #>).Or(followedBy(<#= args #>));
         }
 
 		public static Func<<#= typeArgs #>, TResult> Synchronize<<#= typeArgs #>, TResult>(this Func<<#= typeArgs #>, TResult> self)

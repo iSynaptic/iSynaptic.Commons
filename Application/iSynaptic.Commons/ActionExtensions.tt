@@ -39,6 +39,18 @@ namespace iSynaptic.Commons
             };
         }
 
+		public static Action<<#= typeArgs #>> PrecededBy<<#= typeArgs #>>(this Action<<#= typeArgs #>> self, Action<<#= typeArgs #>> precededBy)
+        {
+            if (self == null || precededBy == null)
+                return self ?? precededBy;
+
+            return (<#= args #>) =>
+            {
+                precededBy(<#= args #>);
+                self(<#= args #>);
+            };
+        }
+
 		public static Action<<#= typeArgs #>> FollowedBy<<#= typeArgs #>>(this Action<<#= typeArgs #>> self, Action<<#= typeArgs #>> followedBy)
         {
             if (self == null || followedBy == null)

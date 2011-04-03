@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 
 namespace iSynaptic.Commons
@@ -146,18 +147,57 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1_CallsBothActionsInSuccession()
+        public void FollowedByOfT1_CallsBothActionsInCorrectOrder()
         {
-            bool leftExecuted = false;
-            bool rightExecuted = false;
+            var results = new List<string>();
 
-            Action<int> left = (t1) => leftExecuted = true;
-            Action<int> right = (t1) => rightExecuted = true;
+            Action<int> left = (t1) => results.Add("left");
+            Action<int> right = (t1) => results.Add("right");
 
             var action = left.FollowedBy(right);
 
             action(1);
-            Assert.IsTrue(leftExecuted && rightExecuted);
+            Assert.IsTrue(results.SequenceEqual(new []{"left", "right"}));
+        }
+
+		[Test]
+        public void PrecededByOfT1_WithNullArgument_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int> originalAction = (t1) => executed = true;
+            Action<int> action = originalAction.PrecededBy(null);
+
+            action(1);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void PrecededByOfT1_ExtendingNullAction_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int> originalAction = (t1) => executed = true;
+            Action<int> action = ((Action<int>)null).PrecededBy(originalAction);
+
+            action(1);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void PrecededByOfT1_CallsBothActionsInCorrectOrder()
+        {
+            var results = new List<string>();
+
+            Action<int> left = (t1) => results.Add("left");
+            Action<int> right = (t1) => results.Add("right");
+
+            var action = left.PrecededBy(right);
+
+            action(1);
+            Assert.IsTrue(results.SequenceEqual(new []{"right", "left"}));
         }
 
 		
@@ -298,18 +338,57 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2_CallsBothActionsInSuccession()
+        public void FollowedByOfT1T2_CallsBothActionsInCorrectOrder()
         {
-            bool leftExecuted = false;
-            bool rightExecuted = false;
+            var results = new List<string>();
 
-            Action<int, int> left = (t1, t2) => leftExecuted = true;
-            Action<int, int> right = (t1, t2) => rightExecuted = true;
+            Action<int, int> left = (t1, t2) => results.Add("left");
+            Action<int, int> right = (t1, t2) => results.Add("right");
 
             var action = left.FollowedBy(right);
 
             action(1, 2);
-            Assert.IsTrue(leftExecuted && rightExecuted);
+            Assert.IsTrue(results.SequenceEqual(new []{"left", "right"}));
+        }
+
+		[Test]
+        public void PrecededByOfT1T2_WithNullArgument_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int> originalAction = (t1, t2) => executed = true;
+            Action<int, int> action = originalAction.PrecededBy(null);
+
+            action(1, 2);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void PrecededByOfT1T2_ExtendingNullAction_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int> originalAction = (t1, t2) => executed = true;
+            Action<int, int> action = ((Action<int, int>)null).PrecededBy(originalAction);
+
+            action(1, 2);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void PrecededByOfT1T2_CallsBothActionsInCorrectOrder()
+        {
+            var results = new List<string>();
+
+            Action<int, int> left = (t1, t2) => results.Add("left");
+            Action<int, int> right = (t1, t2) => results.Add("right");
+
+            var action = left.PrecededBy(right);
+
+            action(1, 2);
+            Assert.IsTrue(results.SequenceEqual(new []{"right", "left"}));
         }
 
 		
@@ -450,18 +529,57 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3_CallsBothActionsInSuccession()
+        public void FollowedByOfT1T2T3_CallsBothActionsInCorrectOrder()
         {
-            bool leftExecuted = false;
-            bool rightExecuted = false;
+            var results = new List<string>();
 
-            Action<int, int, int> left = (t1, t2, t3) => leftExecuted = true;
-            Action<int, int, int> right = (t1, t2, t3) => rightExecuted = true;
+            Action<int, int, int> left = (t1, t2, t3) => results.Add("left");
+            Action<int, int, int> right = (t1, t2, t3) => results.Add("right");
 
             var action = left.FollowedBy(right);
 
             action(1, 2, 3);
-            Assert.IsTrue(leftExecuted && rightExecuted);
+            Assert.IsTrue(results.SequenceEqual(new []{"left", "right"}));
+        }
+
+		[Test]
+        public void PrecededByOfT1T2T3_WithNullArgument_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int> originalAction = (t1, t2, t3) => executed = true;
+            Action<int, int, int> action = originalAction.PrecededBy(null);
+
+            action(1, 2, 3);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void PrecededByOfT1T2T3_ExtendingNullAction_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int> originalAction = (t1, t2, t3) => executed = true;
+            Action<int, int, int> action = ((Action<int, int, int>)null).PrecededBy(originalAction);
+
+            action(1, 2, 3);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void PrecededByOfT1T2T3_CallsBothActionsInCorrectOrder()
+        {
+            var results = new List<string>();
+
+            Action<int, int, int> left = (t1, t2, t3) => results.Add("left");
+            Action<int, int, int> right = (t1, t2, t3) => results.Add("right");
+
+            var action = left.PrecededBy(right);
+
+            action(1, 2, 3);
+            Assert.IsTrue(results.SequenceEqual(new []{"right", "left"}));
         }
 
 		
@@ -602,18 +720,57 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4_CallsBothActionsInSuccession()
+        public void FollowedByOfT1T2T3T4_CallsBothActionsInCorrectOrder()
         {
-            bool leftExecuted = false;
-            bool rightExecuted = false;
+            var results = new List<string>();
 
-            Action<int, int, int, int> left = (t1, t2, t3, t4) => leftExecuted = true;
-            Action<int, int, int, int> right = (t1, t2, t3, t4) => rightExecuted = true;
+            Action<int, int, int, int> left = (t1, t2, t3, t4) => results.Add("left");
+            Action<int, int, int, int> right = (t1, t2, t3, t4) => results.Add("right");
 
             var action = left.FollowedBy(right);
 
             action(1, 2, 3, 4);
-            Assert.IsTrue(leftExecuted && rightExecuted);
+            Assert.IsTrue(results.SequenceEqual(new []{"left", "right"}));
+        }
+
+		[Test]
+        public void PrecededByOfT1T2T3T4_WithNullArgument_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int> originalAction = (t1, t2, t3, t4) => executed = true;
+            Action<int, int, int, int> action = originalAction.PrecededBy(null);
+
+            action(1, 2, 3, 4);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void PrecededByOfT1T2T3T4_ExtendingNullAction_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int> originalAction = (t1, t2, t3, t4) => executed = true;
+            Action<int, int, int, int> action = ((Action<int, int, int, int>)null).PrecededBy(originalAction);
+
+            action(1, 2, 3, 4);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void PrecededByOfT1T2T3T4_CallsBothActionsInCorrectOrder()
+        {
+            var results = new List<string>();
+
+            Action<int, int, int, int> left = (t1, t2, t3, t4) => results.Add("left");
+            Action<int, int, int, int> right = (t1, t2, t3, t4) => results.Add("right");
+
+            var action = left.PrecededBy(right);
+
+            action(1, 2, 3, 4);
+            Assert.IsTrue(results.SequenceEqual(new []{"right", "left"}));
         }
 
 		
@@ -754,18 +911,57 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4T5_CallsBothActionsInSuccession()
+        public void FollowedByOfT1T2T3T4T5_CallsBothActionsInCorrectOrder()
         {
-            bool leftExecuted = false;
-            bool rightExecuted = false;
+            var results = new List<string>();
 
-            Action<int, int, int, int, int> left = (t1, t2, t3, t4, t5) => leftExecuted = true;
-            Action<int, int, int, int, int> right = (t1, t2, t3, t4, t5) => rightExecuted = true;
+            Action<int, int, int, int, int> left = (t1, t2, t3, t4, t5) => results.Add("left");
+            Action<int, int, int, int, int> right = (t1, t2, t3, t4, t5) => results.Add("right");
 
             var action = left.FollowedBy(right);
 
             action(1, 2, 3, 4, 5);
-            Assert.IsTrue(leftExecuted && rightExecuted);
+            Assert.IsTrue(results.SequenceEqual(new []{"left", "right"}));
+        }
+
+		[Test]
+        public void PrecededByOfT1T2T3T4T5_WithNullArgument_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int, int> originalAction = (t1, t2, t3, t4, t5) => executed = true;
+            Action<int, int, int, int, int> action = originalAction.PrecededBy(null);
+
+            action(1, 2, 3, 4, 5);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void PrecededByOfT1T2T3T4T5_ExtendingNullAction_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int, int> originalAction = (t1, t2, t3, t4, t5) => executed = true;
+            Action<int, int, int, int, int> action = ((Action<int, int, int, int, int>)null).PrecededBy(originalAction);
+
+            action(1, 2, 3, 4, 5);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void PrecededByOfT1T2T3T4T5_CallsBothActionsInCorrectOrder()
+        {
+            var results = new List<string>();
+
+            Action<int, int, int, int, int> left = (t1, t2, t3, t4, t5) => results.Add("left");
+            Action<int, int, int, int, int> right = (t1, t2, t3, t4, t5) => results.Add("right");
+
+            var action = left.PrecededBy(right);
+
+            action(1, 2, 3, 4, 5);
+            Assert.IsTrue(results.SequenceEqual(new []{"right", "left"}));
         }
 
 		
@@ -906,18 +1102,57 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4T5T6_CallsBothActionsInSuccession()
+        public void FollowedByOfT1T2T3T4T5T6_CallsBothActionsInCorrectOrder()
         {
-            bool leftExecuted = false;
-            bool rightExecuted = false;
+            var results = new List<string>();
 
-            Action<int, int, int, int, int, int> left = (t1, t2, t3, t4, t5, t6) => leftExecuted = true;
-            Action<int, int, int, int, int, int> right = (t1, t2, t3, t4, t5, t6) => rightExecuted = true;
+            Action<int, int, int, int, int, int> left = (t1, t2, t3, t4, t5, t6) => results.Add("left");
+            Action<int, int, int, int, int, int> right = (t1, t2, t3, t4, t5, t6) => results.Add("right");
 
             var action = left.FollowedBy(right);
 
             action(1, 2, 3, 4, 5, 6);
-            Assert.IsTrue(leftExecuted && rightExecuted);
+            Assert.IsTrue(results.SequenceEqual(new []{"left", "right"}));
+        }
+
+		[Test]
+        public void PrecededByOfT1T2T3T4T5T6_WithNullArgument_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int, int, int> originalAction = (t1, t2, t3, t4, t5, t6) => executed = true;
+            Action<int, int, int, int, int, int> action = originalAction.PrecededBy(null);
+
+            action(1, 2, 3, 4, 5, 6);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void PrecededByOfT1T2T3T4T5T6_ExtendingNullAction_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int, int, int> originalAction = (t1, t2, t3, t4, t5, t6) => executed = true;
+            Action<int, int, int, int, int, int> action = ((Action<int, int, int, int, int, int>)null).PrecededBy(originalAction);
+
+            action(1, 2, 3, 4, 5, 6);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void PrecededByOfT1T2T3T4T5T6_CallsBothActionsInCorrectOrder()
+        {
+            var results = new List<string>();
+
+            Action<int, int, int, int, int, int> left = (t1, t2, t3, t4, t5, t6) => results.Add("left");
+            Action<int, int, int, int, int, int> right = (t1, t2, t3, t4, t5, t6) => results.Add("right");
+
+            var action = left.PrecededBy(right);
+
+            action(1, 2, 3, 4, 5, 6);
+            Assert.IsTrue(results.SequenceEqual(new []{"right", "left"}));
         }
 
 		
@@ -1058,18 +1293,57 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4T5T6T7_CallsBothActionsInSuccession()
+        public void FollowedByOfT1T2T3T4T5T6T7_CallsBothActionsInCorrectOrder()
         {
-            bool leftExecuted = false;
-            bool rightExecuted = false;
+            var results = new List<string>();
 
-            Action<int, int, int, int, int, int, int> left = (t1, t2, t3, t4, t5, t6, t7) => leftExecuted = true;
-            Action<int, int, int, int, int, int, int> right = (t1, t2, t3, t4, t5, t6, t7) => rightExecuted = true;
+            Action<int, int, int, int, int, int, int> left = (t1, t2, t3, t4, t5, t6, t7) => results.Add("left");
+            Action<int, int, int, int, int, int, int> right = (t1, t2, t3, t4, t5, t6, t7) => results.Add("right");
 
             var action = left.FollowedBy(right);
 
             action(1, 2, 3, 4, 5, 6, 7);
-            Assert.IsTrue(leftExecuted && rightExecuted);
+            Assert.IsTrue(results.SequenceEqual(new []{"left", "right"}));
+        }
+
+		[Test]
+        public void PrecededByOfT1T2T3T4T5T6T7_WithNullArgument_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int, int, int, int> originalAction = (t1, t2, t3, t4, t5, t6, t7) => executed = true;
+            Action<int, int, int, int, int, int, int> action = originalAction.PrecededBy(null);
+
+            action(1, 2, 3, 4, 5, 6, 7);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void PrecededByOfT1T2T3T4T5T6T7_ExtendingNullAction_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int, int, int, int> originalAction = (t1, t2, t3, t4, t5, t6, t7) => executed = true;
+            Action<int, int, int, int, int, int, int> action = ((Action<int, int, int, int, int, int, int>)null).PrecededBy(originalAction);
+
+            action(1, 2, 3, 4, 5, 6, 7);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void PrecededByOfT1T2T3T4T5T6T7_CallsBothActionsInCorrectOrder()
+        {
+            var results = new List<string>();
+
+            Action<int, int, int, int, int, int, int> left = (t1, t2, t3, t4, t5, t6, t7) => results.Add("left");
+            Action<int, int, int, int, int, int, int> right = (t1, t2, t3, t4, t5, t6, t7) => results.Add("right");
+
+            var action = left.PrecededBy(right);
+
+            action(1, 2, 3, 4, 5, 6, 7);
+            Assert.IsTrue(results.SequenceEqual(new []{"right", "left"}));
         }
 
 		
@@ -1210,18 +1484,57 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4T5T6T7T8_CallsBothActionsInSuccession()
+        public void FollowedByOfT1T2T3T4T5T6T7T8_CallsBothActionsInCorrectOrder()
         {
-            bool leftExecuted = false;
-            bool rightExecuted = false;
+            var results = new List<string>();
 
-            Action<int, int, int, int, int, int, int, int> left = (t1, t2, t3, t4, t5, t6, t7, t8) => leftExecuted = true;
-            Action<int, int, int, int, int, int, int, int> right = (t1, t2, t3, t4, t5, t6, t7, t8) => rightExecuted = true;
+            Action<int, int, int, int, int, int, int, int> left = (t1, t2, t3, t4, t5, t6, t7, t8) => results.Add("left");
+            Action<int, int, int, int, int, int, int, int> right = (t1, t2, t3, t4, t5, t6, t7, t8) => results.Add("right");
 
             var action = left.FollowedBy(right);
 
             action(1, 2, 3, 4, 5, 6, 7, 8);
-            Assert.IsTrue(leftExecuted && rightExecuted);
+            Assert.IsTrue(results.SequenceEqual(new []{"left", "right"}));
+        }
+
+		[Test]
+        public void PrecededByOfT1T2T3T4T5T6T7T8_WithNullArgument_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int, int, int, int, int> originalAction = (t1, t2, t3, t4, t5, t6, t7, t8) => executed = true;
+            Action<int, int, int, int, int, int, int, int> action = originalAction.PrecededBy(null);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void PrecededByOfT1T2T3T4T5T6T7T8_ExtendingNullAction_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int, int, int, int, int> originalAction = (t1, t2, t3, t4, t5, t6, t7, t8) => executed = true;
+            Action<int, int, int, int, int, int, int, int> action = ((Action<int, int, int, int, int, int, int, int>)null).PrecededBy(originalAction);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void PrecededByOfT1T2T3T4T5T6T7T8_CallsBothActionsInCorrectOrder()
+        {
+            var results = new List<string>();
+
+            Action<int, int, int, int, int, int, int, int> left = (t1, t2, t3, t4, t5, t6, t7, t8) => results.Add("left");
+            Action<int, int, int, int, int, int, int, int> right = (t1, t2, t3, t4, t5, t6, t7, t8) => results.Add("right");
+
+            var action = left.PrecededBy(right);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8);
+            Assert.IsTrue(results.SequenceEqual(new []{"right", "left"}));
         }
 
 		
@@ -1362,18 +1675,57 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4T5T6T7T8T9_CallsBothActionsInSuccession()
+        public void FollowedByOfT1T2T3T4T5T6T7T8T9_CallsBothActionsInCorrectOrder()
         {
-            bool leftExecuted = false;
-            bool rightExecuted = false;
+            var results = new List<string>();
 
-            Action<int, int, int, int, int, int, int, int, int> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9) => leftExecuted = true;
-            Action<int, int, int, int, int, int, int, int, int> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9) => rightExecuted = true;
+            Action<int, int, int, int, int, int, int, int, int> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9) => results.Add("left");
+            Action<int, int, int, int, int, int, int, int, int> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9) => results.Add("right");
 
             var action = left.FollowedBy(right);
 
             action(1, 2, 3, 4, 5, 6, 7, 8, 9);
-            Assert.IsTrue(leftExecuted && rightExecuted);
+            Assert.IsTrue(results.SequenceEqual(new []{"left", "right"}));
+        }
+
+		[Test]
+        public void PrecededByOfT1T2T3T4T5T6T7T8T9_WithNullArgument_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int, int, int, int, int, int> originalAction = (t1, t2, t3, t4, t5, t6, t7, t8, t9) => executed = true;
+            Action<int, int, int, int, int, int, int, int, int> action = originalAction.PrecededBy(null);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void PrecededByOfT1T2T3T4T5T6T7T8T9_ExtendingNullAction_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int, int, int, int, int, int> originalAction = (t1, t2, t3, t4, t5, t6, t7, t8, t9) => executed = true;
+            Action<int, int, int, int, int, int, int, int, int> action = ((Action<int, int, int, int, int, int, int, int, int>)null).PrecededBy(originalAction);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void PrecededByOfT1T2T3T4T5T6T7T8T9_CallsBothActionsInCorrectOrder()
+        {
+            var results = new List<string>();
+
+            Action<int, int, int, int, int, int, int, int, int> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9) => results.Add("left");
+            Action<int, int, int, int, int, int, int, int, int> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9) => results.Add("right");
+
+            var action = left.PrecededBy(right);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9);
+            Assert.IsTrue(results.SequenceEqual(new []{"right", "left"}));
         }
 
 		
@@ -1514,18 +1866,57 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10_CallsBothActionsInSuccession()
+        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10_CallsBothActionsInCorrectOrder()
         {
-            bool leftExecuted = false;
-            bool rightExecuted = false;
+            var results = new List<string>();
 
-            Action<int, int, int, int, int, int, int, int, int, int> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) => leftExecuted = true;
-            Action<int, int, int, int, int, int, int, int, int, int> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) => rightExecuted = true;
+            Action<int, int, int, int, int, int, int, int, int, int> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) => results.Add("left");
+            Action<int, int, int, int, int, int, int, int, int, int> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) => results.Add("right");
 
             var action = left.FollowedBy(right);
 
             action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-            Assert.IsTrue(leftExecuted && rightExecuted);
+            Assert.IsTrue(results.SequenceEqual(new []{"left", "right"}));
+        }
+
+		[Test]
+        public void PrecededByOfT1T2T3T4T5T6T7T8T9T10_WithNullArgument_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int, int, int, int, int, int, int> originalAction = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) => executed = true;
+            Action<int, int, int, int, int, int, int, int, int, int> action = originalAction.PrecededBy(null);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void PrecededByOfT1T2T3T4T5T6T7T8T9T10_ExtendingNullAction_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int, int, int, int, int, int, int> originalAction = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) => executed = true;
+            Action<int, int, int, int, int, int, int, int, int, int> action = ((Action<int, int, int, int, int, int, int, int, int, int>)null).PrecededBy(originalAction);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void PrecededByOfT1T2T3T4T5T6T7T8T9T10_CallsBothActionsInCorrectOrder()
+        {
+            var results = new List<string>();
+
+            Action<int, int, int, int, int, int, int, int, int, int> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) => results.Add("left");
+            Action<int, int, int, int, int, int, int, int, int, int> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) => results.Add("right");
+
+            var action = left.PrecededBy(right);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+            Assert.IsTrue(results.SequenceEqual(new []{"right", "left"}));
         }
 
 		
@@ -1666,18 +2057,57 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11_CallsBothActionsInSuccession()
+        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11_CallsBothActionsInCorrectOrder()
         {
-            bool leftExecuted = false;
-            bool rightExecuted = false;
+            var results = new List<string>();
 
-            Action<int, int, int, int, int, int, int, int, int, int, int> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) => leftExecuted = true;
-            Action<int, int, int, int, int, int, int, int, int, int, int> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) => rightExecuted = true;
+            Action<int, int, int, int, int, int, int, int, int, int, int> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) => results.Add("left");
+            Action<int, int, int, int, int, int, int, int, int, int, int> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) => results.Add("right");
 
             var action = left.FollowedBy(right);
 
             action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11);
-            Assert.IsTrue(leftExecuted && rightExecuted);
+            Assert.IsTrue(results.SequenceEqual(new []{"left", "right"}));
+        }
+
+		[Test]
+        public void PrecededByOfT1T2T3T4T5T6T7T8T9T10T11_WithNullArgument_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int, int, int, int, int, int, int, int> originalAction = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) => executed = true;
+            Action<int, int, int, int, int, int, int, int, int, int, int> action = originalAction.PrecededBy(null);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void PrecededByOfT1T2T3T4T5T6T7T8T9T10T11_ExtendingNullAction_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int, int, int, int, int, int, int, int> originalAction = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) => executed = true;
+            Action<int, int, int, int, int, int, int, int, int, int, int> action = ((Action<int, int, int, int, int, int, int, int, int, int, int>)null).PrecededBy(originalAction);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void PrecededByOfT1T2T3T4T5T6T7T8T9T10T11_CallsBothActionsInCorrectOrder()
+        {
+            var results = new List<string>();
+
+            Action<int, int, int, int, int, int, int, int, int, int, int> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) => results.Add("left");
+            Action<int, int, int, int, int, int, int, int, int, int, int> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) => results.Add("right");
+
+            var action = left.PrecededBy(right);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11);
+            Assert.IsTrue(results.SequenceEqual(new []{"right", "left"}));
         }
 
 		
@@ -1818,18 +2248,57 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11T12_CallsBothActionsInSuccession()
+        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11T12_CallsBothActionsInCorrectOrder()
         {
-            bool leftExecuted = false;
-            bool rightExecuted = false;
+            var results = new List<string>();
 
-            Action<int, int, int, int, int, int, int, int, int, int, int, int> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) => leftExecuted = true;
-            Action<int, int, int, int, int, int, int, int, int, int, int, int> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) => rightExecuted = true;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) => results.Add("left");
+            Action<int, int, int, int, int, int, int, int, int, int, int, int> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) => results.Add("right");
 
             var action = left.FollowedBy(right);
 
             action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
-            Assert.IsTrue(leftExecuted && rightExecuted);
+            Assert.IsTrue(results.SequenceEqual(new []{"left", "right"}));
+        }
+
+		[Test]
+        public void PrecededByOfT1T2T3T4T5T6T7T8T9T10T11T12_WithNullArgument_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int> originalAction = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) => executed = true;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int> action = originalAction.PrecededBy(null);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void PrecededByOfT1T2T3T4T5T6T7T8T9T10T11T12_ExtendingNullAction_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int> originalAction = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) => executed = true;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int> action = ((Action<int, int, int, int, int, int, int, int, int, int, int, int>)null).PrecededBy(originalAction);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void PrecededByOfT1T2T3T4T5T6T7T8T9T10T11T12_CallsBothActionsInCorrectOrder()
+        {
+            var results = new List<string>();
+
+            Action<int, int, int, int, int, int, int, int, int, int, int, int> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) => results.Add("left");
+            Action<int, int, int, int, int, int, int, int, int, int, int, int> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) => results.Add("right");
+
+            var action = left.PrecededBy(right);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
+            Assert.IsTrue(results.SequenceEqual(new []{"right", "left"}));
         }
 
 		
@@ -1970,18 +2439,57 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11T12T13_CallsBothActionsInSuccession()
+        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11T12T13_CallsBothActionsInCorrectOrder()
         {
-            bool leftExecuted = false;
-            bool rightExecuted = false;
+            var results = new List<string>();
 
-            Action<int, int, int, int, int, int, int, int, int, int, int, int, int> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) => leftExecuted = true;
-            Action<int, int, int, int, int, int, int, int, int, int, int, int, int> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) => rightExecuted = true;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) => results.Add("left");
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) => results.Add("right");
 
             var action = left.FollowedBy(right);
 
             action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13);
-            Assert.IsTrue(leftExecuted && rightExecuted);
+            Assert.IsTrue(results.SequenceEqual(new []{"left", "right"}));
+        }
+
+		[Test]
+        public void PrecededByOfT1T2T3T4T5T6T7T8T9T10T11T12T13_WithNullArgument_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int> originalAction = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) => executed = true;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int> action = originalAction.PrecededBy(null);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void PrecededByOfT1T2T3T4T5T6T7T8T9T10T11T12T13_ExtendingNullAction_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int> originalAction = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) => executed = true;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int> action = ((Action<int, int, int, int, int, int, int, int, int, int, int, int, int>)null).PrecededBy(originalAction);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void PrecededByOfT1T2T3T4T5T6T7T8T9T10T11T12T13_CallsBothActionsInCorrectOrder()
+        {
+            var results = new List<string>();
+
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) => results.Add("left");
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) => results.Add("right");
+
+            var action = left.PrecededBy(right);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13);
+            Assert.IsTrue(results.SequenceEqual(new []{"right", "left"}));
         }
 
 		
@@ -2122,18 +2630,57 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14_CallsBothActionsInSuccession()
+        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14_CallsBothActionsInCorrectOrder()
         {
-            bool leftExecuted = false;
-            bool rightExecuted = false;
+            var results = new List<string>();
 
-            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) => leftExecuted = true;
-            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) => rightExecuted = true;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) => results.Add("left");
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) => results.Add("right");
 
             var action = left.FollowedBy(right);
 
             action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14);
-            Assert.IsTrue(leftExecuted && rightExecuted);
+            Assert.IsTrue(results.SequenceEqual(new []{"left", "right"}));
+        }
+
+		[Test]
+        public void PrecededByOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14_WithNullArgument_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int> originalAction = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) => executed = true;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int> action = originalAction.PrecededBy(null);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void PrecededByOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14_ExtendingNullAction_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int> originalAction = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) => executed = true;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int> action = ((Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int>)null).PrecededBy(originalAction);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void PrecededByOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14_CallsBothActionsInCorrectOrder()
+        {
+            var results = new List<string>();
+
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) => results.Add("left");
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) => results.Add("right");
+
+            var action = left.PrecededBy(right);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14);
+            Assert.IsTrue(results.SequenceEqual(new []{"right", "left"}));
         }
 
 		
@@ -2274,18 +2821,57 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15_CallsBothActionsInSuccession()
+        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15_CallsBothActionsInCorrectOrder()
         {
-            bool leftExecuted = false;
-            bool rightExecuted = false;
+            var results = new List<string>();
 
-            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) => leftExecuted = true;
-            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) => rightExecuted = true;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) => results.Add("left");
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) => results.Add("right");
 
             var action = left.FollowedBy(right);
 
             action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
-            Assert.IsTrue(leftExecuted && rightExecuted);
+            Assert.IsTrue(results.SequenceEqual(new []{"left", "right"}));
+        }
+
+		[Test]
+        public void PrecededByOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15_WithNullArgument_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int> originalAction = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) => executed = true;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int> action = originalAction.PrecededBy(null);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void PrecededByOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15_ExtendingNullAction_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int> originalAction = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) => executed = true;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int> action = ((Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int>)null).PrecededBy(originalAction);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void PrecededByOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15_CallsBothActionsInCorrectOrder()
+        {
+            var results = new List<string>();
+
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) => results.Add("left");
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) => results.Add("right");
+
+            var action = left.PrecededBy(right);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
+            Assert.IsTrue(results.SequenceEqual(new []{"right", "left"}));
         }
 
 		
@@ -2426,18 +3012,57 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15T16_CallsBothActionsInSuccession()
+        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15T16_CallsBothActionsInCorrectOrder()
         {
-            bool leftExecuted = false;
-            bool rightExecuted = false;
+            var results = new List<string>();
 
-            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) => leftExecuted = true;
-            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) => rightExecuted = true;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) => results.Add("left");
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) => results.Add("right");
 
             var action = left.FollowedBy(right);
 
             action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
-            Assert.IsTrue(leftExecuted && rightExecuted);
+            Assert.IsTrue(results.SequenceEqual(new []{"left", "right"}));
+        }
+
+		[Test]
+        public void PrecededByOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15T16_WithNullArgument_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int> originalAction = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) => executed = true;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int> action = originalAction.PrecededBy(null);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void PrecededByOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15T16_ExtendingNullAction_ReturnsOriginal()
+        {
+            bool executed = false;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int> originalAction = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) => executed = true;
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int> action = ((Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int>)null).PrecededBy(originalAction);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
+
+            Assert.IsTrue(ReferenceEquals(originalAction, action));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void PrecededByOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15T16_CallsBothActionsInCorrectOrder()
+        {
+            var results = new List<string>();
+
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) => results.Add("left");
+            Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) => results.Add("right");
+
+            var action = left.PrecededBy(right);
+
+            action(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
+            Assert.IsTrue(results.SequenceEqual(new []{"right", "left"}));
         }
 
 			}

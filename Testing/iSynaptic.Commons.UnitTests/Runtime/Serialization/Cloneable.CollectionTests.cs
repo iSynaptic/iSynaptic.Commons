@@ -61,8 +61,8 @@ namespace iSynaptic.Commons.Runtime.Serialization
             int[] clonedInts = Cloneable<int[]>.Clone(ints);
             int[] shallowClonedInts = Cloneable<int[]>.ShallowClone(ints);
 
-            Assert.IsFalse(object.ReferenceEquals(ints, clonedInts));
-            Assert.IsFalse(object.ReferenceEquals(ints, shallowClonedInts));
+            Assert.IsFalse(ReferenceEquals(ints, clonedInts));
+            Assert.IsFalse(ReferenceEquals(ints, shallowClonedInts));
 
             Assert.IsTrue(clonedInts.SequenceEqual(new int[] { 1, 2, 3, 4, 5 }));
             Assert.IsTrue(shallowClonedInts.SequenceEqual(new int[] { 1, 2, 3, 4, 5 }));

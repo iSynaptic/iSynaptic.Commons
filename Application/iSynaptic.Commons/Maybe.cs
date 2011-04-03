@@ -341,6 +341,12 @@ namespace iSynaptic.Commons
             return self.OnNoValue(() => Value(valueFactory));
         }
 
+        public static Maybe<T> OnNoValue<T>(this Maybe<T> self, Action action)
+        {
+            Guard.NotNull(action, "action");
+            return self.OnNoValue(() => { action(); return Maybe<T>.NoValue; });
+        }
+
         public static Maybe<T> OnNoValue<T>(this Maybe<T> self, Func<Maybe<T>> valueFactory)
         {
             Guard.NotNull(valueFactory, "valueFactory");
@@ -349,13 +355,18 @@ namespace iSynaptic.Commons
 
         public static Maybe<T> OnException<T>(this Maybe<T> self, T value)
         {
-            return self.OnException(x => Value(value));
+            return self.OnException(() => value);
+        }
+
+        public static Maybe<T> OnException<T>(this Maybe<T> self, Func<T> valueFactory)
+        {
+            return self.OnException(x => Value(valueFactory()));
         }
 
         public static Maybe<T> OnException<T>(this Maybe<T> self, Action<Exception> handler)
         {
             Guard.NotNull(handler, "handler");
-            return self.When(x => x.Exception != null, x => { handler(x.Exception); return x; });
+            return self.OnException(x => { handler(x); return new Maybe<T>(x); });
         }
 
         public static Maybe<T> OnException<T>(this Maybe<T> self, Func<Exception, Maybe<T>> handler)
@@ -456,6 +467,13 @@ namespace iSynaptic.Commons
             return self.When(predicate, x => result);
         }
 
+        public static Maybe<T> When<T>(this Maybe<T> self, Func<Maybe<T>, bool> predicate, Action<Maybe<T>> action)
+        {
+            Guard.NotNull(predicate, "predicate");
+            Guard.NotNull(action, "action");
+            return self.When(predicate, x => { action(x); return x; });
+        }
+
         public static Maybe<T> When<T>(this Maybe<T> self, Maybe<T> value, Maybe<T> result)
         {
             return self.When(x => x.Equals(value), result);
@@ -483,7 +501,13 @@ namespace iSynaptic.Commons
 
         public static Maybe<TResult> Cast<T, TResult>(this Maybe<T> self)
         {
-            return self.Where(x => x is TResult)
+            return self.Select(x => (TResult)(object)x);
+        }
+
+        public static Maybe<TResult> OfType<T, TResult>(this Maybe<T> self)
+        {
+            return self
+                .Where(x => x is TResult)
                 .Select(x => (TResult)(object)x);
         }
 
