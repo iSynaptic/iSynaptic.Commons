@@ -59,7 +59,7 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void OrOfT1_WithNullFuncs_ThrowsArgumentNullException()
+        public void OrOfT1ReturningBool_WithNullFuncs_ThrowsArgumentNullException()
         {
             Func<int, bool> nullFunc = null;
             Func<int, bool> notNullFunc = (t1) => true;
@@ -69,7 +69,7 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void OrOfT1_WithValidFuncs_ComposesCorrectly()
+        public void OrOfT1ReturningBool_WithValidFuncs_ComposesCorrectly()
         {
             bool leftResult = true;
 			bool rightResult = true;
@@ -214,10 +214,10 @@ namespace iSynaptic.Commons
 		}
 
 		[Test]
-        public void FollowedByOfT1_WithNullArgument_ReturnsOriginal()
+        public void OrOfT1ReturningMaybe_WithNullArgument_ReturnsOriginal()
         {
             Func<int, Maybe<int>> originalFunc = (t1) => 42;
-            var func = originalFunc.FollowedBy(null);
+            var func = originalFunc.Or(null);
 
             var result = func(1);
 
@@ -226,10 +226,10 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1_ExtendingNullFunc_ReturnsOriginal()
+        public void OrOfT1ReturningMaybe_ExtendingNullFunc_ReturnsOriginal()
         {
             Func<int, Maybe<int>> originalFunc = (t1) => 42;
-            var func = ((Func<int, Maybe<int>>)null).FollowedBy(originalFunc);
+            var func = ((Func<int, Maybe<int>>)null).Or(originalFunc);
 
             var result = func(1);
 
@@ -238,12 +238,12 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1_CallsFirstFunc()
+        public void OrOfT1ReturningMaybe_CallsFirstFunc()
         {
             Func<int, Maybe<int>> left = (t1) => 42;
             Func<int, Maybe<int>> right = (t1) => 7;
 
-            var func = left.FollowedBy(right);
+            var func = left.Or(right);
 
             var results = func(1);
 
@@ -251,62 +251,12 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1_CallsSecondFunc()
+        public void OrOfT1ReturningMaybe_CallsSecondFunc()
         {
             Func<int, Maybe<int>> left = (t1) => Maybe<int>.NoValue;
             Func<int, Maybe<int>> right = (t1) => 42;
 
-            var func = left.FollowedBy(right);
-
-            var results = func(1);
-
-            Assert.AreEqual(42, results.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1_WithNullArgument_ReturnsOriginal()
-        {
-            Func<int, Maybe<int>> originalFunc = (t1) => 42;
-            var func = originalFunc.PrecededBy(null);
-
-            var result = func(1);
-
-            Assert.IsTrue(ReferenceEquals(originalFunc, func));
-            Assert.AreEqual(42, result.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1_ExtendingNullAction_ReturnsOriginal()
-        {
-            Func<int, Maybe<int>> originalFunc = (t1) => 42;
-            var func = ((Func<int, Maybe<int>>)null).PrecededBy(originalFunc);
-
-            var result = func(1);
-
-            Assert.IsTrue(ReferenceEquals(originalFunc, func));
-            Assert.AreEqual(42, result.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1_CallsFirstFunc()
-        {
-            Func<int, Maybe<int>> left = (t1) => 42;
-            Func<int, Maybe<int>> right = (t1) => Maybe<int>.NoValue;
-
-            var func = left.PrecededBy(right);
-
-            var results = func(1);
-
-            Assert.AreEqual(42, results.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1_CallsSecondFunc()
-        {
-            Func<int, Maybe<int>> left = (t1) => 7;
-            Func<int, Maybe<int>> right = (t1) => 42;
-
-            var func = left.PrecededBy(right);
+            var func = left.Or(right);
 
             var results = func(1);
 
@@ -360,7 +310,7 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void OrOfT1T2_WithNullFuncs_ThrowsArgumentNullException()
+        public void OrOfT1T2ReturningBool_WithNullFuncs_ThrowsArgumentNullException()
         {
             Func<int, int, bool> nullFunc = null;
             Func<int, int, bool> notNullFunc = (t1, t2) => true;
@@ -370,7 +320,7 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void OrOfT1T2_WithValidFuncs_ComposesCorrectly()
+        public void OrOfT1T2ReturningBool_WithValidFuncs_ComposesCorrectly()
         {
             bool leftResult = true;
 			bool rightResult = true;
@@ -515,10 +465,10 @@ namespace iSynaptic.Commons
 		}
 
 		[Test]
-        public void FollowedByOfT1T2_WithNullArgument_ReturnsOriginal()
+        public void OrOfT1T2ReturningMaybe_WithNullArgument_ReturnsOriginal()
         {
             Func<int, int, Maybe<int>> originalFunc = (t1, t2) => 42;
-            var func = originalFunc.FollowedBy(null);
+            var func = originalFunc.Or(null);
 
             var result = func(1, 2);
 
@@ -527,10 +477,10 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2_ExtendingNullFunc_ReturnsOriginal()
+        public void OrOfT1T2ReturningMaybe_ExtendingNullFunc_ReturnsOriginal()
         {
             Func<int, int, Maybe<int>> originalFunc = (t1, t2) => 42;
-            var func = ((Func<int, int, Maybe<int>>)null).FollowedBy(originalFunc);
+            var func = ((Func<int, int, Maybe<int>>)null).Or(originalFunc);
 
             var result = func(1, 2);
 
@@ -539,12 +489,12 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2_CallsFirstFunc()
+        public void OrOfT1T2ReturningMaybe_CallsFirstFunc()
         {
             Func<int, int, Maybe<int>> left = (t1, t2) => 42;
             Func<int, int, Maybe<int>> right = (t1, t2) => 7;
 
-            var func = left.FollowedBy(right);
+            var func = left.Or(right);
 
             var results = func(1, 2);
 
@@ -552,62 +502,12 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2_CallsSecondFunc()
+        public void OrOfT1T2ReturningMaybe_CallsSecondFunc()
         {
             Func<int, int, Maybe<int>> left = (t1, t2) => Maybe<int>.NoValue;
             Func<int, int, Maybe<int>> right = (t1, t2) => 42;
 
-            var func = left.FollowedBy(right);
-
-            var results = func(1, 2);
-
-            Assert.AreEqual(42, results.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2_WithNullArgument_ReturnsOriginal()
-        {
-            Func<int, int, Maybe<int>> originalFunc = (t1, t2) => 42;
-            var func = originalFunc.PrecededBy(null);
-
-            var result = func(1, 2);
-
-            Assert.IsTrue(ReferenceEquals(originalFunc, func));
-            Assert.AreEqual(42, result.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2_ExtendingNullAction_ReturnsOriginal()
-        {
-            Func<int, int, Maybe<int>> originalFunc = (t1, t2) => 42;
-            var func = ((Func<int, int, Maybe<int>>)null).PrecededBy(originalFunc);
-
-            var result = func(1, 2);
-
-            Assert.IsTrue(ReferenceEquals(originalFunc, func));
-            Assert.AreEqual(42, result.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2_CallsFirstFunc()
-        {
-            Func<int, int, Maybe<int>> left = (t1, t2) => 42;
-            Func<int, int, Maybe<int>> right = (t1, t2) => Maybe<int>.NoValue;
-
-            var func = left.PrecededBy(right);
-
-            var results = func(1, 2);
-
-            Assert.AreEqual(42, results.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2_CallsSecondFunc()
-        {
-            Func<int, int, Maybe<int>> left = (t1, t2) => 7;
-            Func<int, int, Maybe<int>> right = (t1, t2) => 42;
-
-            var func = left.PrecededBy(right);
+            var func = left.Or(right);
 
             var results = func(1, 2);
 
@@ -661,7 +561,7 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void OrOfT1T2T3_WithNullFuncs_ThrowsArgumentNullException()
+        public void OrOfT1T2T3ReturningBool_WithNullFuncs_ThrowsArgumentNullException()
         {
             Func<int, int, int, bool> nullFunc = null;
             Func<int, int, int, bool> notNullFunc = (t1, t2, t3) => true;
@@ -671,7 +571,7 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void OrOfT1T2T3_WithValidFuncs_ComposesCorrectly()
+        public void OrOfT1T2T3ReturningBool_WithValidFuncs_ComposesCorrectly()
         {
             bool leftResult = true;
 			bool rightResult = true;
@@ -816,10 +716,10 @@ namespace iSynaptic.Commons
 		}
 
 		[Test]
-        public void FollowedByOfT1T2T3_WithNullArgument_ReturnsOriginal()
+        public void OrOfT1T2T3ReturningMaybe_WithNullArgument_ReturnsOriginal()
         {
             Func<int, int, int, Maybe<int>> originalFunc = (t1, t2, t3) => 42;
-            var func = originalFunc.FollowedBy(null);
+            var func = originalFunc.Or(null);
 
             var result = func(1, 2, 3);
 
@@ -828,10 +728,10 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3_ExtendingNullFunc_ReturnsOriginal()
+        public void OrOfT1T2T3ReturningMaybe_ExtendingNullFunc_ReturnsOriginal()
         {
             Func<int, int, int, Maybe<int>> originalFunc = (t1, t2, t3) => 42;
-            var func = ((Func<int, int, int, Maybe<int>>)null).FollowedBy(originalFunc);
+            var func = ((Func<int, int, int, Maybe<int>>)null).Or(originalFunc);
 
             var result = func(1, 2, 3);
 
@@ -840,12 +740,12 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3_CallsFirstFunc()
+        public void OrOfT1T2T3ReturningMaybe_CallsFirstFunc()
         {
             Func<int, int, int, Maybe<int>> left = (t1, t2, t3) => 42;
             Func<int, int, int, Maybe<int>> right = (t1, t2, t3) => 7;
 
-            var func = left.FollowedBy(right);
+            var func = left.Or(right);
 
             var results = func(1, 2, 3);
 
@@ -853,62 +753,12 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3_CallsSecondFunc()
+        public void OrOfT1T2T3ReturningMaybe_CallsSecondFunc()
         {
             Func<int, int, int, Maybe<int>> left = (t1, t2, t3) => Maybe<int>.NoValue;
             Func<int, int, int, Maybe<int>> right = (t1, t2, t3) => 42;
 
-            var func = left.FollowedBy(right);
-
-            var results = func(1, 2, 3);
-
-            Assert.AreEqual(42, results.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3_WithNullArgument_ReturnsOriginal()
-        {
-            Func<int, int, int, Maybe<int>> originalFunc = (t1, t2, t3) => 42;
-            var func = originalFunc.PrecededBy(null);
-
-            var result = func(1, 2, 3);
-
-            Assert.IsTrue(ReferenceEquals(originalFunc, func));
-            Assert.AreEqual(42, result.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3_ExtendingNullAction_ReturnsOriginal()
-        {
-            Func<int, int, int, Maybe<int>> originalFunc = (t1, t2, t3) => 42;
-            var func = ((Func<int, int, int, Maybe<int>>)null).PrecededBy(originalFunc);
-
-            var result = func(1, 2, 3);
-
-            Assert.IsTrue(ReferenceEquals(originalFunc, func));
-            Assert.AreEqual(42, result.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3_CallsFirstFunc()
-        {
-            Func<int, int, int, Maybe<int>> left = (t1, t2, t3) => 42;
-            Func<int, int, int, Maybe<int>> right = (t1, t2, t3) => Maybe<int>.NoValue;
-
-            var func = left.PrecededBy(right);
-
-            var results = func(1, 2, 3);
-
-            Assert.AreEqual(42, results.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3_CallsSecondFunc()
-        {
-            Func<int, int, int, Maybe<int>> left = (t1, t2, t3) => 7;
-            Func<int, int, int, Maybe<int>> right = (t1, t2, t3) => 42;
-
-            var func = left.PrecededBy(right);
+            var func = left.Or(right);
 
             var results = func(1, 2, 3);
 
@@ -962,7 +812,7 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void OrOfT1T2T3T4_WithNullFuncs_ThrowsArgumentNullException()
+        public void OrOfT1T2T3T4ReturningBool_WithNullFuncs_ThrowsArgumentNullException()
         {
             Func<int, int, int, int, bool> nullFunc = null;
             Func<int, int, int, int, bool> notNullFunc = (t1, t2, t3, t4) => true;
@@ -972,7 +822,7 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void OrOfT1T2T3T4_WithValidFuncs_ComposesCorrectly()
+        public void OrOfT1T2T3T4ReturningBool_WithValidFuncs_ComposesCorrectly()
         {
             bool leftResult = true;
 			bool rightResult = true;
@@ -1117,10 +967,10 @@ namespace iSynaptic.Commons
 		}
 
 		[Test]
-        public void FollowedByOfT1T2T3T4_WithNullArgument_ReturnsOriginal()
+        public void OrOfT1T2T3T4ReturningMaybe_WithNullArgument_ReturnsOriginal()
         {
             Func<int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4) => 42;
-            var func = originalFunc.FollowedBy(null);
+            var func = originalFunc.Or(null);
 
             var result = func(1, 2, 3, 4);
 
@@ -1129,10 +979,10 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4_ExtendingNullFunc_ReturnsOriginal()
+        public void OrOfT1T2T3T4ReturningMaybe_ExtendingNullFunc_ReturnsOriginal()
         {
             Func<int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4) => 42;
-            var func = ((Func<int, int, int, int, Maybe<int>>)null).FollowedBy(originalFunc);
+            var func = ((Func<int, int, int, int, Maybe<int>>)null).Or(originalFunc);
 
             var result = func(1, 2, 3, 4);
 
@@ -1141,12 +991,12 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4_CallsFirstFunc()
+        public void OrOfT1T2T3T4ReturningMaybe_CallsFirstFunc()
         {
             Func<int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4) => 42;
             Func<int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4) => 7;
 
-            var func = left.FollowedBy(right);
+            var func = left.Or(right);
 
             var results = func(1, 2, 3, 4);
 
@@ -1154,62 +1004,12 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4_CallsSecondFunc()
+        public void OrOfT1T2T3T4ReturningMaybe_CallsSecondFunc()
         {
             Func<int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4) => Maybe<int>.NoValue;
             Func<int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4) => 42;
 
-            var func = left.FollowedBy(right);
-
-            var results = func(1, 2, 3, 4);
-
-            Assert.AreEqual(42, results.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4_WithNullArgument_ReturnsOriginal()
-        {
-            Func<int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4) => 42;
-            var func = originalFunc.PrecededBy(null);
-
-            var result = func(1, 2, 3, 4);
-
-            Assert.IsTrue(ReferenceEquals(originalFunc, func));
-            Assert.AreEqual(42, result.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4_ExtendingNullAction_ReturnsOriginal()
-        {
-            Func<int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4) => 42;
-            var func = ((Func<int, int, int, int, Maybe<int>>)null).PrecededBy(originalFunc);
-
-            var result = func(1, 2, 3, 4);
-
-            Assert.IsTrue(ReferenceEquals(originalFunc, func));
-            Assert.AreEqual(42, result.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4_CallsFirstFunc()
-        {
-            Func<int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4) => 42;
-            Func<int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4) => Maybe<int>.NoValue;
-
-            var func = left.PrecededBy(right);
-
-            var results = func(1, 2, 3, 4);
-
-            Assert.AreEqual(42, results.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4_CallsSecondFunc()
-        {
-            Func<int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4) => 7;
-            Func<int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4) => 42;
-
-            var func = left.PrecededBy(right);
+            var func = left.Or(right);
 
             var results = func(1, 2, 3, 4);
 
@@ -1263,7 +1063,7 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void OrOfT1T2T3T4T5_WithNullFuncs_ThrowsArgumentNullException()
+        public void OrOfT1T2T3T4T5ReturningBool_WithNullFuncs_ThrowsArgumentNullException()
         {
             Func<int, int, int, int, int, bool> nullFunc = null;
             Func<int, int, int, int, int, bool> notNullFunc = (t1, t2, t3, t4, t5) => true;
@@ -1273,7 +1073,7 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void OrOfT1T2T3T4T5_WithValidFuncs_ComposesCorrectly()
+        public void OrOfT1T2T3T4T5ReturningBool_WithValidFuncs_ComposesCorrectly()
         {
             bool leftResult = true;
 			bool rightResult = true;
@@ -1418,10 +1218,10 @@ namespace iSynaptic.Commons
 		}
 
 		[Test]
-        public void FollowedByOfT1T2T3T4T5_WithNullArgument_ReturnsOriginal()
+        public void OrOfT1T2T3T4T5ReturningMaybe_WithNullArgument_ReturnsOriginal()
         {
             Func<int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5) => 42;
-            var func = originalFunc.FollowedBy(null);
+            var func = originalFunc.Or(null);
 
             var result = func(1, 2, 3, 4, 5);
 
@@ -1430,10 +1230,10 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4T5_ExtendingNullFunc_ReturnsOriginal()
+        public void OrOfT1T2T3T4T5ReturningMaybe_ExtendingNullFunc_ReturnsOriginal()
         {
             Func<int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5) => 42;
-            var func = ((Func<int, int, int, int, int, Maybe<int>>)null).FollowedBy(originalFunc);
+            var func = ((Func<int, int, int, int, int, Maybe<int>>)null).Or(originalFunc);
 
             var result = func(1, 2, 3, 4, 5);
 
@@ -1442,12 +1242,12 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4T5_CallsFirstFunc()
+        public void OrOfT1T2T3T4T5ReturningMaybe_CallsFirstFunc()
         {
             Func<int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5) => 42;
             Func<int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5) => 7;
 
-            var func = left.FollowedBy(right);
+            var func = left.Or(right);
 
             var results = func(1, 2, 3, 4, 5);
 
@@ -1455,62 +1255,12 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4T5_CallsSecondFunc()
+        public void OrOfT1T2T3T4T5ReturningMaybe_CallsSecondFunc()
         {
             Func<int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5) => Maybe<int>.NoValue;
             Func<int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5) => 42;
 
-            var func = left.FollowedBy(right);
-
-            var results = func(1, 2, 3, 4, 5);
-
-            Assert.AreEqual(42, results.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4T5_WithNullArgument_ReturnsOriginal()
-        {
-            Func<int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5) => 42;
-            var func = originalFunc.PrecededBy(null);
-
-            var result = func(1, 2, 3, 4, 5);
-
-            Assert.IsTrue(ReferenceEquals(originalFunc, func));
-            Assert.AreEqual(42, result.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4T5_ExtendingNullAction_ReturnsOriginal()
-        {
-            Func<int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5) => 42;
-            var func = ((Func<int, int, int, int, int, Maybe<int>>)null).PrecededBy(originalFunc);
-
-            var result = func(1, 2, 3, 4, 5);
-
-            Assert.IsTrue(ReferenceEquals(originalFunc, func));
-            Assert.AreEqual(42, result.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4T5_CallsFirstFunc()
-        {
-            Func<int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5) => 42;
-            Func<int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5) => Maybe<int>.NoValue;
-
-            var func = left.PrecededBy(right);
-
-            var results = func(1, 2, 3, 4, 5);
-
-            Assert.AreEqual(42, results.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4T5_CallsSecondFunc()
-        {
-            Func<int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5) => 7;
-            Func<int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5) => 42;
-
-            var func = left.PrecededBy(right);
+            var func = left.Or(right);
 
             var results = func(1, 2, 3, 4, 5);
 
@@ -1564,7 +1314,7 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void OrOfT1T2T3T4T5T6_WithNullFuncs_ThrowsArgumentNullException()
+        public void OrOfT1T2T3T4T5T6ReturningBool_WithNullFuncs_ThrowsArgumentNullException()
         {
             Func<int, int, int, int, int, int, bool> nullFunc = null;
             Func<int, int, int, int, int, int, bool> notNullFunc = (t1, t2, t3, t4, t5, t6) => true;
@@ -1574,7 +1324,7 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void OrOfT1T2T3T4T5T6_WithValidFuncs_ComposesCorrectly()
+        public void OrOfT1T2T3T4T5T6ReturningBool_WithValidFuncs_ComposesCorrectly()
         {
             bool leftResult = true;
 			bool rightResult = true;
@@ -1719,10 +1469,10 @@ namespace iSynaptic.Commons
 		}
 
 		[Test]
-        public void FollowedByOfT1T2T3T4T5T6_WithNullArgument_ReturnsOriginal()
+        public void OrOfT1T2T3T4T5T6ReturningMaybe_WithNullArgument_ReturnsOriginal()
         {
             Func<int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6) => 42;
-            var func = originalFunc.FollowedBy(null);
+            var func = originalFunc.Or(null);
 
             var result = func(1, 2, 3, 4, 5, 6);
 
@@ -1731,10 +1481,10 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4T5T6_ExtendingNullFunc_ReturnsOriginal()
+        public void OrOfT1T2T3T4T5T6ReturningMaybe_ExtendingNullFunc_ReturnsOriginal()
         {
             Func<int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6) => 42;
-            var func = ((Func<int, int, int, int, int, int, Maybe<int>>)null).FollowedBy(originalFunc);
+            var func = ((Func<int, int, int, int, int, int, Maybe<int>>)null).Or(originalFunc);
 
             var result = func(1, 2, 3, 4, 5, 6);
 
@@ -1743,12 +1493,12 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4T5T6_CallsFirstFunc()
+        public void OrOfT1T2T3T4T5T6ReturningMaybe_CallsFirstFunc()
         {
             Func<int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6) => 42;
             Func<int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6) => 7;
 
-            var func = left.FollowedBy(right);
+            var func = left.Or(right);
 
             var results = func(1, 2, 3, 4, 5, 6);
 
@@ -1756,62 +1506,12 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4T5T6_CallsSecondFunc()
+        public void OrOfT1T2T3T4T5T6ReturningMaybe_CallsSecondFunc()
         {
             Func<int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6) => Maybe<int>.NoValue;
             Func<int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6) => 42;
 
-            var func = left.FollowedBy(right);
-
-            var results = func(1, 2, 3, 4, 5, 6);
-
-            Assert.AreEqual(42, results.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4T5T6_WithNullArgument_ReturnsOriginal()
-        {
-            Func<int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6) => 42;
-            var func = originalFunc.PrecededBy(null);
-
-            var result = func(1, 2, 3, 4, 5, 6);
-
-            Assert.IsTrue(ReferenceEquals(originalFunc, func));
-            Assert.AreEqual(42, result.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4T5T6_ExtendingNullAction_ReturnsOriginal()
-        {
-            Func<int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6) => 42;
-            var func = ((Func<int, int, int, int, int, int, Maybe<int>>)null).PrecededBy(originalFunc);
-
-            var result = func(1, 2, 3, 4, 5, 6);
-
-            Assert.IsTrue(ReferenceEquals(originalFunc, func));
-            Assert.AreEqual(42, result.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4T5T6_CallsFirstFunc()
-        {
-            Func<int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6) => 42;
-            Func<int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6) => Maybe<int>.NoValue;
-
-            var func = left.PrecededBy(right);
-
-            var results = func(1, 2, 3, 4, 5, 6);
-
-            Assert.AreEqual(42, results.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4T5T6_CallsSecondFunc()
-        {
-            Func<int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6) => 7;
-            Func<int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6) => 42;
-
-            var func = left.PrecededBy(right);
+            var func = left.Or(right);
 
             var results = func(1, 2, 3, 4, 5, 6);
 
@@ -1865,7 +1565,7 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void OrOfT1T2T3T4T5T6T7_WithNullFuncs_ThrowsArgumentNullException()
+        public void OrOfT1T2T3T4T5T6T7ReturningBool_WithNullFuncs_ThrowsArgumentNullException()
         {
             Func<int, int, int, int, int, int, int, bool> nullFunc = null;
             Func<int, int, int, int, int, int, int, bool> notNullFunc = (t1, t2, t3, t4, t5, t6, t7) => true;
@@ -1875,7 +1575,7 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void OrOfT1T2T3T4T5T6T7_WithValidFuncs_ComposesCorrectly()
+        public void OrOfT1T2T3T4T5T6T7ReturningBool_WithValidFuncs_ComposesCorrectly()
         {
             bool leftResult = true;
 			bool rightResult = true;
@@ -2020,10 +1720,10 @@ namespace iSynaptic.Commons
 		}
 
 		[Test]
-        public void FollowedByOfT1T2T3T4T5T6T7_WithNullArgument_ReturnsOriginal()
+        public void OrOfT1T2T3T4T5T6T7ReturningMaybe_WithNullArgument_ReturnsOriginal()
         {
             Func<int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7) => 42;
-            var func = originalFunc.FollowedBy(null);
+            var func = originalFunc.Or(null);
 
             var result = func(1, 2, 3, 4, 5, 6, 7);
 
@@ -2032,10 +1732,10 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4T5T6T7_ExtendingNullFunc_ReturnsOriginal()
+        public void OrOfT1T2T3T4T5T6T7ReturningMaybe_ExtendingNullFunc_ReturnsOriginal()
         {
             Func<int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7) => 42;
-            var func = ((Func<int, int, int, int, int, int, int, Maybe<int>>)null).FollowedBy(originalFunc);
+            var func = ((Func<int, int, int, int, int, int, int, Maybe<int>>)null).Or(originalFunc);
 
             var result = func(1, 2, 3, 4, 5, 6, 7);
 
@@ -2044,12 +1744,12 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4T5T6T7_CallsFirstFunc()
+        public void OrOfT1T2T3T4T5T6T7ReturningMaybe_CallsFirstFunc()
         {
             Func<int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7) => 42;
             Func<int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7) => 7;
 
-            var func = left.FollowedBy(right);
+            var func = left.Or(right);
 
             var results = func(1, 2, 3, 4, 5, 6, 7);
 
@@ -2057,62 +1757,12 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4T5T6T7_CallsSecondFunc()
+        public void OrOfT1T2T3T4T5T6T7ReturningMaybe_CallsSecondFunc()
         {
             Func<int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7) => Maybe<int>.NoValue;
             Func<int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7) => 42;
 
-            var func = left.FollowedBy(right);
-
-            var results = func(1, 2, 3, 4, 5, 6, 7);
-
-            Assert.AreEqual(42, results.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4T5T6T7_WithNullArgument_ReturnsOriginal()
-        {
-            Func<int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7) => 42;
-            var func = originalFunc.PrecededBy(null);
-
-            var result = func(1, 2, 3, 4, 5, 6, 7);
-
-            Assert.IsTrue(ReferenceEquals(originalFunc, func));
-            Assert.AreEqual(42, result.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4T5T6T7_ExtendingNullAction_ReturnsOriginal()
-        {
-            Func<int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7) => 42;
-            var func = ((Func<int, int, int, int, int, int, int, Maybe<int>>)null).PrecededBy(originalFunc);
-
-            var result = func(1, 2, 3, 4, 5, 6, 7);
-
-            Assert.IsTrue(ReferenceEquals(originalFunc, func));
-            Assert.AreEqual(42, result.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4T5T6T7_CallsFirstFunc()
-        {
-            Func<int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7) => 42;
-            Func<int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7) => Maybe<int>.NoValue;
-
-            var func = left.PrecededBy(right);
-
-            var results = func(1, 2, 3, 4, 5, 6, 7);
-
-            Assert.AreEqual(42, results.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4T5T6T7_CallsSecondFunc()
-        {
-            Func<int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7) => 7;
-            Func<int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7) => 42;
-
-            var func = left.PrecededBy(right);
+            var func = left.Or(right);
 
             var results = func(1, 2, 3, 4, 5, 6, 7);
 
@@ -2166,7 +1816,7 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void OrOfT1T2T3T4T5T6T7T8_WithNullFuncs_ThrowsArgumentNullException()
+        public void OrOfT1T2T3T4T5T6T7T8ReturningBool_WithNullFuncs_ThrowsArgumentNullException()
         {
             Func<int, int, int, int, int, int, int, int, bool> nullFunc = null;
             Func<int, int, int, int, int, int, int, int, bool> notNullFunc = (t1, t2, t3, t4, t5, t6, t7, t8) => true;
@@ -2176,7 +1826,7 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void OrOfT1T2T3T4T5T6T7T8_WithValidFuncs_ComposesCorrectly()
+        public void OrOfT1T2T3T4T5T6T7T8ReturningBool_WithValidFuncs_ComposesCorrectly()
         {
             bool leftResult = true;
 			bool rightResult = true;
@@ -2321,10 +1971,10 @@ namespace iSynaptic.Commons
 		}
 
 		[Test]
-        public void FollowedByOfT1T2T3T4T5T6T7T8_WithNullArgument_ReturnsOriginal()
+        public void OrOfT1T2T3T4T5T6T7T8ReturningMaybe_WithNullArgument_ReturnsOriginal()
         {
             Func<int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8) => 42;
-            var func = originalFunc.FollowedBy(null);
+            var func = originalFunc.Or(null);
 
             var result = func(1, 2, 3, 4, 5, 6, 7, 8);
 
@@ -2333,10 +1983,10 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4T5T6T7T8_ExtendingNullFunc_ReturnsOriginal()
+        public void OrOfT1T2T3T4T5T6T7T8ReturningMaybe_ExtendingNullFunc_ReturnsOriginal()
         {
             Func<int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8) => 42;
-            var func = ((Func<int, int, int, int, int, int, int, int, Maybe<int>>)null).FollowedBy(originalFunc);
+            var func = ((Func<int, int, int, int, int, int, int, int, Maybe<int>>)null).Or(originalFunc);
 
             var result = func(1, 2, 3, 4, 5, 6, 7, 8);
 
@@ -2345,12 +1995,12 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4T5T6T7T8_CallsFirstFunc()
+        public void OrOfT1T2T3T4T5T6T7T8ReturningMaybe_CallsFirstFunc()
         {
             Func<int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8) => 42;
             Func<int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8) => 7;
 
-            var func = left.FollowedBy(right);
+            var func = left.Or(right);
 
             var results = func(1, 2, 3, 4, 5, 6, 7, 8);
 
@@ -2358,62 +2008,12 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4T5T6T7T8_CallsSecondFunc()
+        public void OrOfT1T2T3T4T5T6T7T8ReturningMaybe_CallsSecondFunc()
         {
             Func<int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8) => Maybe<int>.NoValue;
             Func<int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8) => 42;
 
-            var func = left.FollowedBy(right);
-
-            var results = func(1, 2, 3, 4, 5, 6, 7, 8);
-
-            Assert.AreEqual(42, results.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4T5T6T7T8_WithNullArgument_ReturnsOriginal()
-        {
-            Func<int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8) => 42;
-            var func = originalFunc.PrecededBy(null);
-
-            var result = func(1, 2, 3, 4, 5, 6, 7, 8);
-
-            Assert.IsTrue(ReferenceEquals(originalFunc, func));
-            Assert.AreEqual(42, result.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4T5T6T7T8_ExtendingNullAction_ReturnsOriginal()
-        {
-            Func<int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8) => 42;
-            var func = ((Func<int, int, int, int, int, int, int, int, Maybe<int>>)null).PrecededBy(originalFunc);
-
-            var result = func(1, 2, 3, 4, 5, 6, 7, 8);
-
-            Assert.IsTrue(ReferenceEquals(originalFunc, func));
-            Assert.AreEqual(42, result.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4T5T6T7T8_CallsFirstFunc()
-        {
-            Func<int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8) => 42;
-            Func<int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8) => Maybe<int>.NoValue;
-
-            var func = left.PrecededBy(right);
-
-            var results = func(1, 2, 3, 4, 5, 6, 7, 8);
-
-            Assert.AreEqual(42, results.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4T5T6T7T8_CallsSecondFunc()
-        {
-            Func<int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8) => 7;
-            Func<int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8) => 42;
-
-            var func = left.PrecededBy(right);
+            var func = left.Or(right);
 
             var results = func(1, 2, 3, 4, 5, 6, 7, 8);
 
@@ -2467,7 +2067,7 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void OrOfT1T2T3T4T5T6T7T8T9_WithNullFuncs_ThrowsArgumentNullException()
+        public void OrOfT1T2T3T4T5T6T7T8T9ReturningBool_WithNullFuncs_ThrowsArgumentNullException()
         {
             Func<int, int, int, int, int, int, int, int, int, bool> nullFunc = null;
             Func<int, int, int, int, int, int, int, int, int, bool> notNullFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9) => true;
@@ -2477,7 +2077,7 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void OrOfT1T2T3T4T5T6T7T8T9_WithValidFuncs_ComposesCorrectly()
+        public void OrOfT1T2T3T4T5T6T7T8T9ReturningBool_WithValidFuncs_ComposesCorrectly()
         {
             bool leftResult = true;
 			bool rightResult = true;
@@ -2622,10 +2222,10 @@ namespace iSynaptic.Commons
 		}
 
 		[Test]
-        public void FollowedByOfT1T2T3T4T5T6T7T8T9_WithNullArgument_ReturnsOriginal()
+        public void OrOfT1T2T3T4T5T6T7T8T9ReturningMaybe_WithNullArgument_ReturnsOriginal()
         {
             Func<int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9) => 42;
-            var func = originalFunc.FollowedBy(null);
+            var func = originalFunc.Or(null);
 
             var result = func(1, 2, 3, 4, 5, 6, 7, 8, 9);
 
@@ -2634,10 +2234,10 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4T5T6T7T8T9_ExtendingNullFunc_ReturnsOriginal()
+        public void OrOfT1T2T3T4T5T6T7T8T9ReturningMaybe_ExtendingNullFunc_ReturnsOriginal()
         {
             Func<int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9) => 42;
-            var func = ((Func<int, int, int, int, int, int, int, int, int, Maybe<int>>)null).FollowedBy(originalFunc);
+            var func = ((Func<int, int, int, int, int, int, int, int, int, Maybe<int>>)null).Or(originalFunc);
 
             var result = func(1, 2, 3, 4, 5, 6, 7, 8, 9);
 
@@ -2646,12 +2246,12 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4T5T6T7T8T9_CallsFirstFunc()
+        public void OrOfT1T2T3T4T5T6T7T8T9ReturningMaybe_CallsFirstFunc()
         {
             Func<int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9) => 42;
             Func<int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9) => 7;
 
-            var func = left.FollowedBy(right);
+            var func = left.Or(right);
 
             var results = func(1, 2, 3, 4, 5, 6, 7, 8, 9);
 
@@ -2659,62 +2259,12 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4T5T6T7T8T9_CallsSecondFunc()
+        public void OrOfT1T2T3T4T5T6T7T8T9ReturningMaybe_CallsSecondFunc()
         {
             Func<int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9) => Maybe<int>.NoValue;
             Func<int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9) => 42;
 
-            var func = left.FollowedBy(right);
-
-            var results = func(1, 2, 3, 4, 5, 6, 7, 8, 9);
-
-            Assert.AreEqual(42, results.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4T5T6T7T8T9_WithNullArgument_ReturnsOriginal()
-        {
-            Func<int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9) => 42;
-            var func = originalFunc.PrecededBy(null);
-
-            var result = func(1, 2, 3, 4, 5, 6, 7, 8, 9);
-
-            Assert.IsTrue(ReferenceEquals(originalFunc, func));
-            Assert.AreEqual(42, result.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4T5T6T7T8T9_ExtendingNullAction_ReturnsOriginal()
-        {
-            Func<int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9) => 42;
-            var func = ((Func<int, int, int, int, int, int, int, int, int, Maybe<int>>)null).PrecededBy(originalFunc);
-
-            var result = func(1, 2, 3, 4, 5, 6, 7, 8, 9);
-
-            Assert.IsTrue(ReferenceEquals(originalFunc, func));
-            Assert.AreEqual(42, result.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4T5T6T7T8T9_CallsFirstFunc()
-        {
-            Func<int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9) => 42;
-            Func<int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9) => Maybe<int>.NoValue;
-
-            var func = left.PrecededBy(right);
-
-            var results = func(1, 2, 3, 4, 5, 6, 7, 8, 9);
-
-            Assert.AreEqual(42, results.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4T5T6T7T8T9_CallsSecondFunc()
-        {
-            Func<int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9) => 7;
-            Func<int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9) => 42;
-
-            var func = left.PrecededBy(right);
+            var func = left.Or(right);
 
             var results = func(1, 2, 3, 4, 5, 6, 7, 8, 9);
 
@@ -2768,7 +2318,7 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void OrOfT1T2T3T4T5T6T7T8T9T10_WithNullFuncs_ThrowsArgumentNullException()
+        public void OrOfT1T2T3T4T5T6T7T8T9T10ReturningBool_WithNullFuncs_ThrowsArgumentNullException()
         {
             Func<int, int, int, int, int, int, int, int, int, int, bool> nullFunc = null;
             Func<int, int, int, int, int, int, int, int, int, int, bool> notNullFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) => true;
@@ -2778,7 +2328,7 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void OrOfT1T2T3T4T5T6T7T8T9T10_WithValidFuncs_ComposesCorrectly()
+        public void OrOfT1T2T3T4T5T6T7T8T9T10ReturningBool_WithValidFuncs_ComposesCorrectly()
         {
             bool leftResult = true;
 			bool rightResult = true;
@@ -2923,10 +2473,10 @@ namespace iSynaptic.Commons
 		}
 
 		[Test]
-        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10_WithNullArgument_ReturnsOriginal()
+        public void OrOfT1T2T3T4T5T6T7T8T9T10ReturningMaybe_WithNullArgument_ReturnsOriginal()
         {
             Func<int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) => 42;
-            var func = originalFunc.FollowedBy(null);
+            var func = originalFunc.Or(null);
 
             var result = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 
@@ -2935,10 +2485,10 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10_ExtendingNullFunc_ReturnsOriginal()
+        public void OrOfT1T2T3T4T5T6T7T8T9T10ReturningMaybe_ExtendingNullFunc_ReturnsOriginal()
         {
             Func<int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) => 42;
-            var func = ((Func<int, int, int, int, int, int, int, int, int, int, Maybe<int>>)null).FollowedBy(originalFunc);
+            var func = ((Func<int, int, int, int, int, int, int, int, int, int, Maybe<int>>)null).Or(originalFunc);
 
             var result = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 
@@ -2947,12 +2497,12 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10_CallsFirstFunc()
+        public void OrOfT1T2T3T4T5T6T7T8T9T10ReturningMaybe_CallsFirstFunc()
         {
             Func<int, int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) => 42;
             Func<int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) => 7;
 
-            var func = left.FollowedBy(right);
+            var func = left.Or(right);
 
             var results = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 
@@ -2960,62 +2510,12 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10_CallsSecondFunc()
+        public void OrOfT1T2T3T4T5T6T7T8T9T10ReturningMaybe_CallsSecondFunc()
         {
             Func<int, int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) => Maybe<int>.NoValue;
             Func<int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) => 42;
 
-            var func = left.FollowedBy(right);
-
-            var results = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-
-            Assert.AreEqual(42, results.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4T5T6T7T8T9T10_WithNullArgument_ReturnsOriginal()
-        {
-            Func<int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) => 42;
-            var func = originalFunc.PrecededBy(null);
-
-            var result = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-
-            Assert.IsTrue(ReferenceEquals(originalFunc, func));
-            Assert.AreEqual(42, result.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4T5T6T7T8T9T10_ExtendingNullAction_ReturnsOriginal()
-        {
-            Func<int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) => 42;
-            var func = ((Func<int, int, int, int, int, int, int, int, int, int, Maybe<int>>)null).PrecededBy(originalFunc);
-
-            var result = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-
-            Assert.IsTrue(ReferenceEquals(originalFunc, func));
-            Assert.AreEqual(42, result.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4T5T6T7T8T9T10_CallsFirstFunc()
-        {
-            Func<int, int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) => 42;
-            Func<int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) => Maybe<int>.NoValue;
-
-            var func = left.PrecededBy(right);
-
-            var results = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-
-            Assert.AreEqual(42, results.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4T5T6T7T8T9T10_CallsSecondFunc()
-        {
-            Func<int, int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) => 7;
-            Func<int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) => 42;
-
-            var func = left.PrecededBy(right);
+            var func = left.Or(right);
 
             var results = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 
@@ -3069,7 +2569,7 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void OrOfT1T2T3T4T5T6T7T8T9T10T11_WithNullFuncs_ThrowsArgumentNullException()
+        public void OrOfT1T2T3T4T5T6T7T8T9T10T11ReturningBool_WithNullFuncs_ThrowsArgumentNullException()
         {
             Func<int, int, int, int, int, int, int, int, int, int, int, bool> nullFunc = null;
             Func<int, int, int, int, int, int, int, int, int, int, int, bool> notNullFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) => true;
@@ -3079,7 +2579,7 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void OrOfT1T2T3T4T5T6T7T8T9T10T11_WithValidFuncs_ComposesCorrectly()
+        public void OrOfT1T2T3T4T5T6T7T8T9T10T11ReturningBool_WithValidFuncs_ComposesCorrectly()
         {
             bool leftResult = true;
 			bool rightResult = true;
@@ -3224,10 +2724,10 @@ namespace iSynaptic.Commons
 		}
 
 		[Test]
-        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11_WithNullArgument_ReturnsOriginal()
+        public void OrOfT1T2T3T4T5T6T7T8T9T10T11ReturningMaybe_WithNullArgument_ReturnsOriginal()
         {
             Func<int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) => 42;
-            var func = originalFunc.FollowedBy(null);
+            var func = originalFunc.Or(null);
 
             var result = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11);
 
@@ -3236,10 +2736,10 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11_ExtendingNullFunc_ReturnsOriginal()
+        public void OrOfT1T2T3T4T5T6T7T8T9T10T11ReturningMaybe_ExtendingNullFunc_ReturnsOriginal()
         {
             Func<int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) => 42;
-            var func = ((Func<int, int, int, int, int, int, int, int, int, int, int, Maybe<int>>)null).FollowedBy(originalFunc);
+            var func = ((Func<int, int, int, int, int, int, int, int, int, int, int, Maybe<int>>)null).Or(originalFunc);
 
             var result = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11);
 
@@ -3248,12 +2748,12 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11_CallsFirstFunc()
+        public void OrOfT1T2T3T4T5T6T7T8T9T10T11ReturningMaybe_CallsFirstFunc()
         {
             Func<int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) => 42;
             Func<int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) => 7;
 
-            var func = left.FollowedBy(right);
+            var func = left.Or(right);
 
             var results = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11);
 
@@ -3261,62 +2761,12 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11_CallsSecondFunc()
+        public void OrOfT1T2T3T4T5T6T7T8T9T10T11ReturningMaybe_CallsSecondFunc()
         {
             Func<int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) => Maybe<int>.NoValue;
             Func<int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) => 42;
 
-            var func = left.FollowedBy(right);
-
-            var results = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11);
-
-            Assert.AreEqual(42, results.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4T5T6T7T8T9T10T11_WithNullArgument_ReturnsOriginal()
-        {
-            Func<int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) => 42;
-            var func = originalFunc.PrecededBy(null);
-
-            var result = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11);
-
-            Assert.IsTrue(ReferenceEquals(originalFunc, func));
-            Assert.AreEqual(42, result.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4T5T6T7T8T9T10T11_ExtendingNullAction_ReturnsOriginal()
-        {
-            Func<int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) => 42;
-            var func = ((Func<int, int, int, int, int, int, int, int, int, int, int, Maybe<int>>)null).PrecededBy(originalFunc);
-
-            var result = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11);
-
-            Assert.IsTrue(ReferenceEquals(originalFunc, func));
-            Assert.AreEqual(42, result.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4T5T6T7T8T9T10T11_CallsFirstFunc()
-        {
-            Func<int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) => 42;
-            Func<int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) => Maybe<int>.NoValue;
-
-            var func = left.PrecededBy(right);
-
-            var results = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11);
-
-            Assert.AreEqual(42, results.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4T5T6T7T8T9T10T11_CallsSecondFunc()
-        {
-            Func<int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) => 7;
-            Func<int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) => 42;
-
-            var func = left.PrecededBy(right);
+            var func = left.Or(right);
 
             var results = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11);
 
@@ -3370,7 +2820,7 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12_WithNullFuncs_ThrowsArgumentNullException()
+        public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12ReturningBool_WithNullFuncs_ThrowsArgumentNullException()
         {
             Func<int, int, int, int, int, int, int, int, int, int, int, int, bool> nullFunc = null;
             Func<int, int, int, int, int, int, int, int, int, int, int, int, bool> notNullFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) => true;
@@ -3380,7 +2830,7 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12_WithValidFuncs_ComposesCorrectly()
+        public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12ReturningBool_WithValidFuncs_ComposesCorrectly()
         {
             bool leftResult = true;
 			bool rightResult = true;
@@ -3525,10 +2975,10 @@ namespace iSynaptic.Commons
 		}
 
 		[Test]
-        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11T12_WithNullArgument_ReturnsOriginal()
+        public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12ReturningMaybe_WithNullArgument_ReturnsOriginal()
         {
             Func<int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) => 42;
-            var func = originalFunc.FollowedBy(null);
+            var func = originalFunc.Or(null);
 
             var result = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
 
@@ -3537,10 +2987,10 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11T12_ExtendingNullFunc_ReturnsOriginal()
+        public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12ReturningMaybe_ExtendingNullFunc_ReturnsOriginal()
         {
             Func<int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) => 42;
-            var func = ((Func<int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>>)null).FollowedBy(originalFunc);
+            var func = ((Func<int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>>)null).Or(originalFunc);
 
             var result = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
 
@@ -3549,12 +2999,12 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11T12_CallsFirstFunc()
+        public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12ReturningMaybe_CallsFirstFunc()
         {
             Func<int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) => 42;
             Func<int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) => 7;
 
-            var func = left.FollowedBy(right);
+            var func = left.Or(right);
 
             var results = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
 
@@ -3562,62 +3012,12 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11T12_CallsSecondFunc()
+        public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12ReturningMaybe_CallsSecondFunc()
         {
             Func<int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) => Maybe<int>.NoValue;
             Func<int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) => 42;
 
-            var func = left.FollowedBy(right);
-
-            var results = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
-
-            Assert.AreEqual(42, results.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4T5T6T7T8T9T10T11T12_WithNullArgument_ReturnsOriginal()
-        {
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) => 42;
-            var func = originalFunc.PrecededBy(null);
-
-            var result = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
-
-            Assert.IsTrue(ReferenceEquals(originalFunc, func));
-            Assert.AreEqual(42, result.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4T5T6T7T8T9T10T11T12_ExtendingNullAction_ReturnsOriginal()
-        {
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) => 42;
-            var func = ((Func<int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>>)null).PrecededBy(originalFunc);
-
-            var result = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
-
-            Assert.IsTrue(ReferenceEquals(originalFunc, func));
-            Assert.AreEqual(42, result.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4T5T6T7T8T9T10T11T12_CallsFirstFunc()
-        {
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) => 42;
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) => Maybe<int>.NoValue;
-
-            var func = left.PrecededBy(right);
-
-            var results = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
-
-            Assert.AreEqual(42, results.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4T5T6T7T8T9T10T11T12_CallsSecondFunc()
-        {
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) => 7;
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) => 42;
-
-            var func = left.PrecededBy(right);
+            var func = left.Or(right);
 
             var results = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
 
@@ -3671,7 +3071,7 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12T13_WithNullFuncs_ThrowsArgumentNullException()
+        public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12T13ReturningBool_WithNullFuncs_ThrowsArgumentNullException()
         {
             Func<int, int, int, int, int, int, int, int, int, int, int, int, int, bool> nullFunc = null;
             Func<int, int, int, int, int, int, int, int, int, int, int, int, int, bool> notNullFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) => true;
@@ -3681,7 +3081,7 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12T13_WithValidFuncs_ComposesCorrectly()
+        public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12T13ReturningBool_WithValidFuncs_ComposesCorrectly()
         {
             bool leftResult = true;
 			bool rightResult = true;
@@ -3826,10 +3226,10 @@ namespace iSynaptic.Commons
 		}
 
 		[Test]
-        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11T12T13_WithNullArgument_ReturnsOriginal()
+        public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12T13ReturningMaybe_WithNullArgument_ReturnsOriginal()
         {
             Func<int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) => 42;
-            var func = originalFunc.FollowedBy(null);
+            var func = originalFunc.Or(null);
 
             var result = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13);
 
@@ -3838,10 +3238,10 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11T12T13_ExtendingNullFunc_ReturnsOriginal()
+        public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12T13ReturningMaybe_ExtendingNullFunc_ReturnsOriginal()
         {
             Func<int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) => 42;
-            var func = ((Func<int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>>)null).FollowedBy(originalFunc);
+            var func = ((Func<int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>>)null).Or(originalFunc);
 
             var result = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13);
 
@@ -3850,12 +3250,12 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11T12T13_CallsFirstFunc()
+        public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12T13ReturningMaybe_CallsFirstFunc()
         {
             Func<int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) => 42;
             Func<int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) => 7;
 
-            var func = left.FollowedBy(right);
+            var func = left.Or(right);
 
             var results = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13);
 
@@ -3863,62 +3263,12 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11T12T13_CallsSecondFunc()
+        public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12T13ReturningMaybe_CallsSecondFunc()
         {
             Func<int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) => Maybe<int>.NoValue;
             Func<int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) => 42;
 
-            var func = left.FollowedBy(right);
-
-            var results = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13);
-
-            Assert.AreEqual(42, results.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4T5T6T7T8T9T10T11T12T13_WithNullArgument_ReturnsOriginal()
-        {
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) => 42;
-            var func = originalFunc.PrecededBy(null);
-
-            var result = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13);
-
-            Assert.IsTrue(ReferenceEquals(originalFunc, func));
-            Assert.AreEqual(42, result.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4T5T6T7T8T9T10T11T12T13_ExtendingNullAction_ReturnsOriginal()
-        {
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) => 42;
-            var func = ((Func<int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>>)null).PrecededBy(originalFunc);
-
-            var result = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13);
-
-            Assert.IsTrue(ReferenceEquals(originalFunc, func));
-            Assert.AreEqual(42, result.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4T5T6T7T8T9T10T11T12T13_CallsFirstFunc()
-        {
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) => 42;
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) => Maybe<int>.NoValue;
-
-            var func = left.PrecededBy(right);
-
-            var results = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13);
-
-            Assert.AreEqual(42, results.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4T5T6T7T8T9T10T11T12T13_CallsSecondFunc()
-        {
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) => 7;
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) => 42;
-
-            var func = left.PrecededBy(right);
+            var func = left.Or(right);
 
             var results = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13);
 
@@ -3972,7 +3322,7 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14_WithNullFuncs_ThrowsArgumentNullException()
+        public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14ReturningBool_WithNullFuncs_ThrowsArgumentNullException()
         {
             Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, bool> nullFunc = null;
             Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, bool> notNullFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) => true;
@@ -3982,7 +3332,7 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14_WithValidFuncs_ComposesCorrectly()
+        public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14ReturningBool_WithValidFuncs_ComposesCorrectly()
         {
             bool leftResult = true;
 			bool rightResult = true;
@@ -4127,10 +3477,10 @@ namespace iSynaptic.Commons
 		}
 
 		[Test]
-        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14_WithNullArgument_ReturnsOriginal()
+        public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14ReturningMaybe_WithNullArgument_ReturnsOriginal()
         {
             Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) => 42;
-            var func = originalFunc.FollowedBy(null);
+            var func = originalFunc.Or(null);
 
             var result = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14);
 
@@ -4139,10 +3489,10 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14_ExtendingNullFunc_ReturnsOriginal()
+        public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14ReturningMaybe_ExtendingNullFunc_ReturnsOriginal()
         {
             Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) => 42;
-            var func = ((Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>>)null).FollowedBy(originalFunc);
+            var func = ((Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>>)null).Or(originalFunc);
 
             var result = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14);
 
@@ -4151,12 +3501,12 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14_CallsFirstFunc()
+        public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14ReturningMaybe_CallsFirstFunc()
         {
             Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) => 42;
             Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) => 7;
 
-            var func = left.FollowedBy(right);
+            var func = left.Or(right);
 
             var results = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14);
 
@@ -4164,62 +3514,12 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14_CallsSecondFunc()
+        public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14ReturningMaybe_CallsSecondFunc()
         {
             Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) => Maybe<int>.NoValue;
             Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) => 42;
 
-            var func = left.FollowedBy(right);
-
-            var results = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14);
-
-            Assert.AreEqual(42, results.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14_WithNullArgument_ReturnsOriginal()
-        {
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) => 42;
-            var func = originalFunc.PrecededBy(null);
-
-            var result = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14);
-
-            Assert.IsTrue(ReferenceEquals(originalFunc, func));
-            Assert.AreEqual(42, result.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14_ExtendingNullAction_ReturnsOriginal()
-        {
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) => 42;
-            var func = ((Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>>)null).PrecededBy(originalFunc);
-
-            var result = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14);
-
-            Assert.IsTrue(ReferenceEquals(originalFunc, func));
-            Assert.AreEqual(42, result.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14_CallsFirstFunc()
-        {
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) => 42;
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) => Maybe<int>.NoValue;
-
-            var func = left.PrecededBy(right);
-
-            var results = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14);
-
-            Assert.AreEqual(42, results.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14_CallsSecondFunc()
-        {
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) => 7;
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) => 42;
-
-            var func = left.PrecededBy(right);
+            var func = left.Or(right);
 
             var results = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14);
 
@@ -4273,7 +3573,7 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15_WithNullFuncs_ThrowsArgumentNullException()
+        public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15ReturningBool_WithNullFuncs_ThrowsArgumentNullException()
         {
             Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, bool> nullFunc = null;
             Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, bool> notNullFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) => true;
@@ -4283,7 +3583,7 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15_WithValidFuncs_ComposesCorrectly()
+        public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15ReturningBool_WithValidFuncs_ComposesCorrectly()
         {
             bool leftResult = true;
 			bool rightResult = true;
@@ -4428,10 +3728,10 @@ namespace iSynaptic.Commons
 		}
 
 		[Test]
-        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15_WithNullArgument_ReturnsOriginal()
+        public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15ReturningMaybe_WithNullArgument_ReturnsOriginal()
         {
             Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) => 42;
-            var func = originalFunc.FollowedBy(null);
+            var func = originalFunc.Or(null);
 
             var result = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
 
@@ -4440,10 +3740,10 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15_ExtendingNullFunc_ReturnsOriginal()
+        public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15ReturningMaybe_ExtendingNullFunc_ReturnsOriginal()
         {
             Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) => 42;
-            var func = ((Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>>)null).FollowedBy(originalFunc);
+            var func = ((Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>>)null).Or(originalFunc);
 
             var result = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
 
@@ -4452,12 +3752,12 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15_CallsFirstFunc()
+        public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15ReturningMaybe_CallsFirstFunc()
         {
             Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) => 42;
             Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) => 7;
 
-            var func = left.FollowedBy(right);
+            var func = left.Or(right);
 
             var results = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
 
@@ -4465,62 +3765,12 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15_CallsSecondFunc()
+        public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15ReturningMaybe_CallsSecondFunc()
         {
             Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) => Maybe<int>.NoValue;
             Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) => 42;
 
-            var func = left.FollowedBy(right);
-
-            var results = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
-
-            Assert.AreEqual(42, results.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15_WithNullArgument_ReturnsOriginal()
-        {
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) => 42;
-            var func = originalFunc.PrecededBy(null);
-
-            var result = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
-
-            Assert.IsTrue(ReferenceEquals(originalFunc, func));
-            Assert.AreEqual(42, result.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15_ExtendingNullAction_ReturnsOriginal()
-        {
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) => 42;
-            var func = ((Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>>)null).PrecededBy(originalFunc);
-
-            var result = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
-
-            Assert.IsTrue(ReferenceEquals(originalFunc, func));
-            Assert.AreEqual(42, result.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15_CallsFirstFunc()
-        {
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) => 42;
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) => Maybe<int>.NoValue;
-
-            var func = left.PrecededBy(right);
-
-            var results = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
-
-            Assert.AreEqual(42, results.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15_CallsSecondFunc()
-        {
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) => 7;
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) => 42;
-
-            var func = left.PrecededBy(right);
+            var func = left.Or(right);
 
             var results = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
 
@@ -4574,7 +3824,7 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15T16_WithNullFuncs_ThrowsArgumentNullException()
+        public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15T16ReturningBool_WithNullFuncs_ThrowsArgumentNullException()
         {
             Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, bool> nullFunc = null;
             Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, bool> notNullFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) => true;
@@ -4584,7 +3834,7 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15T16_WithValidFuncs_ComposesCorrectly()
+        public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15T16ReturningBool_WithValidFuncs_ComposesCorrectly()
         {
             bool leftResult = true;
 			bool rightResult = true;
@@ -4729,10 +3979,10 @@ namespace iSynaptic.Commons
 		}
 
 		[Test]
-        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15T16_WithNullArgument_ReturnsOriginal()
+        public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15T16ReturningMaybe_WithNullArgument_ReturnsOriginal()
         {
             Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) => 42;
-            var func = originalFunc.FollowedBy(null);
+            var func = originalFunc.Or(null);
 
             var result = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
 
@@ -4741,10 +3991,10 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15T16_ExtendingNullFunc_ReturnsOriginal()
+        public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15T16ReturningMaybe_ExtendingNullFunc_ReturnsOriginal()
         {
             Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) => 42;
-            var func = ((Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>>)null).FollowedBy(originalFunc);
+            var func = ((Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>>)null).Or(originalFunc);
 
             var result = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
 
@@ -4753,12 +4003,12 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15T16_CallsFirstFunc()
+        public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15T16ReturningMaybe_CallsFirstFunc()
         {
             Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) => 42;
             Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) => 7;
 
-            var func = left.FollowedBy(right);
+            var func = left.Or(right);
 
             var results = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
 
@@ -4766,62 +4016,12 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15T16_CallsSecondFunc()
+        public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15T16ReturningMaybe_CallsSecondFunc()
         {
             Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) => Maybe<int>.NoValue;
             Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) => 42;
 
-            var func = left.FollowedBy(right);
-
-            var results = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
-
-            Assert.AreEqual(42, results.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15T16_WithNullArgument_ReturnsOriginal()
-        {
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) => 42;
-            var func = originalFunc.PrecededBy(null);
-
-            var result = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
-
-            Assert.IsTrue(ReferenceEquals(originalFunc, func));
-            Assert.AreEqual(42, result.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15T16_ExtendingNullAction_ReturnsOriginal()
-        {
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) => 42;
-            var func = ((Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>>)null).PrecededBy(originalFunc);
-
-            var result = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
-
-            Assert.IsTrue(ReferenceEquals(originalFunc, func));
-            Assert.AreEqual(42, result.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15T16_CallsFirstFunc()
-        {
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) => 42;
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) => Maybe<int>.NoValue;
-
-            var func = left.PrecededBy(right);
-
-            var results = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
-
-            Assert.AreEqual(42, results.Value);
-        }
-
-        [Test]
-        public void PrecededByOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15T16_CallsSecondFunc()
-        {
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) => 7;
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) => 42;
-
-            var func = left.PrecededBy(right);
+            var func = left.Or(right);
 
             var results = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
 

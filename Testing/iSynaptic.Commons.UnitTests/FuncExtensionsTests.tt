@@ -73,7 +73,7 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void OrOf<#= nameSuffix #>_WithNullFuncs_ThrowsArgumentNullException()
+        public void OrOf<#= nameSuffix #>ReturningBool_WithNullFuncs_ThrowsArgumentNullException()
         {
             Func<<#= fixedTypes #>, bool> nullFunc = null;
             Func<<#= fixedTypes #>, bool> notNullFunc = (<#= args #>) => true;
@@ -83,7 +83,7 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void OrOf<#= nameSuffix #>_WithValidFuncs_ComposesCorrectly()
+        public void OrOf<#= nameSuffix #>ReturningBool_WithValidFuncs_ComposesCorrectly()
         {
             bool leftResult = true;
 			bool rightResult = true;
@@ -230,10 +230,10 @@ namespace iSynaptic.Commons
 		}
 
 		[Test]
-        public void FollowedByOf<#= nameSuffix #>_WithNullArgument_ReturnsOriginal()
+        public void OrOf<#= nameSuffix #>ReturningMaybe_WithNullArgument_ReturnsOriginal()
         {
             Func<<#= fixedTypes #>, Maybe<int>> originalFunc = (<#= args #>) => 42;
-            var func = originalFunc.FollowedBy(null);
+            var func = originalFunc.Or(null);
 
             var result = func(<#= fixedArgs #>);
 
@@ -242,10 +242,10 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOf<#= nameSuffix #>_ExtendingNullFunc_ReturnsOriginal()
+        public void OrOf<#= nameSuffix #>ReturningMaybe_ExtendingNullFunc_ReturnsOriginal()
         {
             Func<<#= fixedTypes #>, Maybe<int>> originalFunc = (<#= args #>) => 42;
-            var func = ((Func<<#= fixedTypes #>, Maybe<int>>)null).FollowedBy(originalFunc);
+            var func = ((Func<<#= fixedTypes #>, Maybe<int>>)null).Or(originalFunc);
 
             var result = func(<#= fixedArgs #>);
 
@@ -254,12 +254,12 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOf<#= nameSuffix #>_CallsFirstFunc()
+        public void OrOf<#= nameSuffix #>ReturningMaybe_CallsFirstFunc()
         {
             Func<<#= fixedTypes #>, Maybe<int>> left = (<#= args #>) => 42;
             Func<<#= fixedTypes #>, Maybe<int>> right = (<#= args #>) => 7;
 
-            var func = left.FollowedBy(right);
+            var func = left.Or(right);
 
             var results = func(<#= fixedArgs #>);
 
@@ -267,62 +267,12 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedByOf<#= nameSuffix #>_CallsSecondFunc()
+        public void OrOf<#= nameSuffix #>ReturningMaybe_CallsSecondFunc()
         {
             Func<<#= fixedTypes #>, Maybe<int>> left = (<#= args #>) => Maybe<int>.NoValue;
             Func<<#= fixedTypes #>, Maybe<int>> right = (<#= args #>) => 42;
 
-            var func = left.FollowedBy(right);
-
-            var results = func(<#= fixedArgs #>);
-
-            Assert.AreEqual(42, results.Value);
-        }
-
-        [Test]
-        public void PrecededByOf<#= nameSuffix #>_WithNullArgument_ReturnsOriginal()
-        {
-            Func<<#= fixedTypes #>, Maybe<int>> originalFunc = (<#= args #>) => 42;
-            var func = originalFunc.PrecededBy(null);
-
-            var result = func(<#= fixedArgs #>);
-
-            Assert.IsTrue(ReferenceEquals(originalFunc, func));
-            Assert.AreEqual(42, result.Value);
-        }
-
-        [Test]
-        public void PrecededByOf<#= nameSuffix #>_ExtendingNullAction_ReturnsOriginal()
-        {
-            Func<<#= fixedTypes #>, Maybe<int>> originalFunc = (<#= args #>) => 42;
-            var func = ((Func<<#= fixedTypes #>, Maybe<int>>)null).PrecededBy(originalFunc);
-
-            var result = func(<#= fixedArgs #>);
-
-            Assert.IsTrue(ReferenceEquals(originalFunc, func));
-            Assert.AreEqual(42, result.Value);
-        }
-
-        [Test]
-        public void PrecededByOf<#= nameSuffix #>_CallsFirstFunc()
-        {
-            Func<<#= fixedTypes #>, Maybe<int>> left = (<#= args #>) => 42;
-            Func<<#= fixedTypes #>, Maybe<int>> right = (<#= args #>) => Maybe<int>.NoValue;
-
-            var func = left.PrecededBy(right);
-
-            var results = func(<#= fixedArgs #>);
-
-            Assert.AreEqual(42, results.Value);
-        }
-
-        [Test]
-        public void PrecededByOf<#= nameSuffix #>_CallsSecondFunc()
-        {
-            Func<<#= fixedTypes #>, Maybe<int>> left = (<#= args #>) => 7;
-            Func<<#= fixedTypes #>, Maybe<int>> right = (<#= args #>) => 42;
-
-            var func = left.PrecededBy(right);
+            var func = left.Or(right);
 
             var results = func(<#= fixedArgs #>);
 
