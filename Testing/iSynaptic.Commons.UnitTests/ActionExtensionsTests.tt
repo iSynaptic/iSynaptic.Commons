@@ -174,46 +174,6 @@ namespace iSynaptic.Commons
             Assert.IsTrue(results.SequenceEqual(new []{"left", "right"}));
         }
 
-		[Test]
-        public void PrecededByOf<#= nameSuffix #>_WithNullArgument_ReturnsOriginal()
-        {
-            bool executed = false;
-            Action<<#= fixedTypes #>> originalAction = (<#= args #>) => executed = true;
-            Action<<#= fixedTypes #>> action = originalAction.PrecededBy(null);
-
-            action(<#= fixedArgs #>);
-
-            Assert.IsTrue(ReferenceEquals(originalAction, action));
-            Assert.IsTrue(executed);
-        }
-
-        [Test]
-        public void PrecededByOf<#= nameSuffix #>_ExtendingNullAction_ReturnsOriginal()
-        {
-            bool executed = false;
-            Action<<#= fixedTypes #>> originalAction = (<#= args #>) => executed = true;
-            Action<<#= fixedTypes #>> action = ((Action<<#= fixedTypes #>>)null).PrecededBy(originalAction);
-
-            action(<#= fixedArgs #>);
-
-            Assert.IsTrue(ReferenceEquals(originalAction, action));
-            Assert.IsTrue(executed);
-        }
-
-        [Test]
-        public void PrecededByOf<#= nameSuffix #>_CallsBothActionsInCorrectOrder()
-        {
-            var results = new List<string>();
-
-            Action<<#= fixedTypes #>> left = (<#= args #>) => results.Add("left");
-            Action<<#= fixedTypes #>> right = (<#= args #>) => results.Add("right");
-
-            var action = left.PrecededBy(right);
-
-            action(<#= fixedArgs #>);
-            Assert.IsTrue(results.SequenceEqual(new []{"right", "left"}));
-        }
-
 		<# } #>
 	}
 }

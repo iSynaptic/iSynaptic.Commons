@@ -28,18 +28,6 @@ namespace iSynaptic.Commons
             };
         }
 
-		public static Action<T1> PrecededBy<T1>(this Action<T1> self, Action<T1> precededBy)
-        {
-            if (self == null || precededBy == null)
-                return self ?? precededBy;
-
-            return (t1) =>
-            {
-                precededBy(t1);
-                self(t1);
-            };
-        }
-
 		public static Action<T1> FollowedBy<T1>(this Action<T1> self, Action<T1> followedBy)
         {
             if (self == null || followedBy == null)
@@ -105,18 +93,6 @@ namespace iSynaptic.Commons
                     self(t1, t2);
                 else if (falseAction != null)
                     falseAction(t1, t2);
-            };
-        }
-
-		public static Action<T1, T2> PrecededBy<T1, T2>(this Action<T1, T2> self, Action<T1, T2> precededBy)
-        {
-            if (self == null || precededBy == null)
-                return self ?? precededBy;
-
-            return (t1, t2) =>
-            {
-                precededBy(t1, t2);
-                self(t1, t2);
             };
         }
 
@@ -188,18 +164,6 @@ namespace iSynaptic.Commons
             };
         }
 
-		public static Action<T1, T2, T3> PrecededBy<T1, T2, T3>(this Action<T1, T2, T3> self, Action<T1, T2, T3> precededBy)
-        {
-            if (self == null || precededBy == null)
-                return self ?? precededBy;
-
-            return (t1, t2, t3) =>
-            {
-                precededBy(t1, t2, t3);
-                self(t1, t2, t3);
-            };
-        }
-
 		public static Action<T1, T2, T3> FollowedBy<T1, T2, T3>(this Action<T1, T2, T3> self, Action<T1, T2, T3> followedBy)
         {
             if (self == null || followedBy == null)
@@ -265,18 +229,6 @@ namespace iSynaptic.Commons
                     self(t1, t2, t3, t4);
                 else if (falseAction != null)
                     falseAction(t1, t2, t3, t4);
-            };
-        }
-
-		public static Action<T1, T2, T3, T4> PrecededBy<T1, T2, T3, T4>(this Action<T1, T2, T3, T4> self, Action<T1, T2, T3, T4> precededBy)
-        {
-            if (self == null || precededBy == null)
-                return self ?? precededBy;
-
-            return (t1, t2, t3, t4) =>
-            {
-                precededBy(t1, t2, t3, t4);
-                self(t1, t2, t3, t4);
             };
         }
 
@@ -348,18 +300,6 @@ namespace iSynaptic.Commons
             };
         }
 
-		public static Action<T1, T2, T3, T4, T5> PrecededBy<T1, T2, T3, T4, T5>(this Action<T1, T2, T3, T4, T5> self, Action<T1, T2, T3, T4, T5> precededBy)
-        {
-            if (self == null || precededBy == null)
-                return self ?? precededBy;
-
-            return (t1, t2, t3, t4, t5) =>
-            {
-                precededBy(t1, t2, t3, t4, t5);
-                self(t1, t2, t3, t4, t5);
-            };
-        }
-
 		public static Action<T1, T2, T3, T4, T5> FollowedBy<T1, T2, T3, T4, T5>(this Action<T1, T2, T3, T4, T5> self, Action<T1, T2, T3, T4, T5> followedBy)
         {
             if (self == null || followedBy == null)
@@ -425,18 +365,6 @@ namespace iSynaptic.Commons
                     self(t1, t2, t3, t4, t5, t6);
                 else if (falseAction != null)
                     falseAction(t1, t2, t3, t4, t5, t6);
-            };
-        }
-
-		public static Action<T1, T2, T3, T4, T5, T6> PrecededBy<T1, T2, T3, T4, T5, T6>(this Action<T1, T2, T3, T4, T5, T6> self, Action<T1, T2, T3, T4, T5, T6> precededBy)
-        {
-            if (self == null || precededBy == null)
-                return self ?? precededBy;
-
-            return (t1, t2, t3, t4, t5, t6) =>
-            {
-                precededBy(t1, t2, t3, t4, t5, t6);
-                self(t1, t2, t3, t4, t5, t6);
             };
         }
 
@@ -508,18 +436,6 @@ namespace iSynaptic.Commons
             };
         }
 
-		public static Action<T1, T2, T3, T4, T5, T6, T7> PrecededBy<T1, T2, T3, T4, T5, T6, T7>(this Action<T1, T2, T3, T4, T5, T6, T7> self, Action<T1, T2, T3, T4, T5, T6, T7> precededBy)
-        {
-            if (self == null || precededBy == null)
-                return self ?? precededBy;
-
-            return (t1, t2, t3, t4, t5, t6, t7) =>
-            {
-                precededBy(t1, t2, t3, t4, t5, t6, t7);
-                self(t1, t2, t3, t4, t5, t6, t7);
-            };
-        }
-
 		public static Action<T1, T2, T3, T4, T5, T6, T7> FollowedBy<T1, T2, T3, T4, T5, T6, T7>(this Action<T1, T2, T3, T4, T5, T6, T7> self, Action<T1, T2, T3, T4, T5, T6, T7> followedBy)
         {
             if (self == null || followedBy == null)
@@ -585,18 +501,6 @@ namespace iSynaptic.Commons
                     self(t1, t2, t3, t4, t5, t6, t7, t8);
                 else if (falseAction != null)
                     falseAction(t1, t2, t3, t4, t5, t6, t7, t8);
-            };
-        }
-
-		public static Action<T1, T2, T3, T4, T5, T6, T7, T8> PrecededBy<T1, T2, T3, T4, T5, T6, T7, T8>(this Action<T1, T2, T3, T4, T5, T6, T7, T8> self, Action<T1, T2, T3, T4, T5, T6, T7, T8> precededBy)
-        {
-            if (self == null || precededBy == null)
-                return self ?? precededBy;
-
-            return (t1, t2, t3, t4, t5, t6, t7, t8) =>
-            {
-                precededBy(t1, t2, t3, t4, t5, t6, t7, t8);
-                self(t1, t2, t3, t4, t5, t6, t7, t8);
             };
         }
 
@@ -668,18 +572,6 @@ namespace iSynaptic.Commons
             };
         }
 
-		public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9> PrecededBy<T1, T2, T3, T4, T5, T6, T7, T8, T9>(this Action<T1, T2, T3, T4, T5, T6, T7, T8, T9> self, Action<T1, T2, T3, T4, T5, T6, T7, T8, T9> precededBy)
-        {
-            if (self == null || precededBy == null)
-                return self ?? precededBy;
-
-            return (t1, t2, t3, t4, t5, t6, t7, t8, t9) =>
-            {
-                precededBy(t1, t2, t3, t4, t5, t6, t7, t8, t9);
-                self(t1, t2, t3, t4, t5, t6, t7, t8, t9);
-            };
-        }
-
 		public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9> FollowedBy<T1, T2, T3, T4, T5, T6, T7, T8, T9>(this Action<T1, T2, T3, T4, T5, T6, T7, T8, T9> self, Action<T1, T2, T3, T4, T5, T6, T7, T8, T9> followedBy)
         {
             if (self == null || followedBy == null)
@@ -745,18 +637,6 @@ namespace iSynaptic.Commons
                     self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10);
                 else if (falseAction != null)
                     falseAction(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10);
-            };
-        }
-
-		public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> PrecededBy<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(this Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> self, Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> precededBy)
-        {
-            if (self == null || precededBy == null)
-                return self ?? precededBy;
-
-            return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) =>
-            {
-                precededBy(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10);
-                self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10);
             };
         }
 
@@ -828,18 +708,6 @@ namespace iSynaptic.Commons
             };
         }
 
-		public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> PrecededBy<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(this Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> self, Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> precededBy)
-        {
-            if (self == null || precededBy == null)
-                return self ?? precededBy;
-
-            return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) =>
-            {
-                precededBy(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11);
-                self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11);
-            };
-        }
-
 		public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> FollowedBy<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(this Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> self, Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> followedBy)
         {
             if (self == null || followedBy == null)
@@ -905,18 +773,6 @@ namespace iSynaptic.Commons
                     self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12);
                 else if (falseAction != null)
                     falseAction(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12);
-            };
-        }
-
-		public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> PrecededBy<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(this Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> self, Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> precededBy)
-        {
-            if (self == null || precededBy == null)
-                return self ?? precededBy;
-
-            return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) =>
-            {
-                precededBy(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12);
-                self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12);
             };
         }
 
@@ -988,18 +844,6 @@ namespace iSynaptic.Commons
             };
         }
 
-		public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> PrecededBy<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(this Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> self, Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> precededBy)
-        {
-            if (self == null || precededBy == null)
-                return self ?? precededBy;
-
-            return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) =>
-            {
-                precededBy(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13);
-                self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13);
-            };
-        }
-
 		public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> FollowedBy<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(this Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> self, Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> followedBy)
         {
             if (self == null || followedBy == null)
@@ -1065,18 +909,6 @@ namespace iSynaptic.Commons
                     self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14);
                 else if (falseAction != null)
                     falseAction(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14);
-            };
-        }
-
-		public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> PrecededBy<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(this Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> self, Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> precededBy)
-        {
-            if (self == null || precededBy == null)
-                return self ?? precededBy;
-
-            return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) =>
-            {
-                precededBy(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14);
-                self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14);
             };
         }
 
@@ -1148,18 +980,6 @@ namespace iSynaptic.Commons
             };
         }
 
-		public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> PrecededBy<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(this Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> self, Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> precededBy)
-        {
-            if (self == null || precededBy == null)
-                return self ?? precededBy;
-
-            return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) =>
-            {
-                precededBy(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15);
-                self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15);
-            };
-        }
-
 		public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> FollowedBy<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(this Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> self, Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> followedBy)
         {
             if (self == null || followedBy == null)
@@ -1225,18 +1045,6 @@ namespace iSynaptic.Commons
                     self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16);
                 else if (falseAction != null)
                     falseAction(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16);
-            };
-        }
-
-		public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> PrecededBy<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(this Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> self, Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> precededBy)
-        {
-            if (self == null || precededBy == null)
-                return self ?? precededBy;
-
-            return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) =>
-            {
-                precededBy(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16);
-                self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16);
             };
         }
 

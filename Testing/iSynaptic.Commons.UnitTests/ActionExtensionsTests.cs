@@ -129,46 +129,5 @@ namespace iSynaptic.Commons
 
             Assert.IsTrue(results.SequenceEqual(new []{"left", "right"}));
         }
-
-        [Test]
-        public void PrecededBy_WithNullArgument_ReturnsOriginal()
-        {
-            bool executed = false;
-            Action originalAction = () => executed = true;
-            Action action = originalAction.PrecededBy(null);
-
-            action();
-
-            Assert.IsTrue(ReferenceEquals(originalAction, action));
-            Assert.IsTrue(executed);
-        }
-
-        [Test]
-        public void PrecededBy_ExtendingNullAction_ReturnsOriginal()
-        {
-            bool executed = false;
-            Action originalAction = () => executed = true;
-            Action action = ((Action)null).PrecededBy(originalAction);
-
-            action();
-
-            Assert.IsTrue(ReferenceEquals(originalAction, action));
-            Assert.IsTrue(executed);
-        }
-
-        [Test]
-        public void PrecededBy_CallsBothActionsInCorrectOrder()
-        {
-            var results = new List<string>();
-
-            Action left = () => results.Add("left");
-            Action right = () => results.Add("right");
-
-            var action = left.PrecededBy(right);
-
-            action();
-
-            Assert.IsTrue(results.SequenceEqual(new[] { "right", "left" }));
-        }
     }
 }
