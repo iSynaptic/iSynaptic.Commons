@@ -42,10 +42,10 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedBy_WithNullArgument_ReturnsOriginal()
+        public void OrReturningMaybe_WithNullArgument_ReturnsOriginal()
         {
             Func<Maybe<int>> originalFunc = () => 42;
-            var func = originalFunc.FollowedBy(null);
+            var func = originalFunc.Or(null);
 
             var result = func();
 
@@ -54,10 +54,10 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedBy_ExtendingNullFunc_ReturnsOriginal()
+        public void OrReturningMaybe_ExtendingNullFunc_ReturnsOriginal()
         {
             Func<Maybe<int>> originalFunc = () => 42;
-            var func = ((Func<Maybe<int>>)null).FollowedBy(originalFunc);
+            var func = ((Func<Maybe<int>>)null).Or(originalFunc);
 
             var result = func();
 
@@ -66,12 +66,12 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedBy_CallsFirstFunc()
+        public void OrReturningMaybe_CallsFirstFunc()
         {
             Func<Maybe<int>> left = () => 42;
             Func<Maybe<int>> right = () => 7;
 
-            var func = left.FollowedBy(right);
+            var func = left.Or(right);
 
             var results = func();
 
@@ -79,62 +79,12 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void FollowedBy_CallsSecondFunc()
+        public void OrReturningMaybe_CallsSecondFunc()
         {
             Func<Maybe<int>> left = () => Maybe<int>.NoValue;
             Func<Maybe<int>> right = () => 42;
 
-            var func = left.FollowedBy(right);
-
-            var results = func();
-
-            Assert.AreEqual(42, results.Value);
-        }
-
-        [Test]
-        public void PrecededBy_WithNullArgument_ReturnsOriginal()
-        {
-            Func<Maybe<int>> originalFunc = () => 42;
-            var func = originalFunc.PrecededBy(null);
-
-            var result = func();
-
-            Assert.IsTrue(ReferenceEquals(originalFunc, func));
-            Assert.AreEqual(42, result.Value);
-        }
-
-        [Test]
-        public void PrecededBy_ExtendingNullAction_ReturnsOriginal()
-        {
-            Func<Maybe<int>> originalFunc = () => 42;
-            var func = ((Func<Maybe<int>>)null).PrecededBy(originalFunc);
-
-            var result = func();
-
-            Assert.IsTrue(ReferenceEquals(originalFunc, func));
-            Assert.AreEqual(42, result.Value);
-        }
-
-        [Test]
-        public void PrecededBy_CallsFirstFunc()
-        {
-            Func<Maybe<int>> left = () => 42;
-            Func<Maybe<int>> right = () => Maybe<int>.NoValue;
-
-            var func = left.PrecededBy(right);
-
-            var results = func();
-
-            Assert.AreEqual(42, results.Value);
-        }
-
-        [Test]
-        public void PrecededBy_CallsSecondFunc()
-        {
-            Func<Maybe<int>> left = () => 7;
-            Func<Maybe<int>> right = () => 42;
-
-            var func = left.PrecededBy(right);
+            var func = left.Or(right);
 
             var results = func();
 

@@ -79,15 +79,7 @@ namespace iSynaptic.Commons
             };
         }
 
-        public static Func<Maybe<TResult>> PrecededBy<TResult>(this Func<Maybe<TResult>> self, Func<Maybe<TResult>> precededBy)
-        {
-            if (self == null || precededBy == null)
-                return self ?? precededBy;
-
-            return () => precededBy().Or(self());
-        }
-
-        public static Func<Maybe<TResult>> FollowedBy<TResult>(this Func<Maybe<TResult>> self, Func<Maybe<TResult>> followedBy)
+        public static Func<Maybe<TResult>> Or<TResult>(this Func<Maybe<TResult>> self, Func<Maybe<TResult>> followedBy)
         {
             if (self == null || followedBy == null)
                 return self ?? followedBy;
