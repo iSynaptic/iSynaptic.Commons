@@ -79,12 +79,20 @@ namespace iSynaptic.Commons
             };
         }
 
-        public static Func<Maybe<TResult>> Or<TResult>(this Func<Maybe<TResult>> self, Func<Maybe<TResult>> followedBy)
+        public static Func<Maybe<TResult>> Or<TResult>(this Func<Maybe<TResult>> self, Func<Maybe<TResult>> orFunc)
         {
-            if (self == null || followedBy == null)
-                return self ?? followedBy;
+            if (self == null || orFunc == null)
+                return self ?? orFunc;
 
-            return () => self().Or(followedBy());
+            return () =>
+            {
+                var results = self();
+
+                if (results.HasValue != true && results.Exception == null)
+                    return orFunc();
+
+                return results;
+            };
         }
 
         private class FuncComparer<T> : IComparer<T>

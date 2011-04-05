@@ -67,12 +67,20 @@ namespace iSynaptic.Commons
             };
         }
 
-        public static Func<T1, Maybe<TResult>> Or<T1, TResult>(this Func<T1, Maybe<TResult>> self, Func<T1, Maybe<TResult>> followedBy)
+        public static Func<T1, Maybe<TResult>> Or<T1, TResult>(this Func<T1, Maybe<TResult>> self, Func<T1, Maybe<TResult>> orFunc)
         {
-            if (self == null || followedBy == null)
-                return self ?? followedBy;
+            if (self == null || orFunc == null)
+                return self ?? orFunc;
 
-            return (t1) => self(t1).Or(followedBy(t1));
+            return (t1) =>
+			{
+				var results = self(t1);
+
+				if(results.HasValue != true && results.Exception == null)
+					return orFunc(t1);
+
+				return results;
+			};
         }
 
 		public static Func<T1, TResult> Synchronize<T1, TResult>(this Func<T1, TResult> self)
@@ -159,12 +167,20 @@ namespace iSynaptic.Commons
             };
         }
 
-        public static Func<T1, T2, Maybe<TResult>> Or<T1, T2, TResult>(this Func<T1, T2, Maybe<TResult>> self, Func<T1, T2, Maybe<TResult>> followedBy)
+        public static Func<T1, T2, Maybe<TResult>> Or<T1, T2, TResult>(this Func<T1, T2, Maybe<TResult>> self, Func<T1, T2, Maybe<TResult>> orFunc)
         {
-            if (self == null || followedBy == null)
-                return self ?? followedBy;
+            if (self == null || orFunc == null)
+                return self ?? orFunc;
 
-            return (t1, t2) => self(t1, t2).Or(followedBy(t1, t2));
+            return (t1, t2) =>
+			{
+				var results = self(t1, t2);
+
+				if(results.HasValue != true && results.Exception == null)
+					return orFunc(t1, t2);
+
+				return results;
+			};
         }
 
 		public static Func<T1, T2, TResult> Synchronize<T1, T2, TResult>(this Func<T1, T2, TResult> self)
@@ -251,12 +267,20 @@ namespace iSynaptic.Commons
             };
         }
 
-        public static Func<T1, T2, T3, Maybe<TResult>> Or<T1, T2, T3, TResult>(this Func<T1, T2, T3, Maybe<TResult>> self, Func<T1, T2, T3, Maybe<TResult>> followedBy)
+        public static Func<T1, T2, T3, Maybe<TResult>> Or<T1, T2, T3, TResult>(this Func<T1, T2, T3, Maybe<TResult>> self, Func<T1, T2, T3, Maybe<TResult>> orFunc)
         {
-            if (self == null || followedBy == null)
-                return self ?? followedBy;
+            if (self == null || orFunc == null)
+                return self ?? orFunc;
 
-            return (t1, t2, t3) => self(t1, t2, t3).Or(followedBy(t1, t2, t3));
+            return (t1, t2, t3) =>
+			{
+				var results = self(t1, t2, t3);
+
+				if(results.HasValue != true && results.Exception == null)
+					return orFunc(t1, t2, t3);
+
+				return results;
+			};
         }
 
 		public static Func<T1, T2, T3, TResult> Synchronize<T1, T2, T3, TResult>(this Func<T1, T2, T3, TResult> self)
@@ -343,12 +367,20 @@ namespace iSynaptic.Commons
             };
         }
 
-        public static Func<T1, T2, T3, T4, Maybe<TResult>> Or<T1, T2, T3, T4, TResult>(this Func<T1, T2, T3, T4, Maybe<TResult>> self, Func<T1, T2, T3, T4, Maybe<TResult>> followedBy)
+        public static Func<T1, T2, T3, T4, Maybe<TResult>> Or<T1, T2, T3, T4, TResult>(this Func<T1, T2, T3, T4, Maybe<TResult>> self, Func<T1, T2, T3, T4, Maybe<TResult>> orFunc)
         {
-            if (self == null || followedBy == null)
-                return self ?? followedBy;
+            if (self == null || orFunc == null)
+                return self ?? orFunc;
 
-            return (t1, t2, t3, t4) => self(t1, t2, t3, t4).Or(followedBy(t1, t2, t3, t4));
+            return (t1, t2, t3, t4) =>
+			{
+				var results = self(t1, t2, t3, t4);
+
+				if(results.HasValue != true && results.Exception == null)
+					return orFunc(t1, t2, t3, t4);
+
+				return results;
+			};
         }
 
 		public static Func<T1, T2, T3, T4, TResult> Synchronize<T1, T2, T3, T4, TResult>(this Func<T1, T2, T3, T4, TResult> self)
@@ -435,12 +467,20 @@ namespace iSynaptic.Commons
             };
         }
 
-        public static Func<T1, T2, T3, T4, T5, Maybe<TResult>> Or<T1, T2, T3, T4, T5, TResult>(this Func<T1, T2, T3, T4, T5, Maybe<TResult>> self, Func<T1, T2, T3, T4, T5, Maybe<TResult>> followedBy)
+        public static Func<T1, T2, T3, T4, T5, Maybe<TResult>> Or<T1, T2, T3, T4, T5, TResult>(this Func<T1, T2, T3, T4, T5, Maybe<TResult>> self, Func<T1, T2, T3, T4, T5, Maybe<TResult>> orFunc)
         {
-            if (self == null || followedBy == null)
-                return self ?? followedBy;
+            if (self == null || orFunc == null)
+                return self ?? orFunc;
 
-            return (t1, t2, t3, t4, t5) => self(t1, t2, t3, t4, t5).Or(followedBy(t1, t2, t3, t4, t5));
+            return (t1, t2, t3, t4, t5) =>
+			{
+				var results = self(t1, t2, t3, t4, t5);
+
+				if(results.HasValue != true && results.Exception == null)
+					return orFunc(t1, t2, t3, t4, t5);
+
+				return results;
+			};
         }
 
 		public static Func<T1, T2, T3, T4, T5, TResult> Synchronize<T1, T2, T3, T4, T5, TResult>(this Func<T1, T2, T3, T4, T5, TResult> self)
@@ -527,12 +567,20 @@ namespace iSynaptic.Commons
             };
         }
 
-        public static Func<T1, T2, T3, T4, T5, T6, Maybe<TResult>> Or<T1, T2, T3, T4, T5, T6, TResult>(this Func<T1, T2, T3, T4, T5, T6, Maybe<TResult>> self, Func<T1, T2, T3, T4, T5, T6, Maybe<TResult>> followedBy)
+        public static Func<T1, T2, T3, T4, T5, T6, Maybe<TResult>> Or<T1, T2, T3, T4, T5, T6, TResult>(this Func<T1, T2, T3, T4, T5, T6, Maybe<TResult>> self, Func<T1, T2, T3, T4, T5, T6, Maybe<TResult>> orFunc)
         {
-            if (self == null || followedBy == null)
-                return self ?? followedBy;
+            if (self == null || orFunc == null)
+                return self ?? orFunc;
 
-            return (t1, t2, t3, t4, t5, t6) => self(t1, t2, t3, t4, t5, t6).Or(followedBy(t1, t2, t3, t4, t5, t6));
+            return (t1, t2, t3, t4, t5, t6) =>
+			{
+				var results = self(t1, t2, t3, t4, t5, t6);
+
+				if(results.HasValue != true && results.Exception == null)
+					return orFunc(t1, t2, t3, t4, t5, t6);
+
+				return results;
+			};
         }
 
 		public static Func<T1, T2, T3, T4, T5, T6, TResult> Synchronize<T1, T2, T3, T4, T5, T6, TResult>(this Func<T1, T2, T3, T4, T5, T6, TResult> self)
@@ -619,12 +667,20 @@ namespace iSynaptic.Commons
             };
         }
 
-        public static Func<T1, T2, T3, T4, T5, T6, T7, Maybe<TResult>> Or<T1, T2, T3, T4, T5, T6, T7, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, Maybe<TResult>> self, Func<T1, T2, T3, T4, T5, T6, T7, Maybe<TResult>> followedBy)
+        public static Func<T1, T2, T3, T4, T5, T6, T7, Maybe<TResult>> Or<T1, T2, T3, T4, T5, T6, T7, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, Maybe<TResult>> self, Func<T1, T2, T3, T4, T5, T6, T7, Maybe<TResult>> orFunc)
         {
-            if (self == null || followedBy == null)
-                return self ?? followedBy;
+            if (self == null || orFunc == null)
+                return self ?? orFunc;
 
-            return (t1, t2, t3, t4, t5, t6, t7) => self(t1, t2, t3, t4, t5, t6, t7).Or(followedBy(t1, t2, t3, t4, t5, t6, t7));
+            return (t1, t2, t3, t4, t5, t6, t7) =>
+			{
+				var results = self(t1, t2, t3, t4, t5, t6, t7);
+
+				if(results.HasValue != true && results.Exception == null)
+					return orFunc(t1, t2, t3, t4, t5, t6, t7);
+
+				return results;
+			};
         }
 
 		public static Func<T1, T2, T3, T4, T5, T6, T7, TResult> Synchronize<T1, T2, T3, T4, T5, T6, T7, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, TResult> self)
@@ -711,12 +767,20 @@ namespace iSynaptic.Commons
             };
         }
 
-        public static Func<T1, T2, T3, T4, T5, T6, T7, T8, Maybe<TResult>> Or<T1, T2, T3, T4, T5, T6, T7, T8, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, Maybe<TResult>> self, Func<T1, T2, T3, T4, T5, T6, T7, T8, Maybe<TResult>> followedBy)
+        public static Func<T1, T2, T3, T4, T5, T6, T7, T8, Maybe<TResult>> Or<T1, T2, T3, T4, T5, T6, T7, T8, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, Maybe<TResult>> self, Func<T1, T2, T3, T4, T5, T6, T7, T8, Maybe<TResult>> orFunc)
         {
-            if (self == null || followedBy == null)
-                return self ?? followedBy;
+            if (self == null || orFunc == null)
+                return self ?? orFunc;
 
-            return (t1, t2, t3, t4, t5, t6, t7, t8) => self(t1, t2, t3, t4, t5, t6, t7, t8).Or(followedBy(t1, t2, t3, t4, t5, t6, t7, t8));
+            return (t1, t2, t3, t4, t5, t6, t7, t8) =>
+			{
+				var results = self(t1, t2, t3, t4, t5, t6, t7, t8);
+
+				if(results.HasValue != true && results.Exception == null)
+					return orFunc(t1, t2, t3, t4, t5, t6, t7, t8);
+
+				return results;
+			};
         }
 
 		public static Func<T1, T2, T3, T4, T5, T6, T7, T8, TResult> Synchronize<T1, T2, T3, T4, T5, T6, T7, T8, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, TResult> self)
@@ -803,12 +867,20 @@ namespace iSynaptic.Commons
             };
         }
 
-        public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, Maybe<TResult>> Or<T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, Maybe<TResult>> self, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, Maybe<TResult>> followedBy)
+        public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, Maybe<TResult>> Or<T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, Maybe<TResult>> self, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, Maybe<TResult>> orFunc)
         {
-            if (self == null || followedBy == null)
-                return self ?? followedBy;
+            if (self == null || orFunc == null)
+                return self ?? orFunc;
 
-            return (t1, t2, t3, t4, t5, t6, t7, t8, t9) => self(t1, t2, t3, t4, t5, t6, t7, t8, t9).Or(followedBy(t1, t2, t3, t4, t5, t6, t7, t8, t9));
+            return (t1, t2, t3, t4, t5, t6, t7, t8, t9) =>
+			{
+				var results = self(t1, t2, t3, t4, t5, t6, t7, t8, t9);
+
+				if(results.HasValue != true && results.Exception == null)
+					return orFunc(t1, t2, t3, t4, t5, t6, t7, t8, t9);
+
+				return results;
+			};
         }
 
 		public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult> Synchronize<T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult> self)
@@ -895,12 +967,20 @@ namespace iSynaptic.Commons
             };
         }
 
-        public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, Maybe<TResult>> Or<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, Maybe<TResult>> self, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, Maybe<TResult>> followedBy)
+        public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, Maybe<TResult>> Or<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, Maybe<TResult>> self, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, Maybe<TResult>> orFunc)
         {
-            if (self == null || followedBy == null)
-                return self ?? followedBy;
+            if (self == null || orFunc == null)
+                return self ?? orFunc;
 
-            return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) => self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10).Or(followedBy(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10));
+            return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) =>
+			{
+				var results = self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10);
+
+				if(results.HasValue != true && results.Exception == null)
+					return orFunc(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10);
+
+				return results;
+			};
         }
 
 		public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult> Synchronize<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult> self)
@@ -987,12 +1067,20 @@ namespace iSynaptic.Commons
             };
         }
 
-        public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, Maybe<TResult>> Or<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, Maybe<TResult>> self, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, Maybe<TResult>> followedBy)
+        public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, Maybe<TResult>> Or<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, Maybe<TResult>> self, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, Maybe<TResult>> orFunc)
         {
-            if (self == null || followedBy == null)
-                return self ?? followedBy;
+            if (self == null || orFunc == null)
+                return self ?? orFunc;
 
-            return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) => self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11).Or(followedBy(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11));
+            return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) =>
+			{
+				var results = self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11);
+
+				if(results.HasValue != true && results.Exception == null)
+					return orFunc(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11);
+
+				return results;
+			};
         }
 
 		public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult> Synchronize<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult> self)
@@ -1079,12 +1167,20 @@ namespace iSynaptic.Commons
             };
         }
 
-        public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, Maybe<TResult>> Or<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, Maybe<TResult>> self, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, Maybe<TResult>> followedBy)
+        public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, Maybe<TResult>> Or<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, Maybe<TResult>> self, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, Maybe<TResult>> orFunc)
         {
-            if (self == null || followedBy == null)
-                return self ?? followedBy;
+            if (self == null || orFunc == null)
+                return self ?? orFunc;
 
-            return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) => self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12).Or(followedBy(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12));
+            return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) =>
+			{
+				var results = self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12);
+
+				if(results.HasValue != true && results.Exception == null)
+					return orFunc(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12);
+
+				return results;
+			};
         }
 
 		public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult> Synchronize<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult> self)
@@ -1171,12 +1267,20 @@ namespace iSynaptic.Commons
             };
         }
 
-        public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, Maybe<TResult>> Or<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, Maybe<TResult>> self, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, Maybe<TResult>> followedBy)
+        public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, Maybe<TResult>> Or<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, Maybe<TResult>> self, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, Maybe<TResult>> orFunc)
         {
-            if (self == null || followedBy == null)
-                return self ?? followedBy;
+            if (self == null || orFunc == null)
+                return self ?? orFunc;
 
-            return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) => self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13).Or(followedBy(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13));
+            return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) =>
+			{
+				var results = self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13);
+
+				if(results.HasValue != true && results.Exception == null)
+					return orFunc(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13);
+
+				return results;
+			};
         }
 
 		public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TResult> Synchronize<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TResult> self)
@@ -1263,12 +1367,20 @@ namespace iSynaptic.Commons
             };
         }
 
-        public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, Maybe<TResult>> Or<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, Maybe<TResult>> self, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, Maybe<TResult>> followedBy)
+        public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, Maybe<TResult>> Or<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, Maybe<TResult>> self, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, Maybe<TResult>> orFunc)
         {
-            if (self == null || followedBy == null)
-                return self ?? followedBy;
+            if (self == null || orFunc == null)
+                return self ?? orFunc;
 
-            return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) => self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14).Or(followedBy(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14));
+            return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) =>
+			{
+				var results = self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14);
+
+				if(results.HasValue != true && results.Exception == null)
+					return orFunc(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14);
+
+				return results;
+			};
         }
 
 		public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult> Synchronize<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult> self)
@@ -1355,12 +1467,20 @@ namespace iSynaptic.Commons
             };
         }
 
-        public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, Maybe<TResult>> Or<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, Maybe<TResult>> self, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, Maybe<TResult>> followedBy)
+        public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, Maybe<TResult>> Or<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, Maybe<TResult>> self, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, Maybe<TResult>> orFunc)
         {
-            if (self == null || followedBy == null)
-                return self ?? followedBy;
+            if (self == null || orFunc == null)
+                return self ?? orFunc;
 
-            return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) => self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15).Or(followedBy(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15));
+            return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) =>
+			{
+				var results = self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15);
+
+				if(results.HasValue != true && results.Exception == null)
+					return orFunc(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15);
+
+				return results;
+			};
         }
 
 		public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult> Synchronize<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult> self)
@@ -1447,12 +1567,20 @@ namespace iSynaptic.Commons
             };
         }
 
-        public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, Maybe<TResult>> Or<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, Maybe<TResult>> self, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, Maybe<TResult>> followedBy)
+        public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, Maybe<TResult>> Or<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, Maybe<TResult>> self, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, Maybe<TResult>> orFunc)
         {
-            if (self == null || followedBy == null)
-                return self ?? followedBy;
+            if (self == null || orFunc == null)
+                return self ?? orFunc;
 
-            return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) => self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16).Or(followedBy(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16));
+            return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) =>
+			{
+				var results = self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16);
+
+				if(results.HasValue != true && results.Exception == null)
+					return orFunc(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16);
+
+				return results;
+			};
         }
 
 		public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TResult> Synchronize<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TResult> self)

@@ -78,12 +78,20 @@ namespace iSynaptic.Commons
             };
         }
 
-        public static Func<<#= typeArgs #>, Maybe<TResult>> Or<<#= typeArgs #>, TResult>(this Func<<#= typeArgs #>, Maybe<TResult>> self, Func<<#= typeArgs #>, Maybe<TResult>> followedBy)
+        public static Func<<#= typeArgs #>, Maybe<TResult>> Or<<#= typeArgs #>, TResult>(this Func<<#= typeArgs #>, Maybe<TResult>> self, Func<<#= typeArgs #>, Maybe<TResult>> orFunc)
         {
-            if (self == null || followedBy == null)
-                return self ?? followedBy;
+            if (self == null || orFunc == null)
+                return self ?? orFunc;
 
-            return (<#= args #>) => self(<#= args #>).Or(followedBy(<#= args #>));
+            return (<#= args #>) =>
+			{
+				var results = self(<#= args #>);
+
+				if(results.HasValue != true && results.Exception == null)
+					return orFunc(<#= args #>);
+
+				return results;
+			};
         }
 
 		public static Func<<#= typeArgs #>, TResult> Synchronize<<#= typeArgs #>, TResult>(this Func<<#= typeArgs #>, TResult> self)
