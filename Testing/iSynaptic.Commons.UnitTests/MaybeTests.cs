@@ -255,6 +255,44 @@ namespace iSynaptic.Commons
         }
 
         [Test]
+        public void Coalesce_WithNonNullReferenceType_ReturnsValue()
+        {
+            var value = Maybe.Value("Hello World!")
+                .Coalesce(x => x);
+
+            Assert.IsTrue(value.HasValue);
+            Assert.AreEqual("Hello World!", value.Value);
+        }
+
+        [Test]
+        public void Coalesce_WithNonNullValueType_ReturnsValue()
+        {
+            var value = Maybe.Value((int?)42)
+                .Coalesce(x => x);
+
+            Assert.IsTrue(value.HasValue);
+            Assert.AreEqual(42, value.Value);
+        }
+
+        [Test]
+        public void Coalesce_WithNullReferenceType_ReturnsNoValue()
+        {
+            var value = Maybe.Value("Hello World!")
+                .Coalesce(x => (string)null);
+
+            Assert.IsFalse(value.HasValue);
+        }
+
+        [Test]
+        public void Coalesce_WithNullValueType_ReturnsNoValue()
+        {
+            var value = Maybe.Value(42)
+                .Coalesce(x => (int?)null);
+
+            Assert.IsFalse(value.HasValue);
+        }
+
+        [Test]
         public void Value_ReturnsValueWrapedInMaybe()
         {
             var value = Maybe.Value("Hello World!");

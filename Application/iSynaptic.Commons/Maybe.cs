@@ -270,16 +270,46 @@ namespace iSynaptic.Commons
             return self.NotNull(x => x);
         }
 
-        public static Maybe<T> NotNull<T, TTarget>(this Maybe<T> self, Func<T, TTarget> selector) where TTarget : class
+        public static Maybe<T> NotNull<T, TResult>(this Maybe<T> self, Func<T, TResult> selector) where TResult : class
         {
             Guard.NotNull(selector, "selector");
             return self.Where(x => selector(x) != null);
         }
 
-        public static Maybe<T> NotNull<T, TTarget>(this Maybe<T> self, Func<T, TTarget?> selector) where TTarget : struct
+        public static Maybe<T> NotNull<T, TResult>(this Maybe<T> self, Func<T, TResult?> selector) where TResult : struct
         {
             Guard.NotNull(selector, "selector");
             return self.Where(x => selector(x).HasValue);
+        }
+
+        public static Maybe<TResult> Coalesce<T, TResult>(this Maybe<T> self, Func<T, TResult> selector) where TResult : class
+        {
+            Guard.NotNull(selector, "selector");
+            return self.Coalesce(selector, () => Maybe<TResult>.NoValue);
+        }
+
+        public static Maybe<TResult?> Coalesce<T, TResult>(this Maybe<T> self, Func<T, TResult?> selector) where TResult : struct
+        {
+            Guard.NotNull(selector, "selector");
+            return self.Coalesce(selector, () => Maybe<TResult?>.NoValue);
+        }
+
+        public static Maybe<TResult> Coalesce<T, TResult>(this Maybe<T> self, Func<T, TResult> selector, Func<Maybe<TResult>> valueIfNullFactory) where TResult : class
+        {
+            Guard.NotNull(selector, "selector");
+            Guard.NotNull(valueIfNullFactory, "valueIfNullFactory");
+
+            return self.Select(selector)
+                .When(x => x.HasValue && x.Value == null, x => valueIfNullFactory());
+        }
+
+        public static Maybe<TResult?> Coalesce<T, TResult>(this Maybe<T> self, Func<T, TResult?> selector, Func<Maybe<TResult?>> valueIfNullFactory) where TResult : struct 
+        {
+            Guard.NotNull(selector, "selector");
+            Guard.NotNull(valueIfNullFactory, "valueIfNullFactory");
+
+            return self.Select(selector)
+                .When(x => x.HasValue && x.Value.HasValue != true, x => valueIfNullFactory());
         }
 
         public static Maybe<T> Where<T>(this Maybe<T> self, Func<T, bool> predicate)
