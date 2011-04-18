@@ -8,17 +8,8 @@ namespace iSynaptic.Commons.Collections.Generic
     public sealed class WeakValueDictionary<TKey, TValue> : BaseWeakDictionary<TKey, TValue, TKey, WeakReference<TValue>>
         where TValue : class
     {
-        public WeakValueDictionary()
-            : this(0) { }
-
-        public WeakValueDictionary(int capacity)
-            : this(capacity, null) { }
-
-        public WeakValueDictionary(IEqualityComparer<TKey> comparer)
-            : this(0, comparer) { }
-
-        public WeakValueDictionary(int capacity, IEqualityComparer<TKey> comparer)
-            : base(capacity, comparer)
+        public WeakValueDictionary(int capacity = 0, IEqualityComparer<TKey> comparer = null, Action<Maybe<TKey>, Maybe<TValue>> onGarbagePurge = null)
+            : base(capacity, comparer, onGarbagePurge)
         {
         }
 

@@ -9,8 +9,9 @@ namespace iSynaptic.Commons.Collections.Generic
     {
         private readonly IEqualityComparer<TKey> _Comparer;
         private readonly Dictionary<TWrappedKey, TWrappedValue> _Dictionary;
+        private readonly Action<Maybe<TKey>, Maybe<TValue>> _OnGarbagePurge;
 
-        protected BaseWeakDictionary(int capacity, IEqualityComparer<TKey> comparer)
+        protected BaseWeakDictionary(int capacity, IEqualityComparer<TKey> comparer, Action<Maybe<TKey>, Maybe<TValue>> onGarbagePurge)
         {
             _Comparer = comparer ?? EqualityComparer<TKey>.Default;
 
@@ -19,7 +20,9 @@ namespace iSynaptic.Commons.Collections.Generic
             _Dictionary = wrappedKeyComparer != null
                 ? new Dictionary<TWrappedKey, TWrappedValue>(capacity, wrappedKeyComparer)
                 : new Dictionary<TWrappedKey, TWrappedValue>(capacity);
-        }
+
+            _OnGarbagePurge = onGarbagePurge;
+       }
 
         protected abstract TWrappedKey WrapKey(TKey key, IEqualityComparer<TKey> comparer);
         protected abstract Maybe<TKey> UnwrapKey(TWrappedKey key);
@@ -85,10 +88,18 @@ namespace iSynaptic.Commons.Collections.Generic
 
         public void PurgeGarbage()
         {
-            _Dictionary.RemoveAll(pair =>
+            var itemsToPurge = _Dictionary.Where(pair =>
                 !(UnwrapKey(pair.Key)
                     .Select(k => UnwrapValue(pair.Value))
-                    .HasValue));
+                    .HasValue)).ToArray();
+
+            if (_OnGarbagePurge != null)
+            {
+                foreach (var item in itemsToPurge)
+                    _OnGarbagePurge(UnwrapKey(item.Key), UnwrapValue(item.Value));
+            }
+
+            _Dictionary.Remove(itemsToPurge);
         }
     } 
 }

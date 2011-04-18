@@ -9,17 +9,8 @@ namespace iSynaptic.Commons.Collections.Generic
         where TKey : class
         where TValue : class
     {
-        public WeakDictionary()
-            : this(0) { }
-
-        public WeakDictionary(int capacity)
-            : this(capacity, null) { }
-
-        public WeakDictionary(IEqualityComparer<TKey> comparer)
-            : this(0, comparer) { }
-
-        public WeakDictionary(int capacity, IEqualityComparer<TKey> comparer)
-            : base(capacity, comparer)
+        public WeakDictionary(int capacity = 0, IEqualityComparer<TKey> comparer = null, Action<Maybe<TKey>, Maybe<TValue>> onGarbagePurge = null)
+            : base(capacity, comparer, onGarbagePurge)
         {
         }
 
