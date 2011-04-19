@@ -9,6 +9,6 @@ namespace iSynaptic.Commons.Data
     {
         bool IsInScope<TExodata, TContext, TSubject>(IExodataBinding binding, IExodataRequest<TContext, TSubject> request);
         
-        event EventHandler ScopeClosed;
+        event EventHandler CacheFlushRequested;
     }
 }

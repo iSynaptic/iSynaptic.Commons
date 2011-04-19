@@ -1,4 +1,4 @@
-.namespace iSynaptic.Commons
+.namespace iSynaptic.Commons.IL
 {
 	.class public abstract auto ansi sealed Cast<TSource, TDestination>
 		extends [mscorlib]System.Object

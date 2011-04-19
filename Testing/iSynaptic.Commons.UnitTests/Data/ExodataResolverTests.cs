@@ -135,7 +135,7 @@ namespace iSynaptic.Commons.Data
         }
 
         [Test]
-        public void Resolve_WithExodataScopeObject_FlushesCacheWhenScopeCloses()
+        public void Resolve_WithExodataScopeObject_FlushesCacheWhenScopeRequestsIt()
         {
             int resolveCount = 0;
 
@@ -157,7 +157,7 @@ namespace iSynaptic.Commons.Data
             maxLength = StringExodata.MaxLength;
             Assert.AreEqual(42, maxLength);
 
-            exodataScopeObject.Raise(x => x.ScopeClosed += null, this, EventArgs.Empty);
+            exodataScopeObject.Raise(x => x.CacheFlushRequested += null, this, EventArgs.Empty);
 
             maxLength = StringExodata.MaxLength;
 

@@ -3,28 +3,47 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using iSynaptic.Commons;
 using iSynaptic.Commons.Collections.Generic;
 
 namespace iSynaptic.Commons.Data
 {
     public class ExodataResolver : IExodataResolver
     {
-        private class CacheValue<TExodata>
+        #region Cache Helper Classes
+
+        private interface ICacheValue
         {
-            public int RequestHashCode;
-            public TExodata Exodata;
+            int RequestHashCode { get; }
+            TExodata GetExodata<TExodata>();
         }
 
-        private static class ScopedCache<TExodata>
+        private class CacheValue<TExodata> : ICacheValue
         {
-            public static readonly MultiMap<object, CacheValue<TExodata>> Cache;
-            public static readonly WeakKeyDictionary<object, ICollection<CacheValue<TExodata>>> Dictionary;
-
-            static ScopedCache()
+            public CacheValue(TExodata exodata, int requestHashCode)
             {
-                Dictionary = new WeakKeyDictionary<object, ICollection<CacheValue<TExodata>>>();
-                Cache = new MultiMap<object, CacheValue<TExodata>>(Dictionary);
+                Exodata = exodata;
+                RequestHashCode = requestHashCode;
             }
+
+            public TRequestedExodata GetExodata<TRequestedExodata>()
+            {
+                return Cast<TExodata, TRequestedExodata>.With(Exodata);
+            }
+
+            public TExodata Exodata { get; private set; }
+            public int RequestHashCode { get; private set; }
+        }
+
+        #endregion
+
+        private readonly MultiMap<object, ICacheValue> _Cache;
+        private readonly WeakKeyDictionary<object, ICollection<ICacheValue>> _CacheDictionary;
+
+        public ExodataResolver()
+        {
+            _CacheDictionary = new WeakKeyDictionary<object, ICollection<ICacheValue>>();
+            _Cache = new MultiMap<object, ICacheValue>(_CacheDictionary);
         }
 
         private readonly HashSet<IExodataBindingSource> _BindingSources = new HashSet<IExodataBindingSource>();
@@ -49,30 +68,32 @@ namespace iSynaptic.Commons.Data
 
             if (scopeObject != null)
             {
-                ScopedCache<TExodata>.Dictionary.PurgeGarbage();
+                _CacheDictionary.PurgeGarbage();
+
+                var scopedCache = _Cache[scopeObject];
+                var cachedValue = scopedCache.FirstOrDefault(x => x.RequestHashCode == requestHashCode);
 
                 if (exodataScopeObject == null || exodataScopeObject.IsInScope<TExodata, TContext, TSubject>(selectedBinding, request))
                 {
-                    var scopedCache = ScopedCache<TExodata>.Cache[scopeObject];
-                    var cachedValue = scopedCache.FirstOrDefault(x => x.RequestHashCode == requestHashCode);
-
                     if (cachedValue != null)
-                        return cachedValue.Exodata;
+                        return cachedValue.GetExodata<TExodata>();
                 }
+                else if(cachedValue != null)
+                    _Cache.Remove(scopeObject, cachedValue);
             }
 
             var results = selectedBinding.Resolve<TExodata, TContext, TSubject>(request);
 
             if (scopeObject != null)
             {
-                ScopedCache<TExodata>.Cache.Add(scopeObject, new CacheValue<TExodata> { Exodata = results, RequestHashCode = requestHashCode });
+                _Cache.Add(scopeObject, new CacheValue<TExodata>(results, requestHashCode));
                 
                 if (exodataScopeObject != null)
                 {
-                    exodataScopeObject.ScopeClosed += (s, a) => ScopedCache<TExodata>.Dictionary
+                    exodataScopeObject.CacheFlushRequested += (s, a) => _CacheDictionary
                                                                     .TryGetValue(scopeObject)
                                                                     .Do(x => x.Clear())
-                                                                    .Do(x => ScopedCache<TExodata>.Dictionary.Remove(scopeObject))
+                                                                    .Do(x => _CacheDictionary.Remove(scopeObject))
                                                                     .Run();
                 }
             }
