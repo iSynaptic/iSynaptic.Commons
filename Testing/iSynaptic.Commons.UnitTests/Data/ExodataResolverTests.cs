@@ -100,5 +100,69 @@ namespace iSynaptic.Commons.Data
             Assert.AreEqual(42, maxLength);
             Assert.AreEqual(2, resolveCount);
         }
+
+        [Test]
+        public void Resolve_WithExodataScopeObject_ChecksToSeeIfExodataScopeObjectSaysItIsInScope()
+        {
+            int resolveCount = 0;
+
+            bool isInScope = true;
+
+            var exodataScopeObject = MockRepository.GenerateStub<IExodataScopeObject>();
+            exodataScopeObject.Expect(x => x.IsInScope<int, object, object>(null, null))
+                .IgnoreArguments()
+                .Do((Func<IExodataBinding, IExodataRequest<object, object>, bool>) ((b, r) => isInScope));
+
+            var resolver = new StandardExodataResolver();
+            resolver.Bind(StringExodata.MaxLength)
+                .InScope(x => exodataScopeObject)
+                .To(r => { resolveCount++; return 42; });
+
+            ExodataDeclaration.SetResolver(resolver);
+
+            int maxLength = StringExodata.MaxLength;
+            Assert.AreEqual(42, maxLength);
+
+            maxLength = StringExodata.MaxLength;
+            Assert.AreEqual(42, maxLength);
+
+            isInScope = false;
+
+            maxLength = StringExodata.MaxLength;
+
+            Assert.AreEqual(42, maxLength);
+            Assert.AreEqual(2, resolveCount);
+        }
+
+        [Test]
+        public void Resolve_WithExodataScopeObject_FlushesCacheWhenScopeCloses()
+        {
+            int resolveCount = 0;
+
+            var exodataScopeObject = MockRepository.GenerateStub<IExodataScopeObject>();
+            exodataScopeObject.Expect(x => x.IsInScope<int, object, object>(null, null))
+                .IgnoreArguments()
+                .Return(true);
+
+            var resolver = new StandardExodataResolver();
+            resolver.Bind(StringExodata.MaxLength)
+                .InScope(x => exodataScopeObject)
+                .To(r => { resolveCount++; return 42; });
+
+            ExodataDeclaration.SetResolver(resolver);
+
+            int maxLength = StringExodata.MaxLength;
+            Assert.AreEqual(42, maxLength);
+
+            maxLength = StringExodata.MaxLength;
+            Assert.AreEqual(42, maxLength);
+
+            exodataScopeObject.Raise(x => x.ScopeClosed += null, this, EventArgs.Empty);
+
+            maxLength = StringExodata.MaxLength;
+
+            Assert.AreEqual(42, maxLength);
+            Assert.AreEqual(2, resolveCount);
+        }
     }
 }

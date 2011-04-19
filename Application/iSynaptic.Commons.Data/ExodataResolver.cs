@@ -45,22 +45,37 @@ namespace iSynaptic.Commons.Data
                 return Maybe<TExodata>.NoValue;
 
             object scopeObject = selectedBinding.GetScopeObject<TExodata, TContext, TSubject>(request);
+            var exodataScopeObject = scopeObject as IExodataScopeObject;
 
             if (scopeObject != null)
             {
                 ScopedCache<TExodata>.Dictionary.PurgeGarbage();
 
-                var scopedCache = ScopedCache<TExodata>.Cache[scopeObject];
-                var cachedValue = scopedCache.FirstOrDefault(x => x.RequestHashCode == requestHashCode);
+                if (exodataScopeObject == null || exodataScopeObject.IsInScope<TExodata, TContext, TSubject>(selectedBinding, request))
+                {
+                    var scopedCache = ScopedCache<TExodata>.Cache[scopeObject];
+                    var cachedValue = scopedCache.FirstOrDefault(x => x.RequestHashCode == requestHashCode);
 
-                if(cachedValue != null)
-                    return cachedValue.Exodata;
+                    if (cachedValue != null)
+                        return cachedValue.Exodata;
+                }
             }
 
             var results = selectedBinding.Resolve<TExodata, TContext, TSubject>(request);
 
-            if(scopeObject != null)
+            if (scopeObject != null)
+            {
                 ScopedCache<TExodata>.Cache.Add(scopeObject, new CacheValue<TExodata> { Exodata = results, RequestHashCode = requestHashCode });
+                
+                if (exodataScopeObject != null)
+                {
+                    exodataScopeObject.ScopeClosed += (s, a) => ScopedCache<TExodata>.Dictionary
+                                                                    .TryGetValue(scopeObject)
+                                                                    .Do(x => x.Clear())
+                                                                    .Do(x => ScopedCache<TExodata>.Dictionary.Remove(scopeObject))
+                                                                    .Run();
+                }
+            }
 
             return results;
         }
@@ -79,7 +94,7 @@ namespace iSynaptic.Commons.Data
             }
         }
 
-        public void AddExodataBindingSource<T>() where T : class, IExodataBindingSource, new()
+        public void AddExodataBindingSource<T>() where T : IExodataBindingSource, new()
         {
             AddExodataBindingSource(new T());
         }
@@ -89,6 +104,17 @@ namespace iSynaptic.Commons.Data
             Guard.NotNull(source, "source");
 
             _BindingSources.Add(source);
+        }
+
+        public void RemoveExodataBindingSource<T>() where T : IExodataBindingSource
+        {
+            _BindingSources.RemoveAll(x => x is T);
+        }
+
+        public void RemoveExodataBindingSource(IExodataBindingSource source)
+        {
+            Guard.NotNull(source, "source");
+            _BindingSources.Remove(source);
         }
     }
 }
