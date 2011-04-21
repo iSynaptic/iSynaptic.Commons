@@ -98,24 +98,14 @@ namespace iSynaptic.Commons.Data
             _Modules.Remove(module);
         }
 
-        public IFluentExodataBindingGivenSubjectWhenScopeTo<TExodata, object, object> Bind<TExodata>(IExodataDeclaration declaration)
-        {
-            return _ResolverModule.Bind<TExodata>(declaration);
-        }
-
         public IFluentExodataBindingGivenSubjectWhenScopeTo<TExodata, object, object> Bind<TExodata>(IExodataDeclaration<TExodata> declaration)
         {
-            return Bind<TExodata>((IExodataDeclaration)declaration);
+            return _ResolverModule.Bind<TExodata>(declaration);
         }
 
         public void Bind<TExodata>(IExodataDeclaration<TExodata> declaration, TExodata value)
         {
             Bind(declaration).To(value);
-        }
-
-        public void Bind<TExodata>(IExodataDeclaration declaration, TExodata value)
-        {
-            Bind<TExodata>(declaration).To(value);
         }
     }
 }

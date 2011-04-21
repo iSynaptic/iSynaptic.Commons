@@ -19,11 +19,6 @@ namespace iSynaptic.Commons.Data
 
         public IFluentExodataBindingGivenSubjectWhenScopeTo<TExodata, object, object> Bind<TExodata>(IExodataDeclaration<TExodata> declaration)
         {
-            return Bind<TExodata>((IExodataDeclaration) declaration);
-        }
-
-        public IFluentExodataBindingGivenSubjectWhenScopeTo<TExodata, object, object> Bind<TExodata>(IExodataDeclaration declaration)
-        {
             Guard.NotNull(declaration, "declaration");
             return new FluentExodataBindingBuilder<TExodata, object, object>(this, declaration, b => _Bindings.Add(b));
         }
@@ -31,11 +26,6 @@ namespace iSynaptic.Commons.Data
         public void Bind<TExodata>(IExodataDeclaration<TExodata> declaration, TExodata value)
         {
             Bind(declaration).To(value);
-        }
-
-        public void Bind<TExodata>(IExodataDeclaration declaration, TExodata value)
-        {
-            Bind<TExodata>(declaration).To(value);
         }
     }
 }
