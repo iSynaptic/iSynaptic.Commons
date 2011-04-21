@@ -127,7 +127,7 @@ namespace iSynaptic.Commons.Data
         }
     }
 
-    public abstract class ExodataDeclaration : IExodataDeclaration
+    public abstract class ExodataDeclaration
     {
         protected internal ExodataDeclaration()
         {

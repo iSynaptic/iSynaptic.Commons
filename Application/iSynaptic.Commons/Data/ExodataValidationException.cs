@@ -5,24 +5,16 @@ using System.Text;
 
 namespace iSynaptic.Commons.Data
 {
-    public class ExodataValidationException : Exception
+    public class ExodataValidationException<TExodata> : Exception
     {
-        public ExodataValidationException(IExodataDeclaration declaration, object invalidValue, string message) : base(message)
+        public ExodataValidationException(IExodataDeclaration<TExodata> declaration, TExodata invalidValue, string message)
+            : base(message)
         {
             Declaration = Guard.NotNull(declaration, "declaration");
             InvalidValue = invalidValue;
         }
 
-        public IExodataDeclaration Declaration { get; private set; }
-        public object InvalidValue { get; private set; }
-    }
-
-    public class ExodataValidationException<T> : ExodataValidationException
-    {
-        public ExodataValidationException(IExodataDeclaration declaration, T invalidValue, string message) : base(declaration, invalidValue, message)
-        {
-        }
-
-        public new T InvalidValue { get { return (T) base.InvalidValue; } }
+        public IExodataDeclaration<TExodata> Declaration { get; private set; }
+        public TExodata InvalidValue { get; private set; }
     }
 }
