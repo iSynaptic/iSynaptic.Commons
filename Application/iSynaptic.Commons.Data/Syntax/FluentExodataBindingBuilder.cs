@@ -7,7 +7,7 @@ namespace iSynaptic.Commons.Data.Syntax
 {
     internal class FluentExodataBindingBuilder<TExodata, TContext, TSubject> : IFluentExodataBindingGivenSubjectWhenScopeTo<TExodata, TContext, TSubject>
     {
-        public FluentExodataBindingBuilder(IExodataBindingSource source, IExodataDeclaration declaration, Action<IExodataBinding> onBuildComplete)
+        public FluentExodataBindingBuilder(IExodataBindingSource source, IExodataDeclaration<TExodata> declaration, Action<IExodataBinding> onBuildComplete)
         {
             Guard.NotNull(source, "source");
             Guard.NotNull(declaration, "declaration");
@@ -156,7 +156,7 @@ namespace iSynaptic.Commons.Data.Syntax
         protected Maybe<TSubject> Subject { get; set; }
         protected MemberInfo Member { get; set; }
 
-        protected IExodataDeclaration Declaration { get; set; }
+        protected IExodataDeclaration<TExodata> Declaration { get; set; }
 
         protected Func<IExodataRequest<TContext, TSubject>, bool> UserPredicate { get; set; }
         protected Func<IExodataRequest<TContext, TSubject>, object> ScopeFactory { get; set; }
