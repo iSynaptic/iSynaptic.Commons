@@ -88,8 +88,8 @@ namespace iSynaptic.Commons.Data.Syntax
                     : null
             };
         }
-        
-        public IFluentExodataBindingScopeTo<TExodata, TContext, TSubject> When(Func<IExodataRequest<TContext, TSubject>, bool> userPredicate)
+
+        public IFluentExodataBindingScopeTo<TExodata, TContext, TSubject> When(Func<IExodataRequest<TExodata, TContext, TSubject>, bool> userPredicate)
         {
             Guard.NotNull(userPredicate, "userPredicate");
             UserPredicate = userPredicate;
@@ -103,7 +103,7 @@ namespace iSynaptic.Commons.Data.Syntax
             return this;
         }
 
-        public IFluentExodataBindingTo<TExodata, TContext, TSubject> InScope(Func<IExodataRequest<TContext, TSubject>, object> scopeFactory)
+        public IFluentExodataBindingTo<TExodata, TContext, TSubject> InScope(Func<IExodataRequest<TExodata, TContext, TSubject>, object> scopeFactory)
         {
             Guard.NotNull(scopeFactory, "scopeFactory");
             ScopeFactory = scopeFactory;
@@ -115,14 +115,14 @@ namespace iSynaptic.Commons.Data.Syntax
             To(r => value);
         }
 
-        public void To(Func<IExodataRequest<TContext, TSubject>, TExodata> valueFactory)
+        public void To(Func<IExodataRequest<TExodata, TContext, TSubject>, TExodata> valueFactory)
         {
             Guard.NotNull(valueFactory, "valueFactory");
 
             OnBuildComplete(ExodataBinding.Create<TExodata, TContext, TSubject>(Source, Matches, valueFactory, ScopeFactory, Context.HasValue, Subject.HasValue));
         }
 
-        private bool Matches(IExodataRequest<TContext, TSubject> request)
+        private bool Matches(IExodataRequest<TExodata, TContext, TSubject> request)
         {
             Guard.NotNull(request, "request");
 
@@ -158,8 +158,8 @@ namespace iSynaptic.Commons.Data.Syntax
 
         protected IExodataDeclaration<TExodata> Declaration { get; set; }
 
-        protected Func<IExodataRequest<TContext, TSubject>, bool> UserPredicate { get; set; }
-        protected Func<IExodataRequest<TContext, TSubject>, object> ScopeFactory { get; set; }
+        protected Func<IExodataRequest<TExodata, TContext, TSubject>, bool> UserPredicate { get; set; }
+        protected Func<IExodataRequest<TExodata, TContext, TSubject>, object> ScopeFactory { get; set; }
 
         protected Action<IExodataBinding> OnBuildComplete { get; set; }
     }

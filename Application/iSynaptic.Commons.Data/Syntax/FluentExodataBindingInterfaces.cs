@@ -29,18 +29,18 @@ namespace iSynaptic.Commons.Data.Syntax
 
     public interface IFluentExodataBindingWhenScopeTo<TExodata, TContext, TSubject> : IFluentExodataBindingScopeTo<TExodata, TContext, TSubject>
     {
-        IFluentExodataBindingScopeTo<TExodata, TContext, TSubject> When(Func<IExodataRequest<TContext, TSubject>, bool> predicate);
+        IFluentExodataBindingScopeTo<TExodata, TContext, TSubject> When(Func<IExodataRequest<TExodata, TContext, TSubject>, bool> predicate);
     }
 
     public interface IFluentExodataBindingScopeTo<TExodata, TContext, TSubject> : IFluentExodataBindingTo<TExodata, TContext, TSubject>
     {
         IFluentExodataBindingTo<TExodata, TContext, TSubject> InScope(object scopeObject);
-        IFluentExodataBindingTo<TExodata, TContext, TSubject> InScope(Func<IExodataRequest<TContext, TSubject>, object> scopeFactory);
+        IFluentExodataBindingTo<TExodata, TContext, TSubject> InScope(Func<IExodataRequest<TExodata, TContext, TSubject>, object> scopeFactory);
     }
 
     public interface IFluentExodataBindingTo<TExodata, TContext, TSubject> : IFluentInterface
     {
         void To(TExodata value);
-        void To(Func<IExodataRequest<TContext, TSubject>, TExodata> valueFactory);
+        void To(Func<IExodataRequest<TExodata, TContext, TSubject>, TExodata> valueFactory);
     }
 }

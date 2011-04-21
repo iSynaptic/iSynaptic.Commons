@@ -12,7 +12,7 @@ namespace iSynaptic.Commons.Data
     {
         private readonly HashSet<IExodataBinding> _Bindings = new HashSet<IExodataBinding>();
 
-        public IEnumerable<IExodataBinding> GetBindingsFor<TExodata, TContext, TSubject>(IExodataRequest<TContext, TSubject> request)
+        public IEnumerable<IExodataBinding> GetBindingsFor<TExodata, TContext, TSubject>(IExodataRequest<TExodata, TContext, TSubject> request)
         {
             return _Bindings;
         }

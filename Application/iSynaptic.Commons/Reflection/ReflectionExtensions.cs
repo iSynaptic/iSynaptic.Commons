@@ -11,13 +11,44 @@ namespace iSynaptic.Commons.Reflection
     {
         public static IEnumerable<T> GetAttributesOfType<T>(this ICustomAttributeProvider provider)
         {
-            Guard.NotNull(provider, "provider");
+            return GetAttributesOfType(provider, typeof(T))
+                .Cast<T>();
+        }
 
-            Type desiredType = typeof (T);
+        public static IEnumerable<Attribute> GetAttributesOfType(this ICustomAttributeProvider provider, Type attributeType)
+        {
+            Guard.NotNull(provider, "provider");
+            Guard.NotNull(attributeType, "attributeType");
 
             return provider.GetCustomAttributes(true)
-                .Where(x => desiredType.IsAssignableFrom(x.GetType()))
-                .Cast<T>();
+                .Where(x => x.GetType().DoesImplementType(attributeType))
+                .Cast<Attribute>(); 
+        }
+
+        public static bool DoesImplementType(this Type candidateType, Type testType)
+        {
+            Guard.NotNull(candidateType, "candidateType");
+            Guard.NotNull(testType, "testType");
+
+            if (!testType.IsGenericTypeDefinition)
+                return testType.IsAssignableFrom(candidateType);
+
+            return candidateType.Flatten(x => Maybe.Value(x.BaseType).NotNull())
+                .Select(TryGetGenericTypeDefinition)
+                .Union(candidateType.GetInterfaces().Select(TryGetGenericTypeDefinition))
+                .Where(x => x.HasValue)
+                .Any(x => x.Value == testType);
+        }
+
+        public static Maybe<Type> TryGetGenericTypeDefinition(this Type source)
+        {
+            if (source.IsGenericTypeDefinition)
+                return source;
+
+            if (source.IsGenericType)
+                return source.GetGenericTypeDefinition();
+
+            return Maybe<Type>.NoValue;
         }
 
         public static MethodInfo FindConversionMethod(this Type onType, Type fromType, Type toType)
@@ -65,7 +96,7 @@ namespace iSynaptic.Commons.Reflection
 
         private static IEnumerable<FieldInfo> GetFieldsDeeplyCore(this Type source, Func<FieldInfo, bool> filter)
         {
-            var bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+            const BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 
             var results = source
                 .Flatten(x => Maybe.Value(x.BaseType).NotNull())

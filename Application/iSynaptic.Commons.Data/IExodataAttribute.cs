@@ -7,7 +7,7 @@ namespace iSynaptic.Commons.Data
 {
     public interface IExodataAttribute<out TExodata>
     {
-        bool ProvidesExodataFor<TContext, TSubject>(IExodataRequest<TContext, TSubject> request);
-        TExodata Resolve<TContext, TSubject>(IExodataRequest<TContext, TSubject> request);
+        bool ProvidesExodataFor<TRequestExodata, TContext, TSubject>(IExodataRequest<TRequestExodata, TContext, TSubject> request);
+        TExodata Resolve<TRequestExodata, TContext, TSubject>(IExodataRequest<TRequestExodata, TContext, TSubject> request);
     }
 }

@@ -16,7 +16,22 @@ namespace iSynaptic.Commons.Data
             _Description = description;
         }
 
-        public bool ProvidesExodataFor<TContext, TSubject>(IExodataRequest<TContext, TSubject> request)
+        int IExodataAttribute<int>.Resolve<TExodata, TContext, TSubject>(IExodataRequest<TExodata, TContext, TSubject> request)
+        {
+            return request.Declaration == StringExodata.MinLength ? _MinLength : _MaxLength;
+        }
+
+        string IExodataAttribute<string>.Resolve<TExodata, TContext, TSubject>(IExodataRequest<TExodata, TContext, TSubject> request)
+        {
+            return _Description;
+        }
+
+        StringExodataDefinition IExodataAttribute<StringExodataDefinition>.Resolve<TExodata, TContext, TSubject>(IExodataRequest<TExodata, TContext, TSubject> request)
+        {
+            return new StringExodataDefinition(_MinLength, _MaxLength, _Description);
+        }
+
+        public bool ProvidesExodataFor<TExodata, TContext, TSubject>(IExodataRequest<TExodata, TContext, TSubject> request)
         {
             return
                 request.Declaration == StringExodata.All ||
@@ -24,21 +39,6 @@ namespace iSynaptic.Commons.Data
                 request.Declaration == StringExodata.MaxLength ||
                 request.Declaration == CommonExodata.All ||
                 request.Declaration == CommonExodata.Description;
-        }
-
-        int IExodataAttribute<int>.Resolve<TContext, TSubject>(IExodataRequest<TContext, TSubject> request)
-        {
-            return request.Declaration == StringExodata.MinLength ? _MinLength : _MaxLength;
-        }
-
-        string IExodataAttribute<string>.Resolve<TContext, TSubject>(IExodataRequest<TContext, TSubject> request)
-        {
-            return _Description;
-        }
-
-        StringExodataDefinition IExodataAttribute<StringExodataDefinition>.Resolve<TContext, TSubject>(IExodataRequest<TContext, TSubject> request)
-        {
-            return new StringExodataDefinition(_MinLength, _MaxLength, _Description);
         }
     }
 }

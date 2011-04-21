@@ -7,6 +7,6 @@ namespace iSynaptic.Commons.Data
 {
     public interface IExodataBindingSource
     {
-        IEnumerable<IExodataBinding> GetBindingsFor<TExodata, TContext, TSubject>(IExodataRequest<TContext, TSubject> request);
+        IEnumerable<IExodataBinding> GetBindingsFor<TExodata, TContext, TSubject>(IExodataRequest<TExodata, TContext, TSubject> request);
     }
 }

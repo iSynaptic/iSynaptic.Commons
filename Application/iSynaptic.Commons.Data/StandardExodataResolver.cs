@@ -21,7 +21,7 @@ namespace iSynaptic.Commons.Data
                 _Parent = parent;
             }
 
-            public IEnumerable<IExodataBinding> GetBindingsFor<TExodata, TContext, TSubject>(IExodataRequest<TContext, TSubject> request)
+            public IEnumerable<IExodataBinding> GetBindingsFor<TExodata, TContext, TSubject>(IExodataRequest<TExodata, TContext, TSubject> request)
             {
                 return _Parent._Modules
                     .SelectMany(x => x.GetBindingsFor<TExodata, TContext, TSubject>(request));
@@ -43,7 +43,7 @@ namespace iSynaptic.Commons.Data
             AddExodataBindingSource<AttributeExodataBindingSource>();
         }
 
-        protected override IExodataBinding SelectBinding<TExodata, TContext, TSubject>(IExodataRequest<TContext, TSubject> request, IEnumerable<IExodataBinding> candidates)
+        protected override IExodataBinding SelectBinding<TExodata, TContext, TSubject>(IExodataRequest<TExodata, TContext, TSubject> request, IEnumerable<IExodataBinding> candidates)
         {
             var bindingList = candidates.ToList();
 

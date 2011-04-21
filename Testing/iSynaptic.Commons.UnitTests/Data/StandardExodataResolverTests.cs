@@ -104,6 +104,7 @@ namespace iSynaptic.Commons.Data
 
             var allExodata = CommonExodata.All.For<TestSubject>(x => x.LastName);
 
+            Assert.IsNotNull(allExodata);
             Assert.AreEqual("Last Name", allExodata.Description);
         }
 

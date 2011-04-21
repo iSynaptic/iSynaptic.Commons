@@ -37,7 +37,7 @@ namespace iSynaptic.Commons.Data
             return KeyValuePair.Create(surrogatesFor, surrogate);
         }
 
-        public IEnumerable<IExodataBinding> GetBindingsFor<TExodata, TContext, TSubject>(IExodataRequest<TContext, TSubject> request)
+        public IEnumerable<IExodataBinding> GetBindingsFor<TExodata, TContext, TSubject>(IExodataRequest<TExodata, TContext, TSubject> request)
         {
             Type subjectType = typeof(TSubject);
 
@@ -45,7 +45,7 @@ namespace iSynaptic.Commons.Data
                 .Where(x => x.Key.IsAssignableFrom(subjectType))
                 .Select(x => x.Value)
                 .Cast<IExodataBindingSource>()
-                .SelectMany(x => x.GetBindingsFor<TExodata, TContext, TSubject>(request));
+                .SelectMany(x => x.GetBindingsFor(request));
         }
     }
 }

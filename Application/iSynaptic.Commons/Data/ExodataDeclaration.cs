@@ -87,7 +87,7 @@ namespace iSynaptic.Commons.Data
 
         public TExodata Resolve<TContext, TSubject>(Maybe<TContext> context, Maybe<TSubject> subject, MemberInfo member)
         {
-            var request = Maybe.Value(new ExodataRequest<TContext, TSubject>(this, context, subject, member));
+            var request = Maybe.Value(new ExodataRequest<TExodata, TContext, TSubject>(this, context, subject, member));
 
             var resolvedValue = request
                 .Select(TryResolve)
@@ -102,12 +102,12 @@ namespace iSynaptic.Commons.Data
                 .Return();
         }
 
-        protected virtual Maybe<TExodata> TryResolve<TContext, TSubject>(IExodataRequest<TContext, TSubject> request)
+        protected virtual Maybe<TExodata> TryResolve<TContext, TSubject>(IExodataRequest<TExodata, TContext, TSubject> request)
         {
             return Maybe
                 .Value(ExodataResolver).NotNull()
                 .OnNoValue(() => Ioc.Resolve<IExodataResolver>()).NotNull()
-                .Select(x => x.Resolve<TExodata, TContext, TSubject>(request));
+                .Select(x => x.Resolve(request));
         }
 
         #endregion
@@ -121,7 +121,7 @@ namespace iSynaptic.Commons.Data
             return declaration.Get();
         }
 
-        protected virtual TExodata GetDefault<TContext, TSubject>(IExodataRequest<TContext, TSubject> request)
+        protected virtual TExodata GetDefault<TContext, TSubject>(IExodataRequest<TExodata, TContext, TSubject> request)
         {
             return _Default.Return();
         }

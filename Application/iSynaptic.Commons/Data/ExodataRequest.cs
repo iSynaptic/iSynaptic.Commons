@@ -7,9 +7,9 @@ using System.Text;
 
 namespace iSynaptic.Commons.Data
 {
-    public class ExodataRequest<TContext, TSubject> : IExodataRequest<TContext, TSubject>, IEquatable<IExodataRequest<TContext, TSubject>>
+    public class ExodataRequest<TExodata, TContext, TSubject> : IExodataRequest<TExodata, TContext, TSubject>, IEquatable<IExodataRequest<TExodata, TContext, TSubject>>
     {
-        public ExodataRequest(IExodataDeclaration declaration, IMaybe<TContext> context, IMaybe<TSubject> subject, MemberInfo member)
+        public ExodataRequest(IExodataDeclaration<TExodata> declaration, IMaybe<TContext> context, IMaybe<TSubject> subject, MemberInfo member)
         {
             Declaration = Guard.NotNull(declaration, "declaration");
             Context = context;
@@ -17,13 +17,13 @@ namespace iSynaptic.Commons.Data
             Member = member;
         }
 
-        public IExodataDeclaration Declaration { get; private set; }
+        public IExodataDeclaration<TExodata> Declaration { get; private set; }
 
         public IMaybe<TContext> Context { get; private set; }
         public IMaybe<TSubject> Subject { get; private set; }
         public MemberInfo Member { get; private set; }
 
-        public bool Equals(IExodataRequest<TContext, TSubject> other)
+        public bool Equals(IExodataRequest<TExodata, TContext, TSubject> other)
         {
             return Maybe
                 .Value(other)
@@ -40,7 +40,7 @@ namespace iSynaptic.Commons.Data
         public override bool Equals(object obj)
         {
             return !ReferenceEquals(obj, null) &&
-                Equals(obj as ExodataRequest<TContext, TSubject>);
+                Equals(obj as ExodataRequest<TExodata, TContext, TSubject>);
         }
 
         public override int GetHashCode()

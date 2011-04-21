@@ -111,7 +111,7 @@ namespace iSynaptic.Commons.Data
             var exodataScopeObject = MockRepository.GenerateStub<IExodataScopeObject>();
             exodataScopeObject.Expect(x => x.IsInScope<int, object, object>(null, null))
                 .IgnoreArguments()
-                .Do((Func<IExodataBinding, IExodataRequest<object, object>, bool>) ((b, r) => isInScope));
+                .Do((Func<IExodataBinding, IExodataRequest<int, object, object>, bool>) ((b, r) => isInScope));
 
             var resolver = new StandardExodataResolver();
             resolver.Bind(StringExodata.MaxLength)

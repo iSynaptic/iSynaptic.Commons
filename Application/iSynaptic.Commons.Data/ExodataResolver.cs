@@ -48,7 +48,7 @@ namespace iSynaptic.Commons.Data
 
         private readonly HashSet<IExodataBindingSource> _BindingSources = new HashSet<IExodataBindingSource>();
 
-        public Maybe<TExodata> Resolve<TExodata, TContext, TSubject>(IExodataRequest<TContext, TSubject> request)
+        public Maybe<TExodata> Resolve<TExodata, TContext, TSubject>(IExodataRequest<TExodata, TContext, TSubject> request)
         {
             Guard.NotNull(request, "request");
 
@@ -101,7 +101,7 @@ namespace iSynaptic.Commons.Data
             return results;
         }
 
-        protected virtual IExodataBinding SelectBinding<TExodata, TContext, TSubject>(IExodataRequest<TContext, TSubject> request, IEnumerable<IExodataBinding> candidates)
+        protected virtual IExodataBinding SelectBinding<TExodata, TContext, TSubject>(IExodataRequest<TExodata, TContext, TSubject> request, IEnumerable<IExodataBinding> candidates)
         {
             Guard.NotNull(candidates, "candidates");
 

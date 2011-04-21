@@ -9,7 +9,7 @@ namespace iSynaptic.Commons.Data
 {
     public class AttributeExodataBindingSource : IExodataBindingSource
     {
-        public IEnumerable<IExodataBinding> GetBindingsFor<TExodata, TContext, TSubject>(IExodataRequest<TContext, TSubject> request)
+        public IEnumerable<IExodataBinding> GetBindingsFor<TExodata, TContext, TSubject>(IExodataRequest<TExodata, TContext, TSubject> request)
         {
             Guard.NotNull(request, "request");
 
@@ -17,7 +17,7 @@ namespace iSynaptic.Commons.Data
 
             return provider.GetAttributesOfType<IExodataAttribute<TExodata>>()
                 .Where(x => x.ProvidesExodataFor(request))
-                .Select(x => ExodataBinding.Create<TExodata, TContext, TSubject>(this, x.ProvidesExodataFor, x.Resolve));
+                .Select(x => ExodataBinding.Create<TExodata, TContext, TSubject>(this, y => true, x.Resolve));
         }
     }
 }

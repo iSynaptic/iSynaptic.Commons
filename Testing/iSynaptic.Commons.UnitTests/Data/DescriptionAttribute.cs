@@ -15,12 +15,12 @@ namespace iSynaptic.Commons.Data
             _Description = description;
         }
 
-        public bool ProvidesExodataFor<TContext, TSubject>(IExodataRequest<TContext, TSubject> request)
+        public bool ProvidesExodataFor<TExodata, TContext, TSubject>(IExodataRequest<TExodata, TContext, TSubject> request)
         {
             return request.Declaration == CommonExodata.Description;
         }
 
-        public string Resolve<TContext, TSubject>(IExodataRequest<TContext, TSubject> request)
+        public string Resolve<TExodata, TContext, TSubject>(IExodataRequest<TExodata, TContext, TSubject> request)
         {
             return _Description;
         }

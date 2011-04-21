@@ -7,7 +7,7 @@ namespace iSynaptic.Commons.Data
 {
     public interface IExodataScopeObject
     {
-        bool IsInScope<TExodata, TContext, TSubject>(IExodataBinding binding, IExodataRequest<TContext, TSubject> request);
+        bool IsInScope<TExodata, TContext, TSubject>(IExodataBinding binding, IExodataRequest<TExodata, TContext, TSubject> request);
         
         event EventHandler CacheFlushRequested;
     }
