@@ -5,9 +5,9 @@ using System.Text;
 
 namespace iSynaptic.Commons.Data
 {
-    public interface IExodataAttribute<out TExodata>
+    public interface IExodataAttribute<out TExodata, in THandlesExodata> where TExodata : THandlesExodata
     {
         bool ProvidesExodataFor<TRequestExodata, TContext, TSubject>(IExodataRequest<TRequestExodata, TContext, TSubject> request);
-        TExodata Resolve<TRequestExodata, TContext, TSubject>(IExodataRequest<TRequestExodata, TContext, TSubject> request);
+        TExodata Resolve<TContext, TSubject>(IExodataRequest<THandlesExodata, TContext, TSubject> request);
     }
 }
