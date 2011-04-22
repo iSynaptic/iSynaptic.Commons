@@ -7,9 +7,9 @@ namespace iSynaptic.Commons
     {
         private class NullDependencyResolver : IDependencyResolver
         {
-            public object Resolve(IDependencyDeclaration declaration)
+            public Maybe<object> TryResolve(IDependencyDeclaration declaration)
             {
-                return null;
+                return Maybe<object>.NoValue;
             }
         }
 
@@ -33,6 +33,26 @@ namespace iSynaptic.Commons
         public static object Resolve(Type dependencyType, string name)
         {
             return DependencyResolver.Resolve(dependencyType, name);
+        }
+
+        public static Maybe<T> TryResolve<T>()
+        {
+            return DependencyResolver.TryResolve<T>();
+        }
+
+        public static Maybe<T> TryResolve<T>(string name)
+        {
+            return DependencyResolver.TryResolve<T>(name);
+        }
+
+        public static Maybe<object> TryResolve(Type dependencyType)
+        {
+            return DependencyResolver.TryResolve(dependencyType);
+        }
+
+        public static Maybe<object> TryResolve(Type dependencyType, string name)
+        {
+            return DependencyResolver.TryResolve(dependencyType, name);
         }
 
         public static void SetDependencyResolver(IDependencyResolver resolver)

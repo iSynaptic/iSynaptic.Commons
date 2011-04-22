@@ -24,7 +24,7 @@ namespace iSynaptic.Commons.Data
             public IEnumerable<IExodataBinding> GetBindingsFor<TExodata, TContext, TSubject>(IExodataRequest<TExodata, TContext, TSubject> request)
             {
                 return _Parent._Modules
-                    .SelectMany(x => x.GetBindingsFor<TExodata, TContext, TSubject>(request));
+                    .SelectMany(x => x.GetBindingsFor(request));
             }
         }
 
@@ -47,13 +47,16 @@ namespace iSynaptic.Commons.Data
         {
             var bindingList = candidates.ToList();
 
+            Func<IExodataRequest<TExodata, TContext, TSubject>, IEnumerable<IExodataBinding>, IExodataBinding>
+                fallThroughSelection = base.SelectBinding;
+
             return Maybe.Value(bindingList)
                 .NotNull()
                 .Where(x => x.Count > 1)
                 .Do(x => x.Sort(BindingSortPriority))
                 .Where(x => BindingSortPriority(x[0], x[1]) != 0)
                 .Select(x => x[0])
-                .OnNoValue(() => base.SelectBinding<TExodata, TContext, TSubject>(request, bindingList))
+                .OnNoValue(() => fallThroughSelection(request, bindingList))
                 .Return();
         }
 
@@ -100,7 +103,7 @@ namespace iSynaptic.Commons.Data
 
         public IFluentExodataBindingGivenSubjectWhenScopeTo<TExodata, object, object> Bind<TExodata>(IExodataDeclaration<TExodata> declaration)
         {
-            return _ResolverModule.Bind<TExodata>(declaration);
+            return _ResolverModule.Bind(declaration);
         }
 
         public void Bind<TExodata>(IExodataDeclaration<TExodata> declaration, TExodata value)

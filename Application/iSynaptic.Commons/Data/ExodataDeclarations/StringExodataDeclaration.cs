@@ -15,7 +15,7 @@ namespace iSynaptic.Commons.Data.ExodataDeclarations
         {
         }
 
-        public StringExodataDeclaration(int minLength, int maxLength, string @default, bool isNullPermitted, bool isEmptyPermitted, bool isWhitespacePermitted)
+        public StringExodataDeclaration(int minLength, int maxLength, string @default, bool isNullPermitted, bool isEmptyPermitted, bool isWhiteSpacePermitted)
             : base(@default)
         {
             MinLength = minLength;
@@ -23,7 +23,7 @@ namespace iSynaptic.Commons.Data.ExodataDeclarations
 
             IsNullPermitted = isNullPermitted;
             IsEmptyPermitted = isEmptyPermitted;
-            IsWhitespaceOnlyPermitted = isWhitespacePermitted;
+            IsWhiteSpaceOnlyPermitted = isWhiteSpacePermitted;
         }
 
         protected override void OnValidateValue(string value, string valueName)
@@ -39,7 +39,7 @@ namespace iSynaptic.Commons.Data.ExodataDeclarations
             if (value == string.Empty && IsEmptyPermitted != true)
                 throw new ExodataValidationException<string>(this, value, string.Format("The {0} value must not be empty.", valueName));
 
-            if(string.IsNullOrWhiteSpace(value) && IsWhitespaceOnlyPermitted)
+            if(string.IsNullOrWhiteSpace(value) && IsWhiteSpaceOnlyPermitted)
                 throw new ExodataValidationException<string>(this, value, string.Format("The {0} value must not be only whitespace.", valueName));
 
             if (valueName.Length < MinLength)
@@ -56,6 +56,6 @@ namespace iSynaptic.Commons.Data.ExodataDeclarations
 
         public bool IsNullPermitted { get; private set; }
         public bool IsEmptyPermitted { get; private set; }
-        public bool IsWhitespaceOnlyPermitted { get; private set; }
+        public bool IsWhiteSpaceOnlyPermitted { get; private set; }
     }
 }

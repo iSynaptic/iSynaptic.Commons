@@ -4,7 +4,7 @@ namespace iSynaptic.Commons
 {
     public interface IDependencyResolver
     {
-        object Resolve(IDependencyDeclaration declaration);
+        Maybe<object> TryResolve(IDependencyDeclaration declaration);
     }
 
     public interface IDependencyDeclaration

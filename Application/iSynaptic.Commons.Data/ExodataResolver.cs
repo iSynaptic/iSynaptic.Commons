@@ -48,22 +48,22 @@ namespace iSynaptic.Commons.Data
 
         private readonly HashSet<IExodataBindingSource> _BindingSources = new HashSet<IExodataBindingSource>();
 
-        public Maybe<TExodata> Resolve<TExodata, TContext, TSubject>(IExodataRequest<TExodata, TContext, TSubject> request)
+        public Maybe<TExodata> TryResolve<TExodata, TContext, TSubject>(IExodataRequest<TExodata, TContext, TSubject> request)
         {
             Guard.NotNull(request, "request");
 
             int requestHashCode = request.GetHashCode();
 
             var candidateBindings = _BindingSources
-                .SelectMany(x => x.GetBindingsFor<TExodata, TContext, TSubject>(request))
-                .Where(x => x.Matches<TExodata, TContext, TSubject>(request));
+                .SelectMany(x => x.GetBindingsFor(request))
+                .Where(x => x.Matches(request));
 
-            var selectedBinding = SelectBinding<TExodata, TContext, TSubject>(request, candidateBindings);
+            var selectedBinding = SelectBinding(request, candidateBindings);
 
             if(selectedBinding == null)
                 return Maybe<TExodata>.NoValue;
 
-            object scopeObject = selectedBinding.GetScopeObject<TExodata, TContext, TSubject>(request);
+            object scopeObject = selectedBinding.GetScopeObject(request);
             var exodataScopeObject = scopeObject as IExodataScopeObject;
 
             if (scopeObject != null)
@@ -73,7 +73,7 @@ namespace iSynaptic.Commons.Data
                 var scopedCache = _Cache[scopeObject];
                 var cachedValue = scopedCache.FirstOrDefault(x => x.RequestHashCode == requestHashCode);
 
-                if (exodataScopeObject == null || exodataScopeObject.IsInScope<TExodata, TContext, TSubject>(selectedBinding, request))
+                if (exodataScopeObject == null || exodataScopeObject.IsInScope(selectedBinding, request))
                 {
                     if (cachedValue != null)
                         return cachedValue.GetExodata<TExodata>();
@@ -82,7 +82,7 @@ namespace iSynaptic.Commons.Data
                     _Cache.Remove(scopeObject, cachedValue);
             }
 
-            var results = selectedBinding.Resolve<TExodata, TContext, TSubject>(request);
+            var results = selectedBinding.Resolve(request);
 
             if (scopeObject != null)
             {

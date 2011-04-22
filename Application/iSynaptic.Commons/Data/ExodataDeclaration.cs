@@ -106,8 +106,8 @@ namespace iSynaptic.Commons.Data
         {
             return Maybe
                 .Value(ExodataResolver).NotNull()
-                .OnNoValue(() => Ioc.Resolve<IExodataResolver>()).NotNull()
-                .Select(x => x.Resolve(request));
+                .OnNoValue(() => Ioc.TryResolve<IExodataResolver>())
+                .Select(x => x.TryResolve(request));
         }
 
         #endregion

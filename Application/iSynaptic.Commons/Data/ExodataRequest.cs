@@ -33,7 +33,6 @@ namespace iSynaptic.Commons.Data
                 .Unless(x => !ReferenceEquals(Subject, null) && !Subject.Equals(x.Subject))
                 .Unless(x => Member != x.Member)
                 .Select(x => true)
-                .ThrowOnException()
                 .Return(false);
         }
 
