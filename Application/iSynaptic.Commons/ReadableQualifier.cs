@@ -14,19 +14,18 @@ namespace iSynaptic.Commons
         {
         }
 
-        public ReadableQualifier(Func<TQualifier, TItem> getByQualifier, Func<IEnumerable<TQualifier>> knownQualifier)
+        public ReadableQualifier(Func<TQualifier, TItem> getByQualifier, Func<IEnumerable<TQualifier>> knownQualifiers)
         {
-            Guard.NotNull(getByQualifier, "getByQualifier");
-            _GetByQualifier = getByQualifier;
-            _GetQualifiers = knownQualifier ?? (() => Enumerable.Empty<TQualifier>());
+            _GetByQualifier = Guard.NotNull(getByQualifier, "getByQualifier");
+            _GetQualifiers = knownQualifiers ?? (() => Enumerable.Empty<TQualifier>());
         }
 
-        TItem IReadableQualifier<TQualifier, TItem>.this[TQualifier qualifier]
+        public TItem this[TQualifier qualifier]
         {
             get { return _GetByQualifier(qualifier); }
         }
 
-        IEnumerable<TQualifier> IKnownQualifiers<TQualifier>.GetQualifiers()
+        public IEnumerable<TQualifier> GetQualifiers()
         {
             return _GetQualifiers();
         }
