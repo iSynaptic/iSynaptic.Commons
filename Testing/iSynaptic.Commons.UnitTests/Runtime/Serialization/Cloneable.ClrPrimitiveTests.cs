@@ -267,7 +267,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
         [Test]
         public void CloneDateTime()
         {
-            DateTime now = DateTime.Now;
+            DateTime now = SystemClock.Now;
 
             Assert.IsTrue(Cloneable<DateTime>.CanClone());
             Assert.IsTrue(Cloneable<DateTime>.CanShallowClone());

@@ -60,7 +60,7 @@ namespace iSynaptic.Commons.Reflection
         private class Derived : Base
         {
             protected int Baz = 42;
-            public DateTime Bar = DateTime.Now;
+            public DateTime Bar = SystemClock.Now;
        }
 
         private class FurtherDerived : Derived
