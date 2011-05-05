@@ -219,6 +219,26 @@ namespace iSynaptic.Commons
             return new Maybe<T>(computation);
         }
 
+        public static Maybe<T> NotNull<T>(T value) where T: class
+        {
+            return Value(value).NotNull();
+        }
+
+        public static Maybe<T> NotNull<T>(Func<T> value) where T : class
+        {
+            return Value(value).NotNull();
+        }
+
+        public static Maybe<T?> NotNull<T>(T? value) where T : struct
+        {
+            return Value(value).NotNull();
+        }
+
+        public static Maybe<T?> NotNull<T>(Func<T?> value) where T : struct
+        {
+            return Value(value).NotNull();
+        }
+
         public static Maybe<T> Using<T, TResource>(TResource resource, Func<TResource, Maybe<T>> selector) where TResource : IDisposable
         {
             Guard.NotNull(resource, "resource");

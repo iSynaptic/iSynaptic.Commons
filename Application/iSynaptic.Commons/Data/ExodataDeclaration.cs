@@ -105,7 +105,7 @@ namespace iSynaptic.Commons.Data
         protected virtual Maybe<TExodata> TryResolve<TContext, TSubject>(IExodataRequest<TExodata, TContext, TSubject> request)
         {
             return Maybe
-                .Value(ExodataResolver).NotNull()
+                .NotNull(ExodataResolver)
                 .OnNoValue(() => Ioc.TryResolve<IExodataResolver>())
                 .Select(x => x.TryResolve(request));
         }

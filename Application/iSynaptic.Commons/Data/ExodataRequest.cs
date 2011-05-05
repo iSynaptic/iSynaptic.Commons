@@ -26,8 +26,7 @@ namespace iSynaptic.Commons.Data
         public bool Equals(IExodataRequest<TExodata, TContext, TSubject> other)
         {
             return Maybe
-                .Value(other)
-                .NotNull()
+                .NotNull(other)
                 .Unless(x => Declaration != x.Declaration)
                 .Unless(x => ReferenceEquals(Subject, null) != ReferenceEquals(x.Subject, null))
                 .Unless(x => !ReferenceEquals(Subject, null) && !Subject.Equals(x.Subject))

@@ -33,7 +33,7 @@ namespace iSynaptic.Commons.Reflection
             if (!testType.IsGenericTypeDefinition)
                 return testType.IsAssignableFrom(candidateType);
 
-            return candidateType.Flatten(x => Maybe.Value(x.BaseType).NotNull())
+            return candidateType.Flatten(x => Maybe.NotNull(x.BaseType))
                 .Select(TryGetGenericTypeDefinition)
                 .Union(candidateType.GetInterfaces().Select(TryGetGenericTypeDefinition))
                 .Where(x => x.HasValue)
@@ -99,7 +99,7 @@ namespace iSynaptic.Commons.Reflection
             const BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 
             var results = source
-                .Flatten(x => Maybe.Value(x.BaseType).NotNull())
+                .Flatten(x => Maybe.NotNull(x.BaseType))
                 .SelectMany(x => x.GetFields(bindingFlags).Where(y => y.DeclaringType == x));
             
             return filter != null

@@ -50,8 +50,7 @@ namespace iSynaptic.Commons.Data
             Func<IExodataRequest<TExodata, TContext, TSubject>, IEnumerable<IExodataBinding>, IExodataBinding>
                 fallThroughSelection = base.SelectBinding;
 
-            return Maybe.Value(bindingList)
-                .NotNull()
+            return Maybe.NotNull(bindingList)
                 .Where(x => x.Count > 1)
                 .Do(x => x.Sort(BindingSortPriority))
                 .Where(x => BindingSortPriority(x[0], x[1]) != 0)

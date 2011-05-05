@@ -23,11 +23,11 @@ namespace iSynaptic.Commons
 
             Type targetType = target.GetType();
 
-            var info = Maybe.Value(() => targetType.GetMethod(methodName,
+            var info = Maybe.NotNull(() => targetType.GetMethod(methodName,
                BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.FlattenHierarchy,
                null,
                parameterTypes,
-               null)).NotNull();
+               null));
 
             return info
                 .Where(x => x.IsStatic)
