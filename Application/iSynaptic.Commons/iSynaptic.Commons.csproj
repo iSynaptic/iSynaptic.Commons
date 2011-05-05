@@ -120,7 +120,7 @@
     <Compile Include="Collections\Generic\DictionaryExtensions.cs" />
     <Compile Include="Equatable.cs" />
     <Compile Include="ExceptionExtensions.cs" />
-    <Compile Include="ExpressionExtensions.cs" />
+    <Compile Include="Linq\Expressions\ExpressionExtensions.cs" />
     <Compile Include="FuncExtensions.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

@@ -103,7 +103,7 @@
     <Compile Include="Data\TestSubjectExodataSurrogate.cs" />
     <Compile Include="Collections\Generic\ProjectionCollectionTests.cs" />
     <Compile Include="ExceptionExtensionsTests.cs" />
-    <Compile Include="ExpressionExtensionsTests.cs" />
+    <Compile Include="Linq\Expressions\ExpressionExtensionsTests.cs" />
     <Compile Include="FuncExtensionsTests.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
