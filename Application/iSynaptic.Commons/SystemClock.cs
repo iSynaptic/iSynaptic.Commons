@@ -6,48 +6,57 @@ using iSynaptic.Commons.AOP;
 
 namespace iSynaptic.Commons
 {
-    public class SystemClock : Scope<SystemClock>
+    public sealed class SystemClock : Scope<SystemClock>
     {
-        private static Func<DateTime> _DefaultDateTimeStrategy = null;
+        private static bool _PreventClockAlterations = false;
 
-        protected SystemClock()
-            : this(ScopeBounds.AppDomain, ScopeNesting.Allowed)
+        private SystemClock()
+            : this(ScopeBounds.Thread, ScopeNesting.Allowed)
         {
         }
 
-        protected SystemClock(ScopeBounds bounds, ScopeNesting nesting)
+        private SystemClock(ScopeBounds bounds, ScopeNesting nesting)
             : base(bounds, nesting)
         {
         }
 
         public static IDisposable Fixed(DateTime dateTime)
         {
-            return new SystemClock { DateTimeStrategy = () => dateTime };
+            return Using(() => dateTime);
         }
 
         public static IDisposable Using(Func<DateTime> strategy)
         {
-            return new SystemClock { DateTimeStrategy = Guard.NotNull(strategy, "strategy") };
+            if (_PreventClockAlterations)
+                throw new InvalidOperationException("Clock alterations are not permitted.");
+
+            return new SystemClock { UtcNowStrategy = Guard.NotNull(strategy, "strategy") };
         }
 
-        public static Func<DateTime> DefaultDateTimeStrategy
+        public static void PreventClockAlterations()
         {
-            get { return _DefaultDateTimeStrategy ?? (() => DateTime.UtcNow); }
-            set { _DefaultDateTimeStrategy = value; }
+            _PreventClockAlterations = true;
         }
 
-        protected Func<DateTime> DateTimeStrategy { get; set; }
+        public static Func<DateTime> DefaultDateTimeStrategy { get; set; }
+        private Func<DateTime> UtcNowStrategy { get; set; }
 
-        public static DateTime Now
+        public static DateTime UtcNow
         {
             get
             {
-                var current = GetCurrentScope();
+                if (_PreventClockAlterations != true)
+                {
+                    var current = GetCurrentScope();
 
-                if (current != null && current.DateTimeStrategy != null)
-                    return current.DateTimeStrategy();
+                    if (current != null && current.UtcNowStrategy != null)
+                        return current.UtcNowStrategy();
 
-                return DefaultDateTimeStrategy();
+                    if (DefaultDateTimeStrategy != null)
+                        return DefaultDateTimeStrategy();
+                }
+
+                return DateTime.UtcNow;
             }
         }
     }
