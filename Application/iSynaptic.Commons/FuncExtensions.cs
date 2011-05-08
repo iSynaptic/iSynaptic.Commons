@@ -18,10 +18,23 @@ namespace iSynaptic.Commons
             return new FuncComparer<T>(self);
         }
 
+        public static IEqualityComparer<T> ToEqualityComparer<T>(this Func<T, T, bool> self)
+        {
+            return ToEqualityComparer(self, x => x.GetHashCode());
+        }
+
+        public static IEqualityComparer<T> ToEqualityComparer<T>(this Func<T, T, bool> self, Func<T, int> hashCodeStrategy)
+        {
+            Guard.NotNull(self, "self");
+            Guard.NotNull(hashCodeStrategy, "hashCodeStrategy");
+
+            return new FuncEqualityComparer<T>(self, hashCodeStrategy);
+        }
+
         public static Func<TResult> Memoize<TResult>(this Func<TResult> self)
         {
             Guard.NotNull(self, "self");
-            
+
             TResult result = default(TResult);
             Exception exception = null;
             bool executed = false;
@@ -34,7 +47,7 @@ namespace iSynaptic.Commons
                     {
                         result = self();
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         exception = ex;
                         throw;
@@ -67,7 +80,7 @@ namespace iSynaptic.Commons
 
             return () =>
             {
-                if(needsSynchronizationPredicate())
+                if (needsSynchronizationPredicate())
                 {
                     lock (lockObject)
                     {
@@ -110,5 +123,26 @@ namespace iSynaptic.Commons
             }
         }
 
+        private class FuncEqualityComparer<T> : IEqualityComparer<T>
+        {
+            private readonly Func<T, T, bool> _Strategy;
+            private readonly Func<T, int> _HashCodeStrategy;
+
+            public FuncEqualityComparer(Func<T, T, bool> strategy, Func<T, int> hashCodeStategy)
+            {
+                _Strategy = strategy;
+                _HashCodeStrategy = hashCodeStategy;
+            }
+
+            public bool Equals(T x, T y)
+            {
+                return _Strategy(x, y);
+            }
+
+            public int GetHashCode(T obj)
+            {
+                return _HashCodeStrategy(obj);
+            }
+        }
     }
 }
