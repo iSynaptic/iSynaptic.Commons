@@ -33,7 +33,7 @@ namespace iSynaptic.Commons.Collections.Generic
 
             return x => dictionary
                 .TryGetValue(x)
-                .OnNoValue((Func<ICollection<TValue>>)(() =>
+                .Or((Func<ICollection<TValue>>)(() =>
                 {
                     var values = new List<TValue>();
                     dictionary.Add(x, values);

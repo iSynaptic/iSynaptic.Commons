@@ -106,7 +106,7 @@ namespace iSynaptic.Commons.Data
         {
             return Maybe
                 .NotNull(ExodataResolver)
-                .OnNoValue(() => Ioc.TryResolve<IExodataResolver>())
+                .Or(Ioc.TryResolve<IExodataResolver>)
                 .Select(x => x.TryResolve(request));
         }
 

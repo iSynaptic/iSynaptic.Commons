@@ -55,7 +55,7 @@ namespace iSynaptic.Commons.Data
                 .Do(x => x.Sort(BindingSortPriority))
                 .Where(x => BindingSortPriority(x[0], x[1]) != 0)
                 .Select(x => x[0])
-                .OnNoValue(() => fallThroughSelection(request, bindingList))
+                .Or(() => fallThroughSelection(request, bindingList))
                 .Return();
         }
 

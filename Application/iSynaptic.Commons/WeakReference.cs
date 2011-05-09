@@ -54,9 +54,9 @@ namespace iSynaptic.Commons
             return Maybe
                 .Value(true)
                 .Unless(x => ReferenceEquals(this, Null))
-                .When(true, x => HashCode == other.HashCode)
-                .When(true, x => TryGetTarget().Equals(other.TryGetTarget()))
-                .OnNoValue(() => ReferenceEquals(other, Null))
+                .Where(x => HashCode == other.HashCode)
+                .Where(x => TryGetTarget().Equals(other.TryGetTarget()))
+                .Or(() => ReferenceEquals(other, Null))
                 .Return(false);
         }
 

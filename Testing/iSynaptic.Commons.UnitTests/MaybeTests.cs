@@ -433,22 +433,22 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void OnNoValue_ContinuesWithNewValue()
+        public void Or_ContinuesWithNewValue()
         {
             var value = Maybe<int>.NoValue
-                .OnNoValue(42)
+                .Or(42)
                 .Value;
 
             Assert.AreEqual(42, value);
         }
 
         [Test]
-        public void OnNoValue_DoesNotHandleExceptions()
+        public void Or_DoesNotHandleExceptions()
         {
             Assert.Throws<InvalidOperationException>(() =>
             {
                 var x = new Maybe<int>(new InvalidOperationException())
-                    .OnNoValue(42)
+                    .Or(42)
                     .Value;
             });
         }
@@ -503,7 +503,8 @@ namespace iSynaptic.Commons
         [Test]
         public void When_PredicateIsTrue_UsesComputation()
         {
-            var value = Maybe.Value("Hello")
+            var value = Maybe
+                .Value("Hello")
                 .When("Hello", "World");
 
             Assert.IsTrue(value.HasValue);
@@ -526,7 +527,7 @@ namespace iSynaptic.Commons
             string output = null;
 
             var value = Maybe.Value("Hello")
-                .When("Hello", (Action<string>)(x => output = x))
+                .When("Hello", x => output = x)
                 .Run();
 
             Assert.AreEqual("Hello", output);

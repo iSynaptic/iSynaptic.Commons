@@ -57,8 +57,7 @@ namespace iSynaptic.Commons.Collections.Generic
         {
             var results = _Underlying
                 .TryGetValue(key)
-                .OnNoValue(() => _Selector(key)
-                                    .Do(x => _Underlying.Add(key, x)));
+                .Or(() => _Selector(key).Do(x => _Underlying.Add(key, x)));
 
             value = results.Return();
             return results.HasValue;
