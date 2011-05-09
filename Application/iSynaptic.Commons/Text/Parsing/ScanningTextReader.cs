@@ -16,8 +16,7 @@ namespace iSynaptic.Commons.Text.Parsing
 
         public ScanningTextReader(TextReader innerReader)
         {
-            Guard.NotNull(innerReader, "innerReader");
-            _InnerReader = innerReader;
+            _InnerReader = Guard.NotNull(innerReader, "innerReader");
         }
 
         public int LastCharacterRead
@@ -42,13 +41,7 @@ namespace iSynaptic.Commons.Text.Parsing
 
         protected List<char> LookAheadList
         {
-            get
-            {
-                if (_LookAheadList == null)
-                    _LookAheadList = new List<char>();
-
-                return _LookAheadList;
-            }
+            get { return _LookAheadList ?? (_LookAheadList = new List<char>()); }
         }
 
         public int LookAhead(int index)
@@ -72,10 +65,7 @@ namespace iSynaptic.Commons.Text.Parsing
 
         public override int Peek()
         {
-            if (LookAheadList.Count <= 0)
-                return _InnerReader.Peek();
-
-            return LookAheadList[0];
+            return LookAheadList.Count > 0 ? LookAheadList[0] : _InnerReader.Peek();
         }
 
         public override int Read()

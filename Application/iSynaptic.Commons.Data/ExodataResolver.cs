@@ -68,7 +68,7 @@ namespace iSynaptic.Commons.Data
 
             if (scopeObject != null)
             {
-                _CacheDictionary.PurgeGarbage();
+                _CacheDictionary.PurgeGarbage(null);
 
                 var scopedCache = _Cache[scopeObject];
                 var cachedValue = scopedCache.FirstOrDefault(x => x.RequestHashCode == requestHashCode);

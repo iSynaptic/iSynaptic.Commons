@@ -8,18 +8,15 @@ namespace iSynaptic.Commons.Collections.Generic
 {
     public class ProjectionCollection<TSourceItem, TProjectedItem> : ICollection<TProjectedItem>
     {
-        private static NotSupportedException _ReadOnlyException = new NotSupportedException("Mutating a readonly collection is not allowed.");
+        private static readonly NotSupportedException _ReadOnlyException = new NotSupportedException("Mutating a readonly collection is not allowed.");
 
         private readonly ICollection<TSourceItem> _Underlying = null;
         private readonly Func<TSourceItem, TProjectedItem> _Selector = null;
 
         public ProjectionCollection(ICollection<TSourceItem> underlying, Func<TSourceItem, TProjectedItem> selector)
         {
-            Guard.NotNull(underlying, "underlying");
-            Guard.NotNull(selector, "selector");
-
-            _Underlying = underlying;
-            _Selector = selector;
+            _Underlying = Guard.NotNull(underlying, "underlying");
+            _Selector = Guard.NotNull(selector, "selector");
         }
 
         public IEnumerator<TProjectedItem> GetEnumerator()

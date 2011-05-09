@@ -9,8 +9,8 @@ namespace iSynaptic.Commons.Collections.Generic
     {
         private readonly Func<TKey, WeakReference<TKeyMember>> _MemberSelector = null;
 
-        public WeakKeyMemberDictionary(Func<TKey, WeakReference<TKeyMember>> memberSelector, int capacity = 0, IEqualityComparer<TKey> comparer = null, Action<Maybe<TKey>, Maybe<TValue>> onGarbagePurge = null)
-            : base(capacity, comparer, onGarbagePurge)
+        public WeakKeyMemberDictionary(Func<TKey, WeakReference<TKeyMember>> memberSelector, int capacity = 0, IEqualityComparer<TKey> comparer = null)
+            : base(capacity, comparer)
         {
              _MemberSelector = memberSelector;
         }

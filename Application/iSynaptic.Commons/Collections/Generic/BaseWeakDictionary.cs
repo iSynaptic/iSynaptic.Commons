@@ -9,9 +9,8 @@ namespace iSynaptic.Commons.Collections.Generic
     {
         private readonly IEqualityComparer<TKey> _Comparer;
         private readonly Dictionary<TWrappedKey, TWrappedValue> _Dictionary;
-        private readonly Action<Maybe<TKey>, Maybe<TValue>> _OnGarbagePurge;
 
-        protected BaseWeakDictionary(int capacity, IEqualityComparer<TKey> comparer, Action<Maybe<TKey>, Maybe<TValue>> onGarbagePurge)
+        protected BaseWeakDictionary(int capacity, IEqualityComparer<TKey> comparer)
         {
             _Comparer = comparer ?? EqualityComparer<TKey>.Default;
 
@@ -20,8 +19,6 @@ namespace iSynaptic.Commons.Collections.Generic
             _Dictionary = wrappedKeyComparer != null
                 ? new Dictionary<TWrappedKey, TWrappedValue>(capacity, wrappedKeyComparer)
                 : new Dictionary<TWrappedKey, TWrappedValue>(capacity);
-
-            _OnGarbagePurge = onGarbagePurge;
        }
 
         protected abstract TWrappedKey WrapKey(TKey key, IEqualityComparer<TKey> comparer);
@@ -36,8 +33,6 @@ namespace iSynaptic.Commons.Collections.Generic
 
         public override void Add(TKey key, TValue value)
         {
-            Guard.NotNull(key, "key");
-
             var weakKey = WrapKey(key, _Comparer);
             var weakValue = WrapValue(value);
 
@@ -86,17 +81,17 @@ namespace iSynaptic.Commons.Collections.Generic
                 .GetEnumerator();
         }
 
-        public void PurgeGarbage()
+        public void PurgeGarbage(Action<Maybe<TKey>, Maybe<TValue>> withPurgedPair)
         {
             var itemsToPurge = _Dictionary.Where(pair =>
                 !(UnwrapKey(pair.Key)
                     .Select(k => UnwrapValue(pair.Value))
                     .HasValue)).ToArray();
 
-            if (_OnGarbagePurge != null)
+            if (withPurgedPair != null)
             {
                 foreach (var item in itemsToPurge)
-                    _OnGarbagePurge(UnwrapKey(item.Key), UnwrapValue(item.Value));
+                    withPurgedPair(UnwrapKey(item.Key), UnwrapValue(item.Value));
             }
 
             _Dictionary.Remove(itemsToPurge);

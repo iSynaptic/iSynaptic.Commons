@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using iSynaptic.Commons.Collections.Generic;
 
 namespace iSynaptic.Commons.AOP
 {
@@ -17,7 +18,7 @@ namespace iSynaptic.Commons.AOP
             if (Disposed)
                 throw new ObjectDisposedException(GetType().Name);
 
-            return _Items.Contains(item);
+            return Items.Contains(item);
         }
 
         public void Enlist(params TItem[] items)
@@ -33,7 +34,7 @@ namespace iSynaptic.Commons.AOP
             if (Disposed)
                 throw new ObjectDisposedException(GetType().Name);
 
-            _Items.AddRange(items);
+            Items.AddRange(items);
         }
 
         protected override void Dispose(bool disposing)

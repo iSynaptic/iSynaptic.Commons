@@ -22,11 +22,10 @@ namespace iSynaptic.Commons.Collections.Generic
 
         public MultiMap(Func<TKey, ICollection<TValue>> collectionFactory)
         {
-            Guard.NotNull(collectionFactory, "collectionFactory");
-            _CollectionFactory = collectionFactory;
+            _CollectionFactory = Guard.NotNull(collectionFactory, "collectionFactory");
         }
 
-        private static Func<TKey, ICollection<TValue>> GetDictionaryBackedCollectionFactory(IDictionary<TKey, ICollection<TValue>> dictionary = null)
+        private static Func<TKey, ICollection<TValue>> GetDictionaryBackedCollectionFactory(IDictionary<TKey, ICollection<TValue>> dictionary)
         {
             Guard.NotNull(dictionary, "dictionary");
             Guard.MustSatisfy(dictionary, x => !x.IsReadOnly, "dictionary", "Dictionary must not be read-only.");

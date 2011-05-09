@@ -19,9 +19,9 @@ namespace iSynaptic.Commons.Collections.Generic
             return new object();
         }
 
-        protected override IWeakDictionary<object, object> CreateWeakDictionary(IEqualityComparer<object> comparer = null, Action<Maybe<object>, Maybe<object>> onGarbagePurge = null)
+        protected override IWeakDictionary<object, object> CreateWeakDictionary(IEqualityComparer<object> comparer = null)
         {
-            return new WeakValueDictionary<object, object>(comparer: comparer, onGarbagePurge: onGarbagePurge);
+            return new WeakValueDictionary<object, object>(comparer: comparer);
         }
     }
 }

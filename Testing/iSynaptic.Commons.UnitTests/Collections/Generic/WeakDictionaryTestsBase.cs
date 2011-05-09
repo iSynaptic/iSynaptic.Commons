@@ -16,7 +16,7 @@ namespace iSynaptic.Commons.Collections.Generic
             return CreateWeakDictionary(comparer);
         }
 
-        protected abstract IWeakDictionary<TKey, TValue> CreateWeakDictionary(IEqualityComparer<TKey> comparer = null, Action<Maybe<TKey>, Maybe<TValue>> onGarbagePurge = null);
+        protected abstract IWeakDictionary<TKey, TValue> CreateWeakDictionary(IEqualityComparer<TKey> comparer = null);
     
         [Test]
         public void PurgeGarbage_RemovesEntriesForGarbageCollectedKeys()
@@ -30,7 +30,7 @@ namespace iSynaptic.Commons.Collections.Generic
             dictionary.Add(CreateKey(), CreateValue());
 
             GC.Collect();
-            dictionary.PurgeGarbage();
+            dictionary.PurgeGarbage(null);
 
             Assert.AreEqual(1, dictionary.Count);
             Assert.IsTrue(dictionary.ContainsKey(key));
@@ -41,13 +41,13 @@ namespace iSynaptic.Commons.Collections.Generic
         public void PurgeGarbage_OnGarbagePurgeCalled()
         {
             bool onGarbagePurgeExecuted = false;
-            Action<Maybe<TKey>, Maybe<TValue>> onGarbagePurge = (k, v) => onGarbagePurgeExecuted = true;
+            Action<Maybe<TKey>, Maybe<TValue>> withPurgedPair = (k, v) => onGarbagePurgeExecuted = true;
 
-            var dictionary = CreateWeakDictionary(onGarbagePurge: onGarbagePurge);
+            var dictionary = CreateWeakDictionary();
             dictionary.Add(CreateKey(), CreateValue());
 
             GC.Collect();
-            dictionary.PurgeGarbage();
+            dictionary.PurgeGarbage(withPurgedPair);
 
             Assert.IsTrue(onGarbagePurgeExecuted);
         }

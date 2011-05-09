@@ -10,9 +10,7 @@ namespace iSynaptic.Commons.Collections.Generic
 
         public ReadOnlyDictionary(IDictionary<TKey, TValue> innerDictionary)
         {
-            Guard.NotNull(innerDictionary, "innerDictionary");
-
-            _InnerDictionary = innerDictionary;
+            _InnerDictionary = Guard.NotNull(innerDictionary, "innerDictionary");
         }
 
         public override int Count

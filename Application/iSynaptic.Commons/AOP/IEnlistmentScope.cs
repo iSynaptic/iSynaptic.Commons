@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace iSynaptic.Commons.AOP
 {
-    public interface IEnlistmentScope<T> : IDisposable
+    public interface IEnlistmentScope<in T> : IDisposable
     {
         bool IsEnlisted(T item);
         void Enlist(params T[] items);

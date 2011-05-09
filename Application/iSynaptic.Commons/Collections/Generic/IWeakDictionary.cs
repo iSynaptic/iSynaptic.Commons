@@ -7,6 +7,6 @@ namespace iSynaptic.Commons.Collections.Generic
 {
     public interface IWeakDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {
-        void PurgeGarbage();
+        void PurgeGarbage(Action<Maybe<TKey>, Maybe<TValue>> withPurgedPair);
     }
 }

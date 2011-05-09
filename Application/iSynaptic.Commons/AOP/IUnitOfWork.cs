@@ -1,6 +1,6 @@
 namespace iSynaptic.Commons.AOP
 {
-    public interface IUnitOfWork<T> : IEnlistmentScope<T>
+    public interface IUnitOfWork<in T> : IEnlistmentScope<T>
     {
         void Complete();
     }

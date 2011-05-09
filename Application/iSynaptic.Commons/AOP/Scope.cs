@@ -37,10 +37,7 @@ namespace iSynaptic.Commons.AOP
 
         protected static T GetCurrentScope()
         {
-            if (_CurrentThreadScope != null)
-                return _CurrentThreadScope;
-
-            return _CurrentAppDomainScope;
+            return _CurrentThreadScope ?? _CurrentAppDomainScope;
         }
 
         protected void SetCurrentScope(T scope)

@@ -21,19 +21,24 @@ namespace iSynaptic.Commons.Collections.Generic
         public abstract bool TryGetValue(TKey key, out TValue value);
         public abstract IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator();
 
+        protected virtual T OnWriteOperation<T>()
+        {
+             throw new NotSupportedException("Dictionary is read-only.");
+        }
+
         void ICollection<KeyValuePair<TKey, TValue>>.Clear()
         {
-            throw new NotSupportedException("Dictionary is read-only.");
+            OnWriteOperation<bool>();
         }
 
         void IDictionary<TKey, TValue>.Add(TKey key, TValue value)
         {
-            throw new NotSupportedException("Dictionary is read-only.");
+            OnWriteOperation<bool>();
         }
 
         bool IDictionary<TKey, TValue>.Remove(TKey key)
         {
-            throw new NotSupportedException("Dictionary is read-only.");
+            return OnWriteOperation<bool>();
         }
 
         public virtual bool IsReadOnly
@@ -61,13 +66,13 @@ namespace iSynaptic.Commons.Collections.Generic
             }
             set
             {
-                throw new NotSupportedException("Dictionary is read-only.");
+                OnWriteOperation<bool>();
             }
         }
 
         void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
         {
-            throw new NotSupportedException("Dictionary is read-only.");
+            OnWriteOperation<bool>();
         }
 
         public bool Contains(KeyValuePair<TKey, TValue> item)
@@ -84,7 +89,7 @@ namespace iSynaptic.Commons.Collections.Generic
 
         bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item)
         {
-            throw new NotSupportedException("Dictionary is read-only.");
+            return OnWriteOperation<bool>();
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()

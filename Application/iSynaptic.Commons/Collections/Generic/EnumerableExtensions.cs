@@ -21,12 +21,11 @@ namespace iSynaptic.Commons.Collections.Generic
             Guard.NotNull(source, "source");
             Guard.NotNull(destination, "destination");
 
-            if ((index < 0) || (index > destination.Length))
-                throw new ArgumentOutOfRangeException(
-                    "index", "Number must be either non-negative and less than or equal to Int32.MaxValue or -1.");
+            Guard.MustBeGreaterThanOrEqual(index, 0, "index");
+            Guard.MustBeLessThan(index, destination.Length, "index", "The destination is not large enough for the given index.");
 
             if ((destination.Length - index) < source.Count())
-                throw new ArgumentException("Destination array is not long enough to copy all the items in the collection. Check array index and length.", "index");
+                throw new ArgumentException("Destination array is not large enough to copy all the items in the collection at the given index. Check array index and length.", "index");
 
             foreach (var item in source)
                 destination[index++] = item;
@@ -34,8 +33,9 @@ namespace iSynaptic.Commons.Collections.Generic
 
         public static IEnumerable<IndexedValue<T>> WithIndex<T>(this IEnumerable<T> self)
         {
-            int index = 0;
+            Guard.NotNull(self, "self");
 
+            int index = 0;
             return self.Select(x => new IndexedValue<T>(index++, x));
         }
 
@@ -48,7 +48,6 @@ namespace iSynaptic.Commons.Collections.Generic
         public static IEnumerable<T> Buffer<T>(this IEnumerable<T> self)
         {
             Guard.NotNull(self, "self");
-
             return self.ToArray();
         }
 
@@ -88,12 +87,13 @@ namespace iSynaptic.Commons.Collections.Generic
         public static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> self)
         {
             Guard.NotNull(self, "self");
-
             return self.ToDictionary(x => x.Key, x => x.Value);
         }
 
         public static ReadOnlyDictionary<TKey, TValue> ToReadOnlyDictionary<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> self)
         {
+            Guard.NotNull(self, "self");
+
             return self
                 .ToDictionary()
                 .ToReadOnlyDictionary();
@@ -140,8 +140,9 @@ namespace iSynaptic.Commons.Collections.Generic
 
         private static IEnumerable<T[]> ZipCore<T>(IEnumerable<IEnumerable<T>> iterables)
         {
-            IEnumerator<T>[] enumerators = iterables
-                .Select(x => x != null ? x.GetEnumerator() : null)
+            var enumerators = iterables
+                .Where(x => x != null)
+                .Select(x => x.GetEnumerator())
                 .ToArray();
 
             while (enumerators.Where(x => x != null).Count() > 0)
@@ -177,22 +178,30 @@ namespace iSynaptic.Commons.Collections.Generic
         public static void ForceEnumeration<T>(this IEnumerable<T> self)
         {
             Guard.NotNull(self, "self");
-
             self.All(x => true);
         }
 
         public static IEnumerable<T> MeetsSpecifcation<T>(this IEnumerable<T> candidates, Specification<T> specification)
         {
+            Guard.NotNull(candidates, "candidates");
+            Guard.NotNull(specification, "specification");
+
             return candidates.Where(specification.IsSatisfiedBy);
         }
 
         public static IEnumerable<T> FailsSpecification<T>(this IEnumerable<T> candidates, Specification<T> specification)
         {
+            Guard.NotNull(candidates, "candidates");
+            Guard.NotNull(specification, "specification");
+
             return candidates.Where(x => specification.IsSatisfiedBy(x) != true);
         }
 
         public static bool AllSatisfy<T>(this IEnumerable<T> candidates, Specification<T> specification)
         {
+            Guard.NotNull(candidates, "candidates");
+            Guard.NotNull(specification, "specification");
+
             return candidates.All(specification.IsSatisfiedBy);
         }
 
