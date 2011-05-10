@@ -61,7 +61,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="iSynaptic.Commons.nuspec" />
+    <None Include="iSynaptic.Commons.Data.nuspec" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
