@@ -1,41 +1,56 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Project ToolsVersion="4.0" DefaultTargets="BuildComplete" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-    <PropertyGroup>
-        <SolutionName>iSynaptic.Commons</SolutionName>
-        <TestingFramework>NUnit</TestingFramework>
-        
-        <ILMergePath Condition="$(ILMergePath) == ''">External\Tools\ILMerge</ILMergePath>    
-    </PropertyGroup>
+  <PropertyGroup>
+    <SolutionName>iSynaptic.Commons</SolutionName>
+    <TestingFramework>NUnit</TestingFramework>
 
-    <Import Project="External\Tools\SolutionBuild.targets" />
+    <ILMergePath Condition="$(ILMergePath) == ''">External\Tools\ILMerge</ILMergePath>
+    <NugetPath Condition="$(NugetPath) == ''">External\Tools\Nuget</NugetPath>
+  </PropertyGroup>
 
-    <ItemGroup>
-        <ApplicationProject Include="Application\$(SolutionName).IL\$(SolutionName).IL.csproj" />
-        <ApplicationProject Include="Application\$(SolutionName)\$(SolutionName).csproj" />
-        <ApplicationProject Include="Application\$(SolutionName).Data\$(SolutionName).Data.csproj" />
+  <Import Project="External\Tools\SolutionBuild.targets" />
 
-        <TestingProject Include="Testing\$(SolutionName).UnitTests\$(SolutionName).UnitTests.csproj" />
+  <PropertyGroup>
+    <CommonsNuspecFile>$(MSBuildProjectDirectory)\Application\$(SolutionName)\$(SolutionName).nuspec</CommonsNuspecFile>
+    <CommonsDataNuspecFile>$(MSBuildProjectDirectory)\Application\$(SolutionName).Data\$(SolutionName).Data.nuspec</CommonsDataNuspecFile>
+    
+    <PackagesPath Condition="$(PackagesPath) == ''">$(RootBuildPath)\$(Configuration)\Packages</PackagesPath>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <ApplicationProject Include="Application\$(SolutionName).IL\$(SolutionName).IL.csproj" />
+    <ApplicationProject Include="Application\$(SolutionName)\$(SolutionName).csproj" />
+    <ApplicationProject Include="Application\$(SolutionName).Data\$(SolutionName).Data.csproj" />
 
-        <PreLayoutOutputFilesTarget Include="MergeILAssembly" />
-    </ItemGroup>
+    <TestingProject Include="Testing\$(SolutionName).UnitTests\$(SolutionName).UnitTests.csproj" />
 
-    <ItemGroup>
-        <!--ExcludeCoverageReporting Include="Assembly|Namespace|Class">
+    <PreLayoutOutputFilesTarget Include="MergeILAssembly" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!--ExcludeCoverageReporting Include="Assembly|Namespace|Class">
             <FilterExpression>{Regular Expression}</FilterExpression>
         </ExcludeCoverageReporting-->
-    </ItemGroup>
+  </ItemGroup>
 
-    <Target Name="MergeILAssembly">
-        <MakeDir Directories="$(BinariesPath)\Temp" />
-        
-        <Exec Command="&quot;$(ILMergePath)\ILMerge.exe&quot; &quot;/targetplatform:v4,$(MSBuildBinPath)&quot; &quot;/out:$(BinariesPath)\Temp\iSynaptic.Commons.dll&quot; /internalize:&quot;$(MSBuildProjectDirectory)\Application\$(SolutionName).IL\ILMergeInternalizationExcludes.txt&quot; &quot;$(BinariesPath)\iSynaptic.Commons.dll&quot; &quot;$(BinariesPath)\iSynaptic.Commons.IL.dll&quot;" />
+  <Target Name="MergeILAssembly">
+    <MakeDir Directories="$(BinariesPath)\Temp" />
 
-        <Delete Files="$(BinariesPath)\iSynaptic.Commons.dll;$(BinariesPath)\iSynaptic.Commons.pdb" />
-        <Delete Files="$(BinariesPath)\iSynaptic.Commons.IL.dll;$(BinariesPath)\iSynaptic.Commons.IL.pdb" />
+    <Exec Command="&quot;$(ILMergePath)\ILMerge.exe&quot; &quot;/targetplatform:v4,$(MSBuildBinPath)&quot; &quot;/out:$(BinariesPath)\Temp\iSynaptic.Commons.dll&quot; /internalize:&quot;$(MSBuildProjectDirectory)\Application\$(SolutionName).IL\ILMergeInternalizationExcludes.txt&quot; &quot;$(BinariesPath)\iSynaptic.Commons.dll&quot; &quot;$(BinariesPath)\iSynaptic.Commons.IL.dll&quot;" />
 
-        <Move SourceFiles="$(BinariesPath)\Temp\iSynaptic.Commons.dll;$(BinariesPath)\Temp\iSynaptic.Commons.pdb"
-              DestinationFiles="$(BinariesPath)\iSynaptic.Commons.dll;$(BinariesPath)\iSynaptic.Commons.pdb" />
+    <Delete Files="$(BinariesPath)\iSynaptic.Commons.dll;$(BinariesPath)\iSynaptic.Commons.pdb" />
+    <Delete Files="$(BinariesPath)\iSynaptic.Commons.IL.dll;$(BinariesPath)\iSynaptic.Commons.IL.pdb" />
 
-        <RemoveDir Directories="$(BinariesPath)\Temp" />
-    </Target>
+    <Move SourceFiles="$(BinariesPath)\Temp\iSynaptic.Commons.dll;$(BinariesPath)\Temp\iSynaptic.Commons.pdb"
+          DestinationFiles="$(BinariesPath)\iSynaptic.Commons.dll;$(BinariesPath)\iSynaptic.Commons.pdb" />
+
+    <RemoveDir Directories="$(BinariesPath)\Temp" />
+  </Target>
+
+  <Target Name="CorePackage">
+    <MakeDir Directories="$(PackagesPath)" />
+    
+    <Exec Command="$(NugetPath)\nuget.exe pack &quot;$(CommonsNuspecFile)&quot; -BasePath &quot;$(RootBuildPath)\$(Configuration)&quot; -OutputDirectory &quot;$(PackagesPath)&quot;" />
+    <Exec Command="$(NugetPath)\nuget.exe pack &quot;$(CommonsDataNuspecFile)&quot; -BasePath &quot;$(RootBuildPath)\$(Configuration)&quot; -OutputDirectory &quot;$(PackagesPath)&quot;" />
+  </Target>
 </Project>

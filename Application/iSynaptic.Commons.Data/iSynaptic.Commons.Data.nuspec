@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<package>
+  <metadata>
+    <id>iSynaptic.Commons.Data</id>
+    <version>1.0.0.35</version>
+    <authors>Jordan Terrell</authors>
+    <description>Standard Implementation of Exodata Resolver - Ioc for Data</description>
+    <language>en-US</language>
+    <licenseUrl>https://github.com/iSynaptic/iSynaptic.Commons/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/iSynaptic/iSynaptic.Commons</projectUrl>
+    <frameworkAssemblies>
+      <frameworkAssembly assemblyName="System" targetFramework="net40" />
+      <frameworkAssembly assemblyName="System.Core" targetFramework="net40" />
+    </frameworkAssemblies>
+    <dependencies>
+      <dependency id="iSynaptic.Commons" version="1.0.0.35" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="Binaries\iSynaptic.Commons.Data.dll" target="lib" />
+    <file src="Metadata\iSynaptic.Commons.Data.pdb" target="lib" />
+  </files>
+</package>

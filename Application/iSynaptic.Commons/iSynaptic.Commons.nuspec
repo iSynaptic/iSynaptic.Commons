@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<package>
+  <metadata>
+    <id>iSynaptic.Commons</id>
+    <version>1.0.0.35</version>
+    <authors>Jordan Terrell</authors>
+    <description>Library of common functionality in functional programming style.</description>
+    <language>en-US</language>
+    <licenseUrl>https://github.com/iSynaptic/iSynaptic.Commons/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/iSynaptic/iSynaptic.Commons</projectUrl>
+    <frameworkAssemblies>
+      <frameworkAssembly assemblyName="System" targetFramework="net40" />
+      <frameworkAssembly assemblyName="System.Core" targetFramework="net40" />
+      <frameworkAssembly assemblyName="System.Transactions" targetFramework="net40" />
+      <frameworkAssembly assemblyName="System.Xml" targetFramework="net40" />
+    </frameworkAssemblies>
+  </metadata>
+  <files>
+    <file src="Binaries\iSynaptic.Commons.dll" target="lib" />
+    <file src="Metadata\iSynaptic.Commons.pdb" target="lib" />
+  </files>
+</package>
