@@ -268,5 +268,19 @@ namespace iSynaptic.Commons.Data
 
             Assert.AreEqual("Specific Contextual Member Description", CommonExodata.Description.Given("Context").For<TestSubject>(x => x.FirstName));
         }
+
+        [Test]
+        public void Resolve_WithMultipleMembers_YieldsExodata()
+        {
+            var resolver = new StandardExodataResolver();
+            resolver.Bind(IntegerExodata.MinValue)
+                .For<DateTime>(x => x.Day, x => x.Month)
+                .To(42);
+
+            ExodataDeclaration.SetResolver(resolver);
+
+            Assert.AreEqual(42, IntegerExodata.MinValue.For<DateTime>(x => x.Day));
+            Assert.AreEqual(42, IntegerExodata.MinValue.For<DateTime>(x => x.Month));
+        }
     }
 }

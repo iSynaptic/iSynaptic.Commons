@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>iSynaptic.Commons.Data</id>
-    <version>0.1.0.35</version>
+    <version>0.1.0.36</version>
     <authors>Jordan Terrell</authors>
     <description>Standard Implementation of Exodata Resolver - Ioc for Data</description>
     <language>en-US</language>

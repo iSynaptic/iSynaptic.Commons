@@ -62,16 +62,14 @@ namespace iSynaptic.Commons.Data
         [Test]
         public void LazyExodata_ViaDeclarationMember()
         {
-            Expression<Func<string, object>> expression = x => x.Length;
-
             var resolver = new StandardExodataResolver();
             resolver.Bind(IntegerExodata.MinValue)
-                .For(expression)
+                .For<string>(x => x.Length)
                 .To(42);
 
             ExodataDeclaration.SetResolver(resolver);
 
-            Assert.AreEqual(42, IntegerExodata.MinValue.LazyFor(expression));
+            Assert.AreEqual(42, IntegerExodata.MinValue.LazyFor<string>(x => x.Length));
         }
 
         [Test]

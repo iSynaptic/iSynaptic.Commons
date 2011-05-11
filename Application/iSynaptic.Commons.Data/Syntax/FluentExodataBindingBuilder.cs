@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -9,16 +10,13 @@ namespace iSynaptic.Commons.Data.Syntax
     {
         public FluentExodataBindingBuilder(IExodataBindingSource source, IExodataDeclaration<TExodata> declaration, Action<IExodataBinding> onBuildComplete)
         {
-            Guard.NotNull(source, "source");
-            Guard.NotNull(declaration, "declaration");
-            Guard.NotNull(onBuildComplete, "onBuildComplete");
-
-            Source = source;
-            Declaration = declaration;
-            OnBuildComplete = onBuildComplete;
+            Source = Guard.NotNull(source, "source");
+            Declaration = Guard.NotNull(declaration, "declaration");
+            OnBuildComplete = Guard.NotNull(onBuildComplete, "onBuildComplete");
 
             Context = Maybe<TContext>.NoValue;
             Subject = Maybe<TSubject>.NoValue;
+            Members = new MemberInfo[0];
         }
 
 
@@ -43,16 +41,16 @@ namespace iSynaptic.Commons.Data.Syntax
             return ForCore<TSubject>(subject, null);
         }
 
-        public IFluentExodataBindingWhenScopeTo<TExodata, TContext, TSubject> For(Expression<Func<TSubject, object>> member)
+        public IFluentExodataBindingWhenScopeTo<TExodata, TContext, TSubject> For(params Expression<Func<TSubject, object>>[] members)
         {
-            Guard.NotNull(member, "member");
-            return ForCore(Maybe<TSubject>.NoValue, member);
+            Guard.NotNullOrEmpty(members, "members");
+            return ForCore(Maybe<TSubject>.NoValue, members);
         }
 
-        public IFluentExodataBindingWhenScopeTo<TExodata, TContext, TSubject> For(TSubject subject, Expression<Func<TSubject, object>> member)
+        public IFluentExodataBindingWhenScopeTo<TExodata, TContext, TSubject> For(TSubject subject, params Expression<Func<TSubject, object>>[] members)
         {
-            Guard.NotNull(member, "member");
-            return ForCore(subject, member);
+            Guard.NotNullOrEmpty(members, "members");
+            return ForCore(subject, members);
         }
 
         public IFluentExodataBindingWhenScopeTo<TExodata, TContext, TDerivedSubject> For<TDerivedSubject>() where TDerivedSubject : TSubject
@@ -65,34 +63,33 @@ namespace iSynaptic.Commons.Data.Syntax
             return ForCore<TDerivedSubject>(subject, null);
         }
 
-        public IFluentExodataBindingWhenScopeTo<TExodata, TContext, TDerivedSubject> For<TDerivedSubject>(Expression<Func<TDerivedSubject, object>> member) where TDerivedSubject : TSubject
+        public IFluentExodataBindingWhenScopeTo<TExodata, TContext, TDerivedSubject> For<TDerivedSubject>(params Expression<Func<TDerivedSubject, object>>[] members) where TDerivedSubject : TSubject
         {
-            Guard.NotNull(member, "member");
-            return ForCore(Maybe<TDerivedSubject>.NoValue, member);
+            Guard.NotNullOrEmpty(members, "members");
+            return ForCore(Maybe<TDerivedSubject>.NoValue, members);
         }
 
-        public IFluentExodataBindingWhenScopeTo<TExodata, TContext, TDerivedSubject> For<TDerivedSubject>(TDerivedSubject subject, Expression<Func<TDerivedSubject, object>> member) where TDerivedSubject : TSubject
+        public IFluentExodataBindingWhenScopeTo<TExodata, TContext, TDerivedSubject> For<TDerivedSubject>(TDerivedSubject subject, params Expression<Func<TDerivedSubject, object>>[] members) where TDerivedSubject : TSubject
         {
-            Guard.NotNull(member, "member");
-            return ForCore(subject, member);
+            Guard.NotNullOrEmpty(members, "members");
+            return ForCore(subject, members);
         }
 
-        private IFluentExodataBindingWhenScopeTo<TExodata, TContext, TDerivedSubject> ForCore<TDerivedSubject>(Maybe<TDerivedSubject> subject, Expression<Func<TDerivedSubject, object>> member) where TDerivedSubject : TSubject
+        private IFluentExodataBindingWhenScopeTo<TExodata, TContext, TDerivedSubject> ForCore<TDerivedSubject>(Maybe<TDerivedSubject> subject, IEnumerable<Expression<Func<TDerivedSubject, object>>> members) where TDerivedSubject : TSubject
         {
             return new FluentExodataBindingBuilder<TExodata, TContext, TDerivedSubject>(Source, Declaration, OnBuildComplete)
             {
                 Context = Context,
                 Subject = subject,
-                Member = member != null
-                    ? member.ExtractMemberInfoForExodata<TDerivedSubject>()
-                    : null
+                Members = members != null
+                    ? members.Select(x => x.ExtractMemberInfoForExodata<TDerivedSubject>()).ToArray()
+                    : new MemberInfo[0]
             };
         }
 
         public IFluentExodataBindingScopeTo<TExodata, TContext, TSubject> When(Func<IExodataRequest<TExodata, TContext, TSubject>, bool> userPredicate)
         {
-            Guard.NotNull(userPredicate, "userPredicate");
-            UserPredicate = userPredicate;
+            UserPredicate = Guard.NotNull(userPredicate, "userPredicate");
             return this;
         }
 
@@ -105,8 +102,7 @@ namespace iSynaptic.Commons.Data.Syntax
 
         public IFluentExodataBindingTo<TExodata, TContext, TSubject> InScope(Func<IExodataRequest<TExodata, TContext, TSubject>, object> scopeFactory)
         {
-            Guard.NotNull(scopeFactory, "scopeFactory");
-            ScopeFactory = scopeFactory;
+            ScopeFactory = Guard.NotNull(scopeFactory, "scopeFactory");
             return this;
         }
 
@@ -118,8 +114,7 @@ namespace iSynaptic.Commons.Data.Syntax
         public void To(Func<IExodataRequest<TExodata, TContext, TSubject>, TExodata> valueFactory)
         {
             Guard.NotNull(valueFactory, "valueFactory");
-
-            OnBuildComplete(ExodataBinding.Create<TExodata, TContext, TSubject>(Source, Matches, valueFactory, ScopeFactory, Context.HasValue, Subject.HasValue));
+            OnBuildComplete(ExodataBinding.Create(Source, Matches, valueFactory, ScopeFactory, Context.HasValue, Subject.HasValue));
         }
 
         private bool Matches(IExodataRequest<TExodata, TContext, TSubject> request)
@@ -129,7 +124,10 @@ namespace iSynaptic.Commons.Data.Syntax
             if (Declaration != request.Declaration)
                 return false;
 
-            if (Member != request.Member)
+            if (request.Member == null && Members.Length > 0)
+                return false;
+
+            if (request.Member != null && (Members == null || Members.Contains(request.Member) != true))
                 return false;
 
             if (Context.HasValue && !request.Context.HasValue)
@@ -154,7 +152,7 @@ namespace iSynaptic.Commons.Data.Syntax
 
         protected Maybe<TContext> Context { get; set; }
         protected Maybe<TSubject> Subject { get; set; }
-        protected MemberInfo Member { get; set; }
+        protected MemberInfo[] Members { get; set; }
 
         protected IExodataDeclaration<TExodata> Declaration { get; set; }
 

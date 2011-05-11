@@ -18,13 +18,13 @@ namespace iSynaptic.Commons.Data.Syntax
     public interface IFluentExodataBindingSubjectWhenScopeTo<TExodata, TContext, TSubjectBase> : IFluentExodataBindingWhenScopeTo<TExodata, TContext, TSubjectBase>
     {
         IFluentExodataBindingWhenScopeTo<TExodata, TContext, TSubjectBase> For(TSubjectBase subject);
-        IFluentExodataBindingWhenScopeTo<TExodata, TContext, TSubjectBase> For(Expression<Func<TSubjectBase, object>> member);
-        IFluentExodataBindingWhenScopeTo<TExodata, TContext, TSubjectBase> For(TSubjectBase subject, Expression<Func<TSubjectBase, object>> member);
+        IFluentExodataBindingWhenScopeTo<TExodata, TContext, TSubjectBase> For(params Expression<Func<TSubjectBase, object>>[] members);
+        IFluentExodataBindingWhenScopeTo<TExodata, TContext, TSubjectBase> For(TSubjectBase subject, params Expression<Func<TSubjectBase, object>>[] members);
 
         IFluentExodataBindingWhenScopeTo<TExodata, TContext, TSubject> For<TSubject>() where TSubject : TSubjectBase;
         IFluentExodataBindingWhenScopeTo<TExodata, TContext, TSubject> For<TSubject>(TSubject subject) where TSubject : TSubjectBase;
-        IFluentExodataBindingWhenScopeTo<TExodata, TContext, TSubject> For<TSubject>(Expression<Func<TSubject, object>> member) where TSubject : TSubjectBase;
-        IFluentExodataBindingWhenScopeTo<TExodata, TContext, TSubject> For<TSubject>(TSubject subject, Expression<Func<TSubject, object>> member) where TSubject : TSubjectBase;
+        IFluentExodataBindingWhenScopeTo<TExodata, TContext, TSubject> For<TSubject>(params Expression<Func<TSubject, object>>[] members) where TSubject : TSubjectBase;
+        IFluentExodataBindingWhenScopeTo<TExodata, TContext, TSubject> For<TSubject>(TSubject subject, params Expression<Func<TSubject, object>>[] members) where TSubject : TSubjectBase;
     }
 
     public interface IFluentExodataBindingWhenScopeTo<TExodata, TContext, TSubject> : IFluentExodataBindingScopeTo<TExodata, TContext, TSubject>
