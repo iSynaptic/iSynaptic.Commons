@@ -1,6 +1,7 @@
 *.suo
 *.user
 *.vs10x
+*.docstates
 bin/
 obj/
 Build/
