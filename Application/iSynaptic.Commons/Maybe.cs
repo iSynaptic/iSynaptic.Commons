@@ -17,25 +17,27 @@ namespace iSynaptic.Commons
         public static readonly Maybe<T> NoValue = new Maybe<T>();
         public static readonly Maybe<T> Default = new Maybe<T>(default(T));
 
+        private readonly MaybeResult? _Value;
         private readonly Func<MaybeResult> _Computation;
 
         public Maybe(Func<T> computation)
             : this()
         {
             Guard.NotNull(computation, "computation");
-            _Computation = Default.Bind(x => computation()).Computation;
+            _Computation = Default.Bind(x => computation())._Computation;
         }
 
         public Maybe(T value)
             : this()
         {
-            _Computation = () => new MaybeResult { Value = value, HasValue = true };
+            _Value = new MaybeResult { Value = value, HasValue = true };
         }
 
         public Maybe(Exception exception)
+            : this()
         {
             Guard.NotNull(exception, "exception");
-            _Computation = () => new MaybeResult { Exception = exception };
+            _Value = new MaybeResult { Exception = exception };
         }
 
         private Maybe(Func<MaybeResult> computation)
@@ -50,21 +52,27 @@ namespace iSynaptic.Commons
             Guard.NotNull(unsafeComputation, "unsafeComputation");
 
             Func<MaybeResult> finalComputation =
-                () => unsafeComputation().Computation();
+                () => unsafeComputation().ComputeResult();
 
             return new Maybe<T>(finalComputation.Memoize());
         }
 
-        private Func<MaybeResult> Computation
+        private MaybeResult ComputeResult()
         {
-            get { return _Computation ?? (() => new MaybeResult()); }
+            if (_Value.HasValue)
+                return _Value.Value;
+
+            if (_Computation != null)
+                return _Computation();
+
+            return default(MaybeResult);
         }
 
         public T Value
         {
             get
             {
-                var result = Computation();
+                var result = ComputeResult();
 
                 if (result.Exception != null)
                     result.Exception.ThrowPreservingCallStack();
@@ -81,8 +89,8 @@ namespace iSynaptic.Commons
             get { return Value; }
         }
 
-        public bool HasValue { get { return Computation().HasValue; } }
-        public Exception Exception { get { return Computation().Exception; } }
+        public bool HasValue { get { return ComputeResult().HasValue; } }
+        public Exception Exception { get { return ComputeResult().Exception; } }
 
         public bool Equals(T other)
         {
@@ -175,11 +183,11 @@ namespace iSynaptic.Commons
         {
             Guard.NotNull(func, "func");
 
-            var computation = Computation;
+            Func<MaybeResult> resultComputer = ComputeResult;
 
             Func<Maybe<TResult>.MaybeResult> boundComputation = () =>
             {
-                var result = computation();
+                var result = resultComputer();
 
                 if (result.Exception != null)
                     return new Maybe<TResult>.MaybeResult { Exception = result.Exception };
@@ -189,7 +197,7 @@ namespace iSynaptic.Commons
 
                 try
                 {
-                    return func(result.Value).Computation();
+                    return func(result.Value).ComputeResult();
                 }
                 catch (Exception ex)
                 {
