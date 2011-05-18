@@ -31,12 +31,12 @@ namespace iSynaptic.Commons
 
         public static Maybe<T> TryResolve<T>(this IDependencyResolver resolver)
         {
-            return TryResolve(resolver, typeof(T)).Cast<object, T>();
+            return TryResolve(resolver, typeof(T)).Cast<T>();
         }
 
         public static Maybe<T> TryResolve<T>(this IDependencyResolver resolver, string name)
         {
-            return TryResolve(resolver, typeof(T), name).Cast<object, T>();
+            return TryResolve(resolver, typeof(T), name).Cast<T>();
         }
 
         public static Maybe<object> TryResolve(this IDependencyResolver resolver, Type dependencyType)

@@ -722,7 +722,7 @@ namespace iSynaptic.Commons
             ICollection<string> foo = new List<string>();
 
             ICollection<string> value = Maybe.Value<object>(foo)
-                .Cast<object, ICollection<string>>()
+                .Cast<ICollection<string>>()
                 .Value;
 
             Assert.IsTrue(ReferenceEquals(foo, value));
@@ -734,7 +734,7 @@ namespace iSynaptic.Commons
             ICollection<string> foo = new List<string>();
 
             var value = Maybe.Value<object>(foo)
-                .Cast<object, DateTime>();
+                .Cast<DateTime>();
 
             Assert.Throws<InvalidCastException>(() => value.Return());
         }
@@ -746,7 +746,7 @@ namespace iSynaptic.Commons
 
             bool executed = false;
             var value = Maybe.Value<object>(() => { executed = true; return foo; })
-                .Cast<object, ICollection<string>>();
+                .Cast<ICollection<string>>();
 
             Assert.IsFalse(executed);
 

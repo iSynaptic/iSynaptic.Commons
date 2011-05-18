@@ -33,7 +33,7 @@ namespace iSynaptic.Commons
                 .Where(x => x.IsStatic)
                 .Select(x => Delegate.CreateDelegate(typeof (T), x))
                 .Or(info.Select(x => Delegate.CreateDelegate(typeof (T), target, x)))
-                .Cast<Delegate, T>()
+                .Cast<T>()
                 .Return();
         }
     }

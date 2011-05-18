@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace iSynaptic.Commons
 {
-    public struct Maybe<T> : IMaybe<T>, IEquatable<Maybe<T>>, IEquatable<T>
+    public struct Maybe<T> : IMaybe<T>, IMaybe, IEquatable<Maybe<T>>, IEquatable<T>
     {
         private struct MaybeResult
         {
@@ -74,6 +74,11 @@ namespace iSynaptic.Commons
 
                 return result.Value;
             }
+        }
+
+        object IMaybe.Value
+        {
+            get { return Value; }
         }
 
         public bool HasValue { get { return Computation().HasValue; } }
@@ -624,16 +629,30 @@ namespace iSynaptic.Commons
                 .Select(x => x);
         }
 
-        public static Maybe<TResult> Cast<T, TResult>(this Maybe<T> self)
+        public static Maybe<TResult> Cast<TResult>(this IMaybe self)
         {
-            return self.Select(x => (TResult)(object)x);
+            Guard.NotNull(self, "self");
+
+            return Value(self)
+                .Select(x =>
+                {
+                    if (self.Exception != null)
+                        return new Maybe<TResult>(self.Exception);
+
+                    if (self.HasValue != true)
+                        return Maybe<TResult>.NoValue;
+
+                    return (TResult) self.Value;
+                });
         }
 
-        public static Maybe<TResult> OfType<T, TResult>(this Maybe<T> self)
+        public static Maybe<TResult> OfType<TResult>(this IMaybe self)
         {
-            return self
-                .Where(x => x is TResult)
-                .Select(x => (TResult)(object)x);
+            Guard.NotNull(self, "self");
+
+            return Value(self)
+                .Where(x => x.HasValue && x.Value is TResult)
+                .Cast<TResult>();
         }
 
         public static T? ToNullable<T>(this Maybe<T> self) where T : struct
