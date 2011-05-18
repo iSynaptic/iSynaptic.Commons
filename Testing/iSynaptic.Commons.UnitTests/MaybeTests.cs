@@ -389,18 +389,18 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void Do_CallsActionIfHasValueIsTrue()
+        public void OnValue_CallsActionIfHasValueIsTrue()
         {
             bool didExecute = false;
 
             var value = Maybe<string>.NoValue
-                .Do(x => didExecute = true);
+                .OnValue(x => didExecute = true);
 
             Assert.IsFalse(value.HasValue);
             Assert.IsFalse(didExecute);
 
             value = Maybe.Value("Hello World!")
-                .Do(x => didExecute = true);
+                .OnValue(x => didExecute = true);
 
             Assert.IsTrue(value.HasValue);
             Assert.AreEqual("Hello World!", value.Value);
@@ -640,11 +640,11 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void Do_DefersExecutionUntilEvaluated()
+        public void OnValue_DefersExecutionUntilEvaluated()
         {
             bool executed = false;
             var value = Maybe.Value(() => { executed = true; return "42"; })
-                .Do(x => executed = true);
+                .OnValue(x => executed = true);
 
             Assert.IsFalse(executed);
 
@@ -932,17 +932,18 @@ namespace iSynaptic.Commons
         {
             int started = 0;
             int ended = 0;
+            bool actionExecuted = false;
 
             var waitEvent = new ManualResetEventSlim();
             var value = Maybe.Value(42)
-                .Do(x => started = 1)
+                .OnValue(x => started = 1)
                 .Select(x =>
                         {
                             waitEvent.Wait();
                             return x;
                         })
-                .Do(x => ended = 1)
-                .RunAsync();
+                .OnValue(x => ended = 1)
+                .RunAsync(x => actionExecuted = true);
 
             var waitForStarted = Task.Factory.StartNew(() => { while (Thread.VolatileRead(ref started) != 1) continue; });
             Assert.IsTrue(waitForStarted.Wait(TimeSpan.FromSeconds(0.5)), "Wait for started failed.");
@@ -954,6 +955,7 @@ namespace iSynaptic.Commons
             Assert.IsTrue(waitForEnded.Wait(TimeSpan.FromSeconds(0.5)), "Wait for ended failed.");
 
             Assert.AreEqual(42, value.Value);
+            Assert.IsTrue(actionExecuted);
         }
 
         private static int ThrowsException(int x)

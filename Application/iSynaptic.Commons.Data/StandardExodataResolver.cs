@@ -52,7 +52,7 @@ namespace iSynaptic.Commons.Data
 
             return Maybe.NotNull(bindingList)
                 .Where(x => x.Count > 1)
-                .Do(x => x.Sort(BindingSortPriority))
+                .OnValue(x => x.Sort(BindingSortPriority))
                 .Where(x => BindingSortPriority(x[0], x[1]) != 0)
                 .Select(x => x[0])
                 .Or(() => fallThroughSelection(request, bindingList))

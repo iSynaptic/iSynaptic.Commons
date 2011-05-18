@@ -91,14 +91,13 @@ namespace iSynaptic.Commons.Data
 
             var resolvedValue = request
                 .Select(TryResolve)
-                .Do(x => OnValidateValue(x, "bound"));
+                .OnValue(x => OnValidateValue(x, "bound"));
 
             var defaultValue = request
                 .Select(GetDefault)
-                .Do(x => OnValidateValue(x, "default"));
+                .OnValue(x => OnValidateValue(x, "default"));
 
-            return resolvedValue
-                .Or(defaultValue)
+            return resolvedValue.Or(defaultValue)
                 .Return();
         }
 

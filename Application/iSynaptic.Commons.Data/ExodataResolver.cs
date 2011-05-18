@@ -92,8 +92,8 @@ namespace iSynaptic.Commons.Data
                 {
                     exodataScopeObject.CacheFlushRequested += (s, a) => _CacheDictionary
                                                                     .TryGetValue(scopeObject)
-                                                                    .Do(x => x.Clear())
-                                                                    .Do(x => _CacheDictionary.Remove(scopeObject))
+                                                                    .OnValue(x => x.Clear())
+                                                                    .OnValue(x => _CacheDictionary.Remove(scopeObject))
                                                                     .Run();
                 }
             }

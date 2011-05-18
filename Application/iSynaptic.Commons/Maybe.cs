@@ -404,81 +404,6 @@ namespace iSynaptic.Commons
 
         #endregion
 
-        #region OnException Operator
-
-        public static Maybe<T> OnException<T>(this Maybe<T> self, T value)
-        {
-            return self.OnException(() => value);
-        }
-
-        public static Maybe<T> OnException<T>(this Maybe<T> self, Func<T> valueFactory)
-        {
-            return self.OnException(x => Value(valueFactory()));
-        }
-
-        public static Maybe<T> OnException<T>(this Maybe<T> self, Action<Exception> handler)
-        {
-            Guard.NotNull(handler, "handler");
-            return self.OnException(x => { handler(x); return new Maybe<T>(x); });
-        }
-
-        public static Maybe<T> OnException<T>(this Maybe<T> self, Func<Exception, Maybe<T>> handler)
-        {
-            Guard.NotNull(handler, "handler");
-            return Value(self)
-                .Select(x => x.Exception != null ? handler(x.Exception) : x);
-        }
-
-        #endregion
-
-        #region ThrowOnException Operator
-
-        public static Maybe<T> ThrowOnException<T>(this Maybe<T> self)
-        {
-            return self.ThrowOnException(typeof(Exception));
-        }
-
-        public static Maybe<T> ThrowOnException<T>(this Maybe<T> self, Type exceptionType)
-        {
-            Guard.NotNull(exceptionType, "exceptionType");
-            return self.ThrowOnException(x => exceptionType.IsAssignableFrom(x.GetType()));
-        }
-
-        public static Maybe<T> ThrowOnException<T>(this Maybe<T> self, Func<Exception, bool> predicate)
-        {
-            Guard.NotNull(predicate, "predicate");
-
-            Func<Maybe<T>> boundComputation = () =>
-            {
-                if (self.Exception != null && predicate(self.Exception))
-                    self.Exception.ThrowPreservingCallStack();
-
-                return self;
-            };
-
-            return Maybe<T>.Unsafe(boundComputation);
-        }
-
-        #endregion
-
-        #region ThrowOnNoValue Operator
-
-        public static Maybe<T> ThrowOnNoValue<T>(this Maybe<T> self, Exception exception)
-        {
-            Guard.NotNull(exception, "exception");
-            return self.ThrowOnNoValue(() => exception);
-        }
-
-        public static Maybe<T> ThrowOnNoValue<T>(this Maybe<T> self, Func<Exception> exceptionSelector)
-        {
-            Guard.NotNull(exceptionSelector, "exceptionSelector");
-            return self
-                .OnNoValue(() => { throw exceptionSelector(); })
-                .ThrowOnException();
-        }
-
-        #endregion
-
         #region With Operator
 
         public static Maybe<T> With<T, TSelected>(this Maybe<T> self, Func<T, TSelected> selector, Action<TSelected> action)
@@ -497,7 +422,7 @@ namespace iSynaptic.Commons
             return self.Bind(x =>
             {
                 selector(x)
-                    .Do(action)
+                    .OnValue(action)
                     .ThrowOnException()
                     .Run();
 
@@ -561,6 +486,102 @@ namespace iSynaptic.Commons
 
         #endregion
 
+        #region ThrowOnException Operator
+
+        public static Maybe<T> ThrowOnException<T>(this Maybe<T> self)
+        {
+            return self.ThrowOnException(typeof(Exception));
+        }
+
+        public static Maybe<T> ThrowOnException<T>(this Maybe<T> self, Type exceptionType)
+        {
+            Guard.NotNull(exceptionType, "exceptionType");
+            return self.ThrowOnException(x => exceptionType.IsAssignableFrom(x.GetType()));
+        }
+
+        public static Maybe<T> ThrowOnException<T>(this Maybe<T> self, Func<Exception, bool> predicate)
+        {
+            Guard.NotNull(predicate, "predicate");
+
+            Func<Maybe<T>> boundComputation = () =>
+            {
+                if (self.Exception != null && predicate(self.Exception))
+                    self.Exception.ThrowPreservingCallStack();
+
+                return self;
+            };
+
+            return Maybe<T>.Unsafe(boundComputation);
+        }
+
+        #endregion
+
+        #region ThrowOnNoValue Operator
+
+        public static Maybe<T> ThrowOnNoValue<T>(this Maybe<T> self, Exception exception)
+        {
+            Guard.NotNull(exception, "exception");
+            return self.ThrowOnNoValue(() => exception);
+        }
+
+        public static Maybe<T> ThrowOnNoValue<T>(this Maybe<T> self, Func<Exception> exceptionSelector)
+        {
+            Guard.NotNull(exceptionSelector, "exceptionSelector");
+            return self
+                .OnNoValue(() => { throw exceptionSelector(); })
+                .ThrowOnException();
+        }
+
+        #endregion
+
+        #region OnException Operator
+
+        public static Maybe<T> OnException<T>(this Maybe<T> self, T value)
+        {
+            return self.OnException(() => value);
+        }
+
+        public static Maybe<T> OnException<T>(this Maybe<T> self, Func<T> valueFactory)
+        {
+            return self.OnException(x => Value(valueFactory()));
+        }
+
+        public static Maybe<T> OnException<T>(this Maybe<T> self, Action<Exception> handler)
+        {
+            Guard.NotNull(handler, "handler");
+            return self.OnException(x => { handler(x); return new Maybe<T>(x); });
+        }
+
+        public static Maybe<T> OnException<T>(this Maybe<T> self, Func<Exception, Maybe<T>> handler)
+        {
+            Guard.NotNull(handler, "handler");
+            return Value(self)
+                .Select(x => x.Exception != null ? handler(x.Exception) : x);
+        }
+
+        #endregion
+
+        public static Maybe<T> OnValue<T>(this Maybe<T> self, Action<T> action)
+        {
+            Guard.NotNull(action, "action");
+            return self.Bind(x =>
+            {
+                action(x);
+                return x;
+            });
+        }
+
+        public static Maybe<T> OnNoValue<T>(this Maybe<T> self, Action action)
+        {
+            Guard.NotNull(action, "action");
+
+            return Value(self)
+                .Where(x => x.Exception == null && x.HasValue != true)
+                .OnValue(x => action())
+                .Or(self)
+                .Select(x => x);
+        }
+
         public static Maybe<T> Where<T>(this Maybe<T> self, Func<T, bool> predicate)
         {
             Guard.NotNull(predicate, "predicate");
@@ -573,16 +594,6 @@ namespace iSynaptic.Commons
             return self.Where(x => !predicate(x));
         }
 
-        public static Maybe<T> Do<T>(this Maybe<T> self, Action<T> action)
-        {
-            Guard.NotNull(action, "action");
-            return self.Bind(x =>
-            {
-                action(x);
-                return x;
-            });
-        }
-
         public static Maybe<T> Assign<T>(this Maybe<T> self, ref T target)
         {
             if (self.HasValue)
@@ -591,25 +602,16 @@ namespace iSynaptic.Commons
             return self;
         }
 
-        public static Maybe<T> OnNoValue<T>(this Maybe<T> self, Action action)
+        public static Maybe<T> Run<T>(this Maybe<T> self, Action<T> action = null)
         {
-            Guard.NotNull(action, "action");
-
-            return Value(self)
-                .Where(x => x.Exception == null && x.HasValue != true)
-                .Do(x => action())
-                .Or(self)
-                .Select(x => x);
+            return self
+                .When(x => action != null, x => self.OnValue(action))
+                .HasValue ? self : self;
         }
 
-        public static Maybe<T> Run<T>(this Maybe<T> self)
+        public static Maybe<T> RunAsync<T>(this Maybe<T> self, Action<T> action = null, CancellationToken cancellationToken = default(CancellationToken), TaskCreationOptions taskCreationOptions = TaskCreationOptions.None, TaskScheduler taskScheduler = default(TaskScheduler))
         {
-            return self.HasValue ? self : self;
-        }
-
-        public static Maybe<T> RunAsync<T>(this Maybe<T> self, CancellationToken cancellationToken = default(CancellationToken), TaskCreationOptions taskCreationOptions = TaskCreationOptions.None, TaskScheduler taskScheduler = default(TaskScheduler))
-        {
-            var task = Task.Factory.StartNew(() => self.Run(), cancellationToken, taskCreationOptions, taskScheduler ?? TaskScheduler.Default);
+            var task = Task.Factory.StartNew(() => self.Run(action), cancellationToken, taskCreationOptions, taskScheduler ?? TaskScheduler.Default);
             return Maybe<T>.Default.Bind(x => task.Result);
         }
 

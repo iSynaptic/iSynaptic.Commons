@@ -230,7 +230,7 @@ namespace iSynaptic.Commons.Xml
                 else
                 {
                     var data = _Selector(context)
-                        .Do(x => _MatchAction(x))
+                        .OnValue(x => _MatchAction(x))
                         .OnException(x => context.Errors.Add(new ParseError(string.Format("Unable to interpet data; exception occured: {0}", x.Message), context.Token)))
                         .Run();
                 }
