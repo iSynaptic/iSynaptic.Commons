@@ -5,6 +5,8 @@ using System.Linq;
 using System.Collections;
 using Rhino.Mocks;
 
+using iSynaptic.Commons;
+
 namespace iSynaptic.Commons.Collections.Generic
 {
     [TestFixture]
@@ -253,7 +255,7 @@ namespace iSynaptic.Commons.Collections.Generic
 
             var expected = new[] { 1, 10, 2, 11, 3, 12, 4, 13, 5, 14, 6, 15, 7, 16, 8, 17, 9, 18, 10, 19 };
 
-            Assert.IsTrue(zipped.SelectMany(x => x).SequenceEqual(expected));
+            Assert.IsTrue(zipped.SelectMany(x => x).Select(x => x.Return()).SequenceEqual(expected));
         }
 
         [Test]
@@ -264,7 +266,7 @@ namespace iSynaptic.Commons.Collections.Generic
 
             var expected = new[] { 1, 10, 2, 11, 3, 12, 4, 13, 5, 14, 6, 15, 7, 16, 8, 17, 9, 18, 10, 19 };
 
-            Assert.IsTrue(zipped.SelectMany(x => x).SequenceEqual(expected));
+            Assert.IsTrue(zipped.SelectMany(x => x).Select(x => x.Return()).SequenceEqual(expected));
         }
 
         [Test]
@@ -275,7 +277,7 @@ namespace iSynaptic.Commons.Collections.Generic
 
             var expected = new[] { 1, 10, 2, 11, 3, 12, 4, 13, 5, 14, 6, 15, 7, 16, 8, 17, 9, 18, 10, 19 };
 
-            Assert.IsTrue(zipped.SelectMany(x => x).SequenceEqual(expected));
+            Assert.IsTrue(zipped.SelectMany(x => x).Select(x => x.Return()).SequenceEqual(expected));
         }
 
         [Test]
@@ -286,7 +288,7 @@ namespace iSynaptic.Commons.Collections.Generic
 
             var zipped = left.Zip(right).SelectMany(x => x);
 
-            Assert.IsTrue(zipped.SequenceEqual(new[] { 1, 1, 2, 2, 3, 3, 4, 0 }));
+            Assert.IsTrue(zipped.SequenceEqual(new[] { 1, 1, 2, 2, 3, 3, 4, Maybe<int>.NoValue }));
         }
 
         [Test]

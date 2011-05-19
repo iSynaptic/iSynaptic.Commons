@@ -120,17 +120,17 @@ namespace iSynaptic.Commons.Collections.Generic
             return builder.ToString();
         }
 
-        public static IEnumerable<T[]> Zip<T>(this IEnumerable<IEnumerable<T>> iterables)
+        public static IEnumerable<Maybe<T>[]> Zip<T>(this IEnumerable<IEnumerable<T>> iterables)
         {
             return ZipCore(iterables);
         }
 
-        public static IEnumerable<T[]> Zip<T>(this IEnumerable<T>[] iterables)
+        public static IEnumerable<Maybe<T>[]> Zip<T>(this IEnumerable<T>[] iterables)
         {
             return ZipCore(iterables);
         }
-        
-        public static IEnumerable<T[]> Zip<T>(this IEnumerable<T> first, params IEnumerable<T>[] iterables)
+
+        public static IEnumerable<Maybe<T>[]> Zip<T>(this IEnumerable<T> first, params IEnumerable<T>[] iterables)
         {
             Guard.NotNull(first, "first");
             Guard.NotNull(iterables, "iterables");
@@ -138,7 +138,7 @@ namespace iSynaptic.Commons.Collections.Generic
             return ZipCore(new[] { first }.Concat(iterables));
         }
 
-        private static IEnumerable<T[]> ZipCore<T>(IEnumerable<IEnumerable<T>> iterables)
+        private static IEnumerable<Maybe<T>[]> ZipCore<T>(IEnumerable<IEnumerable<T>> iterables)
         {
             var enumerators = iterables
                 .Where(x => x != null)
@@ -148,7 +148,7 @@ namespace iSynaptic.Commons.Collections.Generic
             while (enumerators.Where(x => x != null).Count() > 0)
             {
                 int index = 0;
-                T[] values = new T[enumerators.Length];
+                var values = new Maybe<T>[enumerators.Length];
 
                 bool anyIsAvailable = false;
                 foreach (IEnumerator<T> enumerator in enumerators)

@@ -42,6 +42,46 @@ namespace iSynaptic.Commons
         }
 
         [Test]
+        public void ToComparer()
+        {
+            Func<string, string, int> strategy = (x, y) => x.CompareTo(y);
+            var comparer = strategy.ToComparer();
+
+            string foo = "Foo";
+            string bar = "Bar";
+
+            Assert.AreEqual(foo.CompareTo(bar), comparer.Compare(foo, bar));
+        }
+
+        [Test]
+        public void ToEqualityComparer_WithSelector()
+        {
+            Func<string, int> strategy = x => x.Length;
+            var lengthComparer = strategy.ToEqualityComparer();
+
+            Assert.IsTrue(lengthComparer.Equals("Foo", "Bar"));
+            Assert.AreEqual(lengthComparer.GetHashCode("Foo"), lengthComparer.GetHashCode("Bar"));
+
+            Assert.IsFalse(lengthComparer.Equals("Foo", "Quix"));
+            Assert.AreNotEqual(lengthComparer.GetHashCode("Foo"), lengthComparer.GetHashCode("Quix"));
+        }
+
+        [Test]
+        public void ToEqualityComparer_WithEqualsAndHashCodeStrategy()
+        {
+            Func<string, string, bool> equalsStrategy = (x, y) => x.Length == y.Length;
+            Func<string, int> hashCodeStrategy = x => x.Length.GetHashCode();
+
+            var lengthComparer = equalsStrategy.ToEqualityComparer(hashCodeStrategy);
+
+            Assert.IsTrue(lengthComparer.Equals("Foo", "Bar"));
+            Assert.AreEqual(lengthComparer.GetHashCode("Foo"), lengthComparer.GetHashCode("Bar"));
+
+            Assert.IsFalse(lengthComparer.Equals("Foo", "Quix"));
+            Assert.AreNotEqual(lengthComparer.GetHashCode("Foo"), lengthComparer.GetHashCode("Quix"));
+        }
+
+        [Test]
         public void OrReturningMaybe_WithNullArgument_ReturnsOriginal()
         {
             Func<Maybe<int>> originalFunc = () => 42;

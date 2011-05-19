@@ -18,17 +18,20 @@ namespace iSynaptic.Commons
             return new FuncComparer<T>(self);
         }
 
-        public static IEqualityComparer<T> ToEqualityComparer<T>(this Func<T, T, bool> self)
+        public static IEqualityComparer<T> ToEqualityComparer<T, TResult>(this Func<T, TResult> selector)
         {
-            return ToEqualityComparer(self, x => x.GetHashCode());
+            Guard.NotNull(selector, "selector");
+
+            return ToEqualityComparer<T>((x, y) => EqualityComparer<TResult>.Default.Equals(selector(x), selector(y)),
+                                          x => EqualityComparer<TResult>.Default.GetHashCode((selector(x))));
         }
 
-        public static IEqualityComparer<T> ToEqualityComparer<T>(this Func<T, T, bool> self, Func<T, int> hashCodeStrategy)
+        public static IEqualityComparer<T> ToEqualityComparer<T>(this Func<T, T, bool> equalsStrategy, Func<T, int> hashCodeStrategy)
         {
-            Guard.NotNull(self, "self");
+            Guard.NotNull(equalsStrategy, "equalsStrategy");
             Guard.NotNull(hashCodeStrategy, "hashCodeStrategy");
 
-            return new FuncEqualityComparer<T>(self, hashCodeStrategy);
+            return new FuncEqualityComparer<T>(equalsStrategy, hashCodeStrategy);
         }
 
         public static Func<TResult> Memoize<TResult>(this Func<TResult> self)
