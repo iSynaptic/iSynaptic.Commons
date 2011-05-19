@@ -2,11 +2,9 @@
 
 namespace iSynaptic.Commons
 {
-    public interface IMaybe<out T>
+    public interface IMaybe<out T> : IMaybe
     {
-        T Value { get; }
-        bool HasValue { get; }
-        Exception Exception { get; }
+        new T Value { get; }
     }
 
     public interface IMaybe
