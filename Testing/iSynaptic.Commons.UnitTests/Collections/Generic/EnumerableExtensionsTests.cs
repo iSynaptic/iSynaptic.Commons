@@ -377,6 +377,21 @@ namespace iSynaptic.Commons.Collections.Generic
             Assert.IsTrue(flatten.Select(x => x.Value).SequenceEqual(new[] { 1, 2, 4, 3 }));
         }
 
+        [Test]
+        public void Distinct_WithSelector()
+        {
+            var items = new[]
+                            {
+                                new TestSubject { Number =1, Text = "Foo"},
+                                new TestSubject { Number =1, Text = "Bar"},
+                                new TestSubject { Number =2, Text = "Foo"},
+                                new TestSubject { Number =3, Text = "Baz"}
+                            };
+
+            Assert.IsTrue(items.Distinct(x => x.Number).Select(x => x.Text).SequenceEqual(new[] {"Foo", "Foo", "Baz"}));
+            Assert.IsTrue(items.Distinct(x => x.Text).Select(x => x.Text).SequenceEqual(new[] { "Foo", "Bar", "Baz" }));
+        }
+
         private static IEnumerable<int> GetRange(int start, int end, Action after)
         {
             foreach (int i in Enumerable.Range(start, end))
@@ -396,6 +411,12 @@ namespace iSynaptic.Commons.Collections.Generic
 
             public int Value { get; private set; }
             public Recursive[] Recursives { get; private set; }
+        }
+
+        public class TestSubject
+        {
+            public int Number { get; set; }
+            public string Text { get; set; }
         }
     }
 }

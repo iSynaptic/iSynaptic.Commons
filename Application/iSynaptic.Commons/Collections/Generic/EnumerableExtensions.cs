@@ -16,6 +16,14 @@ namespace iSynaptic.Commons.Collections.Generic
             return source.OrderBy(keySelector, comparer.ToComparer());
         }
 
+        public static IEnumerable<T> Distinct<T, TKey>(this IEnumerable<T> source, Func<T, TKey> selector)
+        {
+            Guard.NotNull(source, "source");
+            Guard.NotNull(selector, "selector");
+
+            return source.Distinct(selector.ToEqualityComparer());
+        }
+
         public static void CopyTo<T>(this IEnumerable<T> source, T[] destination, int index)
         {
             Guard.NotNull(source, "source");
