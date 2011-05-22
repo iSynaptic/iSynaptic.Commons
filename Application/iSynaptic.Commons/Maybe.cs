@@ -248,12 +248,12 @@ namespace iSynaptic.Commons
             return Value(computation).NotNull();
         }
 
-        public static Maybe<T?> NotNull<T>(T? value) where T : struct
+        public static Maybe<T> NotNull<T>(T? value) where T : struct
         {
             return Value(value).NotNull();
         }
 
-        public static Maybe<T?> NotNull<T>(Func<T?> computation) where T : struct
+        public static Maybe<T> NotNull<T>(Func<T?> computation) where T : struct
         {
             return Value(computation).NotNull();
         }
@@ -263,9 +263,9 @@ namespace iSynaptic.Commons
             return self.NotNull(x => x);
         }
 
-        public static Maybe<T?> NotNull<T>(this Maybe<T?> self) where T : struct
+        public static Maybe<T> NotNull<T>(this Maybe<T?> self) where T : struct
         {
-            return self.NotNull(x => x);
+            return self.Where(x => x.HasValue).Select(x => x.Value);
         }
 
         public static Maybe<T> NotNull<T, TResult>(this Maybe<T> self, Func<T, TResult> selector) where TResult : class
@@ -339,10 +339,10 @@ namespace iSynaptic.Commons
             return self.Coalesce(selector, () => Maybe<TResult>.NoValue);
         }
 
-        public static Maybe<TResult?> Coalesce<T, TResult>(this Maybe<T> self, Func<T, TResult?> selector) where TResult : struct
+        public static Maybe<TResult> Coalesce<T, TResult>(this Maybe<T> self, Func<T, TResult?> selector) where TResult : struct
         {
             Guard.NotNull(selector, "selector");
-            return self.Coalesce(selector, () => Maybe<TResult?>.NoValue);
+            return self.Coalesce(selector, () => Maybe<TResult>.NoValue);
         }
 
         public static Maybe<TResult> Coalesce<T, TResult>(this Maybe<T> self, Func<T, TResult> selector, Func<Maybe<TResult>> valueIfNullFactory) where TResult : class
@@ -356,7 +356,7 @@ namespace iSynaptic.Commons
                 .Or(valueIfNullFactory);
         }
 
-        public static Maybe<TResult?> Coalesce<T, TResult>(this Maybe<T> self, Func<T, TResult?> selector, Func<Maybe<TResult?>> valueIfNullFactory) where TResult : struct
+        public static Maybe<TResult> Coalesce<T, TResult>(this Maybe<T> self, Func<T, TResult?> selector, Func<Maybe<TResult>> valueIfNullFactory) where TResult : struct
         {
             Guard.NotNull(selector, "selector");
             Guard.NotNull(valueIfNullFactory, "valueIfNullFactory");
@@ -499,6 +499,44 @@ namespace iSynaptic.Commons
 
         #endregion
 
+        #region ThrowOn Operator
+
+        public static Maybe<T> ThrowOn<T>(this Maybe<T> self, T value, Exception exception)
+        {
+            return self.ThrowOn(value, () => exception);
+        }
+
+        public static Maybe<T> ThrowOn<T>(this Maybe<T> self, T value, Func<Exception> exceptionFactory)
+        {
+            return self.ThrowOn(x => x.Equals(value), exceptionFactory);
+        }
+
+        public static Maybe<T> ThrowOn<T>(this Maybe<T> self, Func<T, bool> predicate, Func<Exception> exceptionFactory)
+        {
+            return self.When(predicate, x => { throw exceptionFactory(); })
+                .ThrowOnException();
+        }
+
+        #endregion
+
+        #region ThrowOnNoValue Operator
+
+        public static Maybe<T> ThrowOnNoValue<T>(this Maybe<T> self, Exception exception)
+        {
+            Guard.NotNull(exception, "exception");
+            return self.ThrowOnNoValue(() => exception);
+        }
+
+        public static Maybe<T> ThrowOnNoValue<T>(this Maybe<T> self, Func<Exception> exceptionFactory)
+        {
+            Guard.NotNull(exceptionFactory, "exceptionFactory");
+            return self
+                .OnNoValue(() => { throw exceptionFactory(); })
+                .ThrowOnException();
+        }
+
+        #endregion
+
         #region ThrowOnException Operator
 
         public static Maybe<T> ThrowOnException<T>(this Maybe<T> self)
@@ -525,24 +563,6 @@ namespace iSynaptic.Commons
             };
 
             return Maybe<T>.Unsafe(boundComputation);
-        }
-
-        #endregion
-
-        #region ThrowOnNoValue Operator
-
-        public static Maybe<T> ThrowOnNoValue<T>(this Maybe<T> self, Exception exception)
-        {
-            Guard.NotNull(exception, "exception");
-            return self.ThrowOnNoValue(() => exception);
-        }
-
-        public static Maybe<T> ThrowOnNoValue<T>(this Maybe<T> self, Func<Exception> exceptionSelector)
-        {
-            Guard.NotNull(exceptionSelector, "exceptionSelector");
-            return self
-                .OnNoValue(() => { throw exceptionSelector(); })
-                .ThrowOnException();
         }
 
         #endregion
