@@ -650,8 +650,15 @@ namespace iSynaptic.Commons
 
         public static Maybe<T> Synchronize<T>(this Maybe<T> self)
         {
+            return SynchronizeOn(self, new object());
+        }
+
+        public static Maybe<T> SynchronizeOn<T>(this Maybe<T> self, object synchronizeOn)
+        {
+            Guard.NotNull(synchronizeOn, "synchronizeOn");
+
             Func<Maybe<T>> synchronizedComputation = () => self.Run();
-            synchronizedComputation = synchronizedComputation.Synchronize();
+            synchronizedComputation = synchronizedComputation.SynchronizeOn(() => true, synchronizeOn);
 
             return Value(synchronizedComputation)
                 .Select(x => x);
