@@ -57,7 +57,7 @@ namespace iSynaptic.Commons
                 .Where(x => HashCode == other.HashCode)
                 .Where(x => TryGetTarget().Equals(other.TryGetTarget()))
                 .Or(() => ReferenceEquals(other, Null))
-                .Return(false);
+                .Return();
         }
 
         public Maybe<T> TryGetTarget()

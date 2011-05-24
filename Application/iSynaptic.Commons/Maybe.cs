@@ -410,9 +410,7 @@ namespace iSynaptic.Commons
         public static Maybe<T> Or<T>(this Maybe<T> self, Func<Maybe<T>> valueFactory)
         {
             Guard.NotNull(valueFactory, "valueFactory");
-
-            return Value(self)
-                .Select(x => x.Exception == null && x.HasValue != true ? valueFactory() : x);
+            return Maybe<T>.Unsafe(() => self.Exception == null && self.HasValue != true ? valueFactory() : self);
         }
 
         #endregion
@@ -588,8 +586,7 @@ namespace iSynaptic.Commons
         public static Maybe<T> OnException<T>(this Maybe<T> self, Func<Exception, Maybe<T>> handler)
         {
             Guard.NotNull(handler, "handler");
-            return Value(self)
-                .Select(x => x.Exception != null ? handler(x.Exception) : x);
+            return Maybe<T>.Unsafe(() => self.Exception != null ? Value(() => handler(self.Exception)).Select(x => x) : self);
         }
 
         #endregion
@@ -608,11 +605,13 @@ namespace iSynaptic.Commons
         {
             Guard.NotNull(action, "action");
 
-            return Value(self)
-                .Where(x => x.Exception == null && x.HasValue != true)
-                .OnValue(x => action())
-                .Or(self)
-                .Select(x => x);
+            return Maybe<T>.Unsafe(() =>
+            {
+                if (self.Exception == null && self.HasValue != true)
+                    action();
+
+                return self;
+            });
         }
 
         public static Maybe<T> Where<T>(this Maybe<T> self, Func<T, bool> predicate)
@@ -645,7 +644,18 @@ namespace iSynaptic.Commons
         public static Maybe<T> RunAsync<T>(this Maybe<T> self, Action<T> action = null, CancellationToken cancellationToken = default(CancellationToken), TaskCreationOptions taskCreationOptions = TaskCreationOptions.None, TaskScheduler taskScheduler = default(TaskScheduler))
         {
             var task = Task.Factory.StartNew(() => self.Run(action), cancellationToken, taskCreationOptions, taskScheduler ?? TaskScheduler.Default);
-            return Maybe<T>.Default.Bind(x => task.Result);
+            return Maybe<T>.Unsafe(() =>
+            {
+                try
+                {
+                    return task.Result;
+                }
+                catch (AggregateException ex)
+                {
+                    ex.InnerException.ThrowPreservingCallStack();
+                    return Maybe<T>.NoValue;
+                }
+            });
         }
 
         public static Maybe<T> Synchronize<T>(this Maybe<T> self)
@@ -660,34 +670,42 @@ namespace iSynaptic.Commons
             Func<Maybe<T>> synchronizedComputation = () => self.Run();
             synchronizedComputation = synchronizedComputation.SynchronizeOn(() => true, synchronizeOn);
 
-            return Value(synchronizedComputation)
-                .Select(x => x);
+            return Maybe<T>.Unsafe(synchronizedComputation);
         }
 
         public static Maybe<TResult> Cast<TResult>(this IMaybe self)
         {
             Guard.NotNull(self, "self");
 
-            return Value(self)
-                .Select(x =>
-                {
-                    if (self.Exception != null)
-                        return new Maybe<TResult>(self.Exception);
+            return Maybe<TResult>.Unsafe(() => 
+            {
+                if (self.Exception != null)
+                    return new Maybe<TResult>(self.Exception);
 
-                    if (self.HasValue != true)
-                        return Maybe<TResult>.NoValue;
+                if (self.HasValue != true)
+                    return Maybe<TResult>.NoValue;
 
-                    return (TResult) self.Value;
-                });
+                return (TResult) self.Value;
+            });
         }
 
         public static Maybe<TResult> OfType<TResult>(this IMaybe self)
         {
             Guard.NotNull(self, "self");
 
-            return Value(self)
-                .Where(x => x.HasValue && x.Value is TResult)
-                .Cast<TResult>();
+            return Maybe<TResult>.Unsafe(() =>
+            {
+                if (self.Exception != null)
+                    return new Maybe<TResult>(self.Exception);
+
+                if (self.HasValue != true)
+                    return Maybe<TResult>.NoValue;
+
+                if(self.Value is TResult)
+                    return (TResult)self.Value;
+
+                return Maybe<TResult>.NoValue;
+            });
         }
 
         public static T? ToNullable<T>(this Maybe<T> self) where T : struct

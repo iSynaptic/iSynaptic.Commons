@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -478,8 +479,7 @@ namespace iSynaptic.Commons
             Func<Exception, Maybe<int>> handler = x =>
                 { throw new NullReferenceException(); };
 
-            var value = Maybe<string>.Default
-                .Bind(throwException)
+            var value = Maybe.Value<string>(() => { throw new InvalidOperationException(); })
                 .Select(x => x.Length)
                 .Where(x => x > 10)
                 .OnException(handler);
@@ -956,6 +956,47 @@ namespace iSynaptic.Commons
 
             Assert.AreEqual(42, value.Value);
             Assert.IsTrue(actionExecuted);
+        }
+
+        [Test]
+        public void NoOperatorsSuppressExceptionsWhenThrowOnExceptionOperatorIsInEffect()
+        {
+            var input = Maybe.Value<string>(() => { throw new NotSupportedException("Hello, World!"); });
+
+            Action noOp = () => { };
+
+            var operators = new Expression<Func<Maybe<string>, Maybe<string>>>[]
+            {
+                x => x.With(y => y.Length, Console.WriteLine),
+                x => x.When(y => true, y => Console.WriteLine(y)),
+                x => x.Select(y => y),
+                x => x.OnNoValue(noOp),
+                x => x.Coalesce(y => y),
+                x => x.Or("Hello, World!"),
+                x => x.NotNull(),
+                x => x.Where(y => y.StartsWith("H")),
+                x => x.Unless(y => y.StartsWith("H")),
+                x => x.Using(y => noOp.ToDisposable(), y => Maybe.Value("Hello, World!")),
+                x => x.Join(Maybe.Value(42), (y, z) => y),
+                x => x.OnException(ex => Console.WriteLine(ex.Message)),
+                x => x.OnValue(Console.WriteLine),
+                x => x.Synchronize(),
+                x => x.Cast<string>(),
+                x => x.OfType<string>()
+            };
+
+            foreach(var op in operators)
+            {
+                var maybe = op.Compile()(input);
+                Assert.DoesNotThrow(() => maybe.RunAsync().Run(), op.ToString());
+
+                maybe = maybe.ThrowOnException();
+
+                Assert.Throws<NotSupportedException>(() => maybe.RunAsync().Run(), op.ToString());
+
+                maybe = op.Compile()(maybe);
+                Assert.Throws<NotSupportedException>(() => maybe.Run(), op.ToString());
+            }
         }
 
         private static int ThrowsException(int x)
