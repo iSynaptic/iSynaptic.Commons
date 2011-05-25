@@ -221,14 +221,14 @@ namespace iSynaptic.Commons
 
     public static class Maybe
     {
-        #region Value Operator
+        #region Return Operator
 
-        public static Maybe<T> Value<T>(T value)
+        public static Maybe<T> Return<T>(T value)
         {
             return new Maybe<T>(value);
         }
 
-        public static Maybe<T> Value<T>(Func<T> computation)
+        public static Maybe<T> Return<T>(Func<T> computation)
         {
             Guard.NotNull(computation, "computation");
             return new Maybe<T>(computation);
@@ -240,22 +240,22 @@ namespace iSynaptic.Commons
 
         public static Maybe<T> NotNull<T>(T value) where T : class
         {
-            return Value(value).NotNull();
+            return Return(value).NotNull();
         }
 
         public static Maybe<T> NotNull<T>(Func<T> computation) where T : class
         {
-            return Value(computation).NotNull();
+            return Return(computation).NotNull();
         }
 
         public static Maybe<T> NotNull<T>(T? value) where T : struct
         {
-            return Value(value).NotNull();
+            return Return(value).NotNull();
         }
 
         public static Maybe<T> NotNull<T>(Func<T?> computation) where T : struct
         {
-            return Value(computation).NotNull();
+            return Return(computation).NotNull();
         }
 
         public static Maybe<T> NotNull<T>(this Maybe<T> self) where T : class
@@ -404,7 +404,7 @@ namespace iSynaptic.Commons
         public static Maybe<T> Or<T>(this Maybe<T> self, Func<T> valueFactory)
         {
             Guard.NotNull(valueFactory, "valueFactory");
-            return self.Or(() => Value(valueFactory));
+            return self.Or(() => Return(valueFactory));
         }
 
         public static Maybe<T> Or<T>(this Maybe<T> self, Func<Maybe<T>> valueFactory)
@@ -422,7 +422,7 @@ namespace iSynaptic.Commons
             Guard.NotNull(selector, "selector");
             Guard.NotNull(action, "action");
 
-            return With(self, x => Value(selector(x)), action);
+            return With(self, x => Return(selector(x)), action);
         }
 
         public static Maybe<T> With<T, TSelected>(this Maybe<T> self, Func<T, Maybe<TSelected>> selector, Action<TSelected> action)
@@ -574,7 +574,7 @@ namespace iSynaptic.Commons
 
         public static Maybe<T> OnException<T>(this Maybe<T> self, Func<T> valueFactory)
         {
-            return self.OnException(x => Value(valueFactory()));
+            return self.OnException(x => Return(valueFactory()));
         }
 
         public static Maybe<T> OnException<T>(this Maybe<T> self, Action<Exception> handler)
@@ -586,7 +586,7 @@ namespace iSynaptic.Commons
         public static Maybe<T> OnException<T>(this Maybe<T> self, Func<Exception, Maybe<T>> handler)
         {
             Guard.NotNull(handler, "handler");
-            return Maybe<T>.Unsafe(() => self.Exception != null ? Value(() => handler(self.Exception)).Select(x => x) : self);
+            return Maybe<T>.Unsafe(() => self.Exception != null ? Return(() => handler(self.Exception)).Select(x => x) : self);
         }
 
         #endregion

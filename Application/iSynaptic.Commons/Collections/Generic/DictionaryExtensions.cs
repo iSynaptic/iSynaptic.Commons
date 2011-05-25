@@ -18,7 +18,7 @@ namespace iSynaptic.Commons.Collections.Generic
             TValue retreivedValue = default(TValue);
 
             return Maybe
-                .Value(self)
+                .Return(self)
                 .Where(x => x.TryGetValue(key, out retreivedValue))
                 .Select(x => retreivedValue);
         }

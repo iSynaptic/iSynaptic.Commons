@@ -50,7 +50,7 @@ namespace iSynaptic.Commons.Data
 
         public TExodata For<TSubject>(TSubject subject, Expression<Func<TSubject, object>> member)
         {
-            return Resolve(_Context, Maybe.Value(subject), member);
+            return Resolve(_Context, Maybe.Return(subject), member);
         }
 
         public LazyExodata<TExodata> LazyGet()

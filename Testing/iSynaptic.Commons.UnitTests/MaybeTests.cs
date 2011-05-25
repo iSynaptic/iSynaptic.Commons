@@ -256,7 +256,7 @@ namespace iSynaptic.Commons
         [Test]
         public void Coalesce_WithNonNullReferenceType_ReturnsValue()
         {
-            var value = Maybe.Value("Hello World!")
+            var value = Maybe.Return("Hello World!")
                 .Coalesce(x => x);
 
             Assert.IsTrue(value.HasValue);
@@ -266,7 +266,7 @@ namespace iSynaptic.Commons
         [Test]
         public void Coalesce_WithNonNullValueType_ReturnsValue()
         {
-            var value = Maybe.Value((int?)42)
+            var value = Maybe.Return((int?)42)
                 .Coalesce(x => x);
 
             Assert.IsTrue(value.HasValue);
@@ -276,7 +276,7 @@ namespace iSynaptic.Commons
         [Test]
         public void Coalesce_WithNullReferenceType_ReturnsNoValue()
         {
-            var value = Maybe.Value("Hello World!")
+            var value = Maybe.Return("Hello World!")
                 .Coalesce(x => (string)null);
 
             Assert.IsFalse(value.HasValue);
@@ -285,7 +285,7 @@ namespace iSynaptic.Commons
         [Test]
         public void Coalesce_WithNullValueType_ReturnsNoValue()
         {
-            var value = Maybe.Value(42)
+            var value = Maybe.Return(42)
                 .Coalesce(x => (int?)null);
 
             Assert.IsFalse(value.HasValue);
@@ -294,12 +294,12 @@ namespace iSynaptic.Commons
         [Test]
         public void Value_ReturnsValueWrapedInMaybe()
         {
-            var value = Maybe.Value("Hello World!");
+            var value = Maybe.Return("Hello World!");
 
             Assert.IsTrue(value.HasValue);
             Assert.AreEqual("Hello World!", value.Value);
 
-            value = Maybe.Value((string)null);
+            value = Maybe.Return((string)null);
 
             Assert.IsTrue(value.HasValue);
             Assert.IsNull(value.Value);
@@ -311,7 +311,7 @@ namespace iSynaptic.Commons
             string rawValue = "Hello World!";
 
             var value = Maybe
-                .Value(rawValue)
+                .Return(rawValue)
                 .Select(x => x.Length);
 
             Assert.IsTrue(value.HasValue);
@@ -324,14 +324,14 @@ namespace iSynaptic.Commons
             string rawValue = "Hello World!";
 
             var value = Maybe
-                .Value(rawValue)
+                .Return(rawValue)
                 .Where(x => x.Length == rawValue.Length);
 
             Assert.IsTrue(value.HasValue);
             Assert.AreEqual(rawValue, value.Value);
 
             value = Maybe
-                .Value(rawValue)
+                .Return(rawValue)
                 .Where(x => x.Length == rawValue.Length - 1);
 
             Assert.IsFalse(value.HasValue);
@@ -343,14 +343,14 @@ namespace iSynaptic.Commons
             string rawValue = "Hello World!";
 
             var value = Maybe
-                .Value(rawValue)
+                .Return(rawValue)
                 .Unless(x => x.Length == rawValue.Length - 1);
 
             Assert.IsTrue(value.HasValue);
             Assert.AreEqual(rawValue, value.Value);
 
             value = Maybe
-                .Value(rawValue)
+                .Return(rawValue)
                 .Unless(x => x.Length == rawValue.Length);
 
             Assert.IsFalse(value.HasValue);
@@ -375,14 +375,14 @@ namespace iSynaptic.Commons
         public void Extract_RethrowsExistingException()
         {
             Assert.Throws<InvalidOperationException>(() =>
-                Maybe.Value<int>(() => { throw new InvalidOperationException(); })
+                Maybe.Return<int>(() => { throw new InvalidOperationException(); })
                     .Extract(42));
         }
 
         [Test]
         public void Extract_WhereExceptionExists_CanBeAbsorbedByOnException()
         {
-            var value = Maybe.Value<int>(() => { throw new InvalidOperationException(); })
+            var value = Maybe.Return<int>(() => { throw new InvalidOperationException(); })
                 .OnException(27)
                 .Extract(42);
 
@@ -400,7 +400,7 @@ namespace iSynaptic.Commons
             Assert.IsFalse(value.HasValue);
             Assert.IsFalse(didExecute);
 
-            value = Maybe.Value("Hello World!")
+            value = Maybe.Return("Hello World!")
                 .OnValue(x => didExecute = true);
 
             Assert.IsTrue(value.HasValue);
@@ -424,7 +424,7 @@ namespace iSynaptic.Commons
             Assert.IsNull(refString);
             Assert.AreEqual(0, refInt);
 
-            Maybe.Value(rawValue)
+            Maybe.Return(rawValue)
                 .Assign(ref refString)
                 .Select(x => x.Length)
                 .Assign(ref refInt);
@@ -479,7 +479,7 @@ namespace iSynaptic.Commons
             Func<Exception, Maybe<int>> handler = x =>
                 { throw new NullReferenceException(); };
 
-            var value = Maybe.Value<string>(() => { throw new InvalidOperationException(); })
+            var value = Maybe.Return<string>(() => { throw new InvalidOperationException(); })
                 .Select(x => x.Length)
                 .Where(x => x > 10)
                 .OnException(handler);
@@ -492,7 +492,7 @@ namespace iSynaptic.Commons
         {
             int checkValue = 0;
 
-            var value = Maybe.Value("Hello")
+            var value = Maybe.Return("Hello")
                 .With(x => x.Length, x => checkValue = x)
                 .Extract();
 
@@ -504,7 +504,7 @@ namespace iSynaptic.Commons
         public void When_PredicateIsTrue_UsesComputation()
         {
             var value = Maybe
-                .Value("Hello")
+                .Return("Hello")
                 .When("Hello", "World");
 
             Assert.IsTrue(value.HasValue);
@@ -514,7 +514,7 @@ namespace iSynaptic.Commons
         [Test]
         public void When_PredicateIsFalse_UsesOriginalValue()
         {
-            var value = Maybe.Value("Hello")
+            var value = Maybe.Return("Hello")
                 .When("Goodbye", "World");
 
             Assert.IsTrue(value.HasValue);
@@ -526,7 +526,7 @@ namespace iSynaptic.Commons
         {
             string output = null;
 
-            var value = Maybe.Value("Hello")
+            var value = Maybe.Return("Hello")
                 .When("Hello", x => output = x)
                 .Run();
 
@@ -534,10 +534,10 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void Value_DefersExecutionUntilEvaluated()
+        public void Return_DefersExecutionUntilEvaluated()
         {
             bool executed = false;
-            var value = Maybe.Value(() => { executed = true; return 42; });
+            var value = Maybe.Return(() => { executed = true; return 42; });
 
             Assert.IsFalse(executed);
 
@@ -573,7 +573,7 @@ namespace iSynaptic.Commons
         public void Select_DefersExecutionUntilEvaluated()
         {
             bool executed = false;
-            var value = Maybe.Value(() => { executed = true; return "42"; })
+            var value = Maybe.Return(() => { executed = true; return "42"; })
                 .Select(x => x.Length);
 
             Assert.IsFalse(executed);
@@ -586,7 +586,7 @@ namespace iSynaptic.Commons
         public void Select_WhenSelectorReturnsMaybe_DefersExecutionUntilEvaluated()
         {
             bool executed = false;
-            var value = Maybe.Value(() => { executed = true; return "42"; })
+            var value = Maybe.Return(() => { executed = true; return "42"; })
                 .Select(x => Maybe<int>.NoValue);
 
             Assert.IsFalse(executed);
@@ -599,7 +599,7 @@ namespace iSynaptic.Commons
         public void Synchronize_PreventsMultipleEvaluation()
         {
             int count = 0;
-            var value = Maybe.Value(() => { count++; Thread.Sleep(250); return "42"; })
+            var value = Maybe.Return(() => { count++; Thread.Sleep(250); return "42"; })
                 .Synchronize();
 
             string results = null;
@@ -617,7 +617,7 @@ namespace iSynaptic.Commons
         public void Where_DefersExecutionUntilEvaluated()
         {
             bool executed = false;
-            var value = Maybe.Value(() => { executed = true; return "42"; })
+            var value = Maybe.Return(() => { executed = true; return "42"; })
                 .Where(x => x.Length == 2);
 
             Assert.IsFalse(executed);
@@ -630,7 +630,7 @@ namespace iSynaptic.Commons
         public void Unless_DefersExecutionUntilEvaluated()
         {
             bool executed = false;
-            var value = Maybe.Value(() => { executed = true; return "42"; })
+            var value = Maybe.Return(() => { executed = true; return "42"; })
                 .Unless(x => x.Length == 2);
 
             Assert.IsFalse(executed);
@@ -643,7 +643,7 @@ namespace iSynaptic.Commons
         public void OnValue_DefersExecutionUntilEvaluated()
         {
             bool executed = false;
-            var value = Maybe.Value(() => { executed = true; return "42"; })
+            var value = Maybe.Return(() => { executed = true; return "42"; })
                 .OnValue(x => executed = true);
 
             Assert.IsFalse(executed);
@@ -656,7 +656,7 @@ namespace iSynaptic.Commons
         public void Assign_ExecutesImmediately()
         {
             bool executed = false;
-            Maybe.Value(true)
+            Maybe.Return(true)
                 .Assign(ref executed);
 
             Assert.IsTrue(executed);
@@ -666,7 +666,7 @@ namespace iSynaptic.Commons
         public void OnException_DefersExecutionUntilEvaluated()
         {
             bool executed = false;
-            var value = Maybe.Value(() => { executed = true; return "42"; })
+            var value = Maybe.Return(() => { executed = true; return "42"; })
                 .OnException("Hello")
                 .OnException(x => executed = true);
 
@@ -680,7 +680,7 @@ namespace iSynaptic.Commons
         public void ThrowOnException_DefersExecutionUntilEvaluated()
         {
             bool executed = false;
-            var value = Maybe.Value<int>(() => { executed = true; throw new InvalidOperationException(); })
+            var value = Maybe.Return<int>(() => { executed = true; throw new InvalidOperationException(); })
                 .ThrowOnException();
 
             Assert.IsFalse(executed);
@@ -693,7 +693,7 @@ namespace iSynaptic.Commons
         public void ThrowOnNoValue_DefersExecutionUntilEvaluated()
         {
             bool executed = false;
-            var value = Maybe.Value(() => { executed = true; return 42; })
+            var value = Maybe.Return(() => { executed = true; return 42; })
                 .Select(x => Maybe<int>.NoValue)
                 .ThrowOnNoValue(new InvalidOperationException());
 
@@ -707,7 +707,7 @@ namespace iSynaptic.Commons
         public void Synchronize_DeferesExecutionUntilEvaluated()
         {
             bool executed = false;
-            var value = Maybe.Value(() => { executed = true; return 42; })
+            var value = Maybe.Return(() => { executed = true; return 42; })
                 .Synchronize();
 
             Assert.IsFalse(executed);
@@ -721,7 +721,7 @@ namespace iSynaptic.Commons
         {
             ICollection<string> foo = new List<string>();
 
-            ICollection<string> value = Maybe.Value<object>(foo)
+            ICollection<string> value = Maybe.Return<object>(foo)
                 .Cast<ICollection<string>>()
                 .Value;
 
@@ -733,7 +733,7 @@ namespace iSynaptic.Commons
         {
             ICollection<string> foo = new List<string>();
 
-            var value = Maybe.Value<object>(foo)
+            var value = Maybe.Return<object>(foo)
                 .Cast<DateTime>();
 
             Assert.Throws<InvalidCastException>(() => value.Extract());
@@ -745,7 +745,7 @@ namespace iSynaptic.Commons
             ICollection<string> foo = new List<string>();
 
             bool executed = false;
-            var value = Maybe.Value<object>(() => { executed = true; return foo; })
+            var value = Maybe.Return<object>(() => { executed = true; return foo; })
                 .Cast<ICollection<string>>();
 
             Assert.IsFalse(executed);
@@ -757,8 +757,8 @@ namespace iSynaptic.Commons
         [Test]
         public void Or_ReturnsFirstValueIfHasValue()
         {
-            var value = Maybe.Value(1)
-                .Or(Maybe.Value(42))
+            var value = Maybe.Return(1)
+                .Or(Maybe.Return(42))
                 .Extract();
 
             Assert.AreEqual(1, value);
@@ -768,7 +768,7 @@ namespace iSynaptic.Commons
         public void Or_ReturnsSecondValueIfFirstDoesNotHaveValue()
         {
             var value = Maybe<int>.NoValue
-                .Or(Maybe.Value(42))
+                .Or(Maybe.Return(42))
                 .Extract();
 
             Assert.AreEqual(42, value);
@@ -778,7 +778,7 @@ namespace iSynaptic.Commons
         public void Or_YieldsExceptionIfFirstValueHasException()
         {
             var value = new Maybe<int>(new InvalidOperationException())
-                .Or(Maybe.Value(42));
+                .Or(Maybe.Return(42));
 
             Assert.Throws<InvalidOperationException>(() => value.Extract());
         }
@@ -807,7 +807,7 @@ namespace iSynaptic.Commons
             bool executed = false;
 
             var value = new Maybe<int>(new InvalidOperationException())
-                .Or(Maybe.Value(() => { executed = true; return 42; }));
+                .Or(Maybe.Return(() => { executed = true; return 42; }));
 
             Assert.Throws<InvalidOperationException>(() => value.Extract());
             Assert.IsFalse(executed);
@@ -816,8 +816,8 @@ namespace iSynaptic.Commons
         [Test]
         public void Join_ReturnsBothValueIfHasValue()
         {
-            var value = Maybe.Value(1)
-                .Join(Maybe.Value(42))
+            var value = Maybe.Return(1)
+                .Join(Maybe.Return(42))
                 .Extract();
 
             Assert.AreEqual(Tuple.Create(1, 42), value);
@@ -827,7 +827,7 @@ namespace iSynaptic.Commons
         public void Join_ReturnsNoValueIfFirstDoesNotHaveValue()
         {
             var value = Maybe<int>.NoValue
-                .Join(Maybe.Value(42));
+                .Join(Maybe.Return(42));
                 
             Assert.IsFalse(value.HasValue);
         }
@@ -836,7 +836,7 @@ namespace iSynaptic.Commons
         public void Join_YieldsExceptionIfFirstValueHasException()
         {
             var value = new Maybe<int>(new InvalidOperationException())
-                .Join(Maybe.Value(42));
+                .Join(Maybe.Return(42));
 
             Assert.Throws<InvalidOperationException>(() => value.Extract());
         }
@@ -844,7 +844,7 @@ namespace iSynaptic.Commons
         [Test]
         public void Join_YieldsExceptionIfSecondValueHasExceptionAndFirstHasValue()
         {
-            var value = Maybe.Value(1)
+            var value = Maybe.Return(1)
                 .Join(new Maybe<int>(new InvalidOperationException()));
 
             Assert.Throws<InvalidOperationException>(() => value.Extract());
@@ -865,7 +865,7 @@ namespace iSynaptic.Commons
             bool executed = false;
 
             var value = new Maybe<int>(new InvalidOperationException())
-                .Join(Maybe.Value(() => { executed = true; return 42; }));
+                .Join(Maybe.Return(() => { executed = true; return 42; }));
 
             Assert.Throws<InvalidOperationException>(() => value.Extract());
             Assert.IsFalse(executed);
@@ -883,7 +883,7 @@ namespace iSynaptic.Commons
         [Test]
         public void ToNullable_WithValue_ReturnsValue()
         {
-            var value = Maybe.Value(42)
+            var value = Maybe.Return(42)
                 .ToNullable();
 
             Assert.AreEqual(42, value.Value);
@@ -935,7 +935,7 @@ namespace iSynaptic.Commons
             bool actionExecuted = false;
 
             var waitEvent = new ManualResetEventSlim();
-            var value = Maybe.Value(42)
+            var value = Maybe.Return(42)
                 .OnValue(x => started = 1)
                 .Select(x =>
                         {
@@ -961,7 +961,7 @@ namespace iSynaptic.Commons
         [Test]
         public void NoOperatorsSuppressExceptionsWhenThrowOnExceptionOperatorIsInEffect()
         {
-            var input = Maybe.Value<string>(() => { throw new NotSupportedException("Hello, World!"); });
+            var input = Maybe.Return<string>(() => { throw new NotSupportedException("Hello, World!"); });
 
             Action noOp = () => { };
 
@@ -976,8 +976,8 @@ namespace iSynaptic.Commons
                 x => x.NotNull(),
                 x => x.Where(y => y.StartsWith("H")),
                 x => x.Unless(y => y.StartsWith("H")),
-                x => x.Using(y => noOp.ToDisposable(), y => Maybe.Value("Hello, World!")),
-                x => x.Join(Maybe.Value(42), (y, z) => y),
+                x => x.Using(y => noOp.ToDisposable(), y => Maybe.Return("Hello, World!")),
+                x => x.Join(Maybe.Return(42), (y, z) => y),
                 x => x.OnException(ex => Console.WriteLine(ex.Message)),
                 x => x.OnValue(Console.WriteLine),
                 x => x.Synchronize(),
