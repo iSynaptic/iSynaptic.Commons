@@ -65,7 +65,7 @@ namespace iSynaptic.Commons.Collections.Generic
         {
             return this.TryGetValue(item.Key)
                 .Select(x => EqualityComparer<TValue>.Default.Equals(x, item.Value))
-                .Return(false);
+                .Extract(false);
         }
 
         public void CopyTo(KeyValuePair<TKey, TValue>[] destination, int index)

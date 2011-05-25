@@ -17,7 +17,7 @@ namespace iSynaptic.Commons.Collections.Generic
             return Maybe.Value(_InnerEnumerable)
                 .Coalesce(x => x.GetEnumerator())
                 .Select(x => new LookAheadEnumerator<T>(x))
-                .Return();
+                .Extract();
         }
 
         IEnumerator IEnumerable.GetEnumerator()

@@ -369,19 +369,19 @@ namespace iSynaptic.Commons
 
         #endregion
 
-        #region Return Operator
+        #region Extract Operator
 
-        public static T Return<T>(this Maybe<T> self)
+        public static T Extract<T>(this Maybe<T> self)
         {
-            return self.Return(default(T));
+            return self.Extract(default(T));
         }
 
-        public static T Return<T>(this Maybe<T> self, T @default)
+        public static T Extract<T>(this Maybe<T> self, T @default)
         {
-            return self.Return(() => @default);
+            return self.Extract(() => @default);
         }
 
-        public static T Return<T>(this Maybe<T> self, Func<T> @default)
+        public static T Extract<T>(this Maybe<T> self, Func<T> @default)
         {
             return self.Or(@default)
                 .Value;
@@ -712,7 +712,7 @@ namespace iSynaptic.Commons
         {
             return self.Select(x => (T?)x)
                 .Or((T?)null)
-                .Return();
+                .Extract();
         }
     }
 }

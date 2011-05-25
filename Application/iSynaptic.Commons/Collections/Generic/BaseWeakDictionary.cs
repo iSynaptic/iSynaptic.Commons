@@ -55,7 +55,7 @@ namespace iSynaptic.Commons.Collections.Generic
                 .TryGetValue(WrapKey(key, _Comparer))
                 .Bind(UnwrapValue);
 
-            value = result.Return();
+            value = result.Extract();
             return result.HasValue;
         }
 

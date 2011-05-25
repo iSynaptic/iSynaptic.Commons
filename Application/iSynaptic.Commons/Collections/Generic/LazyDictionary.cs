@@ -61,7 +61,7 @@ namespace iSynaptic.Commons.Collections.Generic
                 .TryGetValue(key)
                 .Select(x => x.Value);
 
-            value = results.Return();
+            value = results.Extract();
             return results.HasValue;
         }
 

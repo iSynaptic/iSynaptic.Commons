@@ -98,7 +98,7 @@ namespace iSynaptic.Commons.Data
                 .OnValue(x => OnValidateValue(x, "default"));
 
             return resolvedValue.Or(defaultValue)
-                .Return();
+                .Extract();
         }
 
         protected virtual Maybe<TExodata> TryResolve<TContext, TSubject>(IExodataRequest<TExodata, TContext, TSubject> request)
@@ -122,7 +122,7 @@ namespace iSynaptic.Commons.Data
 
         protected virtual TExodata GetDefault<TContext, TSubject>(IExodataRequest<TExodata, TContext, TSubject> request)
         {
-            return _Default.Return();
+            return _Default.Extract();
         }
     }
 

@@ -56,7 +56,7 @@ namespace iSynaptic.Commons.Data
                 .Where(x => BindingSortPriority(x[0], x[1]) != 0)
                 .Select(x => x[0])
                 .Or(() => fallThroughSelection(request, bindingList))
-                .Return();
+                .Extract();
         }
 
         private static int BindingSortPriority(IExodataBinding left, IExodataBinding right)

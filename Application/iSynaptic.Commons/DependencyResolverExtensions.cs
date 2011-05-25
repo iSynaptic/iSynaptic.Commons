@@ -26,7 +26,7 @@ namespace iSynaptic.Commons
 
         public static object Resolve(this IDependencyResolver resolver, Type dependencyType, string name)
         {
-            return ResolveStrategy(resolver, dependencyType, name).Return();
+            return ResolveStrategy(resolver, dependencyType, name).Extract();
         }
 
         public static Maybe<T> TryResolve<T>(this IDependencyResolver resolver)

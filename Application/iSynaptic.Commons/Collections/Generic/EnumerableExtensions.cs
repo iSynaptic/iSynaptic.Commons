@@ -240,7 +240,7 @@ namespace iSynaptic.Commons.Collections.Generic
             Guard.NotNull(self, "self");
             Guard.NotNull(selector, "selector");
 
-            return new[] {self}.Concat(selector(self).Select(x => Flatten(x, selector)).Return(Enumerable.Empty<T>()));
+            return new[] {self}.Concat(selector(self).Select(x => Flatten(x, selector)).Extract(Enumerable.Empty<T>()));
         }
     }
 }

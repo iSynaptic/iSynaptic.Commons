@@ -34,7 +34,7 @@ namespace iSynaptic.Commons
                 .Select(x => Delegate.CreateDelegate(typeof (T), x))
                 .Or(info.Select(x => Delegate.CreateDelegate(typeof (T), target, x)))
                 .Cast<T>()
-                .Return();
+                .Extract();
         }
     }
 }
