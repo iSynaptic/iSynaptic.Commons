@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -208,6 +209,10 @@ namespace iSynaptic.Commons
             return new Maybe<TResult>(boundComputation.Memoize());
         }
 
+        //public Maybe<TResult> Extend<TResult>(Func<Maybe<T>, TResult> func)
+        //{
+        //}
+
         public static implicit operator Maybe<T>(T value)
         {
             return new Maybe<T>(value);
@@ -327,6 +332,29 @@ namespace iSynaptic.Commons
         {
             Guard.NotNull(selector, "selector");
             return self.Bind(selector);
+        }
+
+        #endregion
+
+        #region SelectMany Operator
+        
+        // This operator is implemented only to satisfy C#'s LINQ comprehension syntax.  The name "SelectMany" is confusing
+        // as there is only one value to "select".
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static Maybe<TResult> SelectMany<T, TResult>(this Maybe<T> self, Func<T, Maybe<TResult>> selector)
+        {
+            Guard.NotNull(selector, "selector");
+            return self.Bind(selector);
+        }
+
+        // This operator is implemented only to satisfy C#'s LINQ comprehension syntax.  The name "SelectMany" is confusing
+        // as there is only one value to "select".
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static Maybe<TResult> SelectMany<T, TIntermediate, TResult>(this Maybe<T> self, Func<T, Maybe<TIntermediate>> selector, Func<T, TIntermediate, TResult> combiner)
+        {
+            Guard.NotNull(selector, "selector");
+            Guard.NotNull(combiner, "combiner");
+            return self.Bind(x => selector(x).Bind(y => combiner(x, y)));
         }
 
         #endregion

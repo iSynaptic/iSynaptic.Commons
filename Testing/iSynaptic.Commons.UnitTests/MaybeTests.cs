@@ -179,6 +179,21 @@ namespace iSynaptic.Commons
         }
 
         [Test]
+        public void ComprehensionSyntaxIsWorking()
+        {
+            Maybe<int> value = 
+                        from x in Maybe.Return(6)
+                        from y in Maybe.Return(7)
+                        let ultimateAnswer = x*y
+                        where ultimateAnswer == 42
+                        select ultimateAnswer;
+
+            Assert.IsTrue(value.HasValue);
+            Assert.IsNull(value.Exception);
+            Assert.AreEqual(42, value.Value);
+        }
+
+        [Test]
         public void Equals_WithSameException_ReturnsTrue()
         {
             var results = Maybe<int>
@@ -772,6 +787,16 @@ namespace iSynaptic.Commons
                 .Extract();
 
             Assert.AreEqual(42, value);
+        }
+
+        [Test]
+        public void Or_ReturnsSecondNoValue_IfBothAreNoValue()
+        {
+            var value = Maybe<int>.NoValue
+                .Or(Maybe<int>.NoValue);
+            
+            Assert.IsFalse(value.HasValue);
+            Assert.IsNull(value.Exception);
         }
 
         [Test]
