@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace iSynaptic.Commons
 {
-    public struct Maybe<T> : IMaybe<T>, IMaybe, IEquatable<Maybe<T>>, IEquatable<T>
+    public struct Maybe<T> : IMaybe<T>, IEquatable<Maybe<T>>, IEquatable<T>
     {
         private struct MaybeResult
         {
@@ -21,6 +21,12 @@ namespace iSynaptic.Commons
         private readonly MaybeResult? _Value;
         private readonly Func<MaybeResult> _Computation;
 
+        public Maybe(T value)
+            : this()
+        {
+            _Value = new MaybeResult { Value = value, HasValue = true };
+        }
+
         public Maybe(Func<T> computation)
             : this()
         {
@@ -28,17 +34,17 @@ namespace iSynaptic.Commons
             _Computation = Default.Bind(x => computation())._Computation;
         }
 
-        public Maybe(T value)
-            : this()
-        {
-            _Value = new MaybeResult { Value = value, HasValue = true };
-        }
-
         public Maybe(Exception exception)
             : this()
         {
             Guard.NotNull(exception, "exception");
             _Value = new MaybeResult { Exception = exception };
+        }
+
+        private Maybe(MaybeResult value)
+            : this()
+        {
+            _Value = value;
         }
 
         private Maybe(Func<MaybeResult> computation)
@@ -52,19 +58,22 @@ namespace iSynaptic.Commons
         {
             Guard.NotNull(unsafeComputation, "unsafeComputation");
 
-            Func<MaybeResult> finalComputation =
-                () => unsafeComputation().ComputeResult();
+            Func<MaybeResult> finalComputation = () =>
+            {
+                var results = unsafeComputation();
+                return ComputeResult(results._Value, results._Computation);
+            };
 
             return new Maybe<T>(finalComputation.Memoize());
         }
 
-        private MaybeResult ComputeResult()
+        private static MaybeResult ComputeResult(MaybeResult? value, Func<MaybeResult> computation)
         {
-            if (_Value.HasValue)
-                return _Value.Value;
+            if (value.HasValue)
+                return value.Value;
 
-            if (_Computation != null)
-                return _Computation();
+            if (computation != null)
+                return computation();
 
             return default(MaybeResult);
         }
@@ -73,7 +82,7 @@ namespace iSynaptic.Commons
         {
             get
             {
-                var result = ComputeResult();
+                var result = ComputeResult(_Value, _Computation);
 
                 if (result.Exception != null)
                     result.Exception.ThrowPreservingCallStack();
@@ -90,8 +99,8 @@ namespace iSynaptic.Commons
             get { return Value; }
         }
 
-        public bool HasValue { get { return ComputeResult().HasValue; } }
-        public Exception Exception { get { return ComputeResult().Exception; } }
+        public bool HasValue { get { return ComputeResult(_Value, _Computation).HasValue; } }
+        public Exception Exception { get { return ComputeResult(_Value, _Computation).Exception; } }
 
         public bool Equals(T other)
         {
@@ -184,11 +193,12 @@ namespace iSynaptic.Commons
         {
             Guard.NotNull(func, "func");
 
-            Func<MaybeResult> resultComputer = ComputeResult;
+            var value = _Value;
+            var computation = _Computation;
 
             Func<Maybe<TResult>.MaybeResult> boundComputation = () =>
             {
-                var result = resultComputer();
+                var result = ComputeResult(value, computation);
 
                 if (result.Exception != null)
                     return new Maybe<TResult>.MaybeResult { Exception = result.Exception };
@@ -198,7 +208,8 @@ namespace iSynaptic.Commons
 
                 try
                 {
-                    return func(result.Value).ComputeResult();
+                    var boundResult = func(result.Value);
+                    return Maybe<TResult>.ComputeResult(boundResult._Value, boundResult._Computation);
                 }
                 catch (Exception ex)
                 {
@@ -209,9 +220,36 @@ namespace iSynaptic.Commons
             return new Maybe<TResult>(boundComputation.Memoize());
         }
 
-        //public Maybe<TResult> Extend<TResult>(Func<Maybe<T>, TResult> func)
-        //{
-        //}
+        public Maybe<TResult> Extend<TResult>(Func<Maybe<T>, TResult> func)
+        {
+            Guard.NotNull(func, "func");
+            return Extend(x => new Maybe<TResult>(func(x)));
+        }
+
+        public Maybe<TResult> Extend<TResult>(Func<Maybe<T>, Maybe<TResult>> func)
+        {
+            Guard.NotNull(func, "func");
+
+            var value = _Value;
+            var computation = _Computation;
+
+            Func<Maybe<TResult>.MaybeResult> boundComputation = () =>
+            {
+                var result = new Maybe<T>(ComputeResult(value, computation));
+
+                try
+                {
+                    var boundResult = func(result);
+                    return Maybe<TResult>.ComputeResult(boundResult._Value, boundResult._Computation);
+                }
+                catch (Exception ex)
+                {
+                    return new Maybe<TResult>.MaybeResult { Exception = ex };
+                }
+            };
+
+            return new Maybe<TResult>(boundComputation.Memoize());
+        }
 
         public static implicit operator Maybe<T>(T value)
         {
@@ -438,7 +476,7 @@ namespace iSynaptic.Commons
         public static Maybe<T> Or<T>(this Maybe<T> self, Func<Maybe<T>> valueFactory)
         {
             Guard.NotNull(valueFactory, "valueFactory");
-            return Maybe<T>.Unsafe(() => self.Exception == null && self.HasValue != true ? valueFactory() : self);
+            return self.Extend(x => x.Exception == null && x.HasValue != true ? valueFactory() : x);
         }
 
         #endregion
@@ -614,7 +652,7 @@ namespace iSynaptic.Commons
         public static Maybe<T> OnException<T>(this Maybe<T> self, Func<Exception, Maybe<T>> handler)
         {
             Guard.NotNull(handler, "handler");
-            return Maybe<T>.Unsafe(() => self.Exception != null ? Return(() => handler(self.Exception)).Select(x => x) : self);
+            return self.Extend(x => x.Exception != null ? handler(x.Exception) : x);
         }
 
         #endregion
@@ -633,12 +671,12 @@ namespace iSynaptic.Commons
         {
             Guard.NotNull(action, "action");
 
-            return Maybe<T>.Unsafe(() =>
+            return self.Extend(x =>
             {
-                if (self.Exception == null && self.HasValue != true)
+                if (x.Exception == null && x.HasValue != true)
                     action();
 
-                return self;
+                return x;
             });
         }
 
@@ -672,7 +710,7 @@ namespace iSynaptic.Commons
         public static Maybe<T> RunAsync<T>(this Maybe<T> self, Action<T> action = null, CancellationToken cancellationToken = default(CancellationToken), TaskCreationOptions taskCreationOptions = TaskCreationOptions.None, TaskScheduler taskScheduler = default(TaskScheduler))
         {
             var task = Task.Factory.StartNew(() => self.Run(action), cancellationToken, taskCreationOptions, taskScheduler ?? TaskScheduler.Default);
-            return Maybe<T>.Unsafe(() =>
+            return self.Bind(x => 
             {
                 try
                 {
@@ -688,15 +726,15 @@ namespace iSynaptic.Commons
 
         public static Maybe<T> Synchronize<T>(this Maybe<T> self)
         {
-            return SynchronizeOn(self, new object());
+            return SynchronizeWith(self, new object());
         }
 
-        public static Maybe<T> SynchronizeOn<T>(this Maybe<T> self, object synchronizeOn)
+        public static Maybe<T> SynchronizeWith<T>(this Maybe<T> self, object lockObject)
         {
-            Guard.NotNull(synchronizeOn, "synchronizeOn");
+            Guard.NotNull(lockObject, "lockObject");
 
             Func<Maybe<T>> synchronizedComputation = () => self.Run();
-            synchronizedComputation = synchronizedComputation.SynchronizeOn(() => true, synchronizeOn);
+            synchronizedComputation = synchronizedComputation.SynchronizeOn(() => true, lockObject);
 
             return Maybe<T>.Unsafe(synchronizedComputation);
         }
@@ -713,7 +751,14 @@ namespace iSynaptic.Commons
                 if (self.HasValue != true)
                     return Maybe<TResult>.NoValue;
 
-                return (TResult) self.Value;
+                try
+                {
+                    return (TResult) self.Value;
+                }
+                catch(Exception ex)
+                {
+                    return new Maybe<TResult>(ex);
+                }
             });
         }
 

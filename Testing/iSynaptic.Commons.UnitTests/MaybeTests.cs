@@ -755,6 +755,17 @@ namespace iSynaptic.Commons
         }
 
         [Test]
+        public void Cast_ExceptionIsContained_WhenCastIsNotPossible()
+        {
+            ICollection<string> foo = new List<string>();
+
+            var value = Maybe.Return<object>(foo)
+                .Cast<DateTime>();
+
+            Assert.DoesNotThrow(() => value.Run());
+        }
+
+        [Test]
         public void Cast_DeferesExecutionUntilEvaluated()
         {
             ICollection<string> foo = new List<string>();
@@ -1006,18 +1017,19 @@ namespace iSynaptic.Commons
                 x => x.OnException(ex => Console.WriteLine(ex.Message)),
                 x => x.OnValue(Console.WriteLine),
                 x => x.Synchronize(),
-                x => x.Cast<string>(),
-                x => x.OfType<string>()
+                x => x.Cast<int>().Cast<string>(),
+                x => x.OfType<int>().OfType<string>(),
+                x => x.RunAsync(null, default(CancellationToken), TaskCreationOptions.None, null)
             };
 
             foreach(var op in operators)
             {
                 var maybe = op.Compile()(input);
-                Assert.DoesNotThrow(() => maybe.RunAsync().Run(), op.ToString());
+                Assert.DoesNotThrow(() => maybe.Run(), op.ToString());
 
-                maybe = maybe.ThrowOnException();
+                maybe = maybe.Run().ThrowOnException();
 
-                Assert.Throws<NotSupportedException>(() => maybe.RunAsync().Run(), op.ToString());
+                Assert.Throws<NotSupportedException>(() => maybe.Run(), op.ToString());
 
                 maybe = op.Compile()(maybe);
                 Assert.Throws<NotSupportedException>(() => maybe.Run(), op.ToString());
