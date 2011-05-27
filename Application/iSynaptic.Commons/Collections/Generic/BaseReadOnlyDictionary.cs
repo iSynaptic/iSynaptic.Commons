@@ -41,7 +41,7 @@ namespace iSynaptic.Commons.Collections.Generic
             return OnWriteOperation<bool>();
         }
 
-        public virtual bool IsReadOnly
+        public bool IsReadOnly
         {
             get { return true; }
         }
