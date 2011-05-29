@@ -978,17 +978,25 @@ namespace iSynaptic.Commons
                             waitEvent.Wait();
                             return x;
                         })
-                .OnValue(x => ended = 1)
-                .RunAsync(x => actionExecuted = true);
+                .OnValue(x => ended = 1);
+
+            Assert.AreEqual(0, started);
+            Assert.AreEqual(0, ended);
+
+            value = value.RunAsync(x => actionExecuted = true);
 
             var waitForStarted = Task.Factory.StartNew(() => { while (Thread.VolatileRead(ref started) != 1) continue; });
             Assert.IsTrue(waitForStarted.Wait(TimeSpan.FromSeconds(0.5)), "Wait for started failed.");
 
+            Assert.AreEqual(1, started);
             Assert.AreEqual(0, ended);
             waitEvent.Set();
 
             var waitForEnded = Task.Factory.StartNew(() => { while (Thread.VolatileRead(ref ended) != 1) continue; });
             Assert.IsTrue(waitForEnded.Wait(TimeSpan.FromSeconds(0.5)), "Wait for ended failed.");
+
+            Assert.AreEqual(1, started);
+            Assert.AreEqual(1, ended);
 
             Assert.AreEqual(42, value.Value);
             Assert.IsTrue(actionExecuted);
