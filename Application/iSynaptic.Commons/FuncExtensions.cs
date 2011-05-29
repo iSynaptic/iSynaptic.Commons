@@ -80,20 +80,20 @@ namespace iSynaptic.Commons
             Guard.NotNull(needsSynchronizationPredicate, "needsSynchronizationPredicate");
 
             var lockObject = new object();
-            return SynchronizeOn(self, needsSynchronizationPredicate, lockObject);
+            return SynchronizeWith(self, needsSynchronizationPredicate, lockObject);
         }
 
-        public static Func<TResult> SynchronizeOn<TResult>(this Func<TResult> self, Func<bool> needsSynchronizationPredicate, object synchronizeOn)
+        public static Func<TResult> SynchronizeWith<TResult>(this Func<TResult> self, Func<bool> needsSynchronizationPredicate, object lockObject)
         {
             Guard.NotNull(self, "self");
             Guard.NotNull(needsSynchronizationPredicate, "needsSynchronizationPredicate");
-            Guard.NotNull(synchronizeOn, "synchronizeOn");
+            Guard.NotNull(lockObject, "lockObject");
 
             return () =>
             {
                 if (needsSynchronizationPredicate())
                 {
-                    lock (synchronizeOn)
+                    lock (lockObject)
                     {
                         return self();
                     }
