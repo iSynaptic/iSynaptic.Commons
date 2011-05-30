@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using NUnit.Framework;
 
 namespace iSynaptic.Commons
@@ -129,6 +132,22 @@ namespace iSynaptic.Commons
             var results = func();
 
             Assert.AreEqual(42, results.Value);
+        }
+
+        [Test]
+        public void Synchronize_PreventsConcurrentAccess()
+        {
+            int count = 0;
+            Func<int> func = () => { count++; return count; };
+            func = func.Synchronize(() => true);
+
+            var random = new Random(DateTime.UtcNow.Second);
+            int start = random.Next(10, 30);
+            int end = random.Next(50, 100);
+
+            Parallel.For(start, end, x => func());
+
+            Assert.AreEqual(end - start, count);
         }
     }
 }

@@ -125,26 +125,17 @@ namespace iSynaptic.Commons
 		[Test]
 		public void SynchronizeOfT1_PreventsConcurrentAccess()
 		{
-			bool shouldSync = true;
-
 			int count = 0;
-            Func<int, int> func = (t1) => { count++; if(count == 1) { Thread.Sleep(100); } return count; };
-			func = func.Synchronize((t1) => shouldSync);
+            Func<int, int> func = (t1) => { count++; return count; };
+			func = func.Synchronize((t1) => true);
 
-            var task1 = Task.Factory.StartNew(() => func(1));
-            var task2 = Task.Factory.StartNew(() => func(1));
+            var random = new Random(DateTime.UtcNow.Second);
+            int start = random.Next(10, 30);
+            int end = random.Next(50, 100);
 
-			var results = new[]{task1, task2}.Select(x => x.Result).OrderBy(x => x);
-			Assert.IsTrue(results.SequenceEqual(new[]{1, 2}));
+            Parallel.For(start, end, x => func(1));
 
-			shouldSync = false;
-			count = 0;
-
-			task1 = Task.Factory.StartNew(() => func(1));
-            task2 = Task.Factory.StartNew(() => func(1));
-
-			results = new[]{task1, task2}.Select(x => x.Result).OrderBy(x => x);
-			Assert.IsTrue(results.SequenceEqual(new[]{2, 2}));
+            Assert.AreEqual(end - start, count);
 		}
 
 		[Test]
@@ -376,26 +367,17 @@ namespace iSynaptic.Commons
 		[Test]
 		public void SynchronizeOfT1T2_PreventsConcurrentAccess()
 		{
-			bool shouldSync = true;
-
 			int count = 0;
-            Func<int, int, int> func = (t1, t2) => { count++; if(count == 1) { Thread.Sleep(100); } return count; };
-			func = func.Synchronize((t1, t2) => shouldSync);
+            Func<int, int, int> func = (t1, t2) => { count++; return count; };
+			func = func.Synchronize((t1, t2) => true);
 
-            var task1 = Task.Factory.StartNew(() => func(1, 2));
-            var task2 = Task.Factory.StartNew(() => func(1, 2));
+            var random = new Random(DateTime.UtcNow.Second);
+            int start = random.Next(10, 30);
+            int end = random.Next(50, 100);
 
-			var results = new[]{task1, task2}.Select(x => x.Result).OrderBy(x => x);
-			Assert.IsTrue(results.SequenceEqual(new[]{1, 2}));
+            Parallel.For(start, end, x => func(1, 2));
 
-			shouldSync = false;
-			count = 0;
-
-			task1 = Task.Factory.StartNew(() => func(1, 2));
-            task2 = Task.Factory.StartNew(() => func(1, 2));
-
-			results = new[]{task1, task2}.Select(x => x.Result).OrderBy(x => x);
-			Assert.IsTrue(results.SequenceEqual(new[]{2, 2}));
+            Assert.AreEqual(end - start, count);
 		}
 
 		[Test]
@@ -627,26 +609,17 @@ namespace iSynaptic.Commons
 		[Test]
 		public void SynchronizeOfT1T2T3_PreventsConcurrentAccess()
 		{
-			bool shouldSync = true;
-
 			int count = 0;
-            Func<int, int, int, int> func = (t1, t2, t3) => { count++; if(count == 1) { Thread.Sleep(100); } return count; };
-			func = func.Synchronize((t1, t2, t3) => shouldSync);
+            Func<int, int, int, int> func = (t1, t2, t3) => { count++; return count; };
+			func = func.Synchronize((t1, t2, t3) => true);
 
-            var task1 = Task.Factory.StartNew(() => func(1, 2, 3));
-            var task2 = Task.Factory.StartNew(() => func(1, 2, 3));
+            var random = new Random(DateTime.UtcNow.Second);
+            int start = random.Next(10, 30);
+            int end = random.Next(50, 100);
 
-			var results = new[]{task1, task2}.Select(x => x.Result).OrderBy(x => x);
-			Assert.IsTrue(results.SequenceEqual(new[]{1, 2}));
+            Parallel.For(start, end, x => func(1, 2, 3));
 
-			shouldSync = false;
-			count = 0;
-
-			task1 = Task.Factory.StartNew(() => func(1, 2, 3));
-            task2 = Task.Factory.StartNew(() => func(1, 2, 3));
-
-			results = new[]{task1, task2}.Select(x => x.Result).OrderBy(x => x);
-			Assert.IsTrue(results.SequenceEqual(new[]{2, 2}));
+            Assert.AreEqual(end - start, count);
 		}
 
 		[Test]
@@ -878,26 +851,17 @@ namespace iSynaptic.Commons
 		[Test]
 		public void SynchronizeOfT1T2T3T4_PreventsConcurrentAccess()
 		{
-			bool shouldSync = true;
-
 			int count = 0;
-            Func<int, int, int, int, int> func = (t1, t2, t3, t4) => { count++; if(count == 1) { Thread.Sleep(100); } return count; };
-			func = func.Synchronize((t1, t2, t3, t4) => shouldSync);
+            Func<int, int, int, int, int> func = (t1, t2, t3, t4) => { count++; return count; };
+			func = func.Synchronize((t1, t2, t3, t4) => true);
 
-            var task1 = Task.Factory.StartNew(() => func(1, 2, 3, 4));
-            var task2 = Task.Factory.StartNew(() => func(1, 2, 3, 4));
+            var random = new Random(DateTime.UtcNow.Second);
+            int start = random.Next(10, 30);
+            int end = random.Next(50, 100);
 
-			var results = new[]{task1, task2}.Select(x => x.Result).OrderBy(x => x);
-			Assert.IsTrue(results.SequenceEqual(new[]{1, 2}));
+            Parallel.For(start, end, x => func(1, 2, 3, 4));
 
-			shouldSync = false;
-			count = 0;
-
-			task1 = Task.Factory.StartNew(() => func(1, 2, 3, 4));
-            task2 = Task.Factory.StartNew(() => func(1, 2, 3, 4));
-
-			results = new[]{task1, task2}.Select(x => x.Result).OrderBy(x => x);
-			Assert.IsTrue(results.SequenceEqual(new[]{2, 2}));
+            Assert.AreEqual(end - start, count);
 		}
 
 		[Test]
@@ -1129,26 +1093,17 @@ namespace iSynaptic.Commons
 		[Test]
 		public void SynchronizeOfT1T2T3T4T5_PreventsConcurrentAccess()
 		{
-			bool shouldSync = true;
-
 			int count = 0;
-            Func<int, int, int, int, int, int> func = (t1, t2, t3, t4, t5) => { count++; if(count == 1) { Thread.Sleep(100); } return count; };
-			func = func.Synchronize((t1, t2, t3, t4, t5) => shouldSync);
+            Func<int, int, int, int, int, int> func = (t1, t2, t3, t4, t5) => { count++; return count; };
+			func = func.Synchronize((t1, t2, t3, t4, t5) => true);
 
-            var task1 = Task.Factory.StartNew(() => func(1, 2, 3, 4, 5));
-            var task2 = Task.Factory.StartNew(() => func(1, 2, 3, 4, 5));
+            var random = new Random(DateTime.UtcNow.Second);
+            int start = random.Next(10, 30);
+            int end = random.Next(50, 100);
 
-			var results = new[]{task1, task2}.Select(x => x.Result).OrderBy(x => x);
-			Assert.IsTrue(results.SequenceEqual(new[]{1, 2}));
+            Parallel.For(start, end, x => func(1, 2, 3, 4, 5));
 
-			shouldSync = false;
-			count = 0;
-
-			task1 = Task.Factory.StartNew(() => func(1, 2, 3, 4, 5));
-            task2 = Task.Factory.StartNew(() => func(1, 2, 3, 4, 5));
-
-			results = new[]{task1, task2}.Select(x => x.Result).OrderBy(x => x);
-			Assert.IsTrue(results.SequenceEqual(new[]{2, 2}));
+            Assert.AreEqual(end - start, count);
 		}
 
 		[Test]
@@ -1380,26 +1335,17 @@ namespace iSynaptic.Commons
 		[Test]
 		public void SynchronizeOfT1T2T3T4T5T6_PreventsConcurrentAccess()
 		{
-			bool shouldSync = true;
-
 			int count = 0;
-            Func<int, int, int, int, int, int, int> func = (t1, t2, t3, t4, t5, t6) => { count++; if(count == 1) { Thread.Sleep(100); } return count; };
-			func = func.Synchronize((t1, t2, t3, t4, t5, t6) => shouldSync);
+            Func<int, int, int, int, int, int, int> func = (t1, t2, t3, t4, t5, t6) => { count++; return count; };
+			func = func.Synchronize((t1, t2, t3, t4, t5, t6) => true);
 
-            var task1 = Task.Factory.StartNew(() => func(1, 2, 3, 4, 5, 6));
-            var task2 = Task.Factory.StartNew(() => func(1, 2, 3, 4, 5, 6));
+            var random = new Random(DateTime.UtcNow.Second);
+            int start = random.Next(10, 30);
+            int end = random.Next(50, 100);
 
-			var results = new[]{task1, task2}.Select(x => x.Result).OrderBy(x => x);
-			Assert.IsTrue(results.SequenceEqual(new[]{1, 2}));
+            Parallel.For(start, end, x => func(1, 2, 3, 4, 5, 6));
 
-			shouldSync = false;
-			count = 0;
-
-			task1 = Task.Factory.StartNew(() => func(1, 2, 3, 4, 5, 6));
-            task2 = Task.Factory.StartNew(() => func(1, 2, 3, 4, 5, 6));
-
-			results = new[]{task1, task2}.Select(x => x.Result).OrderBy(x => x);
-			Assert.IsTrue(results.SequenceEqual(new[]{2, 2}));
+            Assert.AreEqual(end - start, count);
 		}
 
 		[Test]
@@ -1631,26 +1577,17 @@ namespace iSynaptic.Commons
 		[Test]
 		public void SynchronizeOfT1T2T3T4T5T6T7_PreventsConcurrentAccess()
 		{
-			bool shouldSync = true;
-
 			int count = 0;
-            Func<int, int, int, int, int, int, int, int> func = (t1, t2, t3, t4, t5, t6, t7) => { count++; if(count == 1) { Thread.Sleep(100); } return count; };
-			func = func.Synchronize((t1, t2, t3, t4, t5, t6, t7) => shouldSync);
+            Func<int, int, int, int, int, int, int, int> func = (t1, t2, t3, t4, t5, t6, t7) => { count++; return count; };
+			func = func.Synchronize((t1, t2, t3, t4, t5, t6, t7) => true);
 
-            var task1 = Task.Factory.StartNew(() => func(1, 2, 3, 4, 5, 6, 7));
-            var task2 = Task.Factory.StartNew(() => func(1, 2, 3, 4, 5, 6, 7));
+            var random = new Random(DateTime.UtcNow.Second);
+            int start = random.Next(10, 30);
+            int end = random.Next(50, 100);
 
-			var results = new[]{task1, task2}.Select(x => x.Result).OrderBy(x => x);
-			Assert.IsTrue(results.SequenceEqual(new[]{1, 2}));
+            Parallel.For(start, end, x => func(1, 2, 3, 4, 5, 6, 7));
 
-			shouldSync = false;
-			count = 0;
-
-			task1 = Task.Factory.StartNew(() => func(1, 2, 3, 4, 5, 6, 7));
-            task2 = Task.Factory.StartNew(() => func(1, 2, 3, 4, 5, 6, 7));
-
-			results = new[]{task1, task2}.Select(x => x.Result).OrderBy(x => x);
-			Assert.IsTrue(results.SequenceEqual(new[]{2, 2}));
+            Assert.AreEqual(end - start, count);
 		}
 
 		[Test]
@@ -1882,26 +1819,17 @@ namespace iSynaptic.Commons
 		[Test]
 		public void SynchronizeOfT1T2T3T4T5T6T7T8_PreventsConcurrentAccess()
 		{
-			bool shouldSync = true;
-
 			int count = 0;
-            Func<int, int, int, int, int, int, int, int, int> func = (t1, t2, t3, t4, t5, t6, t7, t8) => { count++; if(count == 1) { Thread.Sleep(100); } return count; };
-			func = func.Synchronize((t1, t2, t3, t4, t5, t6, t7, t8) => shouldSync);
+            Func<int, int, int, int, int, int, int, int, int> func = (t1, t2, t3, t4, t5, t6, t7, t8) => { count++; return count; };
+			func = func.Synchronize((t1, t2, t3, t4, t5, t6, t7, t8) => true);
 
-            var task1 = Task.Factory.StartNew(() => func(1, 2, 3, 4, 5, 6, 7, 8));
-            var task2 = Task.Factory.StartNew(() => func(1, 2, 3, 4, 5, 6, 7, 8));
+            var random = new Random(DateTime.UtcNow.Second);
+            int start = random.Next(10, 30);
+            int end = random.Next(50, 100);
 
-			var results = new[]{task1, task2}.Select(x => x.Result).OrderBy(x => x);
-			Assert.IsTrue(results.SequenceEqual(new[]{1, 2}));
+            Parallel.For(start, end, x => func(1, 2, 3, 4, 5, 6, 7, 8));
 
-			shouldSync = false;
-			count = 0;
-
-			task1 = Task.Factory.StartNew(() => func(1, 2, 3, 4, 5, 6, 7, 8));
-            task2 = Task.Factory.StartNew(() => func(1, 2, 3, 4, 5, 6, 7, 8));
-
-			results = new[]{task1, task2}.Select(x => x.Result).OrderBy(x => x);
-			Assert.IsTrue(results.SequenceEqual(new[]{2, 2}));
+            Assert.AreEqual(end - start, count);
 		}
 
 		[Test]
@@ -2133,26 +2061,17 @@ namespace iSynaptic.Commons
 		[Test]
 		public void SynchronizeOfT1T2T3T4T5T6T7T8T9_PreventsConcurrentAccess()
 		{
-			bool shouldSync = true;
-
 			int count = 0;
-            Func<int, int, int, int, int, int, int, int, int, int> func = (t1, t2, t3, t4, t5, t6, t7, t8, t9) => { count++; if(count == 1) { Thread.Sleep(100); } return count; };
-			func = func.Synchronize((t1, t2, t3, t4, t5, t6, t7, t8, t9) => shouldSync);
+            Func<int, int, int, int, int, int, int, int, int, int> func = (t1, t2, t3, t4, t5, t6, t7, t8, t9) => { count++; return count; };
+			func = func.Synchronize((t1, t2, t3, t4, t5, t6, t7, t8, t9) => true);
 
-            var task1 = Task.Factory.StartNew(() => func(1, 2, 3, 4, 5, 6, 7, 8, 9));
-            var task2 = Task.Factory.StartNew(() => func(1, 2, 3, 4, 5, 6, 7, 8, 9));
+            var random = new Random(DateTime.UtcNow.Second);
+            int start = random.Next(10, 30);
+            int end = random.Next(50, 100);
 
-			var results = new[]{task1, task2}.Select(x => x.Result).OrderBy(x => x);
-			Assert.IsTrue(results.SequenceEqual(new[]{1, 2}));
+            Parallel.For(start, end, x => func(1, 2, 3, 4, 5, 6, 7, 8, 9));
 
-			shouldSync = false;
-			count = 0;
-
-			task1 = Task.Factory.StartNew(() => func(1, 2, 3, 4, 5, 6, 7, 8, 9));
-            task2 = Task.Factory.StartNew(() => func(1, 2, 3, 4, 5, 6, 7, 8, 9));
-
-			results = new[]{task1, task2}.Select(x => x.Result).OrderBy(x => x);
-			Assert.IsTrue(results.SequenceEqual(new[]{2, 2}));
+            Assert.AreEqual(end - start, count);
 		}
 
 		[Test]
@@ -2384,26 +2303,17 @@ namespace iSynaptic.Commons
 		[Test]
 		public void SynchronizeOfT1T2T3T4T5T6T7T8T9T10_PreventsConcurrentAccess()
 		{
-			bool shouldSync = true;
-
 			int count = 0;
-            Func<int, int, int, int, int, int, int, int, int, int, int> func = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) => { count++; if(count == 1) { Thread.Sleep(100); } return count; };
-			func = func.Synchronize((t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) => shouldSync);
+            Func<int, int, int, int, int, int, int, int, int, int, int> func = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) => { count++; return count; };
+			func = func.Synchronize((t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) => true);
 
-            var task1 = Task.Factory.StartNew(() => func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
-            var task2 = Task.Factory.StartNew(() => func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+            var random = new Random(DateTime.UtcNow.Second);
+            int start = random.Next(10, 30);
+            int end = random.Next(50, 100);
 
-			var results = new[]{task1, task2}.Select(x => x.Result).OrderBy(x => x);
-			Assert.IsTrue(results.SequenceEqual(new[]{1, 2}));
+            Parallel.For(start, end, x => func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
 
-			shouldSync = false;
-			count = 0;
-
-			task1 = Task.Factory.StartNew(() => func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
-            task2 = Task.Factory.StartNew(() => func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
-
-			results = new[]{task1, task2}.Select(x => x.Result).OrderBy(x => x);
-			Assert.IsTrue(results.SequenceEqual(new[]{2, 2}));
+            Assert.AreEqual(end - start, count);
 		}
 
 		[Test]
@@ -2635,26 +2545,17 @@ namespace iSynaptic.Commons
 		[Test]
 		public void SynchronizeOfT1T2T3T4T5T6T7T8T9T10T11_PreventsConcurrentAccess()
 		{
-			bool shouldSync = true;
-
 			int count = 0;
-            Func<int, int, int, int, int, int, int, int, int, int, int, int> func = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) => { count++; if(count == 1) { Thread.Sleep(100); } return count; };
-			func = func.Synchronize((t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) => shouldSync);
+            Func<int, int, int, int, int, int, int, int, int, int, int, int> func = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) => { count++; return count; };
+			func = func.Synchronize((t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) => true);
 
-            var task1 = Task.Factory.StartNew(() => func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11));
-            var task2 = Task.Factory.StartNew(() => func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11));
+            var random = new Random(DateTime.UtcNow.Second);
+            int start = random.Next(10, 30);
+            int end = random.Next(50, 100);
 
-			var results = new[]{task1, task2}.Select(x => x.Result).OrderBy(x => x);
-			Assert.IsTrue(results.SequenceEqual(new[]{1, 2}));
+            Parallel.For(start, end, x => func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11));
 
-			shouldSync = false;
-			count = 0;
-
-			task1 = Task.Factory.StartNew(() => func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11));
-            task2 = Task.Factory.StartNew(() => func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11));
-
-			results = new[]{task1, task2}.Select(x => x.Result).OrderBy(x => x);
-			Assert.IsTrue(results.SequenceEqual(new[]{2, 2}));
+            Assert.AreEqual(end - start, count);
 		}
 
 		[Test]
@@ -2886,26 +2787,17 @@ namespace iSynaptic.Commons
 		[Test]
 		public void SynchronizeOfT1T2T3T4T5T6T7T8T9T10T11T12_PreventsConcurrentAccess()
 		{
-			bool shouldSync = true;
-
 			int count = 0;
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, int> func = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) => { count++; if(count == 1) { Thread.Sleep(100); } return count; };
-			func = func.Synchronize((t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) => shouldSync);
+            Func<int, int, int, int, int, int, int, int, int, int, int, int, int> func = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) => { count++; return count; };
+			func = func.Synchronize((t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) => true);
 
-            var task1 = Task.Factory.StartNew(() => func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12));
-            var task2 = Task.Factory.StartNew(() => func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12));
+            var random = new Random(DateTime.UtcNow.Second);
+            int start = random.Next(10, 30);
+            int end = random.Next(50, 100);
 
-			var results = new[]{task1, task2}.Select(x => x.Result).OrderBy(x => x);
-			Assert.IsTrue(results.SequenceEqual(new[]{1, 2}));
+            Parallel.For(start, end, x => func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12));
 
-			shouldSync = false;
-			count = 0;
-
-			task1 = Task.Factory.StartNew(() => func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12));
-            task2 = Task.Factory.StartNew(() => func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12));
-
-			results = new[]{task1, task2}.Select(x => x.Result).OrderBy(x => x);
-			Assert.IsTrue(results.SequenceEqual(new[]{2, 2}));
+            Assert.AreEqual(end - start, count);
 		}
 
 		[Test]
@@ -3137,26 +3029,17 @@ namespace iSynaptic.Commons
 		[Test]
 		public void SynchronizeOfT1T2T3T4T5T6T7T8T9T10T11T12T13_PreventsConcurrentAccess()
 		{
-			bool shouldSync = true;
-
 			int count = 0;
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int> func = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) => { count++; if(count == 1) { Thread.Sleep(100); } return count; };
-			func = func.Synchronize((t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) => shouldSync);
+            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int> func = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) => { count++; return count; };
+			func = func.Synchronize((t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) => true);
 
-            var task1 = Task.Factory.StartNew(() => func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13));
-            var task2 = Task.Factory.StartNew(() => func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13));
+            var random = new Random(DateTime.UtcNow.Second);
+            int start = random.Next(10, 30);
+            int end = random.Next(50, 100);
 
-			var results = new[]{task1, task2}.Select(x => x.Result).OrderBy(x => x);
-			Assert.IsTrue(results.SequenceEqual(new[]{1, 2}));
+            Parallel.For(start, end, x => func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13));
 
-			shouldSync = false;
-			count = 0;
-
-			task1 = Task.Factory.StartNew(() => func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13));
-            task2 = Task.Factory.StartNew(() => func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13));
-
-			results = new[]{task1, task2}.Select(x => x.Result).OrderBy(x => x);
-			Assert.IsTrue(results.SequenceEqual(new[]{2, 2}));
+            Assert.AreEqual(end - start, count);
 		}
 
 		[Test]
@@ -3388,26 +3271,17 @@ namespace iSynaptic.Commons
 		[Test]
 		public void SynchronizeOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14_PreventsConcurrentAccess()
 		{
-			bool shouldSync = true;
-
 			int count = 0;
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int> func = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) => { count++; if(count == 1) { Thread.Sleep(100); } return count; };
-			func = func.Synchronize((t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) => shouldSync);
+            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int> func = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) => { count++; return count; };
+			func = func.Synchronize((t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) => true);
 
-            var task1 = Task.Factory.StartNew(() => func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14));
-            var task2 = Task.Factory.StartNew(() => func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14));
+            var random = new Random(DateTime.UtcNow.Second);
+            int start = random.Next(10, 30);
+            int end = random.Next(50, 100);
 
-			var results = new[]{task1, task2}.Select(x => x.Result).OrderBy(x => x);
-			Assert.IsTrue(results.SequenceEqual(new[]{1, 2}));
+            Parallel.For(start, end, x => func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14));
 
-			shouldSync = false;
-			count = 0;
-
-			task1 = Task.Factory.StartNew(() => func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14));
-            task2 = Task.Factory.StartNew(() => func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14));
-
-			results = new[]{task1, task2}.Select(x => x.Result).OrderBy(x => x);
-			Assert.IsTrue(results.SequenceEqual(new[]{2, 2}));
+            Assert.AreEqual(end - start, count);
 		}
 
 		[Test]
@@ -3639,26 +3513,17 @@ namespace iSynaptic.Commons
 		[Test]
 		public void SynchronizeOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15_PreventsConcurrentAccess()
 		{
-			bool shouldSync = true;
-
 			int count = 0;
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int> func = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) => { count++; if(count == 1) { Thread.Sleep(100); } return count; };
-			func = func.Synchronize((t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) => shouldSync);
+            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int> func = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) => { count++; return count; };
+			func = func.Synchronize((t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) => true);
 
-            var task1 = Task.Factory.StartNew(() => func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15));
-            var task2 = Task.Factory.StartNew(() => func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15));
+            var random = new Random(DateTime.UtcNow.Second);
+            int start = random.Next(10, 30);
+            int end = random.Next(50, 100);
 
-			var results = new[]{task1, task2}.Select(x => x.Result).OrderBy(x => x);
-			Assert.IsTrue(results.SequenceEqual(new[]{1, 2}));
+            Parallel.For(start, end, x => func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15));
 
-			shouldSync = false;
-			count = 0;
-
-			task1 = Task.Factory.StartNew(() => func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15));
-            task2 = Task.Factory.StartNew(() => func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15));
-
-			results = new[]{task1, task2}.Select(x => x.Result).OrderBy(x => x);
-			Assert.IsTrue(results.SequenceEqual(new[]{2, 2}));
+            Assert.AreEqual(end - start, count);
 		}
 
 		[Test]
@@ -3890,26 +3755,17 @@ namespace iSynaptic.Commons
 		[Test]
 		public void SynchronizeOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15T16_PreventsConcurrentAccess()
 		{
-			bool shouldSync = true;
-
 			int count = 0;
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int> func = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) => { count++; if(count == 1) { Thread.Sleep(100); } return count; };
-			func = func.Synchronize((t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) => shouldSync);
+            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int> func = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) => { count++; return count; };
+			func = func.Synchronize((t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) => true);
 
-            var task1 = Task.Factory.StartNew(() => func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16));
-            var task2 = Task.Factory.StartNew(() => func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16));
+            var random = new Random(DateTime.UtcNow.Second);
+            int start = random.Next(10, 30);
+            int end = random.Next(50, 100);
 
-			var results = new[]{task1, task2}.Select(x => x.Result).OrderBy(x => x);
-			Assert.IsTrue(results.SequenceEqual(new[]{1, 2}));
+            Parallel.For(start, end, x => func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16));
 
-			shouldSync = false;
-			count = 0;
-
-			task1 = Task.Factory.StartNew(() => func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16));
-            task2 = Task.Factory.StartNew(() => func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16));
-
-			results = new[]{task1, task2}.Select(x => x.Result).OrderBy(x => x);
-			Assert.IsTrue(results.SequenceEqual(new[]{2, 2}));
+            Assert.AreEqual(end - start, count);
 		}
 
 		[Test]

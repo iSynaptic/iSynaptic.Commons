@@ -139,26 +139,17 @@ namespace iSynaptic.Commons
 		[Test]
 		public void SynchronizeOf<#= nameSuffix #>_PreventsConcurrentAccess()
 		{
-			bool shouldSync = true;
-
 			int count = 0;
-            Func<<#= fixedTypes #>, int> func = (<#= args #>) => { count++; if(count == 1) { Thread.Sleep(100); } return count; };
-			func = func.Synchronize((<#= args #>) => shouldSync);
+            Func<<#= fixedTypes #>, int> func = (<#= args #>) => { count++; return count; };
+			func = func.Synchronize((<#= args #>) => true);
 
-            var task1 = Task.Factory.StartNew(() => func(<#= fixedArgs #>));
-            var task2 = Task.Factory.StartNew(() => func(<#= fixedArgs #>));
+            var random = new Random(DateTime.UtcNow.Second);
+            int start = random.Next(10, 30);
+            int end = random.Next(50, 100);
 
-			var results = new[]{task1, task2}.Select(x => x.Result).OrderBy(x => x);
-			Assert.IsTrue(results.SequenceEqual(new[]{1, 2}));
+            Parallel.For(start, end, x => func(<#= fixedArgs #>));
 
-			shouldSync = false;
-			count = 0;
-
-			task1 = Task.Factory.StartNew(() => func(<#= fixedArgs #>));
-            task2 = Task.Factory.StartNew(() => func(<#= fixedArgs #>));
-
-			results = new[]{task1, task2}.Select(x => x.Result).OrderBy(x => x);
-			Assert.IsTrue(results.SequenceEqual(new[]{2, 2}));
+            Assert.AreEqual(end - start, count);
 		}
 
 		[Test]
