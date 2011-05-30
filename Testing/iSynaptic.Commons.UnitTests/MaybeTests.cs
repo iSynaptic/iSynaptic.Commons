@@ -1011,6 +1011,7 @@ namespace iSynaptic.Commons
 
             var operators = new Expression<Func<Maybe<string>, Maybe<string>>>[]
             {
+                x => x.RunAsync(null, default(CancellationToken), TaskCreationOptions.None, null),
                 x => x.With(y => y.Length, Console.WriteLine),
                 x => x.When(y => true, y => Console.WriteLine(y)),
                 x => x.Select(y => y),
@@ -1026,8 +1027,7 @@ namespace iSynaptic.Commons
                 x => x.OnValue(Console.WriteLine),
                 x => x.Synchronize(),
                 x => x.Cast<int>().Cast<string>(),
-                x => x.OfType<int>().OfType<string>(),
-                x => x.RunAsync(null, default(CancellationToken), TaskCreationOptions.None, null)
+                x => x.OfType<int>().OfType<string>()
             };
 
             foreach(var op in operators)

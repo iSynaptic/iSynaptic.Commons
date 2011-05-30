@@ -85,7 +85,8 @@ namespace iSynaptic.Commons
                 var result = ComputeResult(_Value, _Computation);
 
                 if (result.Exception != null)
-                    result.Exception.ThrowPreservingCallStack();
+                    throw result.Exception;
+                    //result.Exception.ThrowPreservingCallStack();
 
                 if (result.HasValue != true)
                     throw new InvalidOperationException("No value can be provided.");
@@ -570,38 +571,6 @@ namespace iSynaptic.Commons
 
         #endregion
 
-        #region ThrowOn Operator
-
-        public static Maybe<T> ThrowOn<T>(this Maybe<T> self, T value, Exception exception)
-        {
-            Guard.NotNull(exception, "exception");
-            return self.ThrowOn(value, () => exception);
-        }
-
-        public static Maybe<T> ThrowOn<T>(this Maybe<T> self, T value, Func<Exception> exceptionFactory)
-        {
-            Guard.NotNull(exceptionFactory, "exceptionFactory");
-            return self.ThrowOn(x => x.Equals(value), exceptionFactory);
-        }
-
-        public static Maybe<T> ThrowOn<T>(this Maybe<T> self, Func<T, bool> predicate, Exception exception)
-        {
-            Guard.NotNull(exception, "exception");
-            Guard.NotNull(predicate, "predicate");
-            return self.ThrowOn(predicate, () => exception);
-        }
-
-        public static Maybe<T> ThrowOn<T>(this Maybe<T> self, Func<T, bool> predicate, Func<Exception> exceptionFactory)
-        {
-            Guard.NotNull(exceptionFactory, "exceptionFactory");
-            Guard.NotNull(predicate, "predicate");
-
-            return self.When(predicate, x => { throw exceptionFactory(); })
-                .ThrowOnException();
-        }
-
-        #endregion
-
         #region ThrowOnNoValue Operator
 
         public static Maybe<T> ThrowOnNoValue<T>(this Maybe<T> self, Exception exception)
@@ -614,8 +583,7 @@ namespace iSynaptic.Commons
         {
             Guard.NotNull(exceptionFactory, "exceptionFactory");
             return self
-                .OnNoValue(() => { throw exceptionFactory(); })
-                .ThrowOnException();
+                .ThrowOn(x => x.Exception == null && x.HasValue != true, x => exceptionFactory());
         }
 
         #endregion
@@ -636,11 +604,43 @@ namespace iSynaptic.Commons
         public static Maybe<T> ThrowOnException<T>(this Maybe<T> self, Func<Exception, bool> predicate)
         {
             Guard.NotNull(predicate, "predicate");
+            return self.ThrowOn(x => x.Exception != null, x => x.Exception);
+        }
+
+        #endregion
+
+        #region ThrowOn Operator
+
+        public static Maybe<T> ThrowOn<T>(this Maybe<T> self, T value, Exception exception)
+        {
+            Guard.NotNull(exception, "exception");
+            return self.ThrowOn(value, x => exception);
+        }
+
+        public static Maybe<T> ThrowOn<T>(this Maybe<T> self, T value, Func<Maybe<T>, Exception> exceptionFactory)
+        {
+            Guard.NotNull(exceptionFactory, "exceptionFactory");
+            return self.ThrowOn(x => x.Equals(value), exceptionFactory);
+        }
+
+        public static Maybe<T> ThrowOn<T>(this Maybe<T> self, Func<Maybe<T>, bool> predicate, Exception exception)
+        {
+            Guard.NotNull(exception, "exception");
+            Guard.NotNull(predicate, "predicate");
+            return self.ThrowOn(predicate, x => exception);
+        }
+
+        public static Maybe<T> ThrowOn<T>(this Maybe<T> self, Func<Maybe<T>, bool> predicate, Func<Maybe<T>, Exception> exceptionFactory)
+        {
+            Guard.NotNull(exceptionFactory, "exceptionFactory");
+            Guard.NotNull(predicate, "predicate");
+
+            Guard.NotNull(predicate, "predicate");
 
             Func<Maybe<T>> boundComputation = () =>
             {
-                if (self.Exception != null && predicate(self.Exception))
-                    self.Exception.ThrowPreservingCallStack();
+                if (predicate(self))
+                    throw exceptionFactory(self);
 
                 return self;
             };
@@ -728,22 +728,24 @@ namespace iSynaptic.Commons
 
         public static Maybe<T> RunAsync<T>(this Maybe<T> self, Action<T> action = null, CancellationToken cancellationToken = default(CancellationToken), TaskCreationOptions taskCreationOptions = TaskCreationOptions.None, TaskScheduler taskScheduler = default(TaskScheduler))
         {
-            var synchronized = self.Synchronize();
-            var task = Task.Factory.StartNew(() => synchronized.Run(action), cancellationToken, taskCreationOptions, taskScheduler ?? TaskScheduler.Default);
+            var task = Task.Factory.StartNew(() => self.Run(action), cancellationToken, taskCreationOptions,
+                                             taskScheduler ?? TaskScheduler.Default);
 
-            return synchronized
-                .Select(x => 
-                {
-                    try
-                    {
-                        return task.Result;
-                    }
-                    catch (AggregateException ex)
-                    {
-                        ex.InnerException.ThrowPreservingCallStack();
-                        return Maybe<T>.NoValue;
-                    }
-                });
+            return Return(task)
+                .ThrowOn(x =>
+                         {
+                             try
+                             {
+                                 x.Value.Wait(cancellationToken);
+                                 return false;
+                             }
+                             catch
+                             {
+                                 return true;
+                             }
+                         }, x => x.Value.Exception is AggregateException ? x.Value.Exception.InnerException : x.Value.Exception)
+                .When(x => x.IsCanceled, x => Maybe<Task<Maybe<T>>>.NoValue)
+                .Select(x => x.Result);
         }
 
         public static Maybe<T> Synchronize<T>(this Maybe<T> self)

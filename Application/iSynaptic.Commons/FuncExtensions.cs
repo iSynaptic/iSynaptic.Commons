@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using iSynaptic.Commons.Runtime.Serialization;
 
 namespace iSynaptic.Commons
 {
@@ -63,7 +64,7 @@ namespace iSynaptic.Commons
                 }
 
                 if (exception != null)
-                    exception.ThrowPreservingCallStack();
+                    throw exception;
 
                 return result;
             };
