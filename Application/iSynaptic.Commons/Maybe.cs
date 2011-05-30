@@ -694,10 +694,11 @@ namespace iSynaptic.Commons
             var task = Task.Factory.StartNew(() => self.Run(action), cancellationToken, taskCreationOptions,
                                              taskScheduler ?? TaskScheduler.Default);
 
-            return Return(task)
-                .OnValue(x => x.Wait(cancellationToken))
-                .When(x => x.IsCanceled, x => Maybe<Task<Maybe<T>>>.NoValue)
-                .Select(x => x.Result);
+            return self.Extend(x =>
+            {
+                task.Wait(cancellationToken);
+                return task.IsCanceled ? Maybe<T>.NoValue : task.Result;
+            });
         }
 
         public static Maybe<T> Synchronize<T>(this Maybe<T> self)
