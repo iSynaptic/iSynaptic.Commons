@@ -140,13 +140,13 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void Bind_ThatImplicitlyThrowsException_ExceptionReturnsCorrectly()
+        public void Bind_ThatImplicitlyThrowsException_BubblesUpException()
         {
             var results = Maybe<int>
                 .Default
                 .Bind(x => 7 / x);
 
-            Assert.IsInstanceOf<DivideByZeroException>(results.Exception);
+            Assert.Throws<DivideByZeroException>(() => results.Run());
         }
 
         [Test]
@@ -196,23 +196,19 @@ namespace iSynaptic.Commons
         [Test]
         public void Equals_WithSameException_ReturnsTrue()
         {
-            var results = Maybe<int>
-                .Default
-                .Bind(x => 7 / x);
+            var exception = new DivideByZeroException();
 
-            Assert.IsTrue(results.Equals(results));
+            var first = new Maybe<int>(exception);
+            var second = new Maybe<int>(exception);
+
+            Assert.IsTrue(first.Equals(second));
         }
 
         [Test]
         public void Equals_WithDifferentException_ReturnsFalse()
         {
-            var first = Maybe<int>
-                .Default
-                .Bind(x => 7 / x);
-
-            var second = Maybe<int>
-                .Default
-                .Bind(ThrowsException);
+            var first = new Maybe<int>(new DivideByZeroException());
+            var second = new Maybe<int>(new DivideByZeroException());
 
             Assert.IsFalse(first.Equals(second));
         }
@@ -220,22 +216,17 @@ namespace iSynaptic.Commons
         [Test]
         public void Equals_WithOnlyOneException_ReturnsFalse()
         {
-            var result = Maybe<int>
-                .Default
-                .Bind(x => 7 / x);
-
+            var result = new Maybe<int>(new DivideByZeroException());
             Assert.IsFalse(Maybe<int>.Default.Equals(result));
-
         }
 
         [Test]
         public void GetHashCode_WithException_ReturnsExceptionsHashCode()
         {
-            var result = Maybe<int>
-                .Default
-                .Bind(x => 7 / x);
+            var exception = new DivideByZeroException();
+            var result = new Maybe<int>(exception);
 
-            Assert.AreEqual(result.Exception.GetHashCode(), result.GetHashCode());
+            Assert.AreEqual(exception.GetHashCode(), result.GetHashCode());
         }
 
         [Test]
@@ -394,15 +385,6 @@ namespace iSynaptic.Commons
                     .Extract(42));
         }
 
-        [Test]
-        public void Extract_WhereExceptionExists_CanBeAbsorbedByOnException()
-        {
-            var value = Maybe.Return<int>(() => { throw new InvalidOperationException(); })
-                .OnException(27)
-                .Extract(42);
-
-            Assert.AreEqual(27, value);
-        }
 
         [Test]
         public void OnValue_CallsActionIfHasValueIsTrue()
@@ -472,34 +454,14 @@ namespace iSynaptic.Commons
         [Test]
         public void OnException_ContinuesWithNewValue()
         {
-            Func<string, string> throwException = x =>
-                { throw new InvalidOperationException(); };
-
             var value = Maybe<string>.Default
-                .Bind(throwException)
+                .Bind(x => new Maybe<string>(new InvalidOperationException()))
                 .Select(x => x.Length)
                 .Where(x => x > 10)
                 .OnException(42);
 
             Assert.IsTrue(value.HasValue);
             Assert.AreEqual(42, value.Value);
-        }
-
-        [Test]
-        public void OnException_WhenHandlerThrowsException_HandlerExceptionPropagates()
-        {
-            Func<string, string> throwException = x =>
-                { throw new InvalidOperationException(); };
-
-            Func<Exception, Maybe<int>> handler = x =>
-                { throw new NullReferenceException(); };
-
-            var value = Maybe.Return<string>(() => { throw new InvalidOperationException(); })
-                .Select(x => x.Length)
-                .Where(x => x > 10)
-                .OnException(handler);
-
-            Assert.IsInstanceOf<NullReferenceException>(value.Exception);
         }
 
         [Test]
@@ -732,6 +694,19 @@ namespace iSynaptic.Commons
         }
 
         [Test]
+        public void CatchExceptions_ContainsThrownExceptions()
+        {
+            var value = Maybe<int>.Default
+                .Select(x => 7/x)
+                .CatchExceptions()
+                .Run();
+
+            Assert.IsNotNull(value.Exception);
+            Assert.IsInstanceOf<DivideByZeroException>(value.Exception);
+            Assert.IsFalse(value.HasValue);
+        }
+
+        [Test]
         public void Cast_ReturnsCastedType()
         {
             ICollection<string> foo = new List<string>();
@@ -752,17 +727,6 @@ namespace iSynaptic.Commons
                 .Cast<DateTime>();
 
             Assert.Throws<InvalidCastException>(() => value.Extract());
-        }
-
-        [Test]
-        public void Cast_ExceptionIsContained_WhenCastIsNotPossible()
-        {
-            ICollection<string> foo = new List<string>();
-
-            var value = Maybe.Return<object>(foo)
-                .Cast<DateTime>();
-
-            Assert.DoesNotThrow(() => value.Run());
         }
 
         [Test]
@@ -1000,53 +964,6 @@ namespace iSynaptic.Commons
 
             Assert.AreEqual(42, value.Value);
             Assert.IsTrue(actionExecuted);
-        }
-
-        [Test]
-        public void NoOperatorsSuppressExceptionsWhenThrowOnExceptionOperatorIsInEffect()
-        {
-            var input = Maybe.Return<string>(() => { throw new NotSupportedException("Hello, World!"); });
-
-            Action noOp = () => { };
-
-            var operators = new Expression<Func<Maybe<string>, Maybe<string>>>[]
-            {
-                x => x.RunAsync(null, default(CancellationToken), TaskCreationOptions.None, null),
-                x => x.With(y => y.Length, Console.WriteLine),
-                x => x.When(y => true, y => Console.WriteLine(y)),
-                x => x.Select(y => y),
-                x => x.OnNoValue(noOp),
-                x => x.Coalesce(y => y),
-                x => x.Or("Hello, World!"),
-                x => x.NotNull(),
-                x => x.Where(y => y.StartsWith("H")),
-                x => x.Unless(y => y.StartsWith("H")),
-                x => x.Using(y => noOp.ToDisposable(), y => Maybe.Return("Hello, World!")),
-                x => x.Join(Maybe.Return(42), (y, z) => y),
-                x => x.OnException(ex => Console.WriteLine(ex.Message)),
-                x => x.OnValue(Console.WriteLine),
-                x => x.Synchronize(),
-                x => x.Cast<int>().Cast<string>(),
-                x => x.OfType<int>().OfType<string>()
-            };
-
-            foreach(var op in operators)
-            {
-                var maybe = op.Compile()(input);
-                Assert.DoesNotThrow(() => maybe.Run(), op.ToString());
-
-                maybe = maybe.Run().ThrowOnException();
-
-                Assert.Throws<NotSupportedException>(() => maybe.Run(), op.ToString());
-
-                maybe = op.Compile()(maybe);
-                Assert.Throws<NotSupportedException>(() => maybe.Run(), op.ToString());
-            }
-        }
-
-        private static int ThrowsException(int x)
-        {
-            throw new InvalidOperationException();
         }
     }
 }
