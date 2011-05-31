@@ -61,12 +61,12 @@ namespace iSynaptic.Commons.Runtime.Serialization
             public CloneTestClass TestClass { get; set; }
         }
 
-        private class ClassWithIntPtrField
+        private class ClassWithFuncField
         {
-            public IntPtr CannotCloneThis { get; set; }
+            public Func<int> CannotCloneThis { get; set; }
         }
 
-        private class DerivedClassWithIntPtrField : ClassWithIntPtrField
+        private class DerivedClassWithFuncField : ClassWithFuncField
         {
         }
 
@@ -79,9 +79,9 @@ namespace iSynaptic.Commons.Runtime.Serialization
         {
         }
 
-        private struct StructWithIntPtrField
+        private struct StructWithFuncField
         {
-            public IntPtr CannotCloneThis { get; set; }
+            public Func<int> CannotCloneThis { get; set; }
         }
 
         private class ReferenceOnlyCloneTestClass
@@ -90,9 +90,9 @@ namespace iSynaptic.Commons.Runtime.Serialization
             public ReferenceOnlyCloneTestClass InnerClass = null;
         }
 
-        private class ClassWithIntPtrArray
+        private class ClassWithFuncArray
         {
-            public IntPtr[] CannotCloneThis { get; set; }
+            public Func<int>[] CannotCloneThis { get; set; }
         }
 
         private class ClassWithNullableIntPtr
@@ -122,7 +122,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
 
         private class NonCloneableChild
         {
-            public IntPtr CannotCloneThis { get; set; }
+            public Func<int> CannotCloneThis { get; set; }
         }
 
         private class ClassWithNonSerializedIllegalField

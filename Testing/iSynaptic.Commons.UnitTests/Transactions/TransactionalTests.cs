@@ -525,7 +525,7 @@ namespace iSynaptic.Commons.Transactions
         [Test]
         public void NonCloneableType()
         {
-            Assert.Throws<InvalidOperationException>(() => new Transactional<IntPtr>());
+            Assert.Throws<InvalidOperationException>(() => new Transactional<Func<int>>());
         }
 
         [Test]

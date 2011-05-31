@@ -305,21 +305,43 @@ namespace iSynaptic.Commons.Runtime.Serialization
         }
 
         [Test]
-        public void CannotCloneIntPtr()
+        public void CloneIntPtr()
         {
-            Assert.IsFalse(Cloneable<IntPtr>.CanClone());
-            Assert.IsFalse(Cloneable<IntPtr>.CanShallowClone());
+            var source = new IntPtr(42);
 
-            Assert.IsFalse(Cloneable<IntPtr?>.CanClone());
-            Assert.IsFalse(Cloneable<IntPtr?>.CanShallowClone());
+            Assert.IsTrue(Cloneable<IntPtr>.CanClone());
+            Assert.IsTrue(Cloneable<IntPtr>.CanShallowClone());
 
-            Assert.Throws<InvalidOperationException>(() => Cloneable<IntPtr>.Clone(IntPtr.Zero));
-            Assert.Throws<InvalidOperationException>(() => Cloneable<IntPtr>.ShallowClone(IntPtr.Zero));
+            Assert.IsTrue(Cloneable<IntPtr?>.CanClone());
+            Assert.IsTrue(Cloneable<IntPtr?>.CanShallowClone());
 
-            Assert.Throws<InvalidOperationException>(() => Cloneable<IntPtr?>.Clone(IntPtr.Zero));
-            Assert.Throws<InvalidOperationException>(() => Cloneable<IntPtr?>.ShallowClone(IntPtr.Zero));
-            Assert.Throws<InvalidOperationException>(() => Cloneable<IntPtr?>.Clone(null));
-            Assert.Throws<InvalidOperationException>(() => Cloneable<IntPtr?>.ShallowClone(null));
+            Assert.AreEqual(source, Cloneable<IntPtr>.Clone(source));
+            Assert.AreEqual(source, Cloneable<IntPtr>.ShallowClone(source));
+
+            Assert.AreEqual(source, Cloneable<IntPtr?>.Clone(source));
+            Assert.AreEqual(source, Cloneable<IntPtr?>.ShallowClone(source));
+            Assert.AreEqual(null, Cloneable<IntPtr?>.Clone(null));
+            Assert.AreEqual(null, Cloneable<IntPtr?>.ShallowClone(null));
+        }
+
+        [Test]
+        public void CloneUIntPtr()
+        {
+            var source = new UIntPtr(42);
+
+            Assert.IsTrue(Cloneable<UIntPtr>.CanClone());
+            Assert.IsTrue(Cloneable<UIntPtr>.CanShallowClone());
+
+            Assert.IsTrue(Cloneable<UIntPtr?>.CanClone());
+            Assert.IsTrue(Cloneable<UIntPtr?>.CanShallowClone());
+
+            Assert.AreEqual(source, Cloneable<UIntPtr>.Clone(source));
+            Assert.AreEqual(source, Cloneable<UIntPtr>.ShallowClone(source));
+
+            Assert.AreEqual(source, Cloneable<UIntPtr?>.Clone(source));
+            Assert.AreEqual(source, Cloneable<UIntPtr?>.ShallowClone(source));
+            Assert.AreEqual(null, Cloneable<UIntPtr?>.Clone(null));
+            Assert.AreEqual(null, Cloneable<UIntPtr?>.ShallowClone(null));
         }
 
         [Test]

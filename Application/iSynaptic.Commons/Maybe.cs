@@ -66,7 +66,7 @@ namespace iSynaptic.Commons
                 var result = ComputeResult(this);
 
                 if (result.Exception != null)
-                    throw result.Exception;
+                    result.Exception.ThrowAsInnerExceptionIfNeeded();
 
                 if (result.HasValue != true)
                     throw new InvalidOperationException("No value can be provided.");
@@ -590,7 +590,7 @@ namespace iSynaptic.Commons
             return self.Extend(x => 
             {
                 if (predicate(x))
-                    throw exceptionFactory(x);
+                    exceptionFactory(x).ThrowAsInnerExceptionIfNeeded();
 
                 return x;
             });

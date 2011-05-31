@@ -10,29 +10,35 @@ namespace iSynaptic.Commons
     public class ExceptionExtensionsTests
     {
         [Test]
-        public void ThrowPreservingCallStack_PreservesOriginalCallStack()
+        public void ThrowAsInnerExceptionIfNeeded_SetsInnerException()
         {
+            var originalException = new InvalidOperationException("Hello, World!");
             try
             {
                 try
                 {
-                    throw new InvalidOperationException();
+                    throw originalException;
                 }
                 catch (Exception ex)
                 {
-                    ex.ThrowPreservingCallStack();
+                    ex.ThrowAsInnerExceptionIfNeeded();
                 }
             }
             catch (Exception ex)
             {
-                Assert.IsFalse(ex.StackTrace.Substring(0, ex.StackTrace.IndexOf(Environment.NewLine)).Contains("ExceptionExtensions.ThrowPreservingCallStack"));   
+                Assert.IsInstanceOf<InvalidOperationException>(ex);
+                Assert.IsNotNull(ex.InnerException);
+                Assert.IsTrue(ReferenceEquals(originalException, ex.InnerException));
             }
         }
 
         [Test]
-        public void ThrowPreserviceCallStack_ThrowsPreviouslyUnthrownException()
+        public void ThrowAsInnerExceptionIfNeeded_ThrowsPreviouslyUnthrownException()
         {
-            Assert.Throws<InvalidOperationException>(() => new InvalidOperationException().ThrowPreservingCallStack());
+            var exception = Assert.Throws<InvalidOperationException>(
+                () => new InvalidOperationException().ThrowAsInnerExceptionIfNeeded());
+
+            Assert.IsNull(exception.InnerException);
         }
     }
 }

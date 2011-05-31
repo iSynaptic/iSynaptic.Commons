@@ -36,6 +36,8 @@ namespace iSynaptic.Commons.Runtime.Serialization
     {
         private static readonly Type[] CloneablePrimitives =
         {
+            typeof(IntPtr),
+            typeof(UIntPtr),
             typeof(string),
             typeof(decimal),
             typeof(DateTime),
@@ -384,9 +386,6 @@ namespace iSynaptic.Commons.Runtime.Serialization
         private static bool IsNotCloneable(Type inputType)
         {
             if (typeof(Delegate).IsAssignableFrom(inputType))
-                return true;
-
-            if (inputType == typeof(IntPtr))
                 return true;
 
             return false;
