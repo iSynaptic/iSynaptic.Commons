@@ -31,7 +31,7 @@ namespace iSynaptic.Commons
             : this()
         {
             Guard.NotNull(computation, "computation");
-            _Computation = Default.Bind(x => computation())._Computation;
+            _Computation = Default.Bind(x => computation().ToMaybe())._Computation;
         }
 
         public Maybe(Exception exception)
@@ -164,12 +164,6 @@ namespace iSynaptic.Commons
             return !(left == right);
         }
 
-        public Maybe<TResult> Bind<TResult>(Func<T, TResult> func)
-        {
-            Guard.NotNull(func, "func");
-            return Bind(x => new Maybe<TResult>(func(x)));
-        }
-
         public Maybe<TResult> Bind<TResult>(Func<T, Maybe<TResult>> func)
         {
             Guard.NotNull(func, "func");
@@ -236,7 +230,7 @@ namespace iSynaptic.Commons
 
         public static Maybe<T> NotNull<T>(T value) where T : class
         {
-            return Return(value).NotNull();
+            return value.ToMaybe().NotNull();
         }
 
         public static Maybe<T> NotNull<T>(Func<T> computation) where T : class
@@ -246,7 +240,7 @@ namespace iSynaptic.Commons
 
         public static Maybe<T> NotNull<T>(T? value) where T : struct
         {
-            return Return(value).NotNull();
+            return value.ToMaybe().NotNull();
         }
 
         public static Maybe<T> NotNull<T>(Func<T?> computation) where T : struct
@@ -316,7 +310,7 @@ namespace iSynaptic.Commons
         public static Maybe<TResult> Select<T, TResult>(this Maybe<T> self, Func<T, TResult> selector)
         {
             Guard.NotNull(selector, "selector");
-            return self.Bind(selector);
+            return self.Bind(x => selector(x).ToMaybe());
         }
 
         public static Maybe<TResult> Select<T, TResult>(this Maybe<T> self, Func<T, Maybe<TResult>> selector)
@@ -345,7 +339,7 @@ namespace iSynaptic.Commons
         {
             Guard.NotNull(selector, "selector");
             Guard.NotNull(combiner, "combiner");
-            return self.Bind(x => selector(x).Bind(y => combiner(x, y)));
+            return self.Bind(x => selector(x).Bind(y => combiner(x, y).ToMaybe()));
         }
 
         #endregion
@@ -441,7 +435,7 @@ namespace iSynaptic.Commons
             Guard.NotNull(selector, "selector");
             Guard.NotNull(action, "action");
 
-            return With(self, x => Return(selector(x)), action);
+            return With(self, x => selector(x).ToMaybe(), action);
         }
 
         public static Maybe<T> With<T, TSelected>(this Maybe<T> self, Func<T, Maybe<TSelected>> selector, Action<TSelected> action)
@@ -449,15 +443,11 @@ namespace iSynaptic.Commons
             Guard.NotNull(selector, "selector");
             Guard.NotNull(action, "action");
 
-            return self.Bind(x =>
-            {
-                selector(x)
-                    .OnValue(action)
-                    .ThrowOnException()
-                    .Run();
-
-                return x;
-            });
+            return self
+                .Select(selector)
+                .OnValue(action)
+                .Select(y => self)
+                .Or(self);
         }
 
         #endregion
@@ -607,7 +597,7 @@ namespace iSynaptic.Commons
 
         public static Maybe<T> OnException<T>(this Maybe<T> self, Func<T> valueFactory)
         {
-            return self.OnException(x => Return(valueFactory()));
+            return self.OnException(x => valueFactory().ToMaybe());
         }
 
         public static Maybe<T> OnException<T>(this Maybe<T> self, Action<Exception> handler)
@@ -627,7 +617,7 @@ namespace iSynaptic.Commons
         public static Maybe<T> OnValue<T>(this Maybe<T> self, Action<T> action)
         {
             Guard.NotNull(action, "action");
-            return self.Bind(x =>
+            return self.Select(x =>
             {
                 action(x);
                 return x;
@@ -759,6 +749,13 @@ namespace iSynaptic.Commons
             return self.Select(x => (T?)x)
                 .Or((T?)null)
                 .Extract();
+        }
+
+        // Conventionally, in LINQ, the monadic "return" operator is written "To...,"
+        // as in "ToList," "ToArray," etc. These are synonyms for Return.
+        public static Maybe<T> ToMaybe<T>(this T value)
+        {
+            return Return(value);
         }
     }
 }

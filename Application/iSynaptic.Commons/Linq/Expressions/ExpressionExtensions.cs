@@ -16,7 +16,8 @@ namespace iSynaptic.Commons.Linq.Expressions
         {
             Guard.NotNull(expression, "expression");
 
-            return Maybe.Return(expression)
+            return expression
+                .ToMaybe()
                 .Select(x =>
                         {
                             var memberInfo = Maybe<MemberInfo>.NoValue;

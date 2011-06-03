@@ -87,7 +87,8 @@ namespace iSynaptic.Commons.Data
 
         public TExodata Resolve<TContext, TSubject>(Maybe<TContext> context, Maybe<TSubject> subject, MemberInfo member)
         {
-            var request = Maybe.Return(new ExodataRequest<TExodata, TContext, TSubject>(this, context, subject, member));
+            var request = new ExodataRequest<TExodata, TContext, TSubject>(this, context, subject, member)
+                .ToMaybe();
 
             var resolvedValue = request
                 .Select(TryResolve)

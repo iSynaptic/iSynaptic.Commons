@@ -22,7 +22,8 @@ namespace iSynaptic.Commons.Collections.Generic
 
         protected override Maybe<TKey> UnwrapKey(TKey key)
         {
-            return Maybe.Return(key)
+            return key
+                .ToMaybe()
                 .Coalesce(x => _MemberSelector(x))
                 .Select(x => x.TryGetTarget())
                 .Select(x => key);

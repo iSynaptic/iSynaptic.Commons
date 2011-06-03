@@ -57,7 +57,7 @@ namespace iSynaptic.Commons.Collections.Generic
                 throw new ObjectDisposedException("IEnumerator<T>");
 
             if (LookAheadList.Count >= (index + 1))
-                return new Maybe<T>(LookAheadList[index]);
+                return LookAheadList[index].ToMaybe();
 
             int itemsToEnumerate = (index + 1) - LookAheadList.Count;
 
@@ -72,7 +72,7 @@ namespace iSynaptic.Commons.Collections.Generic
                     return Maybe<T>.NoValue;
             }
 
-            return new Maybe<T>(LookAheadList[index]);
+            return LookAheadList[index].ToMaybe();
         }
 
         public LookAheadableValue<T> Current

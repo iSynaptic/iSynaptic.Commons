@@ -110,11 +110,11 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void Bind_ThatReturnsScalar_ValueReturnsCorrectly()
+        public void Select_ThatReturnsScalar_ValueReturnsCorrectly()
         {
             var results = Maybe<int>.Default
-                .Bind(x => x + 7)
-                .Bind(x => x * 6);
+                .Select(x => x + 7)
+                .Select(x => x * 6);
 
             Assert.AreEqual(42, results.Value);
         }
@@ -134,7 +134,7 @@ namespace iSynaptic.Commons
         {
             var results = Maybe<int>
                 .Default
-                .Bind(x => 7 / x);
+                .Bind(x => (7 / x).ToMaybe());
 
             Assert.Throws<DivideByZeroException>(() => { var x = results.Value; });
         }
@@ -144,7 +144,7 @@ namespace iSynaptic.Commons
         {
             var results = Maybe<int>
                 .Default
-                .Bind(x => 7 / x);
+                .Bind(x => (7 / x).ToMaybe());
 
             Assert.Throws<DivideByZeroException>(() => results.Run());
         }
@@ -156,8 +156,8 @@ namespace iSynaptic.Commons
 
             var results = Maybe<int>
                 .Default
-                .Bind(x => 7 / x)
-                .Bind(x => executed = true);
+                .Bind(x => (7 / x).ToMaybe())
+                .Bind(x => (executed = true).ToMaybe());
 
             Assert.Throws<DivideByZeroException>(() => { var x = results.Value; });
             Assert.IsFalse(executed);
@@ -170,9 +170,9 @@ namespace iSynaptic.Commons
 
             var results = Maybe<int>
                 .Default
-                .Bind(x => x + 7)
+                .Bind(x => (x + 7).ToMaybe())
                 .Bind(x => Maybe<int>.NoValue)
-                .Bind(x => executed = true);
+                .Bind(x => (executed = true).ToMaybe());
 
             Assert.IsFalse(results.HasValue);
             Assert.IsFalse(executed);
@@ -475,6 +475,19 @@ namespace iSynaptic.Commons
 
             Assert.AreEqual("Hello", value);
             Assert.AreEqual(5, checkValue);
+        }
+
+        [Test]
+        public void With_WhenNoValue_DoesNotExecutes()
+        {
+            int checkValue = 0;
+
+            var value = Maybe.Return("Hello")
+                .With(x => Maybe<int>.NoValue, x => checkValue = x)
+                .Extract();
+
+            Assert.AreEqual("Hello", value);
+            Assert.AreEqual(0, checkValue);
         }
 
         [Test]
