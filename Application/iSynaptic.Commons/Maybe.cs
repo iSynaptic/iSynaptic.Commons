@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace iSynaptic.Commons
 {
+    // Implementation of the Maybe monad. http://en.wikipedia.org/wiki/Monad_%28functional_programming%29#Maybe_monad
+    // Thanks to Brian Beckman for his suggestions and assistance.
+    // Don't Fear the Monad! http://channel9.msdn.com/shows/Going+Deep/Brian-Beckman-Dont-fear-the-Monads/
     public struct Maybe<T> : IMaybe<T>, IEquatable<Maybe<T>>, IEquatable<T>
     {
         private struct MaybeResult
