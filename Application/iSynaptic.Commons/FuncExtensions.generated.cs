@@ -10,6 +10,7 @@ namespace iSynaptic.Commons
 	public static partial class FuncExtensions
 	{
 		
+		
 		public static Action<T1> ToAction<T1, TRet>(this Func<T1, TRet> self)
         {
             Guard.NotNull(self, "self");
@@ -115,6 +116,14 @@ namespace iSynaptic.Commons
 
                 return self(t1);
             };
+        }
+
+		
+		
+		public static Func<T2, T1, TRet> Flip<T1, T2, TRet>(this Func<T1, T2, TRet> self)
+        {
+            Guard.NotNull(self, "self");
+            return (t2, t1) => self(t1, t2);
         }
 
 		
@@ -226,6 +235,14 @@ namespace iSynaptic.Commons
         }
 
 		
+		
+		public static Func<T3, T2, T1, TRet> Flip<T1, T2, T3, TRet>(this Func<T1, T2, T3, TRet> self)
+        {
+            Guard.NotNull(self, "self");
+            return (t3, t2, t1) => self(t1, t2, t3);
+        }
+
+		
 		public static Action<T1, T2, T3> ToAction<T1, T2, T3, TRet>(this Func<T1, T2, T3, TRet> self)
         {
             Guard.NotNull(self, "self");
@@ -331,6 +348,14 @@ namespace iSynaptic.Commons
 
                 return self(t1, t2, t3);
             };
+        }
+
+		
+		
+		public static Func<T4, T3, T2, T1, TRet> Flip<T1, T2, T3, T4, TRet>(this Func<T1, T2, T3, T4, TRet> self)
+        {
+            Guard.NotNull(self, "self");
+            return (t4, t3, t2, t1) => self(t1, t2, t3, t4);
         }
 
 		
@@ -442,6 +467,14 @@ namespace iSynaptic.Commons
         }
 
 		
+		
+		public static Func<T5, T4, T3, T2, T1, TRet> Flip<T1, T2, T3, T4, T5, TRet>(this Func<T1, T2, T3, T4, T5, TRet> self)
+        {
+            Guard.NotNull(self, "self");
+            return (t5, t4, t3, t2, t1) => self(t1, t2, t3, t4, t5);
+        }
+
+		
 		public static Action<T1, T2, T3, T4, T5> ToAction<T1, T2, T3, T4, T5, TRet>(this Func<T1, T2, T3, T4, T5, TRet> self)
         {
             Guard.NotNull(self, "self");
@@ -547,6 +580,14 @@ namespace iSynaptic.Commons
 
                 return self(t1, t2, t3, t4, t5);
             };
+        }
+
+		
+		
+		public static Func<T6, T5, T4, T3, T2, T1, TRet> Flip<T1, T2, T3, T4, T5, T6, TRet>(this Func<T1, T2, T3, T4, T5, T6, TRet> self)
+        {
+            Guard.NotNull(self, "self");
+            return (t6, t5, t4, t3, t2, t1) => self(t1, t2, t3, t4, t5, t6);
         }
 
 		
@@ -658,6 +699,14 @@ namespace iSynaptic.Commons
         }
 
 		
+		
+		public static Func<T7, T6, T5, T4, T3, T2, T1, TRet> Flip<T1, T2, T3, T4, T5, T6, T7, TRet>(this Func<T1, T2, T3, T4, T5, T6, T7, TRet> self)
+        {
+            Guard.NotNull(self, "self");
+            return (t7, t6, t5, t4, t3, t2, t1) => self(t1, t2, t3, t4, t5, t6, t7);
+        }
+
+		
 		public static Action<T1, T2, T3, T4, T5, T6, T7> ToAction<T1, T2, T3, T4, T5, T6, T7, TRet>(this Func<T1, T2, T3, T4, T5, T6, T7, TRet> self)
         {
             Guard.NotNull(self, "self");
@@ -763,6 +812,14 @@ namespace iSynaptic.Commons
 
                 return self(t1, t2, t3, t4, t5, t6, t7);
             };
+        }
+
+		
+		
+		public static Func<T8, T7, T6, T5, T4, T3, T2, T1, TRet> Flip<T1, T2, T3, T4, T5, T6, T7, T8, TRet>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, TRet> self)
+        {
+            Guard.NotNull(self, "self");
+            return (t8, t7, t6, t5, t4, t3, t2, t1) => self(t1, t2, t3, t4, t5, t6, t7, t8);
         }
 
 		
@@ -874,6 +931,14 @@ namespace iSynaptic.Commons
         }
 
 		
+		
+		public static Func<T9, T8, T7, T6, T5, T4, T3, T2, T1, TRet> Flip<T1, T2, T3, T4, T5, T6, T7, T8, T9, TRet>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TRet> self)
+        {
+            Guard.NotNull(self, "self");
+            return (t9, t8, t7, t6, t5, t4, t3, t2, t1) => self(t1, t2, t3, t4, t5, t6, t7, t8, t9);
+        }
+
+		
 		public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9> ToAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, TRet>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TRet> self)
         {
             Guard.NotNull(self, "self");
@@ -979,6 +1044,14 @@ namespace iSynaptic.Commons
 
                 return self(t1, t2, t3, t4, t5, t6, t7, t8, t9);
             };
+        }
+
+		
+		
+		public static Func<T10, T9, T8, T7, T6, T5, T4, T3, T2, T1, TRet> Flip<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TRet>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TRet> self)
+        {
+            Guard.NotNull(self, "self");
+            return (t10, t9, t8, t7, t6, t5, t4, t3, t2, t1) => self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10);
         }
 
 		
@@ -1090,6 +1163,14 @@ namespace iSynaptic.Commons
         }
 
 		
+		
+		public static Func<T11, T10, T9, T8, T7, T6, T5, T4, T3, T2, T1, TRet> Flip<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TRet>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TRet> self)
+        {
+            Guard.NotNull(self, "self");
+            return (t11, t10, t9, t8, t7, t6, t5, t4, t3, t2, t1) => self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11);
+        }
+
+		
 		public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> ToAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TRet>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TRet> self)
         {
             Guard.NotNull(self, "self");
@@ -1195,6 +1276,14 @@ namespace iSynaptic.Commons
 
                 return self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11);
             };
+        }
+
+		
+		
+		public static Func<T12, T11, T10, T9, T8, T7, T6, T5, T4, T3, T2, T1, TRet> Flip<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TRet>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TRet> self)
+        {
+            Guard.NotNull(self, "self");
+            return (t12, t11, t10, t9, t8, t7, t6, t5, t4, t3, t2, t1) => self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12);
         }
 
 		
@@ -1306,6 +1395,14 @@ namespace iSynaptic.Commons
         }
 
 		
+		
+		public static Func<T13, T12, T11, T10, T9, T8, T7, T6, T5, T4, T3, T2, T1, TRet> Flip<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TRet>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TRet> self)
+        {
+            Guard.NotNull(self, "self");
+            return (t13, t12, t11, t10, t9, t8, t7, t6, t5, t4, t3, t2, t1) => self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13);
+        }
+
+		
 		public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> ToAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TRet>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TRet> self)
         {
             Guard.NotNull(self, "self");
@@ -1411,6 +1508,14 @@ namespace iSynaptic.Commons
 
                 return self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13);
             };
+        }
+
+		
+		
+		public static Func<T14, T13, T12, T11, T10, T9, T8, T7, T6, T5, T4, T3, T2, T1, TRet> Flip<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TRet>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TRet> self)
+        {
+            Guard.NotNull(self, "self");
+            return (t14, t13, t12, t11, t10, t9, t8, t7, t6, t5, t4, t3, t2, t1) => self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14);
         }
 
 		
@@ -1522,6 +1627,14 @@ namespace iSynaptic.Commons
         }
 
 		
+		
+		public static Func<T15, T14, T13, T12, T11, T10, T9, T8, T7, T6, T5, T4, T3, T2, T1, TRet> Flip<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TRet>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TRet> self)
+        {
+            Guard.NotNull(self, "self");
+            return (t15, t14, t13, t12, t11, t10, t9, t8, t7, t6, t5, t4, t3, t2, t1) => self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15);
+        }
+
+		
 		public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> ToAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TRet>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TRet> self)
         {
             Guard.NotNull(self, "self");
@@ -1627,6 +1740,14 @@ namespace iSynaptic.Commons
 
                 return self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15);
             };
+        }
+
+		
+		
+		public static Func<T16, T15, T14, T13, T12, T11, T10, T9, T8, T7, T6, T5, T4, T3, T2, T1, TRet> Flip<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TRet>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TRet> self)
+        {
+            Guard.NotNull(self, "self");
+            return (t16, t15, t14, t13, t12, t11, t10, t9, t8, t7, t6, t5, t4, t3, t2, t1) => self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16);
         }
 
 		

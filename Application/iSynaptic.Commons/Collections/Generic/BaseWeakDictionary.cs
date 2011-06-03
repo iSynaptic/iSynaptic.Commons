@@ -53,7 +53,7 @@ namespace iSynaptic.Commons.Collections.Generic
         {
             var result = _Dictionary
                 .TryGetValue(WrapKey(key, _Comparer))
-                .Bind(UnwrapValue);
+                .Select(UnwrapValue);
 
             value = result.Extract();
             return result.HasValue;

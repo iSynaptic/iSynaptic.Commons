@@ -19,7 +19,20 @@ namespace iSynaptic.Commons
 		{
 			string typeArgs = Delimit(Enumerable.Range(1, i), ", ", x => "T" + x.ToString());
 			string args = Delimit(Enumerable.Range(1, i), ", ", x => "t" + x.ToString());
+			
+			string reverseTypeArgs = Delimit(Enumerable.Range(1, i).Reverse(), ", ", x => "T" + x.ToString());
+			string reverseArgs = Delimit(Enumerable.Range(1, i).Reverse(), ", ", x => "t" + x.ToString());
 	    #>
+
+		<# if(i > 1) { #>
+
+		public static Func<<#= reverseTypeArgs #>, TRet> Flip<<#= typeArgs #>, TRet>(this Func<<#= typeArgs #>, TRet> self)
+        {
+            Guard.NotNull(self, "self");
+            return (<#= reverseArgs #>) => self(<#= args #>);
+        }
+
+		<# } #>
 
 		public static Action<<#= typeArgs #>> ToAction<<#= typeArgs #>, TRet>(this Func<<#= typeArgs #>, TRet> self)
         {

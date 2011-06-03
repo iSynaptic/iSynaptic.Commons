@@ -120,59 +120,59 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void Bind_ThatReturnsMaybe_ValueReturnsCorrectly()
+        public void Select_ThatReturnsMaybe_ValueReturnsCorrectly()
         {
             var results = Maybe<int>.Default
-                .Bind(x => new Maybe<int>(x + 7))
-                .Bind(x => new Maybe<int>(x * 6));
+                .Select(x => new Maybe<int>(x + 7))
+                .Select(x => new Maybe<int>(x * 6));
 
             Assert.AreEqual(42, results.Value);
         }
 
         [Test]
-        public void Bind_ThatImplicitlyThrowsException_ValueRethrowsException()
+        public void Select_ThatImplicitlyThrowsException_ValueRethrowsException()
         {
             var results = Maybe<int>
                 .Default
-                .Bind(x => (7 / x).ToMaybe());
+                .Select(x => (7 / x).ToMaybe());
 
             Assert.Throws<DivideByZeroException>(() => { var x = results.Value; });
         }
 
         [Test]
-        public void Bind_ThatImplicitlyThrowsException_BubblesUpException()
+        public void Select_ThatImplicitlyThrowsException_BubblesUpException()
         {
             var results = Maybe<int>
                 .Default
-                .Bind(x => (7 / x).ToMaybe());
+                .Select(x => (7 / x).ToMaybe());
 
             Assert.Throws<DivideByZeroException>(() => results.Run());
         }
 
         [Test]
-        public void Bind_WhenExceptionOccurs_DoesNotExecuteRemainingComputations()
+        public void Select_WhenExceptionOccurs_DoesNotExecuteRemainingComputations()
         {
             bool executed = false;
 
             var results = Maybe<int>
                 .Default
-                .Bind(x => (7 / x).ToMaybe())
-                .Bind(x => (executed = true).ToMaybe());
+                .Select(x => (7 / x).ToMaybe())
+                .Select(x => (executed = true).ToMaybe());
 
             Assert.Throws<DivideByZeroException>(() => { var x = results.Value; });
             Assert.IsFalse(executed);
         }
 
         [Test]
-        public void Bind_WhenNoValue_DoesNotExecuteRemaningComputations()
+        public void Select_WhenNoValue_DoesNotExecuteRemaningComputations()
         {
             bool executed = false;
 
             var results = Maybe<int>
                 .Default
-                .Bind(x => (x + 7).ToMaybe())
-                .Bind(x => Maybe<int>.NoValue)
-                .Bind(x => (executed = true).ToMaybe());
+                .Select(x => (x + 7).ToMaybe())
+                .Select(x => Maybe<int>.NoValue)
+                .Select(x => (executed = true).ToMaybe());
 
             Assert.IsFalse(results.HasValue);
             Assert.IsFalse(executed);
@@ -455,7 +455,7 @@ namespace iSynaptic.Commons
         public void OnException_ContinuesWithNewValue()
         {
             var value = Maybe<string>.Default
-                .Bind(x => new Maybe<string>(new InvalidOperationException()))
+                .Select(x => new Maybe<string>(new InvalidOperationException()))
                 .Select(x => x.Length)
                 .Where(x => x > 10)
                 .OnException(42);

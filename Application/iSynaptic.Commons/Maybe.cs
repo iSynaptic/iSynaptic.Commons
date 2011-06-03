@@ -34,7 +34,7 @@ namespace iSynaptic.Commons
             : this()
         {
             Guard.NotNull(computation, "computation");
-            _Computation = Default.Bind(x => computation().ToMaybe())._Computation;
+            _Computation = Bind(Default, x => computation().ToMaybe())._Computation;
         }
 
         public Maybe(Exception exception)
@@ -167,11 +167,11 @@ namespace iSynaptic.Commons
             return !(left == right);
         }
 
-        public Maybe<TResult> Bind<TResult>(Func<T, Maybe<TResult>> func)
+        public static Maybe<TResult> Bind<TResult>(Maybe<T> self, Func<T, Maybe<TResult>> func)
         {
             Guard.NotNull(func, "func");
 
-            return Extend(x =>
+            return Extend(self, x =>
             {
                 if (x.Exception != null)
                     return new Maybe<TResult>(x.Exception);
@@ -183,20 +183,20 @@ namespace iSynaptic.Commons
             });
         }
 
-        public Maybe<TResult> Extend<TResult>(Func<Maybe<T>, TResult> func)
+        public static Maybe<TResult> Extend<TResult>(Maybe<T> self, Func<Maybe<T>, TResult> func)
         {
             Guard.NotNull(func, "func");
-            return Extend(x => new Maybe<TResult>(func(x)));
+            return Extend(self, x => new Maybe<TResult>(func(x)));
         }
 
-        public Maybe<TResult> Extend<TResult>(Func<Maybe<T>, Maybe<TResult>> func)
+        public static Maybe<TResult> Extend<TResult>(Maybe<T> self, Func<Maybe<T>, Maybe<TResult>> func)
         {
             Guard.NotNull(func, "func");
 
-            var self = this;
+            var @this = self;
 
             Func<Maybe<TResult>.MaybeResult> boundComputation =
-                () => Maybe<TResult>.ComputeResult(func(self));
+                () => Maybe<TResult>.ComputeResult(func(@this));
 
             return new Maybe<TResult>(boundComputation.Memoize());
         }
@@ -313,13 +313,13 @@ namespace iSynaptic.Commons
         public static Maybe<TResult> Select<T, TResult>(this Maybe<T> self, Func<T, TResult> selector)
         {
             Guard.NotNull(selector, "selector");
-            return self.Bind(x => selector(x).ToMaybe());
+            return Maybe<T>.Bind(self, x => selector(x).ToMaybe());
         }
 
         public static Maybe<TResult> Select<T, TResult>(this Maybe<T> self, Func<T, Maybe<TResult>> selector)
         {
             Guard.NotNull(selector, "selector");
-            return self.Bind(selector);
+            return Maybe<T>.Bind(self, selector);
         }
 
         #endregion
@@ -332,7 +332,7 @@ namespace iSynaptic.Commons
         public static Maybe<TResult> SelectMany<T, TResult>(this Maybe<T> self, Func<T, Maybe<TResult>> selector)
         {
             Guard.NotNull(selector, "selector");
-            return self.Bind(selector);
+            return Maybe<T>.Bind(self, selector);
         }
 
         // This operator is implemented only to satisfy C#'s LINQ comprehension syntax.  The name "SelectMany" is confusing
@@ -342,7 +342,7 @@ namespace iSynaptic.Commons
         {
             Guard.NotNull(selector, "selector");
             Guard.NotNull(combiner, "combiner");
-            return self.Bind(x => selector(x).Bind(y => combiner(x, y).ToMaybe()));
+            return self.Select(x => selector(x).Select(y => combiner(x, y).ToMaybe()));
         }
 
         #endregion
@@ -426,7 +426,7 @@ namespace iSynaptic.Commons
         public static Maybe<T> Or<T>(this Maybe<T> self, Func<Maybe<T>> valueFactory)
         {
             Guard.NotNull(valueFactory, "valueFactory");
-            return self.Extend(x => x.Exception == null && x.HasValue != true ? valueFactory() : x);
+            return Maybe<T>.Extend(self, x => x.Exception == null && x.HasValue != true ? valueFactory() : x);
         }
 
         #endregion
@@ -580,7 +580,7 @@ namespace iSynaptic.Commons
             Guard.NotNull(exceptionFactory, "exceptionFactory");
             Guard.NotNull(predicate, "predicate");
 
-            return self.Extend(x => 
+            return Maybe<T>.Extend(self, x => 
             {
                 if (predicate(x))
                     exceptionFactory(x).ThrowAsInnerExceptionIfNeeded();
@@ -612,7 +612,7 @@ namespace iSynaptic.Commons
         public static Maybe<T> OnException<T>(this Maybe<T> self, Func<Exception, Maybe<T>> handler)
         {
             Guard.NotNull(handler, "handler");
-            return self.Extend(x => x.Exception != null ? handler(x.Exception) : x);
+            return Maybe<T>.Extend(self, x => x.Exception != null ? handler(x.Exception) : x);
         }
 
         #endregion
@@ -631,7 +631,7 @@ namespace iSynaptic.Commons
         {
             Guard.NotNull(action, "action");
 
-            return self.Extend(x =>
+            return Maybe<T>.Extend(self, x =>
             {
                 if (x.Exception == null && x.HasValue != true)
                     action();
@@ -642,7 +642,7 @@ namespace iSynaptic.Commons
 
         public static Maybe<T> CatchExceptions<T>(this Maybe<T> self)
         {
-            return self.Extend(x =>
+            return Maybe<T>.Extend(self, x =>
             {
                 try
                 {
@@ -658,7 +658,7 @@ namespace iSynaptic.Commons
         public static Maybe<T> Where<T>(this Maybe<T> self, Func<T, bool> predicate)
         {
             Guard.NotNull(predicate, "predicate");
-            return self.Bind(x => predicate(x) ? x : Maybe<T>.NoValue);
+            return self.Select(x => predicate(x) ? x : Maybe<T>.NoValue);
         }
 
         public static Maybe<T> Unless<T>(this Maybe<T> self, Func<T, bool> predicate)
@@ -687,7 +687,7 @@ namespace iSynaptic.Commons
             var task = Task.Factory.StartNew(() => self.Run(action), cancellationToken, taskCreationOptions,
                                              taskScheduler ?? TaskScheduler.Default);
 
-            return self.Extend(x =>
+            return Maybe<T>.Extend(self, x =>
             {
                 task.Wait(cancellationToken);
                 return task.IsCanceled ? Maybe<T>.NoValue : task.Result;
