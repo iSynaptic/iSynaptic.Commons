@@ -34,14 +34,14 @@ namespace iSynaptic.Commons
             : this()
         {
             Guard.NotNull(computation, "computation");
-            _Computation = Default.Bind(x => computation().ToMaybe())._Computation;
+            _Computation = Extend(x => computation())._Computation;
         }
 
         public Maybe(Func<Maybe<T>> computation)
             : this()
         {
             Guard.NotNull(computation, "computation");
-            _Computation = Default.Bind(x => computation())._Computation;
+            _Computation = Express(x => computation())._Computation;
         }
 
         public Maybe(Exception exception)
@@ -321,29 +321,6 @@ namespace iSynaptic.Commons
 
         #endregion
 
-        #region SelectMany Operator
-        
-        // This is an alias of Bind, and exists only to satisfy C#'s LINQ comprehension syntax.
-        // The name "SelectMany" is confusing as there is only one value to "select".
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static Maybe<TResult> SelectMany<T, TResult>(this Maybe<T> self, Func<T, Maybe<TResult>> selector)
-        {
-            Guard.NotNull(selector, "selector");
-            return self.Bind(selector);
-        }
-
-        // This operator is implemented only to satisfy C#'s LINQ comprehension syntax. 
-        // The name "SelectMany" is confusing as there is only one value to "select".
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static Maybe<TResult> SelectMany<T, TIntermediate, TResult>(this Maybe<T> self, Func<T, Maybe<TIntermediate>> selector, Func<T, TIntermediate, TResult> combiner)
-        {
-            Guard.NotNull(selector, "selector");
-            Guard.NotNull(combiner, "combiner");
-            return self.Bind(x => selector(x).Bind(y => combiner(x, y).ToMaybe()));
-        }
-
-        #endregion
-
         #region Coalesce Operator
 
         public static Maybe<TResult> Coalesce<T, TResult>(this Maybe<T> self, Func<T, TResult> selector) where TResult : class
@@ -614,8 +591,31 @@ namespace iSynaptic.Commons
 
         #endregion
 
+        #region SelectMany Operator
+        
+        // This is an alias of Bind, and exists only to satisfy C#'s LINQ comprehension syntax.
+        // The name "SelectMany" is confusing as there is only one value to "select".
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static Maybe<TResult> SelectMany<T, TResult>(this Maybe<T> self, Func<T, Maybe<TResult>> selector)
+        {
+            Guard.NotNull(selector, "selector");
+            return self.Bind(selector);
+        }
+
+        // This operator is implemented only to satisfy C#'s LINQ comprehension syntax. 
+        // The name "SelectMany" is confusing as there is only one value to "select".
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static Maybe<TResult> SelectMany<T, TIntermediate, TResult>(this Maybe<T> self, Func<T, Maybe<TIntermediate>> selector, Func<T, TIntermediate, TResult> combiner)
+        {
+            Guard.NotNull(selector, "selector");
+            Guard.NotNull(combiner, "combiner");
+            return self.Bind(x => selector(x).Bind(y => combiner(x, y).ToMaybe()));
+        }
+
+        #endregion
+
         // This is an alias of Bind and SelectMany.  Since SelectMany doesn't make sense (because there is at most one value),
-        // the name SelectMaybe communicates better than Bind or SelectMany what this function does.
+        // the name SelectMaybe communicates better than Bind or SelectMany the semantics of the function.
         public static Maybe<TResult> SelectMaybe<T, TResult>(this Maybe<T> self, Func<T, Maybe<TResult>> selector)
         {
             Guard.NotNull(selector, "selector");
@@ -690,7 +690,7 @@ namespace iSynaptic.Commons
         public static Maybe<T> RunAsync<T>(this Maybe<T> self, Action<T> action = null, CancellationToken cancellationToken = default(CancellationToken), TaskCreationOptions taskCreationOptions = TaskCreationOptions.None, TaskScheduler taskScheduler = default(TaskScheduler))
         {
             var task = Task.Factory.StartNew(() => self.Run(action), cancellationToken, taskCreationOptions,
-                                             taskScheduler ?? TaskScheduler.Default);
+                                             taskScheduler ?? TaskScheduler.Current);
 
             return self.Express(x =>
             {
