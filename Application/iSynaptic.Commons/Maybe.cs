@@ -417,7 +417,7 @@ namespace iSynaptic.Commons
         public static Maybe<T> Or<T>(this Maybe<T> self, Func<T> valueFactory)
         {
             Guard.NotNull(valueFactory, "valueFactory");
-            return self.Or(() => Return(valueFactory));
+            return self.Or(() => valueFactory().ToMaybe());
         }
 
         public static Maybe<T> Or<T>(this Maybe<T> self, Func<Maybe<T>> valueFactory)
