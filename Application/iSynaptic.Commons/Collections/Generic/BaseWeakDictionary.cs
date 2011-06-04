@@ -53,7 +53,7 @@ namespace iSynaptic.Commons.Collections.Generic
         {
             var result = _Dictionary
                 .TryGetValue(WrapKey(key, _Comparer))
-                .Select(UnwrapValue);
+                .SelectMaybe(UnwrapValue);
 
             value = result.Extract();
             return result.HasValue;
@@ -74,7 +74,7 @@ namespace iSynaptic.Commons.Collections.Generic
         {
             return (_Dictionary
                 .Select(pair => UnwrapKey(pair.Key)
-                    .Select(k => UnwrapValue(pair.Value)
+                    .SelectMaybe(k => UnwrapValue(pair.Value)
                         .Select(v => KeyValuePair.Create(k, v))))
                 .Where(x => x.HasValue)
                 .Select(x => x.Value))
@@ -83,10 +83,9 @@ namespace iSynaptic.Commons.Collections.Generic
 
         public void PurgeGarbage(Action<Maybe<TKey>, Maybe<TValue>> withPurgedPair)
         {
-            var itemsToPurge = _Dictionary.Where(pair =>
-                !(UnwrapKey(pair.Key)
-                    .Select(k => UnwrapValue(pair.Value))
-                    .HasValue)).ToArray();
+            var itemsToPurge = _Dictionary
+                .Where(pair => !UnwrapKey(pair.Key).Join(UnwrapValue(pair.Value)).HasValue)
+                .ToArray();
 
             if (withPurgedPair != null)
             {

@@ -91,7 +91,7 @@ namespace iSynaptic.Commons.Data
                 .ToMaybe();
 
             var resolvedValue = request
-                .Select(TryResolve)
+                .SelectMaybe(TryResolve)
                 .OnValue(x => OnValidateValue(x, "bound"));
 
             var defaultValue = request
@@ -107,7 +107,7 @@ namespace iSynaptic.Commons.Data
             return Maybe
                 .NotNull(ExodataResolver)
                 .Or(Ioc.TryResolve<IExodataResolver>)
-                .Select(x => x.TryResolve(request));
+                .SelectMaybe(x => x.TryResolve(request));
         }
 
         #endregion

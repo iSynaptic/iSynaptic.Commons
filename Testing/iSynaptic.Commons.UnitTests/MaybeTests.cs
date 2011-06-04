@@ -120,11 +120,11 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void Select_ThatReturnsMaybe_ValueReturnsCorrectly()
+        public void SelectMaybe_ThatReturnsMaybe_ValueReturnsCorrectly()
         {
             var results = Maybe<int>.Default
-                .Select(x => new Maybe<int>(x + 7))
-                .Select(x => new Maybe<int>(x * 6));
+                .SelectMaybe(x => (x + 7).ToMaybe())
+                .SelectMaybe(x => (x * 6).ToMaybe());
 
             Assert.AreEqual(42, results.Value);
         }
@@ -168,11 +168,11 @@ namespace iSynaptic.Commons
         {
             bool executed = false;
 
-            var results = Maybe<int>
+            Maybe<bool> results = Maybe<int>
                 .Default
-                .Select(x => (x + 7).ToMaybe())
-                .Select(x => Maybe<int>.NoValue)
-                .Select(x => (executed = true).ToMaybe());
+                .SelectMaybe(x => (x + 7).ToMaybe())
+                .SelectMaybe(x => Maybe<int>.NoValue)
+                .SelectMaybe(x => (executed = true).ToMaybe());
 
             Assert.IsFalse(results.HasValue);
             Assert.IsFalse(executed);
@@ -455,7 +455,7 @@ namespace iSynaptic.Commons
         public void OnException_ContinuesWithNewValue()
         {
             var value = Maybe<string>.Default
-                .Select(x => new Maybe<string>(new InvalidOperationException()))
+                .SelectMaybe(x => new Maybe<string>(new InvalidOperationException()))
                 .Select(x => x.Length)
                 .Where(x => x > 10)
                 .OnException(42);
@@ -576,8 +576,8 @@ namespace iSynaptic.Commons
         public void Select_WhenSelectorReturnsMaybe_DefersExecutionUntilEvaluated()
         {
             bool executed = false;
-            var value = Maybe.Return(() => { executed = true; return "42"; })
-                .Select(x => Maybe<int>.NoValue);
+            Maybe<int> value = Maybe.Return(() => { executed = true; return "42"; })
+                .SelectMaybe(x => Maybe<int>.NoValue);
 
             Assert.IsFalse(executed);
 
@@ -683,8 +683,8 @@ namespace iSynaptic.Commons
         public void ThrowOnNoValue_DefersExecutionUntilEvaluated()
         {
             bool executed = false;
-            var value = Maybe.Return(() => { executed = true; return 42; })
-                .Select(x => Maybe<int>.NoValue)
+            Maybe<int> value = Maybe.Return(() => { executed = true; return 42; })
+                .SelectMaybe(x => Maybe<int>.NoValue)
                 .ThrowOnNoValue(new InvalidOperationException());
 
             Assert.IsFalse(executed);

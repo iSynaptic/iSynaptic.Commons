@@ -18,7 +18,7 @@ namespace iSynaptic.Commons.Linq.Expressions
 
             return expression
                 .ToMaybe()
-                .Select(x =>
+                .SelectMaybe(x =>
                         {
                             var memberInfo = Maybe<MemberInfo>.NoValue;
                             new ExtractMemberInfoFromMemberExpressionVisitor(y => memberInfo = y).Visit(x);

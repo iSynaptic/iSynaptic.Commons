@@ -25,7 +25,7 @@ namespace iSynaptic.Commons.Collections.Generic
             return key
                 .ToMaybe()
                 .Coalesce(x => _MemberSelector(x))
-                .Select(x => x.TryGetTarget())
+                .SelectMaybe(x => x.TryGetTarget())
                 .Select(x => key);
         }
 
