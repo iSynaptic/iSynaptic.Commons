@@ -174,6 +174,12 @@ namespace iSynaptic.Commons
             return !(left == right);
         }
 
+        public Maybe<TResult> Select<TResult>(Func<T, TResult> selector)
+        {
+            Guard.NotNull(selector, "selector");
+            return Bind(x => selector(x).ToMaybe());
+        }
+
         public Maybe<TResult> Bind<TResult>(Func<T, Maybe<TResult>> func)
         {
             Guard.NotNull(func, "func");
@@ -315,26 +321,10 @@ namespace iSynaptic.Commons
 
         #endregion
 
-        #region Select Operator
-
-        public static Maybe<TResult> Select<T, TResult>(this Maybe<T> self, Func<T, TResult> selector)
-        {
-            Guard.NotNull(selector, "selector");
-            return self.Bind(x => selector(x).ToMaybe());
-        }
-
-        public static Maybe<TResult> SelectMaybe<T, TResult>(this Maybe<T> self, Func<T, Maybe<TResult>> selector)
-        {
-            Guard.NotNull(selector, "selector");
-            return self.Bind(selector);
-        }
-
-        #endregion
-
         #region SelectMany Operator
         
-        // This operator is implemented only to satisfy C#'s LINQ comprehension syntax.  The name "SelectMany" is confusing
-        // as there is only one value to "select".
+        // This is an alias of Bind, and exists only to satisfy C#'s LINQ comprehension syntax.
+        // The name "SelectMany" is confusing as there is only one value to "select".
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static Maybe<TResult> SelectMany<T, TResult>(this Maybe<T> self, Func<T, Maybe<TResult>> selector)
         {
@@ -342,8 +332,8 @@ namespace iSynaptic.Commons
             return self.Bind(selector);
         }
 
-        // This operator is implemented only to satisfy C#'s LINQ comprehension syntax.  The name "SelectMany" is confusing
-        // as there is only one value to "select".
+        // This operator is implemented only to satisfy C#'s LINQ comprehension syntax. 
+        // The name "SelectMany" is confusing as there is only one value to "select".
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static Maybe<TResult> SelectMany<T, TIntermediate, TResult>(this Maybe<T> self, Func<T, Maybe<TIntermediate>> selector, Func<T, TIntermediate, TResult> combiner)
         {
@@ -623,6 +613,14 @@ namespace iSynaptic.Commons
         }
 
         #endregion
+
+        // This is an alias of Bind and SelectMany.  Since SelectMany doesn't make sense (because there is at most one value),
+        // the name SelectMaybe communicates better than Bind or SelectMany what this function does.
+        public static Maybe<TResult> SelectMaybe<T, TResult>(this Maybe<T> self, Func<T, Maybe<TResult>> selector)
+        {
+            Guard.NotNull(selector, "selector");
+            return self.Bind(selector);
+        }
 
         public static Maybe<T> OnValue<T>(this Maybe<T> self, Action<T> action)
         {
