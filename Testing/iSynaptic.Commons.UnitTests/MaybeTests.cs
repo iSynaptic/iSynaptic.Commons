@@ -452,13 +452,13 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void OnException_ContinuesWithNewValue()
+        public void WhenException_ContinuesWithNewValue()
         {
             var value = Maybe<string>.Default
                 .SelectMaybe(x => new Maybe<string>(new InvalidOperationException()))
                 .Select(x => x.Length)
                 .Where(x => x > 10)
-                .OnException(42);
+                .WhenException(42);
 
             Assert.IsTrue(value.HasValue);
             Assert.AreEqual(42, value.Value);
@@ -653,12 +653,12 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void OnException_DefersExecutionUntilEvaluated()
+        public void WhenException_DefersExecutionUntilEvaluated()
         {
             bool executed = false;
             var value = Maybe.Return(() => { executed = true; return "42"; })
-                .OnException("Hello")
-                .OnException(x => executed = true);
+                .WhenException("Hello")
+                .OnValue(x => executed = true);
 
             Assert.IsFalse(executed);
 
