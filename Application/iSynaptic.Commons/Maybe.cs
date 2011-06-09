@@ -475,6 +475,26 @@ namespace iSynaptic.Commons
 
         #endregion
 
+        #region WhenException Operator
+
+        public static Maybe<T> WhenException<T>(this Maybe<T> self, T value)
+        {
+            return self.WhenException(ex => value);
+        }
+
+        public static Maybe<T> WhenException<T>(this Maybe<T> self, Func<Exception, T> valueFactory)
+        {
+            return self.WhenException(ex => valueFactory(ex).ToMaybe());
+        }
+
+        public static Maybe<T> WhenException<T>(this Maybe<T> self, Func<Exception, Maybe<T>> handler)
+        {
+            Guard.NotNull(handler, "handler");
+            return self.Express(x => x.Exception != null ? handler(x.Exception) : x);
+        }
+
+        #endregion
+
         #region Join Operator
 
         public static Maybe<Tuple<T, U>> Join<T, U>(this Maybe<T> self, Maybe<U> other)
@@ -565,32 +585,6 @@ namespace iSynaptic.Commons
 
         #endregion
 
-        #region OnException Operator
-
-        public static Maybe<T> OnException<T>(this Maybe<T> self, T value)
-        {
-            return self.OnException(() => value);
-        }
-
-        public static Maybe<T> OnException<T>(this Maybe<T> self, Func<T> valueFactory)
-        {
-            return self.OnException(x => valueFactory().ToMaybe());
-        }
-
-        public static Maybe<T> OnException<T>(this Maybe<T> self, Action<Exception> handler)
-        {
-            Guard.NotNull(handler, "handler");
-            return self.OnException(x => { handler(x); return new Maybe<T>(x); });
-        }
-
-        public static Maybe<T> OnException<T>(this Maybe<T> self, Func<Exception, Maybe<T>> handler)
-        {
-            Guard.NotNull(handler, "handler");
-            return self.Express(x => x.Exception != null ? handler(x.Exception) : x);
-        }
-
-        #endregion
-
         #region SelectMany Operator
         
         // This is an alias of Bind, and exists only to satisfy C#'s LINQ comprehension syntax.
@@ -640,6 +634,18 @@ namespace iSynaptic.Commons
             {
                 if (x.Exception == null && x.HasValue != true)
                     action();
+
+                return x;
+            });
+        }
+
+        public static Maybe<T> OnException<T>(this Maybe<T> self, Action<Exception> handler)
+        {
+            Guard.NotNull(handler, "handler");
+            return self.Express(x =>
+            {
+                if (x.Exception != null)
+                    handler(x.Exception);
 
                 return x;
             });

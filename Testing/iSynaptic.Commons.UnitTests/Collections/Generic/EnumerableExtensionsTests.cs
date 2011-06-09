@@ -236,22 +236,22 @@ namespace iSynaptic.Commons.Collections.Generic
         }
 
         [Test]
-        public void Zip_WithNullIterables_ThrowsArgumentNullException()
+        public void ZipAll_WithNullIterables_ThrowsArgumentNullException()
         {
             IEnumerable<int> first = null;
             IEnumerable<int> other = Enumerable.Range(1, 10);
 
-            Assert.Throws<ArgumentNullException>(() => first.Zip(other));
-            Assert.Throws<ArgumentNullException>(() => other.Zip(null));
+            Assert.Throws<ArgumentNullException>(() => first.ZipAll(other));
+            Assert.Throws<ArgumentNullException>(() => other.ZipAll(null));
         }
 
         [Test]
-        public void Zip()
+        public void ZipAll()
         {
             var rangeOne = Enumerable.Range(1, 10);
             var rangeTwo = Enumerable.Range(10, 10);
 
-            var zipped = rangeOne.Zip(rangeTwo);
+            var zipped = rangeOne.ZipAll(rangeTwo);
 
             var expected = new[] { 1, 10, 2, 11, 3, 12, 4, 13, 5, 14, 6, 15, 7, 16, 8, 17, 9, 18, 10, 19 };
 
@@ -259,10 +259,10 @@ namespace iSynaptic.Commons.Collections.Generic
         }
 
         [Test]
-        public void Zip_ArrayOfEnumerables()
+        public void ZipAll_ArrayOfEnumerables()
         {
             var array = new[] { Enumerable.Range(1, 10), Enumerable.Range(10, 10) };
-            var zipped = array.Zip();
+            var zipped = array.ZipAll();
 
             var expected = new[] { 1, 10, 2, 11, 3, 12, 4, 13, 5, 14, 6, 15, 7, 16, 8, 17, 9, 18, 10, 19 };
 
@@ -270,10 +270,10 @@ namespace iSynaptic.Commons.Collections.Generic
         }
 
         [Test]
-        public void Zip_EnumerableOfEnumerables()
+        public void ZipAll_EnumerableOfEnumerables()
         {
             var array = new[] { Enumerable.Range(1, 10), Enumerable.Range(10, 10) };
-            var zipped = array.AsEnumerable().Zip();
+            var zipped = array.AsEnumerable().ZipAll();
 
             var expected = new[] { 1, 10, 2, 11, 3, 12, 4, 13, 5, 14, 6, 15, 7, 16, 8, 17, 9, 18, 10, 19 };
 
@@ -281,12 +281,12 @@ namespace iSynaptic.Commons.Collections.Generic
         }
 
         [Test]
-        public void Zip_WithDifferentItemCounts()
+        public void ZipAll_WithDifferentItemCounts()
         {
             var left = Enumerable.Range(1, 4);
             var right = Enumerable.Range(1, 3);
 
-            var zipped = left.Zip(right).SelectMany(x => x);
+            var zipped = left.ZipAll(right).SelectMany(x => x);
 
             Assert.IsTrue(zipped.SequenceEqual(new[] { 1, 1, 2, 2, 3, 3, 4, Maybe<int>.NoValue }));
         }

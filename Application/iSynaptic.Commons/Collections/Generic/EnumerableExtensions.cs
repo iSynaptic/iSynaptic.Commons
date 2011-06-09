@@ -16,6 +16,23 @@ namespace iSynaptic.Commons.Collections.Generic
             return source.OrderBy(keySelector, comparer.ToComparer());
         }
 
+        public static IEnumerable<TSource> OrderByPriorities<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> higherPrioritySelector, params Func<TSource, bool>[] additionalPrioritySelectors)
+        {
+            Guard.NotNull(source, "source");
+            Guard.NotNull(higherPrioritySelector, "higherPrioritySelector");
+
+            IEnumerable<Func<TSource, bool>> selectors = new[] {higherPrioritySelector};
+
+            if(additionalPrioritySelectors != null)
+                selectors = selectors.Concat(additionalPrioritySelectors);
+
+            return source.OrderBy(x => x, (l, r) => (from selector in selectors
+                                                     let leftHasPriority = selector(l)
+                                                     let rightHasPriority = selector(r)
+                                                     where leftHasPriority ^ rightHasPriority
+                                                     select leftHasPriority ? -1 : 1).FirstOrDefault());
+        }
+
         public static IEnumerable<T> Distinct<T, TKey>(this IEnumerable<T> source, Func<T, TKey> selector)
         {
             Guard.NotNull(source, "source");
@@ -128,59 +145,59 @@ namespace iSynaptic.Commons.Collections.Generic
             return builder.ToString();
         }
 
-        public static IEnumerable<Maybe<T>[]> Zip<T>(this IEnumerable<IEnumerable<T>> iterables)
-        {
-            return ZipCore(iterables);
-        }
-
-        public static IEnumerable<Maybe<T>[]> Zip<T>(this IEnumerable<T>[] iterables)
-        {
-            return ZipCore(iterables);
-        }
-
-        public static IEnumerable<Maybe<T>[]> Zip<T>(this IEnumerable<T> first, params IEnumerable<T>[] iterables)
+        public static IEnumerable<Maybe<T>[]> ZipAll<T>(this IEnumerable<T> first, params IEnumerable<T>[] enumerables)
         {
             Guard.NotNull(first, "first");
-            Guard.NotNull(iterables, "iterables");
+            Guard.NotNull(enumerables, "enumerables");
 
-            return ZipCore(new[] { first }.Concat(iterables));
+            return ZipAll(new[] { first }.Concat(enumerables));
         }
 
-        private static IEnumerable<Maybe<T>[]> ZipCore<T>(IEnumerable<IEnumerable<T>> iterables)
+        public static IEnumerable<Maybe<T>[]> ZipAll<T>(this IEnumerable<T>[] enumerables)
         {
-            var enumerators = iterables
-                .Where(x => x != null)
-                .Select(x => x.GetEnumerator())
-                .ToArray();
+            Guard.NotNull(enumerables, "enumerables");
+            return ZipAll((IEnumerable<IEnumerable<T>>)enumerables);
+        }
 
-            while (enumerators.Where(x => x != null).Count() > 0)
+        public static IEnumerable<Maybe<T>[]> ZipAll<T>(this IEnumerable<IEnumerable<T>> enumerables)
+        {
+            Guard.NotNull(enumerables, "enumerables");
+            return ZipAllCore(enumerables);
+        }
+
+        private static IEnumerable<Maybe<T>[]> ZipAllCore<T>(IEnumerable<IEnumerable<T>> enumerables)
+        {
+            using (var compositeDisposable = new CompositeDisposable())
             {
-                int index = 0;
-                var values = new Maybe<T>[enumerators.Length];
+                var enumerators = enumerables
+                    .Where(x => x != null)
+                    .Select(x => x.ToZipableEnumerable())
+                    .Select(x => compositeDisposable.Add(x.GetEnumerator()))
+                    .ToArray();
 
-                bool anyIsAvailable = false;
-                foreach (IEnumerator<T> enumerator in enumerators)
+                while (true)
                 {
-                    if (enumerator == null)
-                        continue;
+                    var items = enumerators
+                        .Select(x => { x.MoveNext(); return x.Current; })
+                        .ToArray();
 
-                    bool isAvailable = enumerator.MoveNext();
-
-                    if (isAvailable != true)
-                    {
-                        enumerators[index] = null;
-                        index++;
-
-                        continue;
-                    }
-
-                    anyIsAvailable = true;
-                    values[index++] = enumerator.Current;
+                    if (items.Any(x => x.HasValue))
+                        yield return items;
+                    else
+                        yield break;
                 }
-
-                if (anyIsAvailable)
-                    yield return values;
             }
+        }
+
+        private static IEnumerable<Maybe<T>> ToZipableEnumerable<T>(this IEnumerable<T> source)
+        {
+            Guard.NotNull(source, "source");
+
+            foreach (var item in source)
+                yield return item.ToMaybe();
+
+            while(true)
+                yield return Maybe<T>.NoValue;
         }
 
         public static void ForceEnumeration<T>(this IEnumerable<T> self)

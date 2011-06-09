@@ -6,6 +6,8 @@ namespace iSynaptic.Commons.AOP
 {
     public class DisposableContext : EnlistmentScope<IDisposable, DisposableContext>
     {
+        private readonly CompositeDisposable _CompositeDisposable = new CompositeDisposable();
+
         public DisposableContext() : this(ScopeBounds.Thread, ScopeNesting.Allowed)
         {
         }
@@ -18,32 +20,28 @@ namespace iSynaptic.Commons.AOP
         {
             try
             {
-                if (Parent != null)
+                if (disposing)
                 {
-                    Parent.Enlist(Items);
-                    Items.Clear();
-                }
-                else
-                {
-                    var exceptions = new List<Exception>();
-                    
-                    Action<IDisposable> dispose = d => d.Dispose();
-                    dispose = dispose.CatchExceptions(exceptions);
-
-                    Items
-                        .ToList()
-                        .ForEach(dispose);
-
-                    Items.Clear();
-
-                    if (exceptions.Count > 0)
-                        throw new AggregateException("Exception(s) occured during disposal.", exceptions);
+                    if (Parent != null)
+                    {
+                        Parent.Enlist(Items);
+                        Items.Clear();
+                    }
+                    else
+                    {
+                        _CompositeDisposable.Dispose();
+                    }
                 }
             }
             finally
             {
                 base.Dispose(disposing);
             }
+        }
+
+        protected override ICollection<IDisposable> Items
+        {
+            get { return _CompositeDisposable; }
         }
 
         public static DisposableContext Current

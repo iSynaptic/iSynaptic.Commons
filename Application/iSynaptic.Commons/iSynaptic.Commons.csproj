@@ -95,6 +95,7 @@
     <Compile Include="Collections\Generic\WeakKeyDictionary.cs" />
     <Compile Include="Collections\Generic\WeakKeyMemberDictionary.cs" />
     <Compile Include="Collections\Generic\WeakValueDictionary.cs" />
+    <Compile Include="CompositeDisposable.cs" />
     <Compile Include="Convert.cs" />
     <Compile Include="DataEventArgs.cs" />
     <Compile Include="Data\ExodataHelper.cs" />

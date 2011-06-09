@@ -64,7 +64,7 @@ namespace iSynaptic.Commons
                 }
 
                 if (exception != null)
-                    throw exception;
+                    exception.ThrowAsInnerExceptionIfNeeded();
 
                 return result;
             };
@@ -109,15 +109,7 @@ namespace iSynaptic.Commons
             if (self == null || orFunc == null)
                 return self ?? orFunc;
 
-            return () =>
-            {
-                var results = self();
-
-                if (results.HasValue != true && results.Exception == null)
-                    return orFunc();
-
-                return results;
-            };
+            return () => self().Or(orFunc);
         }
 
         private class FuncComparer<T> : IComparer<T>

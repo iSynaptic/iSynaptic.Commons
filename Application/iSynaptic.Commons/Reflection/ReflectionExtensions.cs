@@ -63,22 +63,10 @@ namespace iSynaptic.Commons.Reflection
                 .Where(x => x.Parameters.Length == 1)
                 .Select(x => new {x.Method, FromType = x.Parameters[0].ParameterType, x.ToType})
                 .Where(x => x.FromType.IsAssignableFrom(fromType))
-                .OrderBy(x => x, (l, r) =>
-                {
-                    if (l.ToType == toType ^ r.ToType == toType)
-                        return l.ToType == toType ? -1 : 1;
-
-                    if (l.FromType == fromType ^ r.FromType == fromType)
-                        return l.FromType == fromType ? -1 : 1;
-
-                    if (l.Method.Name == "op_Implicit" ^ r.Method.Name == "op_Implicit")
-                        return l.Method.Name == "op_Implicit" ? -1 : 1;
-
-                    if (l.Method.Name == "op_Explicit" ^ r.Method.Name == "op_Explicit")
-                        return l.Method.Name == "op_Explicit" ? -1 : 1;
-
-                    return 0;
-                })
+                .OrderByPriorities(x => x.ToType == toType,
+                                   x => x.FromType == fromType,
+                                   x => x.Method.Name == "op_Implicit",
+                                   x => x.Method.Name == "op_Explicit")
                 .Select(x => x.Method)
                 .FirstOrDefault();
         }
