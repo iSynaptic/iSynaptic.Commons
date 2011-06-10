@@ -11,77 +11,66 @@ namespace iSynaptic.Commons
     // Don't Fear the Monad! http://channel9.msdn.com/shows/Going+Deep/Brian-Beckman-Dont-fear-the-Monads/
     public struct Maybe<T> : IMaybe<T>, IEquatable<Maybe<T>>, IEquatable<T>
     {
-        private struct MaybeResult
-        {
-            public T Value;
-            public bool HasValue;
-            public Exception Exception;
-        }
-
         public static readonly Maybe<T> NoValue = new Maybe<T>();
         public static readonly Maybe<T> Default = new Maybe<T>(default(T));
 
-        private readonly MaybeResult? _Result;
-        private readonly Func<MaybeResult> _Computation;
+        private readonly T _Value;
+        private readonly bool _HasValue;
+        private readonly Exception _Exception;
+
+        private readonly Func<Maybe<T>> _Computation;
 
         public Maybe(T value)
             : this()
         {
-            _Result = new MaybeResult { Value = value, HasValue = true };
+            _Value = value;
+            _HasValue = true;
         }
 
         public Maybe(Func<T> computation)
             : this()
         {
             Guard.NotNull(computation, "computation");
-            _Computation = Extend(x => computation())._Computation;
+            _Computation = Default.Express(x => new Maybe<T>(computation()))._Computation;
         }
 
         public Maybe(Func<Maybe<T>> computation)
+            : this(computation, true)
+        {
+        }
+
+        private Maybe(Func<Maybe<T>> computation, bool wrapComputation)
             : this()
         {
             Guard.NotNull(computation, "computation");
-            _Computation = Express(x => computation())._Computation;
+
+            _Computation = wrapComputation
+                ? Default.Express(x => computation())._Computation
+                : computation;
         }
 
         public Maybe(Exception exception)
             : this()
         {
-            Guard.NotNull(exception, "exception");
-            _Result = new MaybeResult { Exception = exception };
-        }
-
-        private Maybe(Func<MaybeResult> computation)
-            : this()
-        {
-            Guard.NotNull(computation, "computation");
-            _Computation = computation;
-        }
-
-        private static MaybeResult ComputeResult(Maybe<T> mt)
-        {
-            if (mt._Result.HasValue)
-                return mt._Result.Value;
-
-            if (mt._Computation != null)
-                return mt._Computation();
-
-            return default(MaybeResult);
+            _Exception = Guard.NotNull(exception, "exception");
         }
 
         public T Value
         {
             get
             {
-                var result = ComputeResult(this);
+                if(_Computation == null)
+                {
+                    if (_Exception != null)
+                        _Exception.ThrowAsInnerExceptionIfNeeded();
 
-                if (result.Exception != null)
-                    result.Exception.ThrowAsInnerExceptionIfNeeded();
+                    if (_HasValue != true)
+                        throw new InvalidOperationException("No value can be computed.");
 
-                if (result.HasValue != true)
-                    throw new InvalidOperationException("No value can be provided.");
+                    return _Value;    
+                }
 
-                return result.Value;
+                return _Computation().Value;
             }
         }
 
@@ -90,8 +79,26 @@ namespace iSynaptic.Commons
             get { return Value; }
         }
 
-        public bool HasValue { get { return ComputeResult(this).HasValue; } }
-        public Exception Exception { get { return ComputeResult(this).Exception; } }
+        public bool HasValue
+        {
+            get
+            {
+                if(_Computation == null)
+                    return _HasValue;
+
+                return _Computation().HasValue;
+            }
+        }
+        public Exception Exception
+        {
+            get
+            {
+                if(_Computation == null)
+                    return _Exception;
+
+                return _Computation().Exception;
+            }
+        }
 
         public bool Equals(T other)
         {
@@ -207,12 +214,12 @@ namespace iSynaptic.Commons
             Guard.NotNull(func, "func");
 
             var @this = this;
-            Maybe<TResult>.MaybeResult? result = null;
+            Maybe<TResult>? memoizedResult = null;
 
-            Func<Maybe<TResult>.MaybeResult> boundComputation =
-                () => (result ?? (result = Maybe<TResult>.ComputeResult(func(@this)))).Value;
-
-            return new Maybe<TResult>(boundComputation);
+            return new Maybe<TResult>(() =>
+                memoizedResult.HasValue
+                    ? memoizedResult.Value
+                    : (memoizedResult = func(@this)).Value, false);
         }
 
         public static implicit operator Maybe<T>(T value)
