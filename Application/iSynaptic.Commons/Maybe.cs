@@ -21,13 +21,13 @@ namespace iSynaptic.Commons
         public static readonly Maybe<T> NoValue = new Maybe<T>();
         public static readonly Maybe<T> Default = new Maybe<T>(default(T));
 
-        private readonly MaybeResult? _Value;
+        private readonly MaybeResult? _Result;
         private readonly Func<MaybeResult> _Computation;
 
         public Maybe(T value)
             : this()
         {
-            _Value = new MaybeResult { Value = value, HasValue = true };
+            _Result = new MaybeResult { Value = value, HasValue = true };
         }
 
         public Maybe(Func<T> computation)
@@ -48,7 +48,7 @@ namespace iSynaptic.Commons
             : this()
         {
             Guard.NotNull(exception, "exception");
-            _Value = new MaybeResult { Exception = exception };
+            _Result = new MaybeResult { Exception = exception };
         }
 
         private Maybe(Func<MaybeResult> computation)
@@ -58,13 +58,13 @@ namespace iSynaptic.Commons
             _Computation = computation;
         }
 
-        private static MaybeResult ComputeResult(Maybe<T> value)
+        private static MaybeResult ComputeResult(Maybe<T> mt)
         {
-            if (value._Value.HasValue)
-                return value._Value.Value;
+            if (mt._Result.HasValue)
+                return mt._Result.Value;
 
-            if (value._Computation != null)
-                return value._Computation();
+            if (mt._Computation != null)
+                return mt._Computation();
 
             return default(MaybeResult);
         }
@@ -207,11 +207,12 @@ namespace iSynaptic.Commons
             Guard.NotNull(func, "func");
 
             var @this = this;
+            Maybe<TResult>.MaybeResult? result = null;
 
             Func<Maybe<TResult>.MaybeResult> boundComputation =
-                () => Maybe<TResult>.ComputeResult(func(@this));
+                () => (result ?? (result = Maybe<TResult>.ComputeResult(func(@this)))).Value;
 
-            return new Maybe<TResult>(boundComputation.Memoize());
+            return new Maybe<TResult>(boundComputation);
         }
 
         public static implicit operator Maybe<T>(T value)
@@ -475,19 +476,19 @@ namespace iSynaptic.Commons
 
         #endregion
 
-        #region WhenException Operator
+        #region SuppressException Operator
 
-        public static Maybe<T> WhenException<T>(this Maybe<T> self, T value)
+        public static Maybe<T> SuppressException<T>(this Maybe<T> self, T value)
         {
-            return self.WhenException(ex => value);
+            return self.SuppressException(ex => value);
         }
 
-        public static Maybe<T> WhenException<T>(this Maybe<T> self, Func<Exception, T> valueFactory)
+        public static Maybe<T> SuppressException<T>(this Maybe<T> self, Func<Exception, T> valueFactory)
         {
-            return self.WhenException(ex => valueFactory(ex).ToMaybe());
+            return self.SuppressException(ex => valueFactory(ex).ToMaybe());
         }
 
-        public static Maybe<T> WhenException<T>(this Maybe<T> self, Func<Exception, Maybe<T>> handler)
+        public static Maybe<T> SuppressException<T>(this Maybe<T> self, Func<Exception, Maybe<T>> handler)
         {
             Guard.NotNull(handler, "handler");
             return self.Express(x => x.Exception != null ? handler(x.Exception) : x);

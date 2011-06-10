@@ -110,6 +110,26 @@ namespace iSynaptic.Commons
         }
 
         [Test]
+        public void EvaluationOfMaybeOnlyOccursOnce()
+        {
+            int count = 0;
+            Func<int> funcOfInt = () =>  ++count;
+
+            var maybe = new Maybe<int>(funcOfInt);
+
+            for(int i = 0; i < 10; i++)
+                Assert.AreEqual(1, maybe.Value);
+
+            Func<Maybe<int>> funcOfMaybeOfInt = () => (++count).ToMaybe();
+
+            count = 0;
+            maybe = new Maybe<int>(funcOfMaybeOfInt);
+
+            for (int i = 0; i < 10; i++)
+                Assert.AreEqual(1, maybe.Value);
+        }
+
+        [Test]
         public void Select_ThatReturnsScalar_ValueReturnsCorrectly()
         {
             var results = Maybe<int>.Default
@@ -452,13 +472,13 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void WhenException_ContinuesWithNewValue()
+        public void SuppressException_ContinuesWithNewValue()
         {
             var value = Maybe<string>.Default
                 .SelectMaybe(x => new Maybe<string>(new InvalidOperationException()))
                 .Select(x => x.Length)
                 .Where(x => x > 10)
-                .WhenException(42);
+                .SuppressException(42);
 
             Assert.IsTrue(value.HasValue);
             Assert.AreEqual(42, value.Value);
@@ -653,12 +673,12 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void WhenException_DefersExecutionUntilEvaluated()
+        public void SuppressException_DefersExecutionUntilEvaluated()
         {
             bool executed = false;
             var value = Maybe.Return(() => { executed = true; return "42"; })
-                .WhenException("Hello")
-                .OnValue(x => executed = true);
+                .OnValue(x => executed = true)
+                .SuppressException("Hello");
 
             Assert.IsFalse(executed);
 

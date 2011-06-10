@@ -48,6 +48,6 @@ Released on: June xx, 2011
   operation that takes a T and puts it into the Monad, it made more sense to
   call this operation Return.
 
-* Many of the OnException overloads have been renamed to WhenException.  This
+* Many of the OnException overloads have been renamed to SuppressException.  This
   brings parity with the other OnXXX methods that only have side-effects and
   do not change the resulting value.
