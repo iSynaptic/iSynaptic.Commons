@@ -82,6 +82,5 @@ namespace iSynaptic.Commons.Collections.Generic
         {
             return GetEnumerator();
         }
-        
     } 
 }

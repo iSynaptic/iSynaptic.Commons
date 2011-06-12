@@ -41,6 +41,9 @@ namespace iSynaptic.Commons.Collections.Generic
 
         public static ProjectionCollection<TSourceItem, TProjectedItem> ToProjectedCollection<TSourceItem, TProjectedItem>(this ICollection<TSourceItem> self, Func<TSourceItem, TProjectedItem> selector)
         {
+            Guard.NotNull(self, "self");
+            Guard.NotNull(selector, "selector");
+
             return new ProjectionCollection<TSourceItem, TProjectedItem>(self, selector);
         }
     }
