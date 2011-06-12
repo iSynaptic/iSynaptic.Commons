@@ -3,7 +3,7 @@ using System.Reflection.Emit;
 
 namespace iSynaptic.Commons.Data
 {
-    public class StringExodataAttribute : Attribute, IExodataAttribute<int, int>, IExodataAttribute<string, string>, IExodataAttribute<StringExodataDefinition, CommonExodataDefinition>
+    public class StringExodataAttribute : Attribute, IExodataAttribute<int>, IExodataAttribute<string>, IExodataAttribute<StringExodataDefinition, CommonExodataDefinition>
     {
         private readonly int _MinLength;
         private readonly int _MaxLength;

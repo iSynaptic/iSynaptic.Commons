@@ -6,7 +6,7 @@ using System.Text;
 namespace iSynaptic.Commons.Data
 {
     [AttributeUsage(AttributeTargets.Class)]
-    public class DescriptionAttribute : Attribute, IExodataAttribute<string, string>
+    public class DescriptionAttribute : Attribute, IExodataAttribute<string>
     {
         private readonly string _Description;
 
