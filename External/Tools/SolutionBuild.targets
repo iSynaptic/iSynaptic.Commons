@@ -9,9 +9,11 @@
         <Configuration>Release</Configuration>
 
         <RootBuildPath>$(MSBuildProjectDirectory)\Build</RootBuildPath>
-        <BinariesPath>$(RootBuildPath)\$(Configuration)\Binaries</BinariesPath>
-        <MetadataPath>$(RootBuildPath)\$(Configuration)\Metadata</MetadataPath>
-        <ReportingPath>$(RootBuildPath)\$(Configuration)\Reporting</ReportingPath>
+        <BaseBuildPath>$(RootBuildPath)\$(Configuration)</BaseBuildPath>
+      
+        <BinariesPath>$(BaseBuildPath)\Binaries</BinariesPath>
+        <MetadataPath>$(BaseBuildPath)\Metadata</MetadataPath>
+        <ReportingPath>$(BaseBuildPath)\Reporting</ReportingPath>
 
         <ExternalPath>$(MSBuildProjectDirectory)\External</ExternalPath>
         <ExternalReferencesPath>$(ExternalPath)\References</ExternalReferencesPath>
@@ -59,15 +61,15 @@
         <Error Text="Unrecognized Testing Framework." Condition="$(TestingFramework) != 'NUnit' And $(TestingFramework) != 'MbUnit'" />
 
         <Exec WorkingDirectory="$(BinariesPath)"
-              Command="&quot;$(NUnitPath)\nunit-console.exe&quot; /process=Single /framework=v4.0.30319 @(TestingAssembly -> '&quot;$(BinariesPath)\%(Filename)%(Extension)&quot;') /xml=&quot;$(RootBuildPath)\$(Configuration)\$(TestingOutputFileName).xml&quot;" />
+              Command="&quot;$(NUnitPath)\nunit-console.exe&quot; /process=Single /framework=v4.0.30319 @(TestingAssembly -> '&quot;$(BinariesPath)\%(Filename)%(Extension)&quot;') /xml=&quot;$(BaseBuildPath)\$(TestingOutputFileName).xml&quot;" />
         
         <!--NCover
           Condition="$(TestingFramework) == 'NUnit'"
                 ToolPath="$(NCoverPath)"
                 CommandLineExe="$(NUnitPath)\nunit-console.exe"
-                CommandLineArgs=" /framework=v4.0.30319 @(TestingAssembly -> '&quot;$(BinariesPath)\%(Filename)%(Extension)&quot;') /xml=&quot;$(RootBuildPath)\$(Configuration)\$(TestingOutputFileName).xml&quot;"
-                CoverageFile="$(RootBuildPath)\$(Configuration)\CodeCoverage.xml"
-                LogFile="$(RootBuildPath)\$(Configuration)\CodeCoverage.log"
+                CommandLineArgs=" /framework=v4.0.30319 @(TestingAssembly -> '&quot;$(BinariesPath)\%(Filename)%(Extension)&quot;') /xml=&quot;$(BaseBuildPath)\$(TestingOutputFileName).xml&quot;"
+                CoverageFile="$(BaseBuildPath)\CodeCoverage.xml"
+                LogFile="$(BaseBuildPath)\CodeCoverage.log"
                 WorkingDirectory="$(BinariesPath)"
                 Assemblies="@(ApplicationAssembly)" / -->
 
@@ -85,7 +87,7 @@
         <MakeDir Directories="$(MetadataPath);$(ReportingPath)" />
 
         <Move SourceFiles="@(MetadataFile)" DestinationFolder="$(MetadataPath)" />
-        <Move SourceFiles="@(ReportingFile -> '$(RootBuildPath)\$(Configuration)\%(Identity)')" DestinationFolder="$(ReportingPath)" />
+        <Move SourceFiles="@(ReportingFile -> '$(BaseBuildPath)\%(Identity)')" DestinationFolder="$(ReportingPath)" />
     </Target>
 
     <Target Name="CorePackage" />

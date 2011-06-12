@@ -1,0 +1,112 @@
+======================================
+RELEASE NOTES: iSynaptic.Commons
+======================================
+
+
+==== Version 0.2.0.0 ====
+
+Released on: June xx, 2011
+
+---- Notes -----
+
+* This release reflects some collaboration with Brian Beckman and research
+  into CoMonads, and as a result Maybe<T> and some supporting operations
+  have gone through significant changes.
+  
+* The names of many of the Maybe<T> operators has been changed.  See breaking
+  changes below.
+
+* The Maybe<T> Extend method may be removed since Maybe<T> may not be its
+  own CoMonad.
+
+* Removed the internal MaybeResult struct that Maybe<T> used to represent
+  the evaluated result of Maybe<T>.  Since Maybe<T> had a superset of
+  MaybeResult's public interface, Maybe<T> was refactored to store the
+  data that MaybeResult originally stored.
+
+---- Features ----
+
+* Express method on Maybe<T> allow the development of Maybe<T> operators
+  that need full visibility into the Maybe<T> struct.  Express adds lazy
+  evaluzation semantics and memoization.  All other operations that return
+  a Maybe<T> are written either directly or indirectly using Express.
+
+* Maybe<T> now has a constructor that takes a Func<Maybe<T>> to allow this
+  function to be lazily evaluated and viewed as a Maybe<T>.
+
+* Maybe<T> now has a number of extension methods named ThrowOn that allow
+  you to define conditions where an exception should be thrown upon evaluation
+  of the Maybe<T>.
+
+* Support for C# comprehension syntax is now supported for Maybe<T>.  Thanks
+  to Brian Beckman for the implementation of SelectMany.
+
+* Created CompositeDisposable class to treat many disposables as one. The
+  DisposableContext has now been refactored to make use of this class.
+
+* Created OrderByPriorities extension method on IEnumerable<T>. You can provide
+  one or more predicates that give higher sort priority to the items where the
+  predicate returns true.
+
+* Added ToMaybe<T> extension method that enables easy creation of Maybe<T> from
+  constant values.  This is an alias to the Return method, while allowing it
+  to be used as an extension method.
+
+* Cloneable<T> no longer prevents cloning of types that have IntPtr and UIntPtr
+  fields.
+
+---- Breaking Changes ----
+
+* Exceptions thrown when evaluating the result of a Maybe<T> will now
+  bubble up.  This brings parity between Maybe<T> and IEnumerable<T>'s
+  treatment of exceptions.  A CatchExceptions() operation has been
+  implemented which will catch exceptions from up-stream Maybe<T>
+  operations.
+
+* The Unsafe method on Maybe<T> has been removed. This allowed the
+  construction of Maybe<T> that did not have exception protection.
+  Since exception protection is not needed, this method was remove.
+  Additionaly, other methods use Unsafe because they wanted access
+  to the Exception, HasValue, and Value properties to implement their
+  logic. The Express method now provides this capability.
+
+* The Select operation that takes a Func<T, Maybe<TResult>> has been
+  renamed to SelectMaybe,as it was always an alias of Bind. Additionally,
+  SelectMany (another alias of Bind) has also been implemented in order 
+  to support LINQ comprehension syntax.  Unfortunately, the name SelectMany
+  does not make sense symantically, since there is at most one value in
+  a Maybe<T> and the name SelectMany is heavily influnced by LINQ and
+  IEnumerabe<T>, the List monad.  As a result, Maybe<T>'s SelectMany has
+  the EditorBrowsable attribute applied to it to obscure it from IntelliSense.
+
+* Maybe.Return has been renamed to Maybe.Extract.  Since CoMonads have a
+  "extract" operation that take a CoMonad and extracts a T, it made more
+  sense to call this operation Extract.
+
+* Maybe.Value has been renamed to Maybe.Return.  Since Monads have a "return"
+  operation that takes a T and puts it into the Monad, it made more sense to
+  call this operation Return.
+
+* Many of the OnException overloads have been renamed to SuppressException.  This
+  brings parity with the other OnXXX methods that only have side-effects and
+  do not change the resulting value.
+
+* BaseReadOnlyDictionary no longer allows you to override the IsReadOnly property.
+  This should always return true, and this prevents derived implementation that
+  break this invariant.
+
+* Renamed Zip to ZipAll to prevent naming conflict with existing IEnumerable<T>
+  extension methods.
+
+* Removed ThrowPreservingCallStack Exception extension method, since the 
+  implementation doesn't truly preserve the call stack.  Replaced with the
+  ThrowAsInnerExceptionIfNeeded extension method, which if used against an
+  exception that has already been thrown once, clones the exception, and sets
+  the clone's InnerException to the original before throwing the clone. This
+  allows original call stack to be preserved verbatim (albeit in the InnerException),
+  while not changing the exception type or message that is being rethrown.
+
+* Renamed extension method SynchronizeOn to SynchronizeWith for both Func<...> and 
+  Maybe<T> so that it is not confused which an operation that forces execution to
+  happen on a different thread (similar to how Task<TResult> and IObservable<T>
+  schedulers do).

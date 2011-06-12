@@ -1,0 +1,12 @@
+======================================
+RELEASE NOTES: iSynaptic.Commons.Data
+======================================
+
+
+==== Version 0.2.0.0 ====
+
+Released on: June xx, 2011
+
+---- Notes -----
+
+* Recompiled to use iSynaptic.Commons v0.2.0.0. No breaking changes.

@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>iSynaptic.Commons.Data</id>
-    <version>0.1.0.41</version>
+    <version>0.2.0</version>
     <authors>Jordan Terrell</authors>
     <description>Standard Implementation of Exodata Resolver - Ioc for Data</description>
     <language>en-US</language>
@@ -13,11 +13,12 @@
       <frameworkAssembly assemblyName="System.Core" targetFramework="net40" />
     </frameworkAssemblies>
     <dependencies>
-      <dependency id="iSynaptic.Commons" version="0.1.0.41" />
+      <dependency id="iSynaptic.Commons" version="0.2.0" />
     </dependencies>
   </metadata>
   <files>
     <file src="Binaries\iSynaptic.Commons.Data.dll" target="lib" />
     <file src="Metadata\iSynaptic.Commons.Data.pdb" target="lib" />
+    <file src="iSynaptic.Commons.Data.ReleaseNotes.txt" target="ReleaseNotes.txt" />
   </files>
 </package>

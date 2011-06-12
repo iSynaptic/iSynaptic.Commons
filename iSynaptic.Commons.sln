@@ -7,10 +7,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		CommonAssemblyInfo.cs = CommonAssemblyInfo.cs
 		General.ttinclude = General.ttinclude
+		iSynaptic.Commons.Data.ReleaseNotes.txt = iSynaptic.Commons.Data.ReleaseNotes.txt
 		iSynaptic.Commons.msbuild = iSynaptic.Commons.msbuild
+		iSynaptic.Commons.ReleaseNotes.txt = iSynaptic.Commons.ReleaseNotes.txt
 		LICENSE = LICENSE
 		README = README
-		ReleaseNotes.txt = ReleaseNotes.txt
 		Work Items.txt = Work Items.txt
 	EndProjectSection
 EndProject

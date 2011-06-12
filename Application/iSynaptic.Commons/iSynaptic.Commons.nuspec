@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>iSynaptic.Commons</id>
-    <version>0.1.0.41</version>
+    <version>0.2.0</version>
     <authors>Jordan Terrell</authors>
     <description>Library of common functionality in functional programming style.</description>
     <language>en-US</language>
@@ -18,5 +18,6 @@
   <files>
     <file src="Binaries\iSynaptic.Commons.dll" target="lib" />
     <file src="Metadata\iSynaptic.Commons.pdb" target="lib" />
+    <file src="iSynaptic.Commons.ReleaseNotes.txt" target="ReleaseNotes.txt" />
   </files>
 </package>

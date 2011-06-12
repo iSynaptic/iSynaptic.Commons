@@ -27,12 +27,6 @@
     <PreLayoutOutputFilesTarget Include="MergeILAssembly" />
   </ItemGroup>
 
-  <ItemGroup>
-    <!--ExcludeCoverageReporting Include="Assembly|Namespace|Class">
-            <FilterExpression>{Regular Expression}</FilterExpression>
-        </ExcludeCoverageReporting-->
-  </ItemGroup>
-
   <Target Name="MergeILAssembly">
     <MakeDir Directories="$(BinariesPath)\Temp" />
 
@@ -49,8 +43,11 @@
 
   <Target Name="CorePackage">
     <MakeDir Directories="$(PackagesPath)" />
+
+    <Copy SourceFiles="iSynaptic.Commons.ReleaseNotes.txt" DestinationFolder="$(BaseBuildPath)" />
+    <Copy SourceFiles="iSynaptic.Commons.Data.ReleaseNotes.txt" DestinationFolder="$(BaseBuildPath)" />
     
-    <Exec Command="$(NugetPath)\nuget.exe pack &quot;$(CommonsNuspecFile)&quot; -BasePath &quot;$(RootBuildPath)\$(Configuration)&quot; -OutputDirectory &quot;$(PackagesPath)&quot;" />
-    <Exec Command="$(NugetPath)\nuget.exe pack &quot;$(CommonsDataNuspecFile)&quot; -BasePath &quot;$(RootBuildPath)\$(Configuration)&quot; -OutputDirectory &quot;$(PackagesPath)&quot;" />
+    <Exec Command="$(NugetPath)\nuget.exe pack &quot;$(CommonsNuspecFile)&quot; -BasePath &quot;$(BaseBuildPath)&quot; -OutputDirectory &quot;$(PackagesPath)&quot;" />
+    <Exec Command="$(NugetPath)\nuget.exe pack &quot;$(CommonsDataNuspecFile)&quot; -BasePath &quot;$(BaseBuildPath)&quot; -OutputDirectory &quot;$(PackagesPath)&quot;" />
   </Target>
 </Project>
