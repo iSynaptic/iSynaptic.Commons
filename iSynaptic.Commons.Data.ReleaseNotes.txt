@@ -9,4 +9,9 @@ Released on: June xx, 2011
 
 ---- Notes -----
 
-* Recompiled to use iSynaptic.Commons v0.2.0.0. No breaking changes.
+* No breaking changes.
+
+---- Features ----
+
+* Added IExodataAttribute<TExodata> interface to allow attributes to
+  handle requests for one specifc type.
