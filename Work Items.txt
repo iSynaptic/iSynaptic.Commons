@@ -5,20 +5,20 @@
 - Evaluate possible refactoring of Cloneable<T>/Equatable<T> to see if they could be simplified/generalized...
 - Move to .NET 4.0
     * Replace thread safety in Cloneable<T>/Equatable<T> with Lazy<T>
-- Refactor SimpleScanner to a class that inherits from abstract TextScanner<T>, where T is the Token type
-    * Use regular expressions to build a Table Lexer
+- Create abstract TextScanner<T>, where T is the Token type
+    * Use regular expressions to build a Table Lexer?
         ** Convert multiple regular expressions into a single recognizer state machine
-- Create generic Reflection.Emit Visitor<T> implementation (similar to one used in RegularExpressionPipeline)...
+- Create generic Reflection Visitor<T> implementation (similar to one used in RegularExpressionPipeline)...
 - Add RelativePath extension methods to FileSystemInfo and IEnumerable<FileSystemInfo>...
-- Add overridable OnEnlistment() method to EnlistmentScope class...
-- Investigate how Monads could be encorporated in "PipelineEnumerable" concept
-    * Perhaps change so that it is strictly functional composition (i.e. not require interface)
-- Implement SmartFormat...
+- Implement SmartFormat ( e.g. SmartFormat.Format("{Name}: {Description}", new { Name = "Foo", Description = "Bar" }); )
 - Add support for Dependant Scopes (e.g. System.Transactions.Transaction.DependantClone(...))
+- Add support for Scopes that need to be explicitly passed around
+	* Collapse CompositeDisposable into DisposableContext
 - Change LookAheadValue from class to struct
 - Create JSON LoggerContextSerializer
-- Add ObjectDumper to Serialization namespace + create ObjectDumper LoggerContextSerializer
-- Collapse all Func/Action Curry extension methods into a methods that takes in a delegate that dispatches to underlying delegate
 - Scan types for Command-Query Seperation opportunities
 - Enhance GetDelegate extension method to work with generic methods
 - Make entire library localizable via Exodata
+	* Create tool that generates ExodataDeclarations from resource files
+- Investigate/create ISymbol and ISymbol<T> to capture "declaration" as a general concept
+	* Collapse/refactor IDependencyDeclaration<T> and IExodataDeclaration<T> to use ISymbol<T>
