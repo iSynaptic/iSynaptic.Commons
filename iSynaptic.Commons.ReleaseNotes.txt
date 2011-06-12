@@ -38,6 +38,10 @@ Released on: June xx, 2011
   you to define conditions where an exception should be thrown upon evaluation
   of the Maybe<T>.
 
+* Maybe<T> now has a GetHashCode implementation that takes in an IEqualityComparere<T>
+  implementation.  This brings parity with the Equals methods available on
+  Maybe<T>.
+
 * Support for C# comprehension syntax is now supported for Maybe<T>.  Thanks
   to Brian Beckman for the implementation of SelectMany.
 

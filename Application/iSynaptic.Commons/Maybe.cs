@@ -139,16 +139,20 @@ namespace iSynaptic.Commons
 
         public override int GetHashCode()
         {
+            return GetHashCode(EqualityComparer<T>.Default);
+        }
+
+        public int GetHashCode(IEqualityComparer<T> comparer)
+        {
+            Guard.NotNull(comparer, "comparer");
+
             if (Exception != null)
                 return Exception.GetHashCode();
 
             if (HasValue != true)
                 return -1;
 
-            if (Value == null)
-                return 0;
-
-            return Value.GetHashCode();
+            return comparer.GetHashCode(Value);
         }
 
         public static bool operator ==(Maybe<T> left, Maybe<T> right)
