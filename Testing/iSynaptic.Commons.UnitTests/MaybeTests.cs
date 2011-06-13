@@ -127,6 +127,13 @@ namespace iSynaptic.Commons
 
             for (int i = 0; i < 10; i++)
                 Assert.AreEqual(1, maybe.Value);
+
+            count = 0;
+            maybe = new Maybe<int>(funcOfInt)
+                .Select(x => ++count);
+
+            for (int i = 0; i < 10; i++)
+                Assert.AreEqual(2, maybe.Value);
         }
 
         [Test]
