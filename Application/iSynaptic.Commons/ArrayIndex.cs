@@ -8,10 +8,8 @@ namespace iSynaptic.Commons
 
         public ArrayIndex(Array target)
         {
-            Guard.NotNull(target, "target");
-
+            _Target = Guard.NotNull(target, "target");
             Index = new int[target.Rank];
-            _Target = target;
         }
 
         public void Increment()
