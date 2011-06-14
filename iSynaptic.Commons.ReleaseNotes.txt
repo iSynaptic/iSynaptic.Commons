@@ -3,17 +3,13 @@ RELEASE NOTES: iSynaptic.Commons
 ======================================
 
 
-==== Version 0.2.0.0 ====
-
-Released on: June xx, 2011
-
----- Notes -----
+==== v0.2.0 (June xx, 2011) ====
 
 * This release reflects some collaboration with Brian Beckman and research
   into CoMonads, and as a result Maybe<T> and some supporting operations
   have gone through significant changes.
   
-* The names of many of the Maybe<T> operators has been changed.  See breaking
+* The names of many of the Maybe<T> operators have been changed.  See breaking
   changes below.
 
 * The Maybe<T> Extend method may be removed since Maybe<T> may not be its
@@ -21,17 +17,17 @@ Released on: June xx, 2011
 
 * Removed the internal MaybeResult struct that Maybe<T> used to represent
   the evaluated result of Maybe<T>.  Since Maybe<T> had a superset of
-  MaybeResult's public interface, Maybe<T> was refactored to store the
-  data that MaybeResult originally stored.
+  MaybeResult's public interface, Maybe<T> was refactored to directly store
+  the data that MaybeResult originally stored.
 
 ---- Features ----
 
 * Express method on Maybe<T> allow the development of Maybe<T> operators
   that need full visibility into the Maybe<T> struct.  Express adds lazy
-  evaluzation semantics and memoization.  All other operations that return
+  evaluation semantics and memoization.  All other operations that return
   a Maybe<T> are written either directly or indirectly using Express.
 
-* Maybe<T> now has a constructor that takes a Func<Maybe<T>> to allow this
+* Maybe<T> now has a constructor that takes a Func<Maybe<T>> to allow the
   function to be lazily evaluated and viewed as a Maybe<T>.
 
 * Maybe<T> now has a number of extension methods named ThrowOn that allow
@@ -43,7 +39,7 @@ Released on: June xx, 2011
   Maybe<T>.
 
 * Support for C# comprehension syntax is now supported for Maybe<T>.  Thanks
-  to Brian Beckman for the implementation of SelectMany.
+  to Brian Beckman for the suggestion/reference implementation of SelectMany.
 
 * Created CompositeDisposable class to treat many disposables as one. The
   DisposableContext has now been refactored to make use of this class.
@@ -52,7 +48,7 @@ Released on: June xx, 2011
   one or more predicates that give higher sort priority to the items where the
   predicate returns true.
 
-* Added ToMaybe<T> extension method that enables easy creation of Maybe<T> from
+* Added ToMaybe() extension method that enables easy creation of Maybe<T> from
   constant values.  This is an alias to the Return method, while allowing it
   to be used as an extension method.
 
@@ -69,17 +65,17 @@ Released on: June xx, 2011
 
 * The Unsafe method on Maybe<T> has been removed. This allowed the
   construction of Maybe<T> that did not have exception protection.
-  Since exception protection is not needed, this method was remove.
-  Additionaly, other methods use Unsafe because they wanted access
+  Since exception protection is not needed, this method was removed.
+  Additionally, other methods use Unsafe because they wanted access
   to the Exception, HasValue, and Value properties to implement their
   logic. The Express method now provides this capability.
 
 * The Select operation that takes a Func<T, Maybe<TResult>> has been
-  renamed to SelectMaybe,as it was always an alias of Bind. Additionally,
+  renamed to SelectMaybe, as it was always an alias of Bind. Additionally,
   SelectMany (another alias of Bind) has also been implemented in order 
   to support LINQ comprehension syntax.  Unfortunately, the name SelectMany
-  does not make sense symantically, since there is at most one value in
-  a Maybe<T> and the name SelectMany is heavily influnced by LINQ and
+  does not make sense semantically, since there is at most one value in
+  a Maybe<T> and the name SelectMany is heavily influenced by LINQ and
   IEnumerabe<T>, the List monad.  As a result, Maybe<T>'s SelectMany has
   the EditorBrowsable attribute applied to it to obscure it from IntelliSense.
 
@@ -96,8 +92,8 @@ Released on: June xx, 2011
   do not change the resulting value.
 
 * BaseReadOnlyDictionary no longer allows you to override the IsReadOnly property.
-  This should always return true, and this prevents derived implementation that
-  break this invariant.
+  This should always return true, and this prevents derived implementations from
+  breaking this invariant.
 
 * Renamed Zip to ZipAll to prevent naming conflict with existing IEnumerable<T>
   extension methods.
