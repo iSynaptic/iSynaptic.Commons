@@ -671,13 +671,13 @@ namespace iSynaptic.Commons
             return Value(self)
                 .Select(x =>
                 {
-                    if (self.Exception != null)
-                        return new Maybe<TResult>(self.Exception);
+                    if (x.Exception != null)
+                        return new Maybe<TResult>(x.Exception);
 
-                    if (self.HasValue != true)
+                    if (x.HasValue != true)
                         return Maybe<TResult>.NoValue;
 
-                    return (TResult) self.Value;
+                    return (TResult) x.Value;
                 });
         }
 
@@ -686,8 +686,19 @@ namespace iSynaptic.Commons
             Guard.NotNull(self, "self");
 
             return Value(self)
-                .Where(x => x.HasValue && x.Value is TResult)
-                .Cast<TResult>();
+                .Select(x =>
+                {
+                    if (x.Exception != null)
+                        return new Maybe<TResult>(x.Exception);
+
+                    if (x.HasValue != true)
+                        return Maybe<TResult>.NoValue;
+
+                    if(x.Value is TResult)
+                        return (TResult)x.Value;
+
+                    return Maybe<TResult>.NoValue;
+                });
         }
 
         public static T? ToNullable<T>(this Maybe<T> self) where T : struct
