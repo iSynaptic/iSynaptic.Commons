@@ -726,8 +726,13 @@ namespace iSynaptic.Commons
         {
             Guard.NotNull(lockObject, "lockObject");
 
-            Func<Maybe<T>> synchronizedComputation = () => self.Run();
-            synchronizedComputation = synchronizedComputation.SynchronizeWith(() => true, lockObject);
+            Func<Maybe<T>> synchronizedComputation = () =>
+            {
+                lock (lockObject)
+                {
+                    return self.Run();
+                }
+            };
 
             return new Maybe<T>(synchronizedComputation);
         }
