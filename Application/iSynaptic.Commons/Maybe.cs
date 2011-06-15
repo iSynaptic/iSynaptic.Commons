@@ -700,6 +700,9 @@ namespace iSynaptic.Commons
 
         public static Maybe<T> Run<T>(this Maybe<T> self, Action<T> action = null)
         {
+            // Calling HasValue forces evaluation of the Maybe<T>.
+            // Returning self in either code path allows additional
+            // operators to be invoked that are lazily evaluated.
             return self
                 .When(x => action != null, x => self.OnValue(action))
                 .HasValue ? self : self;
@@ -710,11 +713,9 @@ namespace iSynaptic.Commons
             var task = Task.Factory.StartNew(() => self.Run(action), cancellationToken, taskCreationOptions,
                                              taskScheduler ?? TaskScheduler.Current);
 
-            return self.Express(x =>
-            {
-                task.Wait(cancellationToken);
-                return task.IsCanceled ? Maybe<T>.NoValue : task.Result;
-            });
+            return Return(task)
+                .OnValue(t => t.Wait(cancellationToken))
+                .SelectMaybe(t => t.IsCanceled ? Maybe<T>.NoValue : t.Result);
         }
 
         public static Maybe<T> Synchronize<T>(this Maybe<T> self)
