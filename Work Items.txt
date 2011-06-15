@@ -4,6 +4,7 @@
 - Ensure thread safety in Cloneable<T>/Equatable<T>...
 - Evaluate possible refactoring of Cloneable<T>/Equatable<T> to see if they could be simplified/generalized...
 - Move to .NET 4.0
+	* Evaluate using Contracts class (augment or replace Guard class)
     * Replace thread safety in Cloneable<T>/Equatable<T> with Lazy<T>
 - Create abstract TextScanner<T>, where T is the Token type
     * Use regular expressions to build a Table Lexer?
