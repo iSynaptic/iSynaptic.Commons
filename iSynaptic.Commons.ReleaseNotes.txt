@@ -59,7 +59,7 @@ RELEASE NOTES: iSynaptic.Commons
 
 * Exceptions thrown when evaluating the result of a Maybe<T> will now
   bubble up.  This brings parity between Maybe<T> and IEnumerable<T>'s
-  treatment of exceptions.  A CatchExceptions() operation has been
+  treatment of exceptions.  A Catch() operation has been
   implemented which will catch exceptions from up-stream Maybe<T>
   operations.
 
