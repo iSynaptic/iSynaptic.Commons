@@ -734,11 +734,11 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void CatchExceptions_ContainsThrownExceptions()
+        public void Catch_ContainsThrownExceptions()
         {
             var value = Maybe<int>.Default
                 .Select(x => 7/x)
-                .CatchExceptions()
+                .Catch()
                 .Run();
 
             Assert.IsNotNull(value.Exception);

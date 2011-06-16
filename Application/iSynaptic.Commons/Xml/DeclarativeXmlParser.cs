@@ -231,7 +231,7 @@ namespace iSynaptic.Commons.Xml
                 {
                     _Selector(context)
                         .OnValue(x => _MatchAction(x))
-                        .CatchExceptions()
+                        .Catch()
                         .OnException(x => context.Errors.Add(new ParseError(string.Format("Unable to interpet data; exception occured: {0}", x.Message), context.Token)))
                         .Run();
                 }

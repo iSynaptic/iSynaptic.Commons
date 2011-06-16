@@ -487,6 +487,42 @@ namespace iSynaptic.Commons
 
         #endregion
 
+        #region Catch Operator
+
+        public static Maybe<T> Catch<T>(this Maybe<T> self)
+        {
+            return self.Catch(ex => true);
+        }
+
+        public static Maybe<T> Catch<T>(this Maybe<T> self, Func<Exception, bool> exceptionPredicate)
+        {
+            return self.Catch(exceptionPredicate, ex => new Maybe<T>(ex));
+        }
+
+        public static Maybe<T> Catch<T>(this Maybe<T> self, Func<Exception, bool> exceptionPredicate, Func<Exception, Maybe<T>> valueSelector)
+        {
+            Guard.NotNull(exceptionPredicate, "exceptionPredicate");
+            Guard.NotNull(valueSelector, "valueSelector");
+
+            return self.Express(x =>
+            {
+                try
+                {
+                    return x.Run();
+                }
+                catch (Exception ex)
+                {
+                    if (exceptionPredicate(ex))
+                        return valueSelector(ex);
+
+                    throw;
+                }
+            });
+        }
+
+
+        #endregion
+
         #region SuppressException Operator
 
         public static Maybe<T> SuppressException<T>(this Maybe<T> self, T value)
@@ -660,21 +696,6 @@ namespace iSynaptic.Commons
                     handler(x.Exception);
 
                 return x;
-            });
-        }
-
-        public static Maybe<T> CatchExceptions<T>(this Maybe<T> self)
-        {
-            return self.Express(x =>
-            {
-                try
-                {
-                    return x.Run();
-                }
-                catch (Exception ex)
-                {
-                    return new Maybe<T>(ex);
-                }
             });
         }
 
