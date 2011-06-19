@@ -62,7 +62,7 @@ namespace iSynaptic.Commons
 
         public Maybe<T> TryGetTarget()
         {
-            return Maybe.Return(() => Target)
+            return Maybe.Generate(() => Target)
                 .Where(x => IsAlive);
         }
 

@@ -239,14 +239,26 @@ namespace iSynaptic.Commons
 
     public static class Maybe
     {
-        #region Return Operator
-
         public static Maybe<T> Return<T>(T value)
         {
             return new Maybe<T>(value);
         }
 
-        public static Maybe<T> Return<T>(Func<T> computation)
+        public static Maybe<T> Throw<T>(Exception exception)
+        {
+            Guard.NotNull(exception, "exception");
+            return new Maybe<T>((Func<T>)(() => { throw exception; }));
+        }
+
+        #region Generate Operator
+
+        public static Maybe<T> Generate<T>(Func<T> computation)
+        {
+            Guard.NotNull(computation, "computation");
+            return new Maybe<T>(computation);
+        }
+
+        public static Maybe<T> Generate<T>(Func<Maybe<T>> computation)
         {
             Guard.NotNull(computation, "computation");
             return new Maybe<T>(computation);
@@ -263,7 +275,7 @@ namespace iSynaptic.Commons
 
         public static Maybe<T> NotNull<T>(Func<T> computation) where T : class
         {
-            return Return(computation).NotNull();
+            return Generate(computation).NotNull();
         }
 
         public static Maybe<T> NotNull<T>(T? value) where T : struct
@@ -273,7 +285,7 @@ namespace iSynaptic.Commons
 
         public static Maybe<T> NotNull<T>(Func<T?> computation) where T : struct
         {
-            return Return(computation).NotNull();
+            return Generate(computation).NotNull();
         }
 
         public static Maybe<T> NotNull<T>(this Maybe<T> self) where T : class
@@ -301,14 +313,6 @@ namespace iSynaptic.Commons
         #endregion
 
         #region Using Operator
-
-        public static Maybe<T> Using<T, TResource>(TResource resource, Func<TResource, Maybe<T>> selector) where TResource : IDisposable
-        {
-            Guard.NotNull(resource, "resource");
-            Guard.NotNull(selector, "selector");
-
-            return Using(() => resource, selector);
-        }
 
         public static Maybe<T> Using<T, TResource>(Func<TResource> resourceFactory, Func<TResource, Maybe<T>> selector) where TResource : IDisposable
         {
@@ -662,6 +666,23 @@ namespace iSynaptic.Commons
         {
             Guard.NotNull(selector, "selector");
             return self.Bind(selector);
+        }
+
+        public static Maybe<T> Finally<T>(this Maybe<T> self, Action finallyAction)
+        {
+            Guard.NotNull(finallyAction, "finallyAction");
+
+            return self.Express(x =>
+            {
+                try
+                {
+                    return self.Run();
+                }
+                finally
+                {
+                    finallyAction();
+                }
+            });
         }
 
         public static Maybe<T> OnValue<T>(this Maybe<T> self, Action<T> action)
