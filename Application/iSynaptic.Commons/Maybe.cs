@@ -239,26 +239,15 @@ namespace iSynaptic.Commons
 
     public static class Maybe
     {
-        public static Maybe<T> Return<T>(T value)
-        {
-            return new Maybe<T>(value);
-        }
+        #region Defer Operator
 
-        public static Maybe<T> Throw<T>(Exception exception)
-        {
-            Guard.NotNull(exception, "exception");
-            return new Maybe<T>((Func<T>)(() => { throw exception; }));
-        }
-
-        #region Generate Operator
-
-        public static Maybe<T> Generate<T>(Func<T> computation)
+        public static Maybe<T> Defer<T>(Func<T> computation)
         {
             Guard.NotNull(computation, "computation");
             return new Maybe<T>(computation);
         }
 
-        public static Maybe<T> Generate<T>(Func<Maybe<T>> computation)
+        public static Maybe<T> Defer<T>(Func<Maybe<T>> computation)
         {
             Guard.NotNull(computation, "computation");
             return new Maybe<T>(computation);
@@ -275,7 +264,7 @@ namespace iSynaptic.Commons
 
         public static Maybe<T> NotNull<T>(Func<T> computation) where T : class
         {
-            return Generate(computation).NotNull();
+            return Defer(computation).NotNull();
         }
 
         public static Maybe<T> NotNull<T>(T? value) where T : struct
@@ -285,7 +274,7 @@ namespace iSynaptic.Commons
 
         public static Maybe<T> NotNull<T>(Func<T?> computation) where T : struct
         {
-            return Generate(computation).NotNull();
+            return Defer(computation).NotNull();
         }
 
         public static Maybe<T> NotNull<T>(this Maybe<T> self) where T : class
@@ -660,6 +649,17 @@ namespace iSynaptic.Commons
 
         #endregion
 
+        public static Maybe<T> Return<T>(T value)
+        {
+            return new Maybe<T>(value);
+        }
+
+        public static Maybe<T> Throw<T>(Exception exception)
+        {
+            Guard.NotNull(exception, "exception");
+            return new Maybe<T>((Func<T>)(() => { throw exception; }));
+        }
+
         // This is an alias of Bind and SelectMany.  Since SelectMany doesn't make sense (because there is at most one value),
         // the name SelectMaybe communicates better than Bind or SelectMany the semantics of the function.
         public static Maybe<TResult> SelectMaybe<T, TResult>(this Maybe<T> self, Func<T, Maybe<TResult>> selector)
@@ -828,6 +828,12 @@ namespace iSynaptic.Commons
         {
             return Return(value);
         }
+        
+        public static IEnumerable<T> ToEnumerable<T>(this Maybe<T> self)
+        {
+            if(self.HasValue)
+                yield return self.Value;
+        }
 
         public static Maybe<T> AsMaybe<T>(this IMaybe<T> value)
         {
@@ -840,5 +846,6 @@ namespace iSynaptic.Commons
             Guard.NotNull(value, "value");
             return value.Cast<object>();
         }
+
     }
 }

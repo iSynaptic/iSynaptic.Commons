@@ -562,7 +562,7 @@ namespace iSynaptic.Commons
         public void Return_DefersExecutionUntilEvaluated()
         {
             bool executed = false;
-            var value = Maybe.Generate(() => { executed = true; return 42; });
+            var value = Maybe.Defer(() => { executed = true; return 42; });
 
             Assert.IsFalse(executed);
 
@@ -598,7 +598,7 @@ namespace iSynaptic.Commons
         public void Select_DefersExecutionUntilEvaluated()
         {
             bool executed = false;
-            var value = Maybe.Generate(() => { executed = true; return "42"; })
+            var value = Maybe.Defer(() => { executed = true; return "42"; })
                 .Select(x => x.Length);
 
             Assert.IsFalse(executed);
@@ -611,7 +611,7 @@ namespace iSynaptic.Commons
         public void Select_WhenSelectorReturnsMaybe_DefersExecutionUntilEvaluated()
         {
             bool executed = false;
-            Maybe<int> value = Maybe.Generate(() => { executed = true; return "42"; })
+            Maybe<int> value = Maybe.Defer(() => { executed = true; return "42"; })
                 .SelectMaybe(x => Maybe<int>.NoValue);
 
             Assert.IsFalse(executed);
@@ -624,7 +624,7 @@ namespace iSynaptic.Commons
         public void Synchronize_PreventsMultipleEvaluation()
         {
             int count = 0;
-            var value = Maybe.Generate(() => { count++; Thread.Sleep(250); return "42"; })
+            var value = Maybe.Defer(() => { count++; Thread.Sleep(250); return "42"; })
                 .Synchronize();
 
             string results = null;
@@ -642,7 +642,7 @@ namespace iSynaptic.Commons
         public void Where_DefersExecutionUntilEvaluated()
         {
             bool executed = false;
-            var value = Maybe.Generate(() => { executed = true; return "42"; })
+            var value = Maybe.Defer(() => { executed = true; return "42"; })
                 .Where(x => x.Length == 2);
 
             Assert.IsFalse(executed);
@@ -655,7 +655,7 @@ namespace iSynaptic.Commons
         public void Unless_DefersExecutionUntilEvaluated()
         {
             bool executed = false;
-            var value = Maybe.Generate(() => { executed = true; return "42"; })
+            var value = Maybe.Defer(() => { executed = true; return "42"; })
                 .Unless(x => x.Length == 2);
 
             Assert.IsFalse(executed);
@@ -668,7 +668,7 @@ namespace iSynaptic.Commons
         public void OnValue_DefersExecutionUntilEvaluated()
         {
             bool executed = false;
-            var value = Maybe.Generate(() => { executed = true; return "42"; })
+            var value = Maybe.Defer(() => { executed = true; return "42"; })
                 .OnValue(x => executed = true);
 
             Assert.IsFalse(executed);
@@ -691,7 +691,7 @@ namespace iSynaptic.Commons
         public void SuppressException_DefersExecutionUntilEvaluated()
         {
             bool executed = false;
-            var value = Maybe.Generate(() => { executed = true; return "42"; })
+            var value = Maybe.Defer(() => { executed = true; return "42"; })
                 .OnValue(x => executed = true)
                 .SuppressException("Hello");
 
@@ -705,7 +705,7 @@ namespace iSynaptic.Commons
         public void ThrowOnException_DefersExecutionUntilEvaluated()
         {
             bool executed = false;
-            var value = Maybe.Generate(() => { executed = true; return new Maybe<int>(new InvalidOperationException()); })
+            var value = Maybe.Defer(() => { executed = true; return new Maybe<int>(new InvalidOperationException()); })
                 .ThrowOnException();
 
             Assert.IsFalse(executed);
@@ -718,7 +718,7 @@ namespace iSynaptic.Commons
         public void ThrowOnNoValue_DefersExecutionUntilEvaluated()
         {
             bool executed = false;
-            Maybe<int> value = Maybe.Generate(() => { executed = true; return Maybe<int>.NoValue; })
+            Maybe<int> value = Maybe.Defer(() => { executed = true; return Maybe<int>.NoValue; })
                 .ThrowOnNoValue(new InvalidOperationException());
 
             Assert.IsFalse(executed);
@@ -731,7 +731,7 @@ namespace iSynaptic.Commons
         public void Synchronize_DeferesExecutionUntilEvaluated()
         {
             bool executed = false;
-            var value = Maybe.Generate(() => { executed = true; return 42; })
+            var value = Maybe.Defer(() => { executed = true; return 42; })
                 .Synchronize();
 
             Assert.IsFalse(executed);
@@ -782,7 +782,7 @@ namespace iSynaptic.Commons
             ICollection<string> foo = new List<string>();
 
             bool executed = false;
-            var value = Maybe.Generate<object>(() => { executed = true; return foo; })
+            var value = Maybe.Defer(() => { executed = true; return foo; })
                 .Cast<ICollection<string>>();
 
             Assert.IsFalse(executed);
@@ -854,7 +854,7 @@ namespace iSynaptic.Commons
             bool executed = false;
 
             var value = new Maybe<int>(new InvalidOperationException())
-                .Or(Maybe.Generate(() => { executed = true; return 42; }));
+                .Or(Maybe.Defer(() => { executed = true; return 42; }));
 
             Assert.Throws<InvalidOperationException>(() => value.Extract());
             Assert.IsFalse(executed);
@@ -912,7 +912,7 @@ namespace iSynaptic.Commons
             bool executed = false;
 
             var value = new Maybe<int>(new InvalidOperationException())
-                .Join(Maybe.Generate(() => { executed = true; return 42; }));
+                .Join(Maybe.Defer(() => { executed = true; return 42; }));
 
             Assert.Throws<InvalidOperationException>(() => value.Extract());
             Assert.IsFalse(executed);
