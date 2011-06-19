@@ -741,16 +741,16 @@ namespace iSynaptic.Commons
 
         public static Maybe<T> Synchronize<T>(this Maybe<T> self)
         {
-            return SynchronizeWith(self, new object());
+            return Synchronize(self, new object());
         }
 
-        public static Maybe<T> SynchronizeWith<T>(this Maybe<T> self, object lockObject)
+        public static Maybe<T> Synchronize<T>(this Maybe<T> self, object gate)
         {
-            Guard.NotNull(lockObject, "lockObject");
+            Guard.NotNull(gate, "gate");
 
             Func<Maybe<T>> synchronizedComputation = () =>
             {
-                lock (lockObject)
+                lock (gate)
                 {
                     return self.Run();
                 }
