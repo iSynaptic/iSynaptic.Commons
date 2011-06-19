@@ -1,4 +1,5 @@
 - Add Xml comments to public API surface...
+- Scan thru Reactive/Interactive Extensions for potential new/renamed Maybe<T> operators...
 - Allow Exodata bindings to bind to types of declarations, not just instances...
 - Implement Equatable<T>, using same approach as Cloneable<T>...
 - Enhance Cloneable<T> to detect if a struct is a cloneable primative (all fields recursively are cloneable primatives)...
@@ -14,13 +15,16 @@
 - Add RelativePath extension methods to FileSystemInfo and IEnumerable<FileSystemInfo>...
 - Implement SmartFormat ( e.g. SmartFormat.Format("{Name}: {Description}", new { Name = "Foo", Description = "Bar" }); )
 - Add support for Dependant Scopes (e.g. System.Transactions.Transaction.DependantClone(...))
-- Add support for Scopes that need to be explicitly passed around
+- Add support for Scopes that need to be explicitly passed around (e.g. ScopeBounds.Explicit)
+	* Create Push() method to create child scope
 	* Collapse CompositeDisposable into DisposableContext
 - Change LookAheadValue from class to struct
 - Create JSON LoggerContextSerializer
-- Scan types for Command-Query Seperation opportunities
 - Enhance GetDelegate extension method to work with generic methods
 - Make entire library localizable via Exodata
 	* Create tool that generates ExodataDeclarations from resource files
+	* Create seperate DependencyDeclaration (symbol) for retreiving localization ExodataResolver
 - Investigate/create ISymbol and ISymbol<T> to capture "declaration" as a general concept
 	* Collapse/refactor IDependencyDeclaration<T> and IExodataDeclaration<T> to use ISymbol<T>
+	* Create simple SymbolTable scope that uses symbols
+- Scan types for Command-Query Seperation opportunities
