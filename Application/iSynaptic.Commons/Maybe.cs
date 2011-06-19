@@ -807,5 +807,17 @@ namespace iSynaptic.Commons
         {
             return Return(value);
         }
+
+        public static Maybe<T> AsMaybe<T>(this IMaybe<T> value)
+        {
+            Guard.NotNull(value, "value");
+            return value.Cast<T>();
+        }
+
+        public static Maybe<object> AsMaybe(this IMaybe value)
+        {
+            Guard.NotNull(value, "value");
+            return value.Cast<object>();
+        }
     }
 }
