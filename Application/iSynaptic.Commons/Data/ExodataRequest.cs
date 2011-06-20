@@ -7,6 +7,14 @@ using System.Text;
 
 namespace iSynaptic.Commons.Data
 {
+    public static class ExodataRequest
+    {
+        public static ExodataRequest<TExodata, TContext, TSubject> Create<TExodata, TContext, TSubject>(IExodataDeclaration<TExodata> declaration, IMaybe<TContext> context, IMaybe<TSubject> subject, MemberInfo member)
+        {
+            return new ExodataRequest<TExodata, TContext, TSubject>(declaration, context, subject, member);
+        }
+    }
+
     public class ExodataRequest<TExodata, TContext, TSubject> : IExodataRequest<TExodata, TContext, TSubject>, IEquatable<IExodataRequest<TExodata, TContext, TSubject>>
     {
         public ExodataRequest(IExodataDeclaration<TExodata> declaration, IMaybe<TContext> context, IMaybe<TSubject> subject, MemberInfo member)

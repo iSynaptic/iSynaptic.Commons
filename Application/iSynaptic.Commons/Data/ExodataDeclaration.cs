@@ -87,18 +87,10 @@ namespace iSynaptic.Commons.Data
 
         public TExodata Resolve<TContext, TSubject>(Maybe<TContext> context, Maybe<TSubject> subject, MemberInfo member)
         {
-            var request = new ExodataRequest<TExodata, TContext, TSubject>(this, context, subject, member)
-                .ToMaybe();
-
-            var resolvedValue = request
-                .SelectMaybe(TryResolve)
-                .OnValue(x => OnValidateValue(x, "bound"));
-
-            var defaultValue = request
-                .Select(GetDefault)
-                .OnValue(x => OnValidateValue(x, "default"));
-
-            return resolvedValue.Or(defaultValue)
+            return ExodataRequest.Create(this, context, subject, member)
+                .ToMaybe()
+                .Express(request => request.SelectMaybe(TryResolve).OnValue(x => OnValidateValue(x, "bound"))
+                                     .Or(request.Select(GetDefault).OnValue(x => OnValidateValue(x, "default"))))
                 .Extract();
         }
 
