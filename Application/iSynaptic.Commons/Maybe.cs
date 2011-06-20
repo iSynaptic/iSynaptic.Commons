@@ -660,6 +660,17 @@ namespace iSynaptic.Commons
             return new Maybe<T>((Func<T>)(() => { throw exception; }));
         }
 
+        public static Maybe<T> If<T>(bool predicate, Maybe<T> thenValue, Maybe<T> elseValue)
+        {
+            return If(() => predicate, thenValue, elseValue);
+        }
+
+        public static Maybe<T> If<T>(Func<bool> predicate, Maybe<T> thenValue, Maybe<T> elseValue)
+        {
+            Guard.NotNull(predicate, "predicate");
+            return Defer(() => predicate() ? thenValue : elseValue);
+        }
+
         // This is an alias of Bind and SelectMany.  Since SelectMany doesn't make sense (because there is at most one value),
         // the name SelectMaybe communicates better than Bind or SelectMany the semantics of the function.
         public static Maybe<TResult> SelectMaybe<T, TResult>(this Maybe<T> self, Func<T, Maybe<TResult>> selector)
@@ -676,7 +687,7 @@ namespace iSynaptic.Commons
             {
                 try
                 {
-                    return self.Run();
+                    return x.Run();
                 }
                 finally
                 {
@@ -846,6 +857,5 @@ namespace iSynaptic.Commons
             Guard.NotNull(value, "value");
             return value.Cast<object>();
         }
-
     }
 }
