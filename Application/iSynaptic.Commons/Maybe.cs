@@ -516,19 +516,24 @@ namespace iSynaptic.Commons
 
         #endregion
 
-        #region SuppressException Operator
+        #region Suppress Operator
+
+        public static Maybe<T> SuppressException<T>(this Maybe<T> self)
+        {
+            return self.Suppress(ex => Maybe<T>.NoValue);
+        }
 
         public static Maybe<T> SuppressException<T>(this Maybe<T> self, T value)
         {
-            return self.SuppressException(ex => value);
+            return self.Suppress(ex => value);
         }
 
-        public static Maybe<T> SuppressException<T>(this Maybe<T> self, Func<Exception, T> valueFactory)
+        public static Maybe<T> Suppress<T>(this Maybe<T> self, Func<Exception, T> valueFactory)
         {
-            return self.SuppressException(ex => valueFactory(ex).ToMaybe());
+            return self.Suppress(ex => valueFactory(ex).ToMaybe());
         }
 
-        public static Maybe<T> SuppressException<T>(this Maybe<T> self, Func<Exception, Maybe<T>> handler)
+        public static Maybe<T> Suppress<T>(this Maybe<T> self, Func<Exception, Maybe<T>> handler)
         {
             Guard.NotNull(handler, "handler");
             return self.Express(x => x.Exception != null ? handler(x.Exception) : x);
