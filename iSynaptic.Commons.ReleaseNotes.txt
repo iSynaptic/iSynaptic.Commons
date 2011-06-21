@@ -12,9 +12,6 @@ RELEASE NOTES: iSynaptic.Commons
 * The names of many of the Maybe<T> operators have been changed.  See breaking
   changes below.
 
-* The Maybe<T> Extend method may be removed since Maybe<T> may not be its
-  own CoMonad.
-
 * Removed the internal MaybeResult struct that Maybe<T> used to represent
   the evaluated result of Maybe<T>.  Since Maybe<T> had a superset of
   MaybeResult's public interface, Maybe<T> was refactored to directly store
@@ -87,7 +84,7 @@ RELEASE NOTES: iSynaptic.Commons
   operation that takes a T and puts it into the Monad, it made more sense to
   call this operation Return.
 
-* Many of the OnException overloads have been renamed to SuppressException.  This
+* Many of the OnException overloads have been renamed to Suppress.  This
   brings parity with the other OnXXX methods that only have side-effects and
   do not change the resulting value.
 

@@ -98,7 +98,7 @@ namespace iSynaptic.Commons.Data
         {
             return Maybe
                 .NotNull(ExodataResolver)
-                .Or(Ioc.TryResolve<IExodataResolver>)
+                .Or(Maybe.Defer(Ioc.TryResolve<IExodataResolver>))
                 .SelectMaybe(x => x.TryResolve(request));
         }
 
