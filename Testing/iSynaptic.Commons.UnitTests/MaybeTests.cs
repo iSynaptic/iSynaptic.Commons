@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using Rhino.Mocks;
 
 namespace iSynaptic.Commons
 {
@@ -478,6 +479,75 @@ namespace iSynaptic.Commons
         }
 
         [Test]
+        public void OnNoValue_CallsActionIfHasValueIsFalse()
+        {
+            bool didExecute = false;
+
+            var value = "42".ToMaybe()
+                .OnNoValue(() => didExecute = true);
+
+            Assert.IsTrue(value.HasValue);
+            Assert.AreEqual("42", value.Value);
+            Assert.IsFalse(didExecute);
+
+            value = Maybe<string>.NoValue
+                .OnNoValue(() => didExecute = true);
+
+            Assert.IsFalse(value.HasValue);
+            Assert.IsTrue(didExecute);
+        }
+
+        [Test]
+        public void OnException_ExecutesActionOnThrownException()
+        {
+            bool executed = false;
+
+            var value = 0.ToMaybe()
+                .Select(x => 7/x)
+                .OnException(x => executed = true);
+
+            Assert.Throws<DivideByZeroException>(() => value.Extract());
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void OnException_ExecutesActionOnContainedException()
+        {
+            bool executed = false;
+
+            var value = new Maybe<int>(new InvalidOperationException())
+            .OnException(x => executed = true)
+                .Run();
+
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void OnException_OnThrownException_DoesNotExecuteHandlerAgainForExceptionCausedByHandler()
+        {
+            int count = 0;
+
+            var value = 0.ToMaybe()
+                .Select(x => 7 / x)
+                .OnException(x => { count++; throw new NullReferenceException(); });
+
+            var exception = Assert.Throws<NullReferenceException>(() => value.Extract());
+            Assert.AreEqual(1, count);
+        }
+
+        [Test]
+        public void OnException_OnContainedException_DoesNotExecuteHandlerAgainForExceptionCausedByHandler()
+        {
+            int count = 0;
+
+            var value = new Maybe<int>(new InvalidOperationException())
+                .OnException(x => { count++; throw new NullReferenceException(); });
+
+            var exception = Assert.Throws<NullReferenceException>(() => value.Extract());
+            Assert.AreEqual(1, count);
+        }
+
+        [Test]
         public void Assign_AssignsValueToReferenceIfHasValue()
         {
             string rawValue = "Hello World!";
@@ -815,6 +885,16 @@ namespace iSynaptic.Commons
         }
 
         [Test]
+        public void Catch_DoesntCatchIfPredicateReturnsFalse()
+        {
+            var value = Maybe<int>.Default
+                .Select(x => 7/x)
+                .Catch(x => false);
+
+            Assert.Throws<DivideByZeroException>(() => value.Run());
+        }
+
+        [Test]
         public void Cast_ReturnsCastedType()
         {
             object foo = new List<string>();
@@ -829,22 +909,98 @@ namespace iSynaptic.Commons
         [Test]
         public void Cast_ThrowsException_WhenCastIsNotPossible()
         {
-            ICollection<string> foo = new List<string>();
+            object foo = new List<string>();
 
-            var value = Maybe.Return<object>(foo)
+            var value = Maybe.Return(foo)
                 .Cast<DateTime>();
 
             Assert.Throws<InvalidCastException>(() => value.Extract());
         }
 
         [Test]
+        public void Cast_ThrowsException_PropigatesExistingException()
+        {
+            object foo = new List<string>();
+
+            var value = new Maybe<List<string>>(new InvalidOperationException())
+                .Cast<DateTime>();
+
+            Assert.Throws<InvalidOperationException>(() => value.Extract());
+        }
+
+        [Test]
+        public void Cast_PropigatesNoValue()
+        {
+            var value = Maybe<ICollection<string>>.NoValue
+                .Cast<DateTime>();
+
+            Assert.IsFalse(value.HasValue);
+        }
+
+        [Test]
         public void Cast_DeferesExecutionUntilEvaluated()
         {
-            ICollection<string> foo = new List<string>();
+            object foo = new List<string>();
 
             bool executed = false;
             var value = Maybe.Defer(() => { executed = true; return foo; })
                 .Cast<ICollection<string>>();
+
+            Assert.IsFalse(executed);
+
+            Assert.IsTrue(ReferenceEquals(foo, value.Value));
+            Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void OfType_ReturnsValueAsType()
+        {
+            object foo = new List<string>();
+
+            ICollection<string> value = Maybe.Return(foo)
+                .OfType<ICollection<string>>()
+                .Value;
+
+            Assert.IsTrue(ReferenceEquals(foo, value));
+        }
+
+        [Test]
+        public void OfType_PropigatesExistingException()
+        {
+            var value = new Maybe<ICollection<string>>(new InvalidOperationException())
+                .OfType<DateTime>();
+
+            Assert.Throws<InvalidOperationException>(() => value.Extract());
+        }
+
+        [Test]
+        public void OfType_PropigatesNoValue()
+        {
+            var value = Maybe<ICollection<string>>.NoValue
+                .OfType<DateTime>();
+
+            Assert.IsFalse(value.HasValue);
+        }
+
+        [Test]
+        public void OfType_ReturnsNoValue_WhenCastIsNotPossible()
+        {
+            object foo = new List<string>();
+
+            var value = Maybe.Return(foo)
+                .OfType<DateTime>();
+
+            Assert.IsTrue(value == Maybe<DateTime>.NoValue);
+        }
+
+        [Test]
+        public void OfType_DeferesExecutionUntilEvaluated()
+        {
+            object foo = new List<string>();
+
+            bool executed = false;
+            var value = Maybe.Defer(() => { executed = true; return foo; })
+                .OfType<ICollection<string>>();
 
             Assert.IsFalse(executed);
 
@@ -915,7 +1071,7 @@ namespace iSynaptic.Commons
             bool executed = false;
 
             var value = new Maybe<int>(new InvalidOperationException())
-                .Or(Maybe.Defer(() => { executed = true; return 42; }));
+                .Or(() => { executed = true; return 42; });
 
             Assert.Throws<InvalidOperationException>(() => value.Extract());
             Assert.IsFalse(executed);
@@ -1114,6 +1270,96 @@ namespace iSynaptic.Commons
 
             Assert.AreEqual("42", value.Value);
             Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void Finally_CallsActionUponSuccessfulEvaluation()
+        {
+            bool disposed = false;
+            Action disposer = () => disposed = true;
+            var disposable = disposer.ToDisposable();
+
+            var value = disposable.ToMaybe()
+                .Select(x => 42)
+                .Finally(disposable.Dispose);
+
+            Assert.IsFalse(disposed);
+
+            var result = value.Value;
+            Assert.IsTrue(disposed);
+            Assert.AreEqual(42, result);
+        }
+
+        [Test]
+        public void Finally_CallsActionUponFailedEvaluation()
+        {
+            bool disposed = false;
+            Action disposer = () => disposed = true;
+            var disposable = disposer.ToDisposable();
+
+            var value = disposable.ToMaybe()
+                .ThrowOn(x => new InvalidOperationException())
+                .Finally(disposable.Dispose);
+
+            Assert.IsFalse(disposed);
+
+            Assert.Throws<InvalidOperationException>(() => { var result = value.Value; });
+            Assert.IsTrue(disposed);
+        }
+
+        [Test]
+        public void ToEnumerable_OnValue_YieldsSingleValueStream()
+        {
+            var enumerable = 42.ToMaybe()
+                .ToEnumerable();
+
+            Assert.IsTrue(enumerable.SequenceEqual(new []{42}));
+        }
+
+        [Test]
+        public void ToEnumerable_NoValue_YieldsEmptyStream()
+        {
+            var enumerable = Maybe<int>.NoValue
+                .ToEnumerable();
+
+            Assert.AreEqual(0, enumerable.Count());
+        }
+
+        [Test]
+        public void ToEnumerable_WithException_ThrowsException()
+        {
+            var enumerable = new Maybe<int>(new InvalidOperationException())
+                .ToEnumerable();
+
+            Assert.Throws<InvalidOperationException>(() => enumerable.ToArray());
+        }
+
+        [Test]
+        public void AsMaybeOfT_ConvertsIMaybeOfTToStruct()
+        {
+            var iMaybe = MockRepository.GenerateStub<IMaybe<string>>();
+            iMaybe.Stub(x => x.HasValue).Return(true).Repeat.Any();
+            ((IMaybe)iMaybe).Stub(x => x.Value).Return("42").Repeat.Any();
+
+            var value = iMaybe.AsMaybe();
+
+            Assert.IsNull(value.Exception);
+            Assert.IsTrue(value.HasValue);
+            Assert.AreEqual("42", value.Value);
+        }
+
+        [Test]
+        public void AsMaybe_ConvertsIMaybeToStruct()
+        {
+            var iMaybe = MockRepository.GenerateStub<IMaybe>();
+            iMaybe.Stub(x => x.HasValue).Return(true).Repeat.Any();
+            iMaybe.Stub(x => x.Value).Return("42").Repeat.Any();
+
+            var value = iMaybe.AsMaybe();
+
+            Assert.IsNull(value.Exception);
+            Assert.IsTrue(value.HasValue);
+            Assert.AreEqual("42", value.Value);
         }
     }
 }

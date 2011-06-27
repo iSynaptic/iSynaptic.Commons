@@ -436,7 +436,7 @@ namespace iSynaptic.Commons
         public static Maybe<T> When<T>(this Maybe<T> self, T value, Action<T> action)
         {
             Guard.NotNull(action, "action");
-            return self.When(x => EqualityComparer<T>.Default.Equals(x, value), self.OnValue(action));
+            return self.When(x => EqualityComparer<T>.Default.Equals(x, value), action);
         }
 
         public static Maybe<T> When<T>(this Maybe<T> self, T value, Maybe<T> newValue)
@@ -687,16 +687,20 @@ namespace iSynaptic.Commons
             Guard.NotNull(handler, "handler");
             return self.Express(x =>
             {
+                Exception exception = null;
+
                 try
                 {
-                    if (x.Exception != null)
-                        handler(x.Exception);
+                    exception = x.Exception;
                 }
-                catch (Exception ex)
+                catch(Exception ex)
                 {
                     handler(ex);
                     throw;
                 }
+
+                if (exception != null)
+                    handler(exception);
 
                 return x;
             });
@@ -813,8 +817,10 @@ namespace iSynaptic.Commons
         
         public static IEnumerable<T> ToEnumerable<T>(this Maybe<T> self)
         {
-            if(self.HasValue)
-                yield return self.Value;
+            var result = self.ThrowOnException();
+
+            if (result.HasValue)
+                yield return result.Value;
         }
 
         public static Maybe<T> AsMaybe<T>(this IMaybe<T> value)
