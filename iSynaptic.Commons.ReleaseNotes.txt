@@ -49,8 +49,27 @@ RELEASE NOTES: iSynaptic.Commons
   constant values.  This is an alias to the Return method, while allowing it
   to be used as an extension method.
 
+* Added If extension method to Maybe<T> that allows a new Maybe<T> to be created
+  based on a predicate.
+
+* Added a Finally extension method to Maybe<T> to allow cleanup logic to be executed
+  after the Maybe<T> has been evaluated.
+
+* Added a ToEnumerable extension method to Maybe<T> to allow transition from the 
+  Maybe monad to the List monad.
+
+* Added AsMaybe extension methods that treat IMaybe<T> and IMaybe implementations as
+  Maybe<T> or Maybe<object> respectively.
+
 * Cloneable<T> no longer prevents cloning of types that have IntPtr and UIntPtr
   fields.
+
+* EnlistmentScope now has virtual members to enable alternative enlisted item
+  management.
+
+* Added Flip and Curry extension methods to Func<...> and Action.
+
+* Input validation was added to numerous methods throughout the libary.
 
 ---- Breaking Changes ----
 
@@ -84,6 +103,23 @@ RELEASE NOTES: iSynaptic.Commons
   operation that takes a T and puts it into the Monad, it made more sense to
   call this operation Return.
 
+* Maybe.When overloads have been simplified by removing the ones that take
+  Func<T, Maybe<T>> as an argument.  Maybe.Defer can be used in with 
+  Maybe.When to achieve the same behavior.
+
+* Maybe.ThrowOn now takes one less argument.  It now takes a funtion that
+  optionally returns an exception.  If it returns an exception, the
+  exception is thrown.  If it returns null, nothing occurs.
+
+* Maybe.Using extension method that takes an IDisposable as its first argument
+  has been removed.  Using Return and the new Finally method can be used to
+  acheive the same behavior.
+
+* Maybe<T>.Bind and Maybe<T>.Select have been moved to the Maybe class and
+  turned into extension methods.  This allows other extension methods to
+  be authored that deals with Maybe<T> when T is a more specific or constrained
+  type.
+
 * Many of the OnException overloads have been renamed to Suppress.  This
   brings parity with the other OnXXX methods that only have side-effects and
   do not change the resulting value.
@@ -103,7 +139,7 @@ RELEASE NOTES: iSynaptic.Commons
   allows original call stack to be preserved verbatim (albeit in the InnerException),
   while not changing the exception type or message that is being rethrown.
 
-* Renamed extension method SynchronizeOn to SynchronizeWith for both Func<...> and 
+* Renamed extension method SynchronizeOn to Synchronize for both Func<...> and 
   Maybe<T> so that it is not confused which an operation that forces execution to
   happen on a different thread (similar to how Task<TResult> and IObservable<T>
   schedulers do).
