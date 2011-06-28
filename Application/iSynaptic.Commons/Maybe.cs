@@ -49,6 +49,19 @@ namespace iSynaptic.Commons
                 : computation;
         }
 
+        public Maybe<TResult> Express<TResult>(Func<Maybe<T>, Maybe<TResult>> func)
+        {
+            Guard.NotNull(func, "func");
+
+            var @this = this;
+            Maybe<TResult>? memoizedResult = null;
+
+            return new Maybe<TResult>(() =>
+                memoizedResult.HasValue
+                    ? memoizedResult.Value
+                    : (memoizedResult = func(@this)).Value, false);
+        }
+
         public Maybe(Exception exception)
             : this()
         {
@@ -186,41 +199,6 @@ namespace iSynaptic.Commons
         public static bool operator !=(T left, Maybe<T> right)
         {
             return !(left == right);
-        }
-
-        public Maybe<TResult> Select<TResult>(Func<T, TResult> selector)
-        {
-            Guard.NotNull(selector, "selector");
-            return Bind(x => selector(x).ToMaybe());
-        }
-
-        public Maybe<TResult> Bind<TResult>(Func<T, Maybe<TResult>> func)
-        {
-            Guard.NotNull(func, "func");
-
-            return Express(x =>
-            {
-                if (x.Exception != null)
-                    return new Maybe<TResult>(x.Exception);
-
-                if (x.HasValue != true)
-                    return Maybe<TResult>.NoValue;
-
-                return func(x.Value);
-            });
-        }
-
-        public Maybe<TResult> Express<TResult>(Func<Maybe<T>, Maybe<TResult>> func)
-        {
-            Guard.NotNull(func, "func");
-
-            var @this = this;
-            Maybe<TResult>? memoizedResult = null;
-
-            return new Maybe<TResult>(() =>
-                memoizedResult.HasValue
-                    ? memoizedResult.Value
-                    : (memoizedResult = func(@this)).Value, false);
         }
 
         public static implicit operator Maybe<T>(T value)
@@ -611,6 +589,28 @@ namespace iSynaptic.Commons
         }
 
         #endregion
+
+        public static Maybe<TResult> Bind<T, TResult>(this Maybe<T> self, Func<T, Maybe<TResult>> func)
+        {
+            Guard.NotNull(func, "func");
+
+            return self.Express(x =>
+            {
+                if (x.Exception != null)
+                    return new Maybe<TResult>(x.Exception);
+
+                if (x.HasValue != true)
+                    return Maybe<TResult>.NoValue;
+
+                return func(x.Value);
+            });
+        }
+
+        public static Maybe<TResult> Select<T, TResult>(this Maybe<T> self, Func<T, TResult> selector)
+        {
+            Guard.NotNull(selector, "selector");
+            return self.Bind(x => selector(x).ToMaybe());
+        }
 
         public static Maybe<T> Return<T>(T value)
         {
