@@ -5,128 +5,152 @@ RELEASE NOTES: iSynaptic.Commons
 
 ==== v0.2.0 (June xx, 2011) ====
 
-* This release reflects some collaboration with Brian Beckman and research
-  into CoMonads, and as a result Maybe<T> and some supporting operations
-  have gone through significant changes.
+* This release reflects some collaboration with Brian Beckman (Microsoft), and
+  research into CoMonads, and as a result Maybe<T> and some supporting
+  operators have gone through significant changes.
   
 * The names of many of the Maybe<T> operators have been changed.  See breaking
   changes below.
 
-* Removed the internal MaybeResult struct that Maybe<T> used to represent
+* Removed the internal MaybeResult structure that Maybe<T> used to represent
   the evaluated result of Maybe<T>.  Since Maybe<T> had a superset of
-  MaybeResult's public interface, Maybe<T> was refactored to directly store
-  the data that MaybeResult originally stored.
+  MaybeResult's public interface, Maybe<T> was refactored to directly store the
+  data that MaybeResult originally stored.
 
 ---- Features ----
 
-* Express method on Maybe<T> allow the development of Maybe<T> operators
-  that need full visibility into the Maybe<T> struct.  Express adds lazy
-  evaluation semantics and memoization.  All other operations that return
-  a Maybe<T> are written either directly or indirectly using Express.
+* Express method on Maybe<T> allows the development of Maybe<T> operators that
+  need full visibility into the Maybe<T> structure.  Express adds lazy
+  evaluation semantics and memoization.  All other Maybe<T> operators are
+  written either directly or indirectly using Express.
 
 * Maybe<T> now has a constructor that takes a Func<Maybe<T>> to allow the
   function to be lazily evaluated and viewed as a Maybe<T>.
 
-* Maybe<T> now has a number of extension methods named ThrowOn that allow
-  you to define conditions where an exception should be thrown upon evaluation
-  of the Maybe<T>.
-
-* Maybe<T> now has a GetHashCode implementation that takes in an IEqualityComparere<T>
-  implementation.  This brings parity with the Equals methods available on
+* Maybe<T> now has a number of operators named ThrowOn that allow you to define
+  conditions where an exception should be thrown upon evaluation of the
   Maybe<T>.
 
-* Support for C# comprehension syntax is now supported for Maybe<T>.  Thanks
-  to Brian Beckman for the suggestion/reference implementation of SelectMany.
+* Maybe<T> now has a GetHashCode implementation that takes in an 
+  IEqualityComparere<T> implementation.  This brings parity with the Equals
+  methods available on Maybe<T>.
+
+* Support for C# comprehension syntax is now supported for Maybe<T>.  Thanks to
+  Brian Beckman for the reference implementation of SelectMany.
+  
+  Design Note: SelectMany is the method that the C# compiler looks for when
+  translating LINQ comprehension syntax into method invocations.  Although,
+  LINQ comprehension syntax can be used when many different Monads, the
+  decision to call the monadic "bind" operation "SelectMany" semantically
+  couples C#'s support of Monads to the List Monad. In other words, "Many" in 
+  "SelectMany" assumes that there are many values that could be selected.  In
+  the case of Maybe<T>, there is at most one value to be selected, so 
+  "SelectMany" does not make sense semantically.  However, in order to support
+  C# comprehension syntax, the method name must be named SelectMany.  
+  Maybe<T>'s SelectMany method has the EditorBrowseableAttribute applied to it
+  so that SelectMany is not visible in IntelliSense (under standard Visual
+  Studio IDE configurations).  SelectMany and SelectMaybe are just aliases for
+  the Bind operator.
 
 * Created CompositeDisposable class to treat many disposables as one. The
   DisposableContext has now been refactored to make use of this class.
 
-* Created OrderByPriorities extension method on IEnumerable<T>. You can provide
-  one or more predicates that give higher sort priority to the items where the
+  Design Note: CompositeDisposable may eventually be collapsed back into
+  DisposableContext once DisposableContext (and all Scope<T> implementations)
+  can be created as a explicit context and not only a thread or app-domain
+  static context.
+
+* Created OrderByPriorities operator on IEnumerable<T>. You can provide one or
+  more predicates that give higher sort priority to the items where the
   predicate returns true.
 
-* Added ToMaybe() extension method that enables easy creation of Maybe<T> from
-  constant values.  This is an alias to the Return method, while allowing it
-  to be used as an extension method.
+* Added ToMaybe() operator that enables easy creation of Maybe<T> from
+  arbitrary values.  This is an alias to the Maybe.Return operator, while
+  allowing it to be used as an extension method.
 
-* Added If extension method to Maybe<T> that allows a new Maybe<T> to be created
-  based on a predicate.
+* Added If extension method to Maybe<T> that allows a new Maybe<T> to be
+  created based on a predicate.
 
-* Added a Finally extension method to Maybe<T> to allow cleanup logic to be executed
-  after the Maybe<T> has been evaluated.
+* Added a Finally extension method to Maybe<T> to allow cleanup logic to be
+  executed after the Maybe<T> has been evaluated.
 
-* Added a ToEnumerable extension method to Maybe<T> to allow transition from the 
-  Maybe monad to the List monad.
+* Added a ToEnumerable operator to Maybe<T> to allow transition from the Maybe
+  monad to the List monad.  If the Maybe<T> has a value, the enumerable will
+  yield only that one value.  If the Maybe<T> has no value, the enumerable will
+  yield an empty stream.  If the Maybe<T> contains an exception, the enumerable
+  will throw the exception upon every enumeration.
 
-* Added AsMaybe extension methods that treat IMaybe<T> and IMaybe implementations as
-  Maybe<T> or Maybe<object> respectively.
+* Added AsMaybe operators that treat IMaybe<T> and IMaybe implementations as
+  Maybe<T> or Maybe<object> respectively and allow use of operators that rely
+  on Maybe<T>.
+
+  Design Note: The reason for implementing the Maybe Monad as a structure was
+  to keep the core type, Maybe<T>, very lightweight.  Storing simple values
+  such as integers in a Maybe<T> incurs very little overhead
+  (e.g Maybe.Return(42)). As such, all of the operators are implemented using
+  the Maybe<T> structure, and not the IMaybe<T> or IMaybe interface.  The
+  interfaces are provided to support co-variant and non-generic scenarios.
 
 * Cloneable<T> no longer prevents cloning of types that have IntPtr and UIntPtr
-  fields.
+  fields.  In the future, Cloneable<T> may no longer prevent cloning objects
+  that have delegates as fields.
 
 * EnlistmentScope now has virtual members to enable alternative enlisted item
   management.
 
 * Added Flip and Curry extension methods to Func<...> and Action.
 
-* Input validation was added to numerous methods throughout the libary.
+* Input validation was added to numerous methods throughout the library.
 
 ---- Breaking Changes ----
 
-* Exceptions thrown when evaluating the result of a Maybe<T> will now
-  bubble up.  This brings parity between Maybe<T> and IEnumerable<T>'s
-  treatment of exceptions.  A Catch() operation has been
-  implemented which will catch exceptions from up-stream Maybe<T>
-  operations.
+* Exceptions thrown when evaluating the result of a Maybe<T> will now escape
+  the Maybe<T>.  This brings parity between Maybe<T> and IEnumerable<T>'s
+  treatment of exceptions.  A Catch() operator has been implemented which will
+  catch exceptions thrown from up-stream Maybe<T> operators.
 
-* The Unsafe method on Maybe<T> has been removed. This allowed the
-  construction of Maybe<T> that did not have exception protection.
-  Since exception protection is not needed, this method was removed.
-  Additionally, other methods use Unsafe because they wanted access
-  to the Exception, HasValue, and Value properties to implement their
-  logic. The Express method now provides this capability.
+* The Unsafe method on Maybe<T> has been removed. This allowed the construction
+  of Maybe<T> that did not have exception protection.  Since exception 
+  protection no longer implemented, this method was removed.  Additionally,
+  other methods used Unsafe because they wanted access to the Exception, 
+  HasValue, and Value properties to implement their logic. The Express method
+  now provides this capability.
 
-* The Select operation that takes a Func<T, Maybe<TResult>> has been
-  renamed to SelectMaybe, as it was always an alias of Bind. Additionally,
-  SelectMany (another alias of Bind) has also been implemented in order 
-  to support LINQ comprehension syntax.  Unfortunately, the name SelectMany
-  does not make sense semantically, since there is at most one value in
-  a Maybe<T> and the name SelectMany is heavily influenced by LINQ and
-  IEnumerabe<T>, the List monad.  As a result, Maybe<T>'s SelectMany has
-  the EditorBrowsable attribute applied to it to obscure it from IntelliSense.
+* The Select operation that takes a Func<T, Maybe<TResult>> has been renamed to
+  SelectMaybe, as it was always an alias of Bind.
 
 * Maybe.Return has been renamed to Maybe.Extract.  Since CoMonads have a
-  "extract" operation that take a CoMonad and extracts a T, it made more
-  sense to call this operation Extract.
+  "extract" operation that take a CoMonad and extracts a T, it made more sense
+  to call this operation Extract.
 
 * Maybe.Value has been renamed to Maybe.Return.  Since Monads have a "return"
   operation that takes a T and puts it into the Monad, it made more sense to
   call this operation Return.
 
 * Maybe.When overloads have been simplified by removing the ones that take
-  Func<T, Maybe<T>> as an argument.  Maybe.Defer can be used in with 
-  Maybe.When to achieve the same behavior.
+  Func<T, Maybe<T>> as an argument.  Maybe.Defer can be used in with Maybe.When
+  to achieve the same behavior.
 
-* Maybe.ThrowOn now takes one less argument.  It now takes a funtion that
-  optionally returns an exception.  If it returns an exception, the
-  exception is thrown.  If it returns null, nothing occurs.
+* Maybe.ThrowOn now takes one less argument.  It now takes a function that
+  optionally returns an exception.  If it returns an exception, the exception
+  is thrown.  If it returns null, nothing occurs.
 
-* Maybe.Using extension method that takes an IDisposable as its first argument
-  has been removed.  Using Return and the new Finally method can be used to
-  acheive the same behavior.
+* The Maybe.Using operator that takes an IDisposable as its first argument has
+  been removed.  Using Return and the new Finally method can be used to achieve
+  the same behavior.
 
 * Maybe<T>.Bind and Maybe<T>.Select have been moved to the Maybe class and
-  turned into extension methods.  This allows other extension methods to
-  be authored that deals with Maybe<T> when T is a more specific or constrained
+  turned into extension methods.  This allows other extension methods to be
+  authored that deals with Maybe<T> when T is a more specific or constrained
   type.
 
-* Many of the OnException overloads have been renamed to Suppress.  This
-  brings parity with the other OnXXX methods that only have side-effects and
-  do not change the resulting value.
+* Many of the OnException overloads have been renamed to Suppress.  This brings
+  parity with the other OnXXX methods that only have side-effects and do not
+  change the resulting value.
 
-* BaseReadOnlyDictionary no longer allows you to override the IsReadOnly property.
-  This should always return true, and this prevents derived implementations from
-  breaking this invariant.
+* BaseReadOnlyDictionary no longer allows you to override the IsReadOnly
+  property. This should always return true, and this prevents derived
+  implementations from breaking this invariant.
 
 * Renamed Zip to ZipAll to prevent naming conflict with existing IEnumerable<T>
   extension methods.
@@ -136,10 +160,11 @@ RELEASE NOTES: iSynaptic.Commons
   ThrowAsInnerExceptionIfNeeded extension method, which if used against an
   exception that has already been thrown once, clones the exception, and sets
   the clone's InnerException to the original before throwing the clone. This
-  allows original call stack to be preserved verbatim (albeit in the InnerException),
-  while not changing the exception type or message that is being rethrown.
+  allows original call stack to be preserved verbatim (albeit in the
+  InnerException), while not changing the exception type or message that is
+  being "re-thrown".
 
 * Renamed extension method SynchronizeOn to Synchronize for both Func<...> and 
-  Maybe<T> so that it is not confused which an operation that forces execution to
-  happen on a different thread (similar to how Task<TResult> and IObservable<T>
-  schedulers do).
+  Maybe<T> so that it is not confused which an operation that forces execution
+  to happen on a different thread (similar to how Task<TResult> and
+  IObservable<T> schedulers do).
