@@ -9,10 +9,10 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCompany("iSynaptic")]
 [assembly: AssemblyTrademark("iSynaptic")]
 [assembly: AssemblyProduct("iSynaptic.Commons")]
-[assembly: AssemblyCopyright("Copyright © iSynaptic 2010")]
+[assembly: AssemblyCopyright("Copyright © Jordan Terrell 2011")]
 
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(true)]
 
-[assembly: AssemblyVersion("0.2.0.0")]
-[assembly: AssemblyFileVersion("0.2.0.0")]
+[assembly: AssemblyVersion("0.2.1.0")]
+[assembly: AssemblyFileVersion("0.2.1.0")]
