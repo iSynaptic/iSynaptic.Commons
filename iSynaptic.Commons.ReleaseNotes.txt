@@ -2,6 +2,14 @@
 RELEASE NOTES: iSynaptic.Commons
 ======================================
 
+==== v0.2.1 (June 29, 2011) ====
+
+---- Breaking Changes ----
+
+* Removed the Maybe.Or operator that takes in just a T.  This overload makes
+  it difficult for the C# compiler to do type inference.
+
+
 
 ==== v0.2.0 (June 29, 2011) ====
 

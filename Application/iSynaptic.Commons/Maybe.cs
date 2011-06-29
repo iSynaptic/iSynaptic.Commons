@@ -361,11 +361,6 @@ namespace iSynaptic.Commons
 
         #region Or Operator
 
-        public static Maybe<T> Or<T>(this Maybe<T> self, T value)
-        {
-            return self.Or(() => value);
-        }
-
         public static Maybe<T> Or<T>(this Maybe<T> self, Func<T> valueFactory)
         {
             Guard.NotNull(valueFactory, "valueFactory");
