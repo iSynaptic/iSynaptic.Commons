@@ -3,11 +3,11 @@ RELEASE NOTES: iSynaptic.Commons.Data
 ======================================
 
 
-==== v0.2.0 (June xx, 2011) ====
+==== v0.2.0 (June 29, 2011) ====
 
 * No breaking changes.
 
 ---- Features ----
 
-* Added IExodataAttribute<TExodata> interface to allow attributes to
-  handle requests for one specifc type.
+* Added IExodataAttribute<TExodata> interface to allow attributes to handle
+ requests for one specific type.

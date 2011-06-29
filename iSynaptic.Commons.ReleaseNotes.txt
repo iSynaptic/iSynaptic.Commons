@@ -3,7 +3,7 @@ RELEASE NOTES: iSynaptic.Commons
 ======================================
 
 
-==== v0.2.0 (June xx, 2011) ====
+==== v0.2.0 (June 29, 2011) ====
 
 * This release reflects some collaboration with Brian Beckman (Microsoft), and
   research into CoMonads, and as a result Maybe<T> and some supporting
