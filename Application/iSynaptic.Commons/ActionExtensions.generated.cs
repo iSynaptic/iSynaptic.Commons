@@ -9,6 +9,7 @@ namespace iSynaptic.Commons
 	public static partial class ActionExtensions
 	{
 		
+		
 		public static Action<T1> MakeConditional<T1>(this Action<T1> self, Func<T1, bool> condition)
         {
             return MakeConditional(self, condition, null);
@@ -74,6 +75,20 @@ namespace iSynaptic.Commons
 
                 innerAction();
             };
+        }
+
+		
+		
+		public static Action<T2, T1> Flip<T1, T2>(this Action<T1, T2> self)
+        {
+            Guard.NotNull(self, "self");
+            return (t2, t1) => self(t1, t2);
+        }
+
+		public static Action<T2> Curry<T1, T2>(this Action<T1, T2> self, T1 t1)
+        {
+            Guard.NotNull(self, "self");
+            return (t2) => self(t1, t2);
         }
 
 		
@@ -145,6 +160,20 @@ namespace iSynaptic.Commons
         }
 
 		
+		
+		public static Action<T3, T2, T1> Flip<T1, T2, T3>(this Action<T1, T2, T3> self)
+        {
+            Guard.NotNull(self, "self");
+            return (t3, t2, t1) => self(t1, t2, t3);
+        }
+
+		public static Action<T2, T3> Curry<T1, T2, T3>(this Action<T1, T2, T3> self, T1 t1)
+        {
+            Guard.NotNull(self, "self");
+            return (t2, t3) => self(t1, t2, t3);
+        }
+
+		
 		public static Action<T1, T2, T3> MakeConditional<T1, T2, T3>(this Action<T1, T2, T3> self, Func<T1, T2, T3, bool> condition)
         {
             return MakeConditional(self, condition, null);
@@ -210,6 +239,20 @@ namespace iSynaptic.Commons
 
                 innerAction();
             };
+        }
+
+		
+		
+		public static Action<T4, T3, T2, T1> Flip<T1, T2, T3, T4>(this Action<T1, T2, T3, T4> self)
+        {
+            Guard.NotNull(self, "self");
+            return (t4, t3, t2, t1) => self(t1, t2, t3, t4);
+        }
+
+		public static Action<T2, T3, T4> Curry<T1, T2, T3, T4>(this Action<T1, T2, T3, T4> self, T1 t1)
+        {
+            Guard.NotNull(self, "self");
+            return (t2, t3, t4) => self(t1, t2, t3, t4);
         }
 
 		
@@ -281,6 +324,20 @@ namespace iSynaptic.Commons
         }
 
 		
+		
+		public static Action<T5, T4, T3, T2, T1> Flip<T1, T2, T3, T4, T5>(this Action<T1, T2, T3, T4, T5> self)
+        {
+            Guard.NotNull(self, "self");
+            return (t5, t4, t3, t2, t1) => self(t1, t2, t3, t4, t5);
+        }
+
+		public static Action<T2, T3, T4, T5> Curry<T1, T2, T3, T4, T5>(this Action<T1, T2, T3, T4, T5> self, T1 t1)
+        {
+            Guard.NotNull(self, "self");
+            return (t2, t3, t4, t5) => self(t1, t2, t3, t4, t5);
+        }
+
+		
 		public static Action<T1, T2, T3, T4, T5> MakeConditional<T1, T2, T3, T4, T5>(this Action<T1, T2, T3, T4, T5> self, Func<T1, T2, T3, T4, T5, bool> condition)
         {
             return MakeConditional(self, condition, null);
@@ -346,6 +403,20 @@ namespace iSynaptic.Commons
 
                 innerAction();
             };
+        }
+
+		
+		
+		public static Action<T6, T5, T4, T3, T2, T1> Flip<T1, T2, T3, T4, T5, T6>(this Action<T1, T2, T3, T4, T5, T6> self)
+        {
+            Guard.NotNull(self, "self");
+            return (t6, t5, t4, t3, t2, t1) => self(t1, t2, t3, t4, t5, t6);
+        }
+
+		public static Action<T2, T3, T4, T5, T6> Curry<T1, T2, T3, T4, T5, T6>(this Action<T1, T2, T3, T4, T5, T6> self, T1 t1)
+        {
+            Guard.NotNull(self, "self");
+            return (t2, t3, t4, t5, t6) => self(t1, t2, t3, t4, t5, t6);
         }
 
 		
@@ -417,6 +488,20 @@ namespace iSynaptic.Commons
         }
 
 		
+		
+		public static Action<T7, T6, T5, T4, T3, T2, T1> Flip<T1, T2, T3, T4, T5, T6, T7>(this Action<T1, T2, T3, T4, T5, T6, T7> self)
+        {
+            Guard.NotNull(self, "self");
+            return (t7, t6, t5, t4, t3, t2, t1) => self(t1, t2, t3, t4, t5, t6, t7);
+        }
+
+		public static Action<T2, T3, T4, T5, T6, T7> Curry<T1, T2, T3, T4, T5, T6, T7>(this Action<T1, T2, T3, T4, T5, T6, T7> self, T1 t1)
+        {
+            Guard.NotNull(self, "self");
+            return (t2, t3, t4, t5, t6, t7) => self(t1, t2, t3, t4, t5, t6, t7);
+        }
+
+		
 		public static Action<T1, T2, T3, T4, T5, T6, T7> MakeConditional<T1, T2, T3, T4, T5, T6, T7>(this Action<T1, T2, T3, T4, T5, T6, T7> self, Func<T1, T2, T3, T4, T5, T6, T7, bool> condition)
         {
             return MakeConditional(self, condition, null);
@@ -482,6 +567,20 @@ namespace iSynaptic.Commons
 
                 innerAction();
             };
+        }
+
+		
+		
+		public static Action<T8, T7, T6, T5, T4, T3, T2, T1> Flip<T1, T2, T3, T4, T5, T6, T7, T8>(this Action<T1, T2, T3, T4, T5, T6, T7, T8> self)
+        {
+            Guard.NotNull(self, "self");
+            return (t8, t7, t6, t5, t4, t3, t2, t1) => self(t1, t2, t3, t4, t5, t6, t7, t8);
+        }
+
+		public static Action<T2, T3, T4, T5, T6, T7, T8> Curry<T1, T2, T3, T4, T5, T6, T7, T8>(this Action<T1, T2, T3, T4, T5, T6, T7, T8> self, T1 t1)
+        {
+            Guard.NotNull(self, "self");
+            return (t2, t3, t4, t5, t6, t7, t8) => self(t1, t2, t3, t4, t5, t6, t7, t8);
         }
 
 		
@@ -553,6 +652,20 @@ namespace iSynaptic.Commons
         }
 
 		
+		
+		public static Action<T9, T8, T7, T6, T5, T4, T3, T2, T1> Flip<T1, T2, T3, T4, T5, T6, T7, T8, T9>(this Action<T1, T2, T3, T4, T5, T6, T7, T8, T9> self)
+        {
+            Guard.NotNull(self, "self");
+            return (t9, t8, t7, t6, t5, t4, t3, t2, t1) => self(t1, t2, t3, t4, t5, t6, t7, t8, t9);
+        }
+
+		public static Action<T2, T3, T4, T5, T6, T7, T8, T9> Curry<T1, T2, T3, T4, T5, T6, T7, T8, T9>(this Action<T1, T2, T3, T4, T5, T6, T7, T8, T9> self, T1 t1)
+        {
+            Guard.NotNull(self, "self");
+            return (t2, t3, t4, t5, t6, t7, t8, t9) => self(t1, t2, t3, t4, t5, t6, t7, t8, t9);
+        }
+
+		
 		public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9> MakeConditional<T1, T2, T3, T4, T5, T6, T7, T8, T9>(this Action<T1, T2, T3, T4, T5, T6, T7, T8, T9> self, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, bool> condition)
         {
             return MakeConditional(self, condition, null);
@@ -618,6 +731,20 @@ namespace iSynaptic.Commons
 
                 innerAction();
             };
+        }
+
+		
+		
+		public static Action<T10, T9, T8, T7, T6, T5, T4, T3, T2, T1> Flip<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(this Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> self)
+        {
+            Guard.NotNull(self, "self");
+            return (t10, t9, t8, t7, t6, t5, t4, t3, t2, t1) => self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10);
+        }
+
+		public static Action<T2, T3, T4, T5, T6, T7, T8, T9, T10> Curry<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(this Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> self, T1 t1)
+        {
+            Guard.NotNull(self, "self");
+            return (t2, t3, t4, t5, t6, t7, t8, t9, t10) => self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10);
         }
 
 		
@@ -689,6 +816,20 @@ namespace iSynaptic.Commons
         }
 
 		
+		
+		public static Action<T11, T10, T9, T8, T7, T6, T5, T4, T3, T2, T1> Flip<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(this Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> self)
+        {
+            Guard.NotNull(self, "self");
+            return (t11, t10, t9, t8, t7, t6, t5, t4, t3, t2, t1) => self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11);
+        }
+
+		public static Action<T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> Curry<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(this Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> self, T1 t1)
+        {
+            Guard.NotNull(self, "self");
+            return (t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) => self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11);
+        }
+
+		
 		public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> MakeConditional<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(this Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> self, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, bool> condition)
         {
             return MakeConditional(self, condition, null);
@@ -754,6 +895,20 @@ namespace iSynaptic.Commons
 
                 innerAction();
             };
+        }
+
+		
+		
+		public static Action<T12, T11, T10, T9, T8, T7, T6, T5, T4, T3, T2, T1> Flip<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(this Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> self)
+        {
+            Guard.NotNull(self, "self");
+            return (t12, t11, t10, t9, t8, t7, t6, t5, t4, t3, t2, t1) => self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12);
+        }
+
+		public static Action<T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> Curry<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(this Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> self, T1 t1)
+        {
+            Guard.NotNull(self, "self");
+            return (t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) => self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12);
         }
 
 		
@@ -825,6 +980,20 @@ namespace iSynaptic.Commons
         }
 
 		
+		
+		public static Action<T13, T12, T11, T10, T9, T8, T7, T6, T5, T4, T3, T2, T1> Flip<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(this Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> self)
+        {
+            Guard.NotNull(self, "self");
+            return (t13, t12, t11, t10, t9, t8, t7, t6, t5, t4, t3, t2, t1) => self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13);
+        }
+
+		public static Action<T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> Curry<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(this Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> self, T1 t1)
+        {
+            Guard.NotNull(self, "self");
+            return (t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) => self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13);
+        }
+
+		
 		public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> MakeConditional<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(this Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> self, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, bool> condition)
         {
             return MakeConditional(self, condition, null);
@@ -890,6 +1059,20 @@ namespace iSynaptic.Commons
 
                 innerAction();
             };
+        }
+
+		
+		
+		public static Action<T14, T13, T12, T11, T10, T9, T8, T7, T6, T5, T4, T3, T2, T1> Flip<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(this Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> self)
+        {
+            Guard.NotNull(self, "self");
+            return (t14, t13, t12, t11, t10, t9, t8, t7, t6, t5, t4, t3, t2, t1) => self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14);
+        }
+
+		public static Action<T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> Curry<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(this Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> self, T1 t1)
+        {
+            Guard.NotNull(self, "self");
+            return (t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) => self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14);
         }
 
 		
@@ -961,6 +1144,20 @@ namespace iSynaptic.Commons
         }
 
 		
+		
+		public static Action<T15, T14, T13, T12, T11, T10, T9, T8, T7, T6, T5, T4, T3, T2, T1> Flip<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(this Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> self)
+        {
+            Guard.NotNull(self, "self");
+            return (t15, t14, t13, t12, t11, t10, t9, t8, t7, t6, t5, t4, t3, t2, t1) => self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15);
+        }
+
+		public static Action<T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> Curry<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(this Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> self, T1 t1)
+        {
+            Guard.NotNull(self, "self");
+            return (t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) => self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15);
+        }
+
+		
 		public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> MakeConditional<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(this Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> self, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, bool> condition)
         {
             return MakeConditional(self, condition, null);
@@ -1026,6 +1223,20 @@ namespace iSynaptic.Commons
 
                 innerAction();
             };
+        }
+
+		
+		
+		public static Action<T16, T15, T14, T13, T12, T11, T10, T9, T8, T7, T6, T5, T4, T3, T2, T1> Flip<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(this Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> self)
+        {
+            Guard.NotNull(self, "self");
+            return (t16, t15, t14, t13, t12, t11, t10, t9, t8, t7, t6, t5, t4, t3, t2, t1) => self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16);
+        }
+
+		public static Action<T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> Curry<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(this Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> self, T1 t1)
+        {
+            Guard.NotNull(self, "self");
+            return (t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) => self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16);
         }
 
 		

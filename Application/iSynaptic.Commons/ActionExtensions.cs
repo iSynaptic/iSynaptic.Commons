@@ -6,6 +6,12 @@ namespace iSynaptic.Commons
 {
     public static partial class ActionExtensions
     {
+        public static Action Curry<T1>(this Action<T1> self, T1 t1)
+        {
+            Guard.NotNull(self, "self");
+            return () => self(t1);
+        }
+
         public static IDisposable ToDisposable(this Action self)
         {
             Guard.NotNull(self, "self");

@@ -13,6 +13,12 @@ namespace iSynaptic.Commons
             return () => self();
         }
 
+        public static Func<TRet> Curry<T1, TRet>(this Func<T1, TRet> self, T1 t1)
+        {
+            Guard.NotNull(self, "self");
+            return () => self(t1);
+        }
+
         public static IComparer<T> ToComparer<T>(this Func<T, T, int> self)
         {
             Guard.NotNull(self, "self");

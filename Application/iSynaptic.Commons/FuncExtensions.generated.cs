@@ -125,6 +125,12 @@ namespace iSynaptic.Commons
             return (t2, t1) => self(t1, t2);
         }
 
+		public static Func<T2, TRet> Curry<T1, T2, TRet>(this Func<T1, T2, TRet> self, T1 t1)
+        {
+            Guard.NotNull(self, "self");
+            return (t2) => self(t1, t2);
+        }
+
 		
 		public static Action<T1, T2> ToAction<T1, T2, TRet>(this Func<T1, T2, TRet> self)
         {
@@ -238,6 +244,12 @@ namespace iSynaptic.Commons
         {
             Guard.NotNull(self, "self");
             return (t3, t2, t1) => self(t1, t2, t3);
+        }
+
+		public static Func<T2, T3, TRet> Curry<T1, T2, T3, TRet>(this Func<T1, T2, T3, TRet> self, T1 t1)
+        {
+            Guard.NotNull(self, "self");
+            return (t2, t3) => self(t1, t2, t3);
         }
 
 		
@@ -355,6 +367,12 @@ namespace iSynaptic.Commons
             return (t4, t3, t2, t1) => self(t1, t2, t3, t4);
         }
 
+		public static Func<T2, T3, T4, TRet> Curry<T1, T2, T3, T4, TRet>(this Func<T1, T2, T3, T4, TRet> self, T1 t1)
+        {
+            Guard.NotNull(self, "self");
+            return (t2, t3, t4) => self(t1, t2, t3, t4);
+        }
+
 		
 		public static Action<T1, T2, T3, T4> ToAction<T1, T2, T3, T4, TRet>(this Func<T1, T2, T3, T4, TRet> self)
         {
@@ -468,6 +486,12 @@ namespace iSynaptic.Commons
         {
             Guard.NotNull(self, "self");
             return (t5, t4, t3, t2, t1) => self(t1, t2, t3, t4, t5);
+        }
+
+		public static Func<T2, T3, T4, T5, TRet> Curry<T1, T2, T3, T4, T5, TRet>(this Func<T1, T2, T3, T4, T5, TRet> self, T1 t1)
+        {
+            Guard.NotNull(self, "self");
+            return (t2, t3, t4, t5) => self(t1, t2, t3, t4, t5);
         }
 
 		
@@ -585,6 +609,12 @@ namespace iSynaptic.Commons
             return (t6, t5, t4, t3, t2, t1) => self(t1, t2, t3, t4, t5, t6);
         }
 
+		public static Func<T2, T3, T4, T5, T6, TRet> Curry<T1, T2, T3, T4, T5, T6, TRet>(this Func<T1, T2, T3, T4, T5, T6, TRet> self, T1 t1)
+        {
+            Guard.NotNull(self, "self");
+            return (t2, t3, t4, t5, t6) => self(t1, t2, t3, t4, t5, t6);
+        }
+
 		
 		public static Action<T1, T2, T3, T4, T5, T6> ToAction<T1, T2, T3, T4, T5, T6, TRet>(this Func<T1, T2, T3, T4, T5, T6, TRet> self)
         {
@@ -698,6 +728,12 @@ namespace iSynaptic.Commons
         {
             Guard.NotNull(self, "self");
             return (t7, t6, t5, t4, t3, t2, t1) => self(t1, t2, t3, t4, t5, t6, t7);
+        }
+
+		public static Func<T2, T3, T4, T5, T6, T7, TRet> Curry<T1, T2, T3, T4, T5, T6, T7, TRet>(this Func<T1, T2, T3, T4, T5, T6, T7, TRet> self, T1 t1)
+        {
+            Guard.NotNull(self, "self");
+            return (t2, t3, t4, t5, t6, t7) => self(t1, t2, t3, t4, t5, t6, t7);
         }
 
 		
@@ -815,6 +851,12 @@ namespace iSynaptic.Commons
             return (t8, t7, t6, t5, t4, t3, t2, t1) => self(t1, t2, t3, t4, t5, t6, t7, t8);
         }
 
+		public static Func<T2, T3, T4, T5, T6, T7, T8, TRet> Curry<T1, T2, T3, T4, T5, T6, T7, T8, TRet>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, TRet> self, T1 t1)
+        {
+            Guard.NotNull(self, "self");
+            return (t2, t3, t4, t5, t6, t7, t8) => self(t1, t2, t3, t4, t5, t6, t7, t8);
+        }
+
 		
 		public static Action<T1, T2, T3, T4, T5, T6, T7, T8> ToAction<T1, T2, T3, T4, T5, T6, T7, T8, TRet>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, TRet> self)
         {
@@ -928,6 +970,12 @@ namespace iSynaptic.Commons
         {
             Guard.NotNull(self, "self");
             return (t9, t8, t7, t6, t5, t4, t3, t2, t1) => self(t1, t2, t3, t4, t5, t6, t7, t8, t9);
+        }
+
+		public static Func<T2, T3, T4, T5, T6, T7, T8, T9, TRet> Curry<T1, T2, T3, T4, T5, T6, T7, T8, T9, TRet>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TRet> self, T1 t1)
+        {
+            Guard.NotNull(self, "self");
+            return (t2, t3, t4, t5, t6, t7, t8, t9) => self(t1, t2, t3, t4, t5, t6, t7, t8, t9);
         }
 
 		
@@ -1045,6 +1093,12 @@ namespace iSynaptic.Commons
             return (t10, t9, t8, t7, t6, t5, t4, t3, t2, t1) => self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10);
         }
 
+		public static Func<T2, T3, T4, T5, T6, T7, T8, T9, T10, TRet> Curry<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TRet>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TRet> self, T1 t1)
+        {
+            Guard.NotNull(self, "self");
+            return (t2, t3, t4, t5, t6, t7, t8, t9, t10) => self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10);
+        }
+
 		
 		public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> ToAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TRet>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TRet> self)
         {
@@ -1158,6 +1212,12 @@ namespace iSynaptic.Commons
         {
             Guard.NotNull(self, "self");
             return (t11, t10, t9, t8, t7, t6, t5, t4, t3, t2, t1) => self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11);
+        }
+
+		public static Func<T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TRet> Curry<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TRet>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TRet> self, T1 t1)
+        {
+            Guard.NotNull(self, "self");
+            return (t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) => self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11);
         }
 
 		
@@ -1275,6 +1335,12 @@ namespace iSynaptic.Commons
             return (t12, t11, t10, t9, t8, t7, t6, t5, t4, t3, t2, t1) => self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12);
         }
 
+		public static Func<T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TRet> Curry<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TRet>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TRet> self, T1 t1)
+        {
+            Guard.NotNull(self, "self");
+            return (t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) => self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12);
+        }
+
 		
 		public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> ToAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TRet>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TRet> self)
         {
@@ -1388,6 +1454,12 @@ namespace iSynaptic.Commons
         {
             Guard.NotNull(self, "self");
             return (t13, t12, t11, t10, t9, t8, t7, t6, t5, t4, t3, t2, t1) => self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13);
+        }
+
+		public static Func<T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TRet> Curry<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TRet>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TRet> self, T1 t1)
+        {
+            Guard.NotNull(self, "self");
+            return (t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) => self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13);
         }
 
 		
@@ -1505,6 +1577,12 @@ namespace iSynaptic.Commons
             return (t14, t13, t12, t11, t10, t9, t8, t7, t6, t5, t4, t3, t2, t1) => self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14);
         }
 
+		public static Func<T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TRet> Curry<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TRet>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TRet> self, T1 t1)
+        {
+            Guard.NotNull(self, "self");
+            return (t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) => self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14);
+        }
+
 		
 		public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> ToAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TRet>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TRet> self)
         {
@@ -1620,6 +1698,12 @@ namespace iSynaptic.Commons
             return (t15, t14, t13, t12, t11, t10, t9, t8, t7, t6, t5, t4, t3, t2, t1) => self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15);
         }
 
+		public static Func<T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TRet> Curry<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TRet>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TRet> self, T1 t1)
+        {
+            Guard.NotNull(self, "self");
+            return (t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) => self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15);
+        }
+
 		
 		public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> ToAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TRet>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TRet> self)
         {
@@ -1733,6 +1817,12 @@ namespace iSynaptic.Commons
         {
             Guard.NotNull(self, "self");
             return (t16, t15, t14, t13, t12, t11, t10, t9, t8, t7, t6, t5, t4, t3, t2, t1) => self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16);
+        }
+
+		public static Func<T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TRet> Curry<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TRet>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TRet> self, T1 t1)
+        {
+            Guard.NotNull(self, "self");
+            return (t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) => self(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16);
         }
 
 		

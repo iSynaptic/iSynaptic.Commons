@@ -18,7 +18,29 @@ namespace iSynaptic.Commons
 		{
 			string typeArgs = Delimit(Enumerable.Range(1, i), ", ", x => "T" + x.ToString());
 			string args = Delimit(Enumerable.Range(1, i), ", ", x => "t" + x.ToString());
+
+			string reverseTypeArgs = Delimit(Enumerable.Range(1, i).Reverse(), ", ", x => "T" + x.ToString());
+			string reverseArgs = Delimit(Enumerable.Range(1, i).Reverse(), ", ", x => "t" + x.ToString());
+
+			string curriedTypeArgs = Delimit(Enumerable.Range(1, i).Skip(1), ", ", x => "T" + x.ToString());
+			string curriedArgs = Delimit(Enumerable.Range(1, i).Skip(1), ", ", x => "t" + x.ToString());
 	    #>
+
+		<# if(i > 1) { #>
+
+		public static Action<<#= reverseTypeArgs #>> Flip<<#= typeArgs #>>(this Action<<#= typeArgs #>> self)
+        {
+            Guard.NotNull(self, "self");
+            return (<#= reverseArgs #>) => self(<#= args #>);
+        }
+
+		public static Action<<#= curriedTypeArgs #>> Curry<<#= typeArgs #>>(this Action<<#= typeArgs #>> self, T1 t1)
+        {
+            Guard.NotNull(self, "self");
+            return (<#= curriedArgs #>) => self(t1, <#= curriedArgs #>);
+        }
+
+		<# } #>
 
 		public static Action<<#= typeArgs #>> MakeConditional<<#= typeArgs #>>(this Action<<#= typeArgs #>> self, Func<<#= typeArgs #>, bool> condition)
         {

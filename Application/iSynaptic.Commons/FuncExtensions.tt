@@ -22,6 +22,9 @@ namespace iSynaptic.Commons
 			
 			string reverseTypeArgs = Delimit(Enumerable.Range(1, i).Reverse(), ", ", x => "T" + x.ToString());
 			string reverseArgs = Delimit(Enumerable.Range(1, i).Reverse(), ", ", x => "t" + x.ToString());
+
+			string curriedTypeArgs = Delimit(Enumerable.Range(1, i).Skip(1), ", ", x => "T" + x.ToString());
+			string curriedArgs = Delimit(Enumerable.Range(1, i).Skip(1), ", ", x => "t" + x.ToString());
 	    #>
 
 		<# if(i > 1) { #>
@@ -30,6 +33,12 @@ namespace iSynaptic.Commons
         {
             Guard.NotNull(self, "self");
             return (<#= reverseArgs #>) => self(<#= args #>);
+        }
+
+		public static Func<<#= curriedTypeArgs #>, TRet> Curry<<#= typeArgs #>, TRet>(this Func<<#= typeArgs #>, TRet> self, T1 t1)
+        {
+            Guard.NotNull(self, "self");
+            return (<#= curriedArgs #>) => self(t1, <#= curriedArgs #>);
         }
 
 		<# } #>
