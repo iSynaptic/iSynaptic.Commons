@@ -13,6 +13,9 @@ RELEASE NOTES: iSynaptic.Commons
 * A new method, named Extract has been implemented that will throw an exception
   if no value is available.  This is similar to IEnumerable<T>'s First method.
 
+* Renamed EnumerableExtensions.Flatten to Recurse to better reflect what the
+  method does.
+
 
 
 ==== v0.2.1 (June 29, 2011) ====

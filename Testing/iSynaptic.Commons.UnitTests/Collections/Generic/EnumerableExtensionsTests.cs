@@ -371,10 +371,10 @@ namespace iSynaptic.Commons.Collections.Generic
                             new Recursive(4)),
                         new Recursive(3));
 
-            var flatten = r1.Flatten(r => r.Recursives).ToArray();
+            var recursives = r1.Recurse(r => r.Recursives).ToArray();
 
-            Assert.AreEqual(4, flatten.Length);
-            Assert.IsTrue(flatten.Select(x => x.Value).SequenceEqual(new[] { 1, 2, 4, 3 }));
+            Assert.AreEqual(4, recursives.Length);
+            Assert.IsTrue(recursives.Select(x => x.Value).SequenceEqual(new[] { 1, 2, 4, 3 }));
         }
 
         [Test]

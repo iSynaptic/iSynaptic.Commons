@@ -236,28 +236,28 @@ namespace iSynaptic.Commons.Collections.Generic
             return new SmartLoop<T>(items);
         }
 
-        public static IEnumerable<T> Flatten<T>(this IEnumerable<T> self, Func<T, IEnumerable<T>> selector)
+        public static IEnumerable<T> Recurse<T>(this IEnumerable<T> self, Func<T, IEnumerable<T>> selector)
         {
             Guard.NotNull(self, "self");
             Guard.NotNull(selector, "selector");
 
-            return self.SelectMany(x => new[]{x}.Concat((selector(x) ?? Enumerable.Empty<T>()).Flatten(selector)));
+            return self.SelectMany(x => new[] { x }.Concat((selector(x) ?? Enumerable.Empty<T>()).Recurse(selector)));
         }
 
-        public static IEnumerable<T> Flatten<T>(this T self, Func<T, IEnumerable<T>> selector)
+        public static IEnumerable<T> Recurse<T>(this T self, Func<T, IEnumerable<T>> selector)
         {
             Guard.NotNull(self, "self");
             Guard.NotNull(selector, "selector");
 
-            return new[] {self}.Flatten(selector);
+            return new[] { self }.Recurse(selector);
         }
 
-        public static IEnumerable<T> Flatten<T>(this T self, Func<T, Maybe<T>> selector)
+        public static IEnumerable<T> Recurse<T>(this T self, Func<T, Maybe<T>> selector)
         {
             Guard.NotNull(self, "self");
             Guard.NotNull(selector, "selector");
 
-            return new[] {self}.Concat(selector(self).Select(x => Flatten(x, selector)).ValueOrDefault(Enumerable.Empty<T>()));
+            return new[] { self }.Concat(selector(self).Select(x => Recurse(x, selector)).ValueOrDefault(Enumerable.Empty<T>()));
         }
     }
 }
