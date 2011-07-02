@@ -91,7 +91,7 @@ namespace iSynaptic.Commons.Data
                 .ToMaybe()
                 .Express(request => request.SelectMaybe(TryResolve).OnValue(x => OnValidateValue(x, "bound"))
                                      .Or(request.Select(GetDefault).OnValue(x => OnValidateValue(x, "default"))))
-                .Extract();
+                .ValueOrDefault();
         }
 
         protected virtual Maybe<TExodata> TryResolve<TContext, TSubject>(IExodataRequest<TExodata, TContext, TSubject> request)
@@ -115,7 +115,7 @@ namespace iSynaptic.Commons.Data
 
         protected virtual TExodata GetDefault<TContext, TSubject>(IExodataRequest<TExodata, TContext, TSubject> request)
         {
-            return _Default.Extract();
+            return _Default.ValueOrDefault();
         }
     }
 

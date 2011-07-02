@@ -40,7 +40,7 @@ namespace iSynaptic.Commons.Data
                 .Unless(x => !ReferenceEquals(Subject, null) && !Subject.Equals(x.Subject))
                 .Unless(x => Member != x.Member)
                 .Select(x => true)
-                .Extract(false);
+                .ValueOrDefault(false);
         }
 
         public override bool Equals(object obj)

@@ -55,7 +55,7 @@ namespace iSynaptic.Commons.Collections.Generic
                 .TryGetValue(WrapKey(key, _Comparer))
                 .SelectMaybe(UnwrapValue);
 
-            value = result.Extract();
+            value = result.ValueOrDefault();
             return result.HasValue;
         }
 

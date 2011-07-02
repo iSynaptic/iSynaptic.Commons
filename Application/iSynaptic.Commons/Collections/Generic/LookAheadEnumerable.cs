@@ -18,7 +18,7 @@ namespace iSynaptic.Commons.Collections.Generic
                 .ToMaybe()
                 .Coalesce(x => x.GetEnumerator())
                 .Select(x => new LookAheadEnumerator<T>(x))
-                .Extract();
+                .ValueOrDefault();
         }
 
         IEnumerator IEnumerable.GetEnumerator()

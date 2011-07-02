@@ -59,7 +59,7 @@ namespace iSynaptic.Commons.Collections.Generic
                 .TryGetValue(key)
                 .Or(() => _Selector(key).OnValue(x => _Underlying.Add(key, x)));
 
-            value = results.Extract();
+            value = results.ValueOrDefault();
             return results.HasValue;
         }
 

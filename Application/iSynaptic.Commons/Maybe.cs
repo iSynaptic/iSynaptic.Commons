@@ -339,27 +339,31 @@ namespace iSynaptic.Commons
 
         #endregion
 
-        #region Extract Operator
+        #region ValueOrDefault Operator
 
-        public static T Extract<T>(this Maybe<T> self)
+        public static T ValueOrDefault<T>(this Maybe<T> self, Func<T> @default)
         {
-            return self.Extract(default(T));
+            return self.Or(@default).Value;
         }
 
-        public static T Extract<T>(this Maybe<T> self, T @default)
+        public static T ValueOrDefault<T>(this Maybe<T> self, T @default)
         {
-            return self.Extract(() => @default);
+            return self.Or(@default).Value;
         }
 
-        public static T Extract<T>(this Maybe<T> self, Func<T> @default)
+        public static T ValueOrDefault<T>(this Maybe<T> self)
         {
-            return self.Or(@default)
-                .Value;
+            return self.Or(default(T)).Value;
         }
 
         #endregion
 
         #region Or Operator
+
+        public static Maybe<T> Or<T>(this Maybe<T> self, T value)
+        {
+            return self.Or(() => value.ToMaybe());
+        }
 
         public static Maybe<T> Or<T>(this Maybe<T> self, Func<T> valueFactory)
         {
@@ -607,6 +611,11 @@ namespace iSynaptic.Commons
             return self.Bind(x => selector(x).ToMaybe());
         }
 
+        public static T Extract<T>(this Maybe<T> self)
+        {
+            return self.Value;
+        }
+
         public static Maybe<T> Return<T>(T value)
         {
             return new Maybe<T>(value);
@@ -800,7 +809,7 @@ namespace iSynaptic.Commons
         {
             return self.Select(x => (T?)x)
                 .Or((T?)null)
-                .Extract();
+                .ValueOrDefault();
         }
 
         // Conventionally, in LINQ, the monadic "return" operator is written "To...,"

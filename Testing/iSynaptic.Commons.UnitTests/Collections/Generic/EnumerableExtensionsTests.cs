@@ -255,7 +255,7 @@ namespace iSynaptic.Commons.Collections.Generic
 
             var expected = new[] { 1, 10, 2, 11, 3, 12, 4, 13, 5, 14, 6, 15, 7, 16, 8, 17, 9, 18, 10, 19 };
 
-            Assert.IsTrue(zipped.SelectMany(x => x).Select(x => x.Extract()).SequenceEqual(expected));
+            Assert.IsTrue(zipped.SelectMany(x => x).Select(x => x.ValueOrDefault()).SequenceEqual(expected));
         }
 
         [Test]
@@ -266,7 +266,7 @@ namespace iSynaptic.Commons.Collections.Generic
 
             var expected = new[] { 1, 10, 2, 11, 3, 12, 4, 13, 5, 14, 6, 15, 7, 16, 8, 17, 9, 18, 10, 19 };
 
-            Assert.IsTrue(zipped.SelectMany(x => x).Select(x => x.Extract()).SequenceEqual(expected));
+            Assert.IsTrue(zipped.SelectMany(x => x).Select(x => x.ValueOrDefault()).SequenceEqual(expected));
         }
 
         [Test]
@@ -277,7 +277,7 @@ namespace iSynaptic.Commons.Collections.Generic
 
             var expected = new[] { 1, 10, 2, 11, 3, 12, 4, 13, 5, 14, 6, 15, 7, 16, 8, 17, 9, 18, 10, 19 };
 
-            Assert.IsTrue(zipped.SelectMany(x => x).Select(x => x.Extract()).SequenceEqual(expected));
+            Assert.IsTrue(zipped.SelectMany(x => x).Select(x => x.ValueOrDefault()).SequenceEqual(expected));
         }
 
         [Test]

@@ -428,26 +428,26 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void Extract_UnwrapsValueIfItHasAvalue()
+        public void ValueOrDefault_UnwrapsValueIfItHasAvalue()
         {
             var rawValue = "Hello World!";
             var value = Maybe.NotNull(rawValue)
-                .Extract("{default}");
+                .ValueOrDefault("{default}");
 
             Assert.AreEqual(rawValue, value);
 
             value = Maybe<string>.NoValue
-                .Extract("{default}");
+                .ValueOrDefault("{default}");
 
             Assert.AreEqual("{default}", value);
         }
 
         [Test]
-        public void Extract_ThrowsException()
+        public void Extract_ThrowsContainedException()
         {
             Assert.Throws<InvalidOperationException>(() =>
                 new Maybe<int>(new InvalidOperationException())
-                    .Extract(42));
+                    .Extract());
         }
 
         [Test]
@@ -455,7 +455,7 @@ namespace iSynaptic.Commons
         {
             Assert.Throws<InvalidOperationException>(() =>
                 Maybe.Throw<int>(new InvalidOperationException())
-                    .Extract(42));
+                    .Extract());
         }
 
 
@@ -506,7 +506,7 @@ namespace iSynaptic.Commons
                 .Select(x => 7/x)
                 .OnException(x => executed = true);
 
-            Assert.Throws<DivideByZeroException>(() => value.Extract());
+            Assert.Throws<DivideByZeroException>(() => value.ValueOrDefault());
             Assert.IsTrue(executed);
         }
 
@@ -531,7 +531,7 @@ namespace iSynaptic.Commons
                 .Select(x => 7 / x)
                 .OnException(x => { count++; throw new NullReferenceException(); });
 
-            var exception = Assert.Throws<NullReferenceException>(() => value.Extract());
+            var exception = Assert.Throws<NullReferenceException>(() => value.ValueOrDefault());
             Assert.AreEqual(1, count);
         }
 
@@ -543,7 +543,7 @@ namespace iSynaptic.Commons
             var value = new Maybe<int>(new InvalidOperationException())
                 .OnException(x => { count++; throw new NullReferenceException(); });
 
-            var exception = Assert.Throws<NullReferenceException>(() => value.Extract());
+            var exception = Assert.Throws<NullReferenceException>(() => value.ValueOrDefault());
             Assert.AreEqual(1, count);
         }
 
@@ -624,7 +624,7 @@ namespace iSynaptic.Commons
 
             var value = Maybe.Return("Hello")
                 .With(x => x.Length, x => checkValue = x)
-                .Extract();
+                .ValueOrDefault();
 
             Assert.AreEqual("Hello", value);
             Assert.AreEqual(5, checkValue);
@@ -637,7 +637,7 @@ namespace iSynaptic.Commons
 
             var value = Maybe.Return("Hello")
                 .With(x => Maybe<int>.NoValue, x => checkValue = x)
-                .Extract();
+                .ValueOrDefault();
 
             Assert.AreEqual("Hello", value);
             Assert.AreEqual(0, checkValue);
@@ -914,7 +914,7 @@ namespace iSynaptic.Commons
             var value = Maybe.Return(foo)
                 .Cast<DateTime>();
 
-            Assert.Throws<InvalidCastException>(() => value.Extract());
+            Assert.Throws<InvalidCastException>(() => value.ValueOrDefault());
         }
 
         [Test]
@@ -925,7 +925,7 @@ namespace iSynaptic.Commons
             var value = new Maybe<List<string>>(new InvalidOperationException())
                 .Cast<DateTime>();
 
-            Assert.Throws<InvalidOperationException>(() => value.Extract());
+            Assert.Throws<InvalidOperationException>(() => value.ValueOrDefault());
         }
 
         [Test]
@@ -970,7 +970,7 @@ namespace iSynaptic.Commons
             var value = new Maybe<ICollection<string>>(new InvalidOperationException())
                 .OfType<DateTime>();
 
-            Assert.Throws<InvalidOperationException>(() => value.Extract());
+            Assert.Throws<InvalidOperationException>(() => value.ValueOrDefault());
         }
 
         [Test]
@@ -1013,7 +1013,7 @@ namespace iSynaptic.Commons
         {
             var value = Maybe.Return(1)
                 .Or(Maybe.Return(42))
-                .Extract();
+                .ValueOrDefault();
 
             Assert.AreEqual(1, value);
         }
@@ -1023,7 +1023,7 @@ namespace iSynaptic.Commons
         {
             var value = Maybe<int>.NoValue
                 .Or(Maybe.Return(42))
-                .Extract();
+                .ValueOrDefault();
 
             Assert.AreEqual(42, value);
         }
@@ -1044,7 +1044,7 @@ namespace iSynaptic.Commons
             var value = new Maybe<int>(new InvalidOperationException())
                 .Or(Maybe.Return(42));
 
-            Assert.Throws<InvalidOperationException>(() => value.Extract());
+            Assert.Throws<InvalidOperationException>(() => value.ValueOrDefault());
         }
 
         [Test]
@@ -1053,7 +1053,7 @@ namespace iSynaptic.Commons
             var value = Maybe<int>.NoValue
                 .Or(new Maybe<int>(new InvalidOperationException()));
 
-            Assert.Throws<InvalidOperationException>(() => value.Extract());
+            Assert.Throws<InvalidOperationException>(() => value.ValueOrDefault());
         }
 
         [Test]
@@ -1062,7 +1062,7 @@ namespace iSynaptic.Commons
             var value = new Maybe<int>(new InvalidOperationException())
                 .Or(new Maybe<int>(new NotSupportedException()));
 
-            Assert.Throws<InvalidOperationException>(() => value.Extract());
+            Assert.Throws<InvalidOperationException>(() => value.ValueOrDefault());
         }
 
         [Test]
@@ -1073,7 +1073,7 @@ namespace iSynaptic.Commons
             var value = new Maybe<int>(new InvalidOperationException())
                 .Or(() => { executed = true; return 42; });
 
-            Assert.Throws<InvalidOperationException>(() => value.Extract());
+            Assert.Throws<InvalidOperationException>(() => value.ValueOrDefault());
             Assert.IsFalse(executed);
         }
 
@@ -1082,7 +1082,7 @@ namespace iSynaptic.Commons
         {
             var value = Maybe.Return(1)
                 .Join(Maybe.Return(42))
-                .Extract();
+                .ValueOrDefault();
 
             Assert.AreEqual(Tuple.Create(1, 42), value);
         }
@@ -1102,7 +1102,7 @@ namespace iSynaptic.Commons
             var value = new Maybe<int>(new InvalidOperationException())
                 .Join(Maybe.Return(42));
 
-            Assert.Throws<InvalidOperationException>(() => value.Extract());
+            Assert.Throws<InvalidOperationException>(() => value.ValueOrDefault());
         }
 
         [Test]
@@ -1111,7 +1111,7 @@ namespace iSynaptic.Commons
             var value = Maybe.Return(1)
                 .Join(new Maybe<int>(new InvalidOperationException()));
 
-            Assert.Throws<InvalidOperationException>(() => value.Extract());
+            Assert.Throws<InvalidOperationException>(() => value.ValueOrDefault());
         }
 
         [Test]
@@ -1120,7 +1120,7 @@ namespace iSynaptic.Commons
             var value = new Maybe<int>(new InvalidOperationException())
                 .Join(new Maybe<int>(new NotSupportedException()));
 
-            Assert.Throws<InvalidOperationException>(() => value.Extract());
+            Assert.Throws<InvalidOperationException>(() => value.ValueOrDefault());
         }
 
         [Test]
@@ -1131,7 +1131,7 @@ namespace iSynaptic.Commons
             var value = new Maybe<int>(new InvalidOperationException())
                 .Join(Maybe.Defer(() => { executed = true; return 42; }));
 
-            Assert.Throws<InvalidOperationException>(() => value.Extract());
+            Assert.Throws<InvalidOperationException>(() => value.ValueOrDefault());
             Assert.IsFalse(executed);
         }
 

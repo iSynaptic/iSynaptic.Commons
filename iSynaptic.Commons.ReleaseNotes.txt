@@ -2,6 +2,19 @@
 RELEASE NOTES: iSynaptic.Commons
 ======================================
 
+==== v0.2.2 (July xx, 2011) ====
+
+---- Breaking Changes ----
+
+* All Maybe.Extract implementations have been renamed to ValueOrDefault. This 
+  more accurately communicates the function's behavior.  This is similar to
+  IEnumerable<T>'s FirstOrDefault methods.
+ 
+* A new method, named Extract has been implemented that will throw an exception
+  if no value is available.  This is similar to IEnumerable<T>'s First method.
+
+
+
 ==== v0.2.1 (June 29, 2011) ====
 
 ---- Breaking Changes ----
