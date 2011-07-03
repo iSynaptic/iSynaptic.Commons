@@ -4,6 +4,11 @@ RELEASE NOTES: iSynaptic.Commons
 
 ==== v0.2.2 (July xx, 2011) ====
 
+---- Features ----
+
+* Added two Maybe.If overloads that emit the elseValue and use Maybe<T>.NoValue
+  if the predicate evaluates to false.
+
 ---- Breaking Changes ----
 
 * All Maybe.Extract implementations have been renamed to ValueOrDefault. This 
@@ -12,6 +17,10 @@ RELEASE NOTES: iSynaptic.Commons
  
 * A new method, named Extract has been implemented that will throw an exception
   if no value is available.  This is similar to IEnumerable<T>'s First method.
+
+* Maybe<T>.Express has been moved to the static Maybe class as an extension
+  method.  There are no more Maybe<T> operators directly implemented in the
+  Maybe<T> structure.
 
 * Renamed EnumerableExtensions.Flatten to Recurse to better reflect what the
   method does.

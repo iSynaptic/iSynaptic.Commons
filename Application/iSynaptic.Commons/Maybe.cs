@@ -28,38 +28,20 @@ namespace iSynaptic.Commons
         }
 
         public Maybe(Func<T> computation)
-            : this()
+            : this(() => new Maybe<T>(computation()))
         {
-            Guard.NotNull(computation, "computation");
-            _Computation = Default.Express(x => new Maybe<T>(computation()))._Computation;
         }
 
         public Maybe(Func<Maybe<T>> computation)
-            : this(computation, true)
-        {
-        }
-
-        private Maybe(Func<Maybe<T>> computation, bool wrapComputation)
             : this()
         {
             Guard.NotNull(computation, "computation");
 
-            _Computation = wrapComputation
-                ? Default.Express(x => computation())._Computation
-                : computation;
-        }
+            Maybe<T>? memoizedResult = null;
 
-        public Maybe<TResult> Express<TResult>(Func<Maybe<T>, Maybe<TResult>> func)
-        {
-            Guard.NotNull(func, "func");
-
-            var @this = this;
-            Maybe<TResult>? memoizedResult = null;
-
-            return new Maybe<TResult>(() =>
-                memoizedResult.HasValue
+            _Computation = () => memoizedResult.HasValue
                     ? memoizedResult.Value
-                    : (memoizedResult = func(@this)).Value, false);
+                    : (memoizedResult = computation()).Value;
         }
 
         public Maybe(Exception exception)
@@ -230,6 +212,32 @@ namespace iSynaptic.Commons
 
         #endregion
 
+        #region If Operator
+
+        public static Maybe<T> If<T>(bool predicate, Maybe<T> thenValue)
+        {
+            return If(() => predicate, thenValue);
+        }
+
+        public static Maybe<T> If<T>(Func<bool> predicate, Maybe<T> thenValue)
+        {
+            Guard.NotNull(predicate, "predicate");
+            return If(predicate, thenValue, Maybe<T>.NoValue);
+        }
+
+        public static Maybe<T> If<T>(bool predicate, Maybe<T> thenValue, Maybe<T> elseValue)
+        {
+            return If(() => predicate, thenValue, elseValue);
+        }
+
+        public static Maybe<T> If<T>(Func<bool> predicate, Maybe<T> thenValue, Maybe<T> elseValue)
+        {
+            Guard.NotNull(predicate, "predicate");
+            return Defer(() => predicate() ? thenValue : elseValue);
+        }
+
+        #endregion
+
         #region NotNull Operator
 
         public static Maybe<T> NotNull<T>(T value) where T : class
@@ -343,17 +351,17 @@ namespace iSynaptic.Commons
 
         public static T ValueOrDefault<T>(this Maybe<T> self, Func<T> @default)
         {
-            return self.Or(@default).Value;
+            return self.Or(@default).Extract();
         }
 
         public static T ValueOrDefault<T>(this Maybe<T> self, T @default)
         {
-            return self.Or(@default).Value;
+            return self.ValueOrDefault(() => @default);
         }
 
         public static T ValueOrDefault<T>(this Maybe<T> self)
         {
-            return self.Or(default(T)).Value;
+            return self.ValueOrDefault(default(T));
         }
 
         #endregion
@@ -611,6 +619,14 @@ namespace iSynaptic.Commons
             return self.Bind(x => selector(x).ToMaybe());
         }
 
+        public static Maybe<TResult> Express<T, TResult>(this Maybe<T> self, Func<Maybe<T>, Maybe<TResult>> func)
+        {
+            Guard.NotNull(func, "func");
+
+            var @this = self;
+            return new Maybe<TResult>(() => func(@this));
+        }
+
         public static T Extract<T>(this Maybe<T> self)
         {
             return self.Value;
@@ -625,17 +641,6 @@ namespace iSynaptic.Commons
         {
             Guard.NotNull(exception, "exception");
             return new Maybe<T>((Func<T>)(() => { throw exception; }));
-        }
-
-        public static Maybe<T> If<T>(bool predicate, Maybe<T> thenValue, Maybe<T> elseValue)
-        {
-            return If(() => predicate, thenValue, elseValue);
-        }
-
-        public static Maybe<T> If<T>(Func<bool> predicate, Maybe<T> thenValue, Maybe<T> elseValue)
-        {
-            Guard.NotNull(predicate, "predicate");
-            return Defer(() => predicate() ? thenValue : elseValue);
         }
 
         // This is an alias of Bind and SelectMany.  Since SelectMany doesn't make sense (because there is at most one value),

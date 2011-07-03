@@ -1229,9 +1229,17 @@ namespace iSynaptic.Commons
         }
 
         [Test]
+        public void If_ReturnsNoValue_IfBoolIsFalseAndNoElseValueProvided()
+        {
+            var value = Maybe.If(false, 42.ToMaybe());
+
+            Assert.IsFalse(value.HasValue);
+        }
+
+        [Test]
         public void If_ReturnsThenValue_IfBoolIsTrue()
         {
-            var value = Maybe.If(true, 42.ToMaybe(), 7.ToMaybe());
+            var value = Maybe.If(true, 42.ToMaybe());
 
             Assert.That(value == 42);
         }
