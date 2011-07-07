@@ -19,11 +19,5 @@ namespace iSynaptic.Commons.Data
         TExodata For<TSubject>(TSubject subject);
         TExodata For<TSubject>(Expression<Func<TSubject, object>> member);
         TExodata For<TSubject>(TSubject subject, Expression<Func<TSubject, object>> member);
-
-        LazyExodata<TExodata> LazyGet();
-        LazyExodata<TExodata> LazyFor<TSubject>();
-        LazyExodata<TExodata> LazyFor<TSubject>(TSubject subject);
-        LazyExodata<TExodata> LazyFor<TSubject>(Expression<Func<TSubject, object>> member);
-        LazyExodata<TExodata> LazyFor<TSubject>(TSubject subject, Expression<Func<TSubject, object>> member);
     }
 }

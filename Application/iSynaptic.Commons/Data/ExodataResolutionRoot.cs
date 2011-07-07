@@ -53,31 +53,6 @@ namespace iSynaptic.Commons.Data
             return Resolve(_Context, subject.ToMaybe(), member);
         }
 
-        public LazyExodata<TExodata> LazyGet()
-        {
-            return new LazyExodata<TExodata>(Get);
-        }
-
-        public LazyExodata<TExodata> LazyFor<TSubject>()
-        {
-            return new LazyExodata<TExodata>(For<TSubject>);
-        }
-
-        public LazyExodata<TExodata> LazyFor<TSubject>(TSubject subject)
-        {
-            return new LazyExodata<TExodata>(() => For(subject));
-        }
-
-        public LazyExodata<TExodata> LazyFor<TSubject>(Expression<Func<TSubject, object>> member)
-        {
-            return new LazyExodata<TExodata>(() => For(member));
-        }
-
-        public LazyExodata<TExodata> LazyFor<TSubject>(TSubject subject, Expression<Func<TSubject, object>> member)
-        {
-            return new LazyExodata<TExodata>(() => For(subject, member));
-        }
-
         protected TExodata Resolve<TSubject>(Maybe<TContext> context, Maybe<TSubject> subject, Expression member)
         {
             MemberInfo memberInfo = member != null 

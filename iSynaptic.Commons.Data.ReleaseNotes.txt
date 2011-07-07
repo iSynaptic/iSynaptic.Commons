@@ -4,7 +4,10 @@ RELEASE NOTES: iSynaptic.Commons.Data
 
 ==== v0.2.2 (July xx, 2011) ====
 
-* No changes; reving with iSynaptic.Commons.
+---- Breaking Changes ----
+
+* Dropped direct support for LazyExodata - this behavior can be achieved easily
+  without direct support by Exodata.
 
 
 ==== v0.2.1 (June 29, 2011) ====

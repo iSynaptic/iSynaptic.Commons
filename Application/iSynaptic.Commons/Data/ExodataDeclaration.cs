@@ -56,31 +56,6 @@ namespace iSynaptic.Commons.Data
             return Given<object>().For(subject, member);
         }
 
-        public LazyExodata<TExodata> LazyGet()
-        {
-            return Given<object>().LazyGet();
-        }
-
-        public LazyExodata<TExodata> LazyFor<TSubject>()
-        {
-            return Given<object>().LazyFor<TSubject>();
-        }
-
-        public LazyExodata<TExodata> LazyFor<TSubject>(TSubject subject)
-        {
-            return Given<object>().LazyFor(subject);
-        }
-
-        public LazyExodata<TExodata> LazyFor<TSubject>(Expression<Func<TSubject, object>> member)
-        {
-            return Given<object>().LazyFor(member);
-        }
-
-        public LazyExodata<TExodata> LazyFor<TSubject>(TSubject subject, Expression<Func<TSubject, object>> member)
-        {
-            return Given<object>().LazyFor(subject, member);
-        }
-
         #endregion
 
         #region Resolution Logic
