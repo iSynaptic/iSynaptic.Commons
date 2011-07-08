@@ -48,9 +48,11 @@ namespace iSynaptic.Commons.Data
 
         private readonly HashSet<IExodataBindingSource> _BindingSources = new HashSet<IExodataBindingSource>();
 
-        public Maybe<TExodata> TryResolve<TExodata, TContext, TSubject>(IExodataRequest<TExodata, TContext, TSubject> request)
+        public Maybe<TExodata> TryResolve<TExodata, TContext, TSubject>(ISymbol<TExodata> symbol, Maybe<TContext> context, Maybe<TSubject> subject, MemberInfo member)
         {
-            Guard.NotNull(request, "request");
+            Guard.NotNull(symbol, "symbol");
+
+            var request = ExodataRequest.Create(symbol, context, subject, member);
 
             int requestHashCode = request.GetHashCode();
 

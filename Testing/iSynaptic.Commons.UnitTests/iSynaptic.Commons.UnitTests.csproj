@@ -94,6 +94,7 @@
     <Compile Include="Collections\Generic\WeakKeyMemberDictionaryTests.cs" />
     <Compile Include="Data\CommonExodata.cs" />
     <Compile Include="Data\DescriptionAttribute.cs" />
+    <Compile Include="Data\ExodataResolverExtensions.cs" />
     <Compile Include="Data\IntegerExodata.cs" />
     <Compile Include="Data\ExodataResolverTests.cs" />
     <Compile Include="Data\StringExodataSurrogate.cs" />

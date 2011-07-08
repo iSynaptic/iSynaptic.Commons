@@ -17,7 +17,7 @@ namespace iSynaptic.Commons.Data
             return member.ExtractMemberInfoFromMemberExpression()
                 .Where(x => x.DeclaringType.IsAssignableFrom(typeof(TSubject)))
                 .Where(x => x is PropertyInfo || x is FieldInfo)
-                .ThrowOnNoValue(() => new ArgumentException("You can only retreive member metatdata for properties and fields.", "member"))
+                .ThrowOnNoValue(() => new ArgumentException("You can only retrieve member exodata for properties and fields.", "member"))
                 .Value;
         }
     }

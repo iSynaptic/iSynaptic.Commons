@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using iSynaptic.Commons.Data.ExodataDeclarations;
 using NUnit.Framework;
 using Rhino.Mocks;
 
@@ -12,19 +11,18 @@ namespace iSynaptic.Commons.Data
     public class ExodataResolverTests
     {
         [Test]
-        public void Resolve_WithNoBindings_ReturnsDefault()
+        public void TryResolve_WithNoBindings_ReturnsNoValue()
         {
             var resolver = new ExodataResolver();
-            ExodataDeclaration.SetResolver(resolver);
+            var symbol = new Symbol<int>();
 
-            var declaration = new ComparableExodataDeclaration<int>(-1, 42, 7);
-            var value = declaration.Get();
+            var value = resolver.TryGet(symbol);
 
-            Assert.AreEqual(7, value);
+            Assert.AreEqual(Maybe<int>.NoValue, value);
         }
 
         [Test]
-        public void Resolve_WithAmbiguousBindingSelection_ThrowsException()
+        public void TryResolve_WithAmbiguousBindingSelection_ThrowsException()
         {
             var binding1 = MockRepository.GenerateStub<IExodataBinding>();
             var binding2 = MockRepository.GenerateStub<IExodataBinding>();
@@ -45,66 +43,68 @@ namespace iSynaptic.Commons.Data
             var resolver = new ExodataResolver();
             resolver.AddExodataBindingSource(source);
 
-            ExodataDeclaration.SetResolver(resolver);
-            Assert.Throws<InvalidOperationException>(() => StringExodata.MaxLength.Get());
+            var symbol = new Symbol<int>();
+
+            Assert.Throws<InvalidOperationException>(() => resolver.TryGet(symbol));
         }
 
         [Test]
-        public void Resolve_WithScopeFactoryObject_CachesResult()
+        public void TryResolve_WithScopeFactoryObject_CachesResult()
         {
             int resolveCount = 0;
             var scopeObject = new object();
+            var symbol = new Symbol<int>();
 
             var resolver = new StandardExodataResolver();
-            resolver.Bind(StringExodata.MaxLength)
+
+            resolver.Bind(symbol)
                 .InScope(x => scopeObject)
                 .To(r => { resolveCount++; return 42; });
 
-            ExodataDeclaration.SetResolver(resolver);
-
-            int maxLength = StringExodata.MaxLength;
+            int maxLength = resolver.TryGet(symbol).Value;
             Assert.AreEqual(42, maxLength);
 
-            maxLength = StringExodata.MaxLength;
+            maxLength = resolver.TryGet(symbol).Value;
             Assert.AreEqual(42, maxLength);
 
-            maxLength = StringExodata.MaxLength;
+            maxLength = resolver.TryGet(symbol).Value;
             Assert.AreEqual(42, maxLength);
             
             Assert.AreEqual(1, resolveCount);
         }
 
         [Test]
-        public void Resolve_WithScopeFactoryObject_FlushesCacheCorrectly()
+        public void TryResolve_WithScopeFactoryObject_FlushesCacheCorrectly()
         {
             int resolveCount = 0;
             var scopeObject = new object();
+            var symbol = new Symbol<int>();
 
             var resolver = new StandardExodataResolver();
-            resolver.Bind(StringExodata.MaxLength)
+            resolver.Bind(symbol)
                 .InScope(x => scopeObject)
                 .To(r => { resolveCount++; return 42; });
 
-            ExodataDeclaration.SetResolver(resolver);
-
-            int maxLength = StringExodata.MaxLength;
+            int maxLength = resolver.TryGet(symbol).Value;
             Assert.AreEqual(42, maxLength);
 
-            maxLength = StringExodata.MaxLength;
+            maxLength = resolver.TryGet(symbol).Value;
             Assert.AreEqual(42, maxLength);
 
             scopeObject = null;
             GC.Collect();
 
-            maxLength = StringExodata.MaxLength;
+            maxLength = resolver.TryGet(symbol).Value;
+
             Assert.AreEqual(42, maxLength);
             Assert.AreEqual(2, resolveCount);
         }
 
         [Test]
-        public void Resolve_WithExodataScopeObject_ChecksToSeeIfExodataScopeObjectSaysItIsInScope()
+        public void TryResolve_WithExodataScopeObject_ChecksToSeeIfExodataScopeObjectSaysItIsInScope()
         {
             int resolveCount = 0;
+            var symbol = new Symbol<int>();
 
             bool isInScope = true;
 
@@ -114,30 +114,30 @@ namespace iSynaptic.Commons.Data
                 .Do((Func<IExodataBinding, IExodataRequest<int, object, object>, bool>) ((b, r) => isInScope));
 
             var resolver = new StandardExodataResolver();
-            resolver.Bind(StringExodata.MaxLength)
+
+            resolver.Bind(symbol)
                 .InScope(x => exodataScopeObject)
                 .To(r => { resolveCount++; return 42; });
 
-            ExodataDeclaration.SetResolver(resolver);
-
-            int maxLength = StringExodata.MaxLength;
+            int maxLength = resolver.TryGet(symbol).Value;
             Assert.AreEqual(42, maxLength);
 
-            maxLength = StringExodata.MaxLength;
+            maxLength = resolver.TryGet(symbol).Value;
             Assert.AreEqual(42, maxLength);
 
             isInScope = false;
 
-            maxLength = StringExodata.MaxLength;
+            maxLength = resolver.TryGet(symbol).Value;
 
             Assert.AreEqual(42, maxLength);
             Assert.AreEqual(2, resolveCount);
         }
 
         [Test]
-        public void Resolve_WithExodataScopeObject_FlushesCacheWhenScopeRequestsIt()
+        public void TryResolve_WithExodataScopeObject_FlushesCacheWhenScopeRequestsIt()
         {
             int resolveCount = 0;
+            var symbol = new Symbol<int>();
 
             var exodataScopeObject = MockRepository.GenerateStub<IExodataScopeObject>();
             exodataScopeObject.Expect(x => x.IsInScope<int, object, object>(null, null))
@@ -145,21 +145,19 @@ namespace iSynaptic.Commons.Data
                 .Return(true);
 
             var resolver = new StandardExodataResolver();
-            resolver.Bind(StringExodata.MaxLength)
+            resolver.Bind(symbol)
                 .InScope(x => exodataScopeObject)
                 .To(r => { resolveCount++; return 42; });
 
-            ExodataDeclaration.SetResolver(resolver);
-
-            int maxLength = StringExodata.MaxLength;
+            int maxLength = resolver.TryGet(symbol).Value;
             Assert.AreEqual(42, maxLength);
 
-            maxLength = StringExodata.MaxLength;
+            maxLength = resolver.TryGet(symbol).Value;
             Assert.AreEqual(42, maxLength);
 
             exodataScopeObject.Raise(x => x.CacheFlushRequested += null, this, EventArgs.Empty);
 
-            maxLength = StringExodata.MaxLength;
+            maxLength = resolver.TryGet(symbol).Value;
 
             Assert.AreEqual(42, maxLength);
             Assert.AreEqual(2, resolveCount);

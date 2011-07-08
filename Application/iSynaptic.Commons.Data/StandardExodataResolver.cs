@@ -100,14 +100,14 @@ namespace iSynaptic.Commons.Data
             _Modules.Remove(module);
         }
 
-        public IFluentExodataBindingGivenSubjectWhenScopeTo<TExodata, object, object> Bind<TExodata>(IExodataDeclaration<TExodata> declaration)
+        public IFluentExodataBindingGivenSubjectWhenScopeTo<TExodata, object, object> Bind<TExodata>(ISymbol<TExodata> symbol)
         {
-            return _ResolverModule.Bind(declaration);
+            return _ResolverModule.Bind(symbol);
         }
 
-        public void Bind<TExodata>(IExodataDeclaration<TExodata> declaration, TExodata value)
+        public void Bind<TExodata>(ISymbol<TExodata> symbol, TExodata value)
         {
-            Bind(declaration).To(value);
+            Bind(symbol).To(value);
         }
     }
 }

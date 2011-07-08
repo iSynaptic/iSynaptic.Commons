@@ -8,7 +8,7 @@
 
             Bind(CommonExodata.Description)
                 .For<TestSubject>()
-                .To("Overriden Description");
+                .To("Overridden Description");
         }
     }
 }

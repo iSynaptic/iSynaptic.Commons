@@ -99,17 +99,10 @@
     <Compile Include="Convert.cs" />
     <Compile Include="DataEventArgs.cs" />
     <Compile Include="Data\ExodataHelper.cs" />
-    <Compile Include="Data\ExodataResolutionRoot.cs" />
-    <Compile Include="Data\IExodataDeclaration.cs" />
-    <Compile Include="Data\IExodataRequest.cs" />
-    <Compile Include="Data\IExodataResolutionRoot.cs" />
+    <Compile Include="Data\Syntax\FluentExodataResolutionRoot.cs" />
+    <Compile Include="Data\Syntax\IFluentExodataResolutionRoot.cs" />
     <Compile Include="Data\IExodataResolver.cs" />
     <Compile Include="Data\ExodataDeclaration.cs" />
-    <Compile Include="Data\ExodataDeclarations\GuidExodataDeclaration.cs" />
-    <Compile Include="Data\ExodataDeclarations\ComparableExodataDeclaration.cs" />
-    <Compile Include="Data\ExodataDeclarations\StringExodataDeclaration.cs" />
-    <Compile Include="Data\ExodataRequest.cs" />
-    <Compile Include="Data\ExodataValidationException.cs" />
     <Compile Include="DependencyResolver.cs" />
     <Compile Include="DependencyResolverExtensions.cs" />
     <Compile Include="Diagnostics\ILogger.cs" />
@@ -120,6 +113,7 @@
     <Compile Include="Collections\Generic\DictionaryExtensions.cs" />
     <Compile Include="Equatable.cs" />
     <Compile Include="ExceptionExtensions.cs" />
+    <Compile Include="ISymbol.cs" />
     <Compile Include="Linq\Expressions\ExpressionExtensions.cs" />
     <Compile Include="FuncExtensions.generated.cs">
       <AutoGen>True</AutoGen>
@@ -156,6 +150,7 @@
     <Compile Include="Runtime\Serialization\CloneContext.cs" />
     <Compile Include="Runtime\Serialization\CloneReferenceOnlyAttribute.cs" />
     <Compile Include="Specification.cs" />
+    <Compile Include="Symbol.cs" />
     <Compile Include="SystemClock.cs" />
     <Compile Include="Text\Parsing\ScanningTextReader.cs" />
     <Compile Include="Transactions\ITransactional.cs" />

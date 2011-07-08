@@ -3,7 +3,7 @@ using System.Reflection.Emit;
 
 namespace iSynaptic.Commons.Data
 {
-    public class StringExodataAttribute : Attribute, IExodataAttribute<int>, IExodataAttribute<string>, IExodataAttribute<StringExodataDefinition, CommonExodataDefinition>
+    public class StringExodataAttribute : Attribute, IExodataAttribute<int>, IExodataAttribute<string>, IExodataAttribute<StringExodataDefinition>
     {
         private readonly int _MinLength;
         private readonly int _MaxLength;
@@ -19,14 +19,14 @@ namespace iSynaptic.Commons.Data
         public bool ProvidesExodataFor<TExodata, TContext, TSubject>(IExodataRequest<TExodata, TContext, TSubject> request)
         {
             return
-                request.Declaration == StringExodata.All ||
-                request.Declaration == StringExodata.MinLength ||
-                request.Declaration == StringExodata.MaxLength ||
-                request.Declaration == CommonExodata.All ||
-                request.Declaration == CommonExodata.Description;
+                request.Symbol == StringExodata.All ||
+                request.Symbol == StringExodata.MinLength ||
+                request.Symbol == StringExodata.MaxLength ||
+                request.Symbol == CommonExodata.All ||
+                request.Symbol == CommonExodata.Description;
         }
 
-        public StringExodataDefinition Resolve<TContext, TSubject>(IExodataRequest<CommonExodataDefinition, TContext, TSubject> request)
+        public StringExodataDefinition Resolve<TContext, TSubject>(IExodataRequest<StringExodataDefinition, TContext, TSubject> request)
         {
             return new StringExodataDefinition(_MinLength, _MaxLength, _Description);
         }
@@ -38,7 +38,7 @@ namespace iSynaptic.Commons.Data
 
         public int Resolve<TContext, TSubject>(IExodataRequest<int, TContext, TSubject> request)
         {
-            return request.Declaration == StringExodata.MinLength ? _MinLength : _MaxLength;
+            return request.Symbol == StringExodata.MinLength ? _MinLength : _MaxLength;
         }
     }
 }

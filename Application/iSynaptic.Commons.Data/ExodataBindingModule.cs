@@ -17,15 +17,15 @@ namespace iSynaptic.Commons.Data
             return _Bindings;
         }
 
-        public IFluentExodataBindingGivenSubjectWhenScopeTo<TExodata, object, object> Bind<TExodata>(IExodataDeclaration<TExodata> declaration)
+        public IFluentExodataBindingGivenSubjectWhenScopeTo<TExodata, object, object> Bind<TExodata>(ISymbol<TExodata> symbol)
         {
-            Guard.NotNull(declaration, "declaration");
-            return new FluentExodataBindingBuilder<TExodata, object, object>(this, declaration, b => _Bindings.Add(b));
+            Guard.NotNull(symbol, "symbol");
+            return new FluentExodataBindingBuilder<TExodata, object, object>(this, symbol, b => _Bindings.Add(b));
         }
 
-        public void Bind<TExodata>(IExodataDeclaration<TExodata> declaration, TExodata value)
+        public void Bind<TExodata>(ISymbol<TExodata> symbol, TExodata value)
         {
-            Bind(declaration).To(value);
+            Bind(symbol).To(value);
         }
     }
 }

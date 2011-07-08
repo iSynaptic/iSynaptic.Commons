@@ -8,10 +8,10 @@ namespace iSynaptic.Commons.Data.Syntax
 {
     internal class FluentExodataBindingBuilder<TExodata, TContext, TSubject> : IFluentExodataBindingGivenSubjectWhenScopeTo<TExodata, TContext, TSubject>
     {
-        public FluentExodataBindingBuilder(IExodataBindingSource source, IExodataDeclaration<TExodata> declaration, Action<IExodataBinding> onBuildComplete)
+        public FluentExodataBindingBuilder(IExodataBindingSource source, ISymbol<TExodata> symbol, Action<IExodataBinding> onBuildComplete)
         {
             Source = Guard.NotNull(source, "source");
-            Declaration = Guard.NotNull(declaration, "declaration");
+            Symbol = Guard.NotNull(symbol, "symbol");
             OnBuildComplete = Guard.NotNull(onBuildComplete, "onBuildComplete");
 
             Context = Maybe<TContext>.NoValue;
@@ -22,7 +22,7 @@ namespace iSynaptic.Commons.Data.Syntax
 
         public IFluentExodataBindingSubjectWhenScopeTo<TExodata, TDerivedContext, TSubject> Given<TDerivedContext>() where TDerivedContext : TContext
         {
-            return new FluentExodataBindingBuilder<TExodata, TDerivedContext, TSubject>(Source, Declaration, OnBuildComplete)
+            return new FluentExodataBindingBuilder<TExodata, TDerivedContext, TSubject>(Source, Symbol, OnBuildComplete)
             {
                 Context = Maybe<TDerivedContext>.NoValue
             };
@@ -30,7 +30,7 @@ namespace iSynaptic.Commons.Data.Syntax
 
         public IFluentExodataBindingSubjectWhenScopeTo<TExodata, TDerivedContext, TSubject> Given<TDerivedContext>(TDerivedContext context) where TDerivedContext : TContext
         {
-            return new FluentExodataBindingBuilder<TExodata, TDerivedContext, TSubject>(Source, Declaration, OnBuildComplete)
+            return new FluentExodataBindingBuilder<TExodata, TDerivedContext, TSubject>(Source, Symbol, OnBuildComplete)
             {
                 Context = context
             };
@@ -77,7 +77,7 @@ namespace iSynaptic.Commons.Data.Syntax
 
         private IFluentExodataBindingWhenScopeTo<TExodata, TContext, TDerivedSubject> ForCore<TDerivedSubject>(Maybe<TDerivedSubject> subject, IEnumerable<Expression<Func<TDerivedSubject, object>>> members) where TDerivedSubject : TSubject
         {
-            return new FluentExodataBindingBuilder<TExodata, TContext, TDerivedSubject>(Source, Declaration, OnBuildComplete)
+            return new FluentExodataBindingBuilder<TExodata, TContext, TDerivedSubject>(Source, Symbol, OnBuildComplete)
             {
                 Context = Context,
                 Subject = subject,
@@ -121,7 +121,7 @@ namespace iSynaptic.Commons.Data.Syntax
         {
             Guard.NotNull(request, "request");
 
-            if (Declaration != request.Declaration)
+            if (Symbol != request.Symbol)
                 return false;
 
             if (request.Member == null && Members.Length > 0)
@@ -154,7 +154,7 @@ namespace iSynaptic.Commons.Data.Syntax
         protected Maybe<TSubject> Subject { get; set; }
         protected MemberInfo[] Members { get; set; }
 
-        protected IExodataDeclaration<TExodata> Declaration { get; set; }
+        protected ISymbol<TExodata> Symbol { get; set; }
 
         protected Func<IExodataRequest<TExodata, TContext, TSubject>, bool> UserPredicate { get; set; }
         protected Func<IExodataRequest<TExodata, TContext, TSubject>, object> ScopeFactory { get; set; }

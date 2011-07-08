@@ -9,23 +9,23 @@ namespace iSynaptic.Commons.Data
 {
     public static class ExodataRequest
     {
-        public static ExodataRequest<TExodata, TContext, TSubject> Create<TExodata, TContext, TSubject>(IExodataDeclaration<TExodata> declaration, IMaybe<TContext> context, IMaybe<TSubject> subject, MemberInfo member)
+        public static ExodataRequest<TExodata, TContext, TSubject> Create<TExodata, TContext, TSubject>(ISymbol<TExodata> symbol, IMaybe<TContext> context, IMaybe<TSubject> subject, MemberInfo member)
         {
-            return new ExodataRequest<TExodata, TContext, TSubject>(declaration, context, subject, member);
+            return new ExodataRequest<TExodata, TContext, TSubject>(symbol, context, subject, member);
         }
     }
 
     public class ExodataRequest<TExodata, TContext, TSubject> : IExodataRequest<TExodata, TContext, TSubject>, IEquatable<IExodataRequest<TExodata, TContext, TSubject>>
     {
-        public ExodataRequest(IExodataDeclaration<TExodata> declaration, IMaybe<TContext> context, IMaybe<TSubject> subject, MemberInfo member)
+        public ExodataRequest(ISymbol<TExodata> symbol, IMaybe<TContext> context, IMaybe<TSubject> subject, MemberInfo member)
         {
-            Declaration = Guard.NotNull(declaration, "declaration");
+            Symbol = Guard.NotNull(symbol, "symbol");
             Context = context;
             Subject = subject;
             Member = member;
         }
 
-        public IExodataDeclaration<TExodata> Declaration { get; private set; }
+        public ISymbol<TExodata> Symbol { get; private set; }
 
         public IMaybe<TContext> Context { get; private set; }
         public IMaybe<TSubject> Subject { get; private set; }
@@ -35,7 +35,7 @@ namespace iSynaptic.Commons.Data
         {
             return Maybe
                 .NotNull(other)
-                .Unless(x => Declaration != x.Declaration)
+                .Unless(x => Symbol != x.Symbol)
                 .Unless(x => ReferenceEquals(Subject, null) != ReferenceEquals(x.Subject, null))
                 .Unless(x => !ReferenceEquals(Subject, null) && !Subject.Equals(x.Subject))
                 .Unless(x => Member != x.Member)
@@ -53,7 +53,7 @@ namespace iSynaptic.Commons.Data
         {
             int results = 42;
 
-            results = results ^ Declaration.GetHashCode();
+            results = results ^ Symbol.GetHashCode();
             results = results ^ (Context != null ? Context.GetHashCode() : 0);
             results = results ^ (Subject != null ? Subject.GetHashCode() : 0);
             results = results ^ (Member != null ? Member.GetHashCode() : 0);

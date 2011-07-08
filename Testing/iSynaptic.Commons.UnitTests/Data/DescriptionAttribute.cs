@@ -17,7 +17,7 @@ namespace iSynaptic.Commons.Data
 
         public bool ProvidesExodataFor<TExodata, TContext, TSubject>(IExodataRequest<TExodata, TContext, TSubject> request)
         {
-            return request.Declaration == CommonExodata.Description;
+            return request.Symbol == CommonExodata.Description;
         }
 
         public string Resolve<TContext, TSubject>(IExodataRequest<string, TContext, TSubject> request)

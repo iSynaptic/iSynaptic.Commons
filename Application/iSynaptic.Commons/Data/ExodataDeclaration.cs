@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Linq.Expressions;
 using System.Reflection;
+using iSynaptic.Commons.Data.Syntax;
 
 namespace iSynaptic.Commons.Data
 {
-    public class ExodataDeclaration<TExodata> : ExodataDeclaration, IExodataDeclaration<TExodata>, IExodataResolutionRoot<TExodata>
+    public class ExodataDeclaration<TExodata> : ExodataDeclaration, ISymbol<TExodata>, IFluentExodataResolutionRoot<TExodata>
     {
         public static readonly ExodataDeclaration<TExodata> TypeDeclaration = new ExodataDeclaration<TExodata>();
 
@@ -19,16 +20,41 @@ namespace iSynaptic.Commons.Data
             _Default = @default;
         }
 
-        #region Resolution Methods
+        #region Fluent Resolution
 
-        public IExodataResolutionSubject<TExodata> Given<TContext>()
+        public IFluentExodataResolutionRoot<TExodata> Given<TContext>()
         {
-            return new ExodataResolutionRoot<TExodata, TContext>(this);
+            return new ExodataDeclarationResolutionContext<TExodata, TContext>(this);
         }
 
-        public IExodataResolutionSubject<TExodata> Given<TContext>(TContext context)
+        public IFluentExodataResolutionRoot<TExodata> Given<TContext>(TContext context)
         {
-            return new ExodataResolutionRoot<TExodata, TContext>(this, context);
+            return new ExodataDeclarationResolutionContext<TExodata, TContext>(this, context);
+        }
+
+        public Maybe<TExodata> TryGet()
+        {
+            return Given<object>().TryGet();
+        }
+
+        public Maybe<TExodata> TryFor<TSubject>()
+        {
+            return Given<object>().TryFor<TSubject>();
+        }
+
+        public Maybe<TExodata> TryFor<TSubject>(TSubject subject)
+        {
+            return Given<object>().TryFor(subject);
+        }
+
+        public Maybe<TExodata> TryFor<TSubject>(Expression<Func<TSubject, object>> member)
+        {
+            return Given<object>().TryFor(member);
+        }
+
+        public Maybe<TExodata> TryFor<TSubject>(TSubject subject, Expression<Func<TSubject, object>> member)
+        {
+            return Given<object>().TryFor(subject, member);
         }
 
         public TExodata Get()
@@ -62,19 +88,19 @@ namespace iSynaptic.Commons.Data
 
         public TExodata Resolve<TContext, TSubject>(Maybe<TContext> context, Maybe<TSubject> subject, MemberInfo member)
         {
-            return ExodataRequest.Create(this, context, subject, member)
-                .ToMaybe()
-                .Express(request => request.SelectMaybe(TryResolve).OnValue(x => OnValidateValue(x, "bound"))
-                                     .Or(request.Select(GetDefault).OnValue(x => OnValidateValue(x, "default"))))
+            return TryResolve(context, subject, member)
+                    .Or(TryGetDefault(context, subject, member))
+
                 .ValueOrDefault();
         }
 
-        protected virtual Maybe<TExodata> TryResolve<TContext, TSubject>(IExodataRequest<TExodata, TContext, TSubject> request)
+        public virtual Maybe<TExodata> TryResolve<TContext, TSubject>(Maybe<TContext> context, Maybe<TSubject> subject, MemberInfo member)
         {
             return Maybe
                 .NotNull(ExodataResolver)
                 .Or(Ioc.TryResolve<IExodataResolver>)
-                .SelectMaybe(x => x.TryResolve(request));
+                .SelectMaybe(x => x.TryResolve(this, context, subject, member))
+                .OnValue(x => OnValidateValue(x, "bound"));
         }
 
         #endregion
@@ -88,9 +114,9 @@ namespace iSynaptic.Commons.Data
             return declaration.Get();
         }
 
-        protected virtual TExodata GetDefault<TContext, TSubject>(IExodataRequest<TExodata, TContext, TSubject> request)
+        protected virtual Maybe<TExodata> TryGetDefault<TContext, TSubject>(Maybe<TContext> context, Maybe<TSubject> subject, MemberInfo member)
         {
-            return _Default.ValueOrDefault();
+            return _Default.OnValue(x => OnValidateValue(x, "default"));
         }
     }
 
@@ -112,4 +138,30 @@ namespace iSynaptic.Commons.Data
 
         protected static IExodataResolver ExodataResolver { get; set; }
     }
+
+    internal class ExodataDeclarationResolutionContext<TExodata, TContext> : FluentExodataResolutionRoot<TExodata, TContext>
+    {
+        private readonly ExodataDeclaration<TExodata> _Declaration;
+        public ExodataDeclarationResolutionContext(ExodataDeclaration<TExodata> declaration, Maybe<TContext> context = default(Maybe<TContext>))
+            : base(context)
+        {
+            _Declaration = Guard.NotNull(declaration, "declaration");
+        }
+
+        protected override IFluentExodataResolutionRoot<TExodata> CreateNewResolutionRoot<TDesiredContext>(Maybe<TDesiredContext> context)
+        {
+            return new ExodataDeclarationResolutionContext<TExodata, TDesiredContext>(_Declaration, context);
+        }
+
+        protected override TExodata Resolve<TSubject>(Maybe<TContext> context, Maybe<TSubject> subject, MemberInfo member)
+        {
+            return _Declaration.Resolve(context, subject, member);
+        }
+
+        protected override Maybe<TExodata> TryResolve<TSubject>(Maybe<TContext> context, Maybe<TSubject> subject, MemberInfo member)
+        {
+            return _Declaration.Resolve(context, subject, member);
+        }
+    }
+
 }

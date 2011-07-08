@@ -3,9 +3,9 @@ using System.Reflection;
 
 namespace iSynaptic.Commons.Data
 {
-    public interface IExodataRequest<out TExodata, out TContext, out TSubject>
+    public interface IExodataRequest<in TExodata, out TContext, out TSubject>
     {
-        IExodataDeclaration<TExodata> Declaration { get; }
+        ISymbol<TExodata> Symbol { get; }
         IMaybe<TContext> Context { get; }
         IMaybe<TSubject> Subject { get; }
         MemberInfo Member { get; }
