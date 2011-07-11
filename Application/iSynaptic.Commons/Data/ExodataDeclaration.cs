@@ -24,12 +24,12 @@ namespace iSynaptic.Commons.Data
 
         public IFluentExodataResolutionRoot<TExodata> Given<TContext>()
         {
-            return new ExodataDeclarationResolutionContext<TExodata, TContext>(this);
+            return new ExodataDeclarationResolutionRoot<TExodata, TContext>(this);
         }
 
         public IFluentExodataResolutionRoot<TExodata> Given<TContext>(TContext context)
         {
-            return new ExodataDeclarationResolutionContext<TExodata, TContext>(this, context);
+            return new ExodataDeclarationResolutionRoot<TExodata, TContext>(this, context);
         }
 
         public Maybe<TExodata> TryGet()
@@ -86,7 +86,7 @@ namespace iSynaptic.Commons.Data
 
         #region Resolution Logic
 
-        public TExodata Resolve<TContext, TSubject>(Maybe<TContext> context, Maybe<TSubject> subject, MemberInfo member)
+        public virtual TExodata Resolve<TContext, TSubject>(Maybe<TContext> context, Maybe<TSubject> subject, MemberInfo member)
         {
             return TryResolve(context, subject, member)
                     .Or(TryGetDefault(context, subject, member))
@@ -139,10 +139,10 @@ namespace iSynaptic.Commons.Data
         protected static IExodataResolver ExodataResolver { get; set; }
     }
 
-    internal class ExodataDeclarationResolutionContext<TExodata, TContext> : FluentExodataResolutionRoot<TExodata, TContext>
+    internal class ExodataDeclarationResolutionRoot<TExodata, TContext> : FluentExodataResolutionRoot<TExodata, TContext>
     {
         private readonly ExodataDeclaration<TExodata> _Declaration;
-        public ExodataDeclarationResolutionContext(ExodataDeclaration<TExodata> declaration, Maybe<TContext> context = default(Maybe<TContext>))
+        public ExodataDeclarationResolutionRoot(ExodataDeclaration<TExodata> declaration, Maybe<TContext> context = default(Maybe<TContext>))
             : base(context)
         {
             _Declaration = Guard.NotNull(declaration, "declaration");
@@ -150,7 +150,7 @@ namespace iSynaptic.Commons.Data
 
         protected override IFluentExodataResolutionRoot<TExodata> CreateNewResolutionRoot<TDesiredContext>(Maybe<TDesiredContext> context)
         {
-            return new ExodataDeclarationResolutionContext<TExodata, TDesiredContext>(_Declaration, context);
+            return new ExodataDeclarationResolutionRoot<TExodata, TDesiredContext>(_Declaration, context);
         }
 
         protected override TExodata Resolve<TSubject>(Maybe<TContext> context, Maybe<TSubject> subject, MemberInfo member)
@@ -160,8 +160,7 @@ namespace iSynaptic.Commons.Data
 
         protected override Maybe<TExodata> TryResolve<TSubject>(Maybe<TContext> context, Maybe<TSubject> subject, MemberInfo member)
         {
-            return _Declaration.Resolve(context, subject, member);
+            return _Declaration.TryResolve(context, subject, member);
         }
     }
-
 }
