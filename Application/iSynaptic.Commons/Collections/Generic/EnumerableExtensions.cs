@@ -21,14 +21,24 @@ namespace iSynaptic.Commons.Collections.Generic
             Guard.NotNull(source, "source");
             Guard.NotNull(higherPrioritySelector, "higherPrioritySelector");
 
-            IEnumerable<Func<TSource, bool>> selectors = new[] {higherPrioritySelector};
+            return source.OrderByPriorities((l, r) => higherPrioritySelector(l), additionalPrioritySelectors != null
+                                                                                    ? additionalPrioritySelectors.Select(s => (Func<TSource, TSource, bool>)((l, r) => s(l))).ToArray()
+                                                                                    : null);
+        }
+
+        public static IEnumerable<TSource> OrderByPriorities<TSource>(this IEnumerable<TSource> source, Func<TSource, TSource, bool> higherPrioritySelector, params Func<TSource, TSource, bool>[] additionalPrioritySelectors)
+        {
+            Guard.NotNull(source, "source");
+            Guard.NotNull(higherPrioritySelector, "higherPrioritySelector");
+
+            IEnumerable<Func<TSource, TSource, bool>> selectors = new[] {higherPrioritySelector};
 
             if(additionalPrioritySelectors != null)
                 selectors = selectors.Concat(additionalPrioritySelectors);
 
             return source.OrderBy(x => x, (l, r) => (from selector in selectors
-                                                     let leftHasPriority = selector(l)
-                                                     let rightHasPriority = selector(r)
+                                                     let leftHasPriority = selector(l, r)
+                                                     let rightHasPriority = selector(r, l)
                                                      where leftHasPriority ^ rightHasPriority
                                                      select leftHasPriority ? -1 : 1).FirstOrDefault());
         }
