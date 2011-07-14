@@ -46,21 +46,27 @@ namespace iSynaptic.Commons.Data
         protected override IExodataBinding SelectBinding<TExodata, TContext, TSubject>(IExodataRequest<TExodata, TContext, TSubject> request, IEnumerable<IExodataBinding> candidates)
         {
             var bindingList = candidates.ToList();
+            bindingList.Sort(BindingPrecedenceOrder);
 
             Func<IExodataRequest<TExodata, TContext, TSubject>, IEnumerable<IExodataBinding>, IExodataBinding>
                 fallThroughSelection = base.SelectBinding;
 
             return Maybe.NotNull(bindingList)
                 .Where(x => x.Count > 1)
-                .OnValue(x => x.Sort(BindingSortPriority))
-                .Where(x => BindingSortPriority(x[0], x[1]) != 0)
+                .Where(x => BindingPrecedenceOrder(x[0], x[1]) != 0)
                 .Select(x => x[0])
                 .Or(() => fallThroughSelection(request, bindingList))
                 .ValueOrDefault();
         }
 
-        private static int BindingSortPriority(IExodataBinding left, IExodataBinding right)
+        public static int BindingPrecedenceOrder(IExodataBinding x, IExodataBinding y)
         {
+            var left = x as IExodataBindingDetails;
+            var right = y as IExodataBindingDetails;
+
+            if (left == null || right == null)
+                return 0;
+
             bool leftIsAttributeBinding = left.Source is AttributeExodataBindingSource;
             bool rightIsAttributeBinding = right.Source is AttributeExodataBindingSource;
 
@@ -82,11 +88,12 @@ namespace iSynaptic.Commons.Data
             if (left.ContextType != right.ContextType)
                 return left.ContextType.IsAssignableFrom(right.ContextType) ? 1 : -1;
 
-            if(left.SubjectType != right.SubjectType)
+            if (left.SubjectType != right.SubjectType)
                 return left.SubjectType.IsAssignableFrom(right.SubjectType) ? 1 : -1;
 
             return 0;
         }
+
 
         public void LoadModule(ExodataBindingModule module)
         {

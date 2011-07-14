@@ -47,7 +47,7 @@ namespace iSynaptic.Commons.Data
                 _Cache = new MultiMap<object, CacheValue>(_CacheDictionary);
             }
 
-            public class Binding<TContext, TSubject> : IExodataBinding
+            public class Binding<TContext, TSubject> : IExodataBinding, IExodataBindingDetails
             {
                 public Binding(Func<IExodataRequest<TExodata, TContext, TSubject>, bool> predicate, Func<IExodataRequest<TExodata, TContext, TSubject>, TExodata> valueFactory, IExodataBindingSource source)
                 {
