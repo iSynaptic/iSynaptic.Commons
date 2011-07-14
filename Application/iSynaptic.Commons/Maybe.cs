@@ -779,6 +779,9 @@ namespace iSynaptic.Commons
         {
             Guard.NotNull(self, "self");
 
+            if(self is Maybe<TResult>)
+                return (Maybe<TResult>) self;
+
             return new Maybe<TResult>(() =>
             {
                 if (self.Exception != null)
@@ -794,6 +797,9 @@ namespace iSynaptic.Commons
         public static Maybe<TResult> OfType<TResult>(this IMaybe self)
         {
             Guard.NotNull(self, "self");
+
+            if (self is Maybe<TResult>)
+                return (Maybe<TResult>) self;
 
             return new Maybe<TResult>(() =>
             {
