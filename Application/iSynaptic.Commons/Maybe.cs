@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -597,6 +598,33 @@ namespace iSynaptic.Commons
 
         #endregion
 
+        #region ToEnumerable Operator
+
+        public static IEnumerable<T> ToEnumerable<T>(params Maybe<T>[] values)
+        {
+            Guard.NotNull(values, "values");
+
+            return values
+                .Select(x => x.ThrowOnException())
+                .Where(x => x.HasValue)
+                .Select(x => x.Value);
+        }
+
+        public static IEnumerable<T> ToEnumerable<T>(this Maybe<T> self)
+        {
+            return self.ToEnumerable(null);
+        }
+
+        public static IEnumerable<T> ToEnumerable<T>(this Maybe<T> self, params Maybe<T>[] others)
+        {
+            if (others != null && others.Length > 0)
+                return ToEnumerable(new[] { self }.Concat(others).ToArray());
+
+            return ToEnumerable(new[] {self});
+        }
+
+        #endregion
+
         public static Maybe<TResult> Bind<T, TResult>(this Maybe<T> self, Func<T, Maybe<TResult>> func)
         {
             Guard.NotNull(func, "func");
@@ -828,14 +856,6 @@ namespace iSynaptic.Commons
         public static Maybe<T> ToMaybe<T>(this T value)
         {
             return Return(value);
-        }
-        
-        public static IEnumerable<T> ToEnumerable<T>(this Maybe<T> self)
-        {
-            var result = self.ThrowOnException();
-
-            if (result.HasValue)
-                yield return result.Value;
         }
 
         public static Maybe<T> AsMaybe<T>(this IMaybe<T> value)

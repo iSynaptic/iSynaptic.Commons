@@ -907,6 +907,18 @@ namespace iSynaptic.Commons
         }
 
         [Test]
+        public void Cast_ToTheSameTypeIsPassThru()
+        {
+            List<string> foo = new List<string>();
+
+            List<string> value = ((IMaybe)Maybe.Return(foo))
+                .Cast<List<string>>()
+                .Value;
+
+            Assert.IsTrue(ReferenceEquals(foo, value));
+        }
+
+        [Test]
         public void Cast_ThrowsException_WhenCastIsNotPossible()
         {
             object foo = new List<string>();
@@ -950,6 +962,18 @@ namespace iSynaptic.Commons
 
             Assert.IsTrue(ReferenceEquals(foo, value.Value));
             Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void OfType_ToTheSameTypeIsPassThru()
+        {
+            List<string> foo = new List<string>();
+
+            List<string> value = ((IMaybe)Maybe.Return(foo))
+                .OfType<List<string>>()
+                .Value;
+
+            Assert.IsTrue(ReferenceEquals(foo, value));
         }
 
         [Test]
@@ -1338,6 +1362,30 @@ namespace iSynaptic.Commons
         {
             var enumerable = new Maybe<int>(new InvalidOperationException())
                 .ToEnumerable();
+
+            Assert.Throws<InvalidOperationException>(() => enumerable.ToArray());
+        }
+
+        [Test]
+        public void ToEnumerable_WithMultipleValues_YieldsValueStream()
+        {
+            var enumerable = Maybe.ToEnumerable(1.ToMaybe(), 7.ToMaybe(), 42.ToMaybe());
+
+            Assert.IsTrue(enumerable.SequenceEqual(new[] { 1, 7, 42 }));
+        }
+
+        [Test]
+        public void ToEnumerable_WithSomeNoValues_YieldsAvailableValueStream()
+        {
+            var enumerable = Maybe.ToEnumerable(1.ToMaybe(), Maybe<int>.NoValue, 42.ToMaybe());
+
+            Assert.IsTrue(enumerable.SequenceEqual(new[] { 1, 42 }));
+        }
+
+        [Test]
+        public void ToEnumerable_WithSomeExceptionValues_ThrowsException()
+        {
+            var enumerable = Maybe.ToEnumerable(1.ToMaybe(), Maybe.Throw<int>(new InvalidOperationException()), 42.ToMaybe());
 
             Assert.Throws<InvalidOperationException>(() => enumerable.ToArray());
         }
