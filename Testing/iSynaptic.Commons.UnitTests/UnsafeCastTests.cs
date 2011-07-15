@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using iSynaptic.Commons.Stubs;
 using NUnit.Framework;
 
 namespace iSynaptic.Commons
