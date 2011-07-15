@@ -43,53 +43,37 @@ namespace iSynaptic.Commons.Data
             AddExodataBindingSource<AttributeExodataBindingSource>();
         }
 
-        protected override IExodataBinding SelectBinding<TExodata, TContext, TSubject>(IExodataRequest<TExodata, TContext, TSubject> request, IEnumerable<IExodataBinding> candidates)
+        protected override int CompareBindingPrecidence<TExodata, TContext, TSubject>(IExodataRequest<TExodata, TContext, TSubject> request, IExodataBinding left, IExodataBinding right)
         {
-            var bindingList = candidates.ToList();
-            bindingList.Sort(BindingPrecedenceOrder);
-
-            Func<IExodataRequest<TExodata, TContext, TSubject>, IEnumerable<IExodataBinding>, IExodataBinding>
-                fallThroughSelection = base.SelectBinding;
-
-            return Maybe.NotNull(bindingList)
-                .Where(x => x.Count > 1)
-                .Where(x => BindingPrecedenceOrder(x[0], x[1]) != 0)
-                .Select(x => x[0])
-                .Or(() => fallThroughSelection(request, bindingList))
-                .ValueOrDefault();
-        }
-
-        public static int BindingPrecedenceOrder(IExodataBinding x, IExodataBinding y)
-        {
-            var left = x as IExodataBindingDetails;
-            var right = y as IExodataBindingDetails;
+            var l = left as IExodataBindingDetails;
+            var r = right as IExodataBindingDetails;
 
             if (left == null || right == null)
                 return 0;
 
-            bool leftIsAttributeBinding = left.Source is AttributeExodataBindingSource;
-            bool rightIsAttributeBinding = right.Source is AttributeExodataBindingSource;
+            bool leftIsAttributeBinding = l.Source is AttributeExodataBindingSource;
+            bool rightIsAttributeBinding = r.Source is AttributeExodataBindingSource;
 
             if (leftIsAttributeBinding ^ rightIsAttributeBinding)
                 return leftIsAttributeBinding ? 1 : -1;
 
-            bool leftBoundToContext = left.BoundToContextInstance;
-            bool rightBoundToContext = right.BoundToContextInstance;
+            bool leftBoundToContext = l.BoundToContextInstance;
+            bool rightBoundToContext = r.BoundToContextInstance;
 
             if (leftBoundToContext ^ rightBoundToContext)
                 return leftBoundToContext ? -1 : 1;
 
-            bool leftBoundToSubject = left.BoundToSubjectInstance;
-            bool rightBoundToSubject = right.BoundToSubjectInstance;
+            bool leftBoundToSubject = l.BoundToSubjectInstance;
+            bool rightBoundToSubject = r.BoundToSubjectInstance;
 
             if (leftBoundToSubject ^ rightBoundToSubject)
                 return leftBoundToSubject ? -1 : 1;
 
-            if (left.ContextType != right.ContextType)
-                return left.ContextType.IsAssignableFrom(right.ContextType) ? 1 : -1;
+            if (l.ContextType != r.ContextType)
+                return l.ContextType.IsAssignableFrom(r.ContextType) ? 1 : -1;
 
-            if (left.SubjectType != right.SubjectType)
-                return left.SubjectType.IsAssignableFrom(right.SubjectType) ? 1 : -1;
+            if (l.SubjectType != r.SubjectType)
+                return l.SubjectType.IsAssignableFrom(r.SubjectType) ? 1 : -1;
 
             return 0;
         }

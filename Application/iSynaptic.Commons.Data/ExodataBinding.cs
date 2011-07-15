@@ -16,7 +16,7 @@ namespace iSynaptic.Commons.Data
             Guard.NotNull(valueFactory, "valueFactory");
             Guard.NotNull(source, "source");
 
-            return new TypedBinding<TExodata>.Binding<TContext, TSubject>(predicate, valueFactory, source)
+            return new TypedBinding<TExodata, TContext, TSubject>(predicate, valueFactory, source)
             {
                 ContextType = typeof(TContext),
                 SubjectType = typeof(TSubject),
@@ -26,48 +26,42 @@ namespace iSynaptic.Commons.Data
             };
         }
 
-        private class TypedBinding<TExodata>
+        private class TypedBinding<TExodata, TContext, TSubject> : IExodataBinding, IExodataBindingDetails
         {
-            #region Cache Helper Classes
+                private class CacheValue
+                {
+                    public TExodata Exodata { get; set; }
+                    public int RequestHashCode { get; set; }
+                }
 
-            private class CacheValue
-            {
-                public TExodata Exodata { get; set; }
-                public int RequestHashCode { get; set; }
-            }
+                private readonly WeakKeyDictionary<object, ICollection<CacheValue>> _CacheDictionary;
+                private readonly MultiMap<object, CacheValue> _Cache;
 
-            #endregion
-
-            private static readonly WeakKeyDictionary<object, ICollection<CacheValue>> _CacheDictionary;
-            private static readonly MultiMap<object, CacheValue> _Cache;
-
-            static TypedBinding()
-            {
-                _CacheDictionary = new WeakKeyDictionary<object, ICollection<CacheValue>>();
-                _Cache = new MultiMap<object, CacheValue>(_CacheDictionary);
-            }
-
-            public class Binding<TContext, TSubject> : IExodataBinding, IExodataBindingDetails
-            {
-                public Binding(Func<IExodataRequest<TExodata, TContext, TSubject>, bool> predicate, Func<IExodataRequest<TExodata, TContext, TSubject>, TExodata> valueFactory, IExodataBindingSource source)
+                public TypedBinding(Func<IExodataRequest<TExodata, TContext, TSubject>, bool> predicate, Func<IExodataRequest<TExodata, TContext, TSubject>, TExodata> valueFactory, IExodataBindingSource source)
                 {
                     Guard.NotNull(predicate, "predicate");
                     Guard.NotNull(valueFactory, "valueFactory");
                     Guard.NotNull(source, "source");
+
+                    _CacheDictionary = new WeakKeyDictionary<object, ICollection<CacheValue>>();
+                    _Cache = new MultiMap<object, CacheValue>(_CacheDictionary);
 
                     Predicate = predicate;
                     ValueFactory = valueFactory;
                     Source = source;
                 }
 
-                public bool Matches<TRequestExodata, TRequestContext, TRequestSubject>(IExodataRequest<TRequestExodata, TRequestContext, TRequestSubject> request)
+                private bool Matches<TRequestExodata, TRequestContext, TRequestSubject>(IExodataRequest<TRequestExodata, TRequestContext, TRequestSubject> request)
                 {
                     var predicate = Predicate as Func<IExodataRequest<TRequestExodata, TRequestContext, TRequestSubject>, bool>;
                     return predicate != null && predicate(request);
                 }
 
-                public TRequestExodata Resolve<TRequestExodata, TRequestContext, TRequestSubject>(IExodataRequest<TRequestExodata, TRequestContext, TRequestSubject> request)
+                public Maybe<TRequestExodata> TryResolve<TRequestExodata, TRequestContext, TRequestSubject>(IExodataRequest<TRequestExodata, TRequestContext, TRequestSubject> request)
                 {
+                    if(Matches(request) != true)
+                        return Maybe<TRequestExodata>.NoValue;
+
                     int requestHashCode = request.GetHashCode();
 
                     object scopeObject = ScopeFactory != null
@@ -122,6 +116,5 @@ namespace iSynaptic.Commons.Data
                 public Func<IExodataRequest<TExodata, TContext, TSubject>, bool> Predicate { get; set; }
                 public Func<IExodataRequest<TExodata, TContext, TSubject>, TExodata> ValueFactory { get; set; }
             }
-        }
     }
 }

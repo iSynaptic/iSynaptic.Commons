@@ -665,6 +665,12 @@ namespace iSynaptic.Commons
             return new Maybe<T>(value);
         }
 
+        public static Maybe<T> Exception<T>(Exception exception)
+        {
+            Guard.NotNull(exception, "exception");
+            return new Maybe<T>(exception);
+        }
+
         public static Maybe<T> Throw<T>(Exception exception)
         {
             Guard.NotNull(exception, "exception");

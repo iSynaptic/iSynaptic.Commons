@@ -28,9 +28,9 @@ namespace iSynaptic.Commons.Data
             var binding2 = MockRepository.GenerateStub<IExodataBinding>();
 
             Action<IExodataBinding> expectations = b =>
-                b.Expect(x => x.Matches<int, object, object>(null))
+                b.Expect(x => x.TryResolve<int, object, object>(null))
                     .IgnoreArguments()
-                    .Return(true);
+                    .Return(42.ToMaybe());
 
             expectations(binding1);
             expectations(binding2);
@@ -45,7 +45,11 @@ namespace iSynaptic.Commons.Data
 
             var symbol = new Symbol<int>();
 
-            Assert.Throws<InvalidOperationException>(() => resolver.TryGet(symbol));
+            var result = resolver.TryGet(symbol);
+
+            Assert.IsFalse(result.HasValue);
+            Assert.IsNotNull(result.Exception);
+            Assert.IsInstanceOf<InvalidOperationException>(result.Exception);
         }
 
         [Test]
