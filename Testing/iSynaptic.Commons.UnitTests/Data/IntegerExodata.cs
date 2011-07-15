@@ -1,6 +1,4 @@
-﻿using iSynaptic.Commons.Data.ExodataDeclarations;
-
-namespace iSynaptic.Commons.Data
+﻿namespace iSynaptic.Commons.Data
 {
     public class IntegerExodata
     {

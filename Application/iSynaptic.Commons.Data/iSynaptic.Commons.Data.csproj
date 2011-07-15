@@ -40,9 +40,9 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AttributeExodataBindingSource.cs" />
-    <Compile Include="ExodataDeclarations\ComparableExodataDeclaration.cs" />
-    <Compile Include="ExodataDeclarations\GuidExodataDeclaration.cs" />
-    <Compile Include="ExodataDeclarations\StringExodataDeclaration.cs" />
+    <Compile Include="ComparableExodataDeclaration.cs" />
+    <Compile Include="GuidExodataDeclaration.cs" />
+    <Compile Include="StringExodataDeclaration.cs" />
     <Compile Include="ExodataRequest.cs" />
     <Compile Include="ExodataValidationException.cs" />
     <Compile Include="IExodataBindingDetails.cs" />

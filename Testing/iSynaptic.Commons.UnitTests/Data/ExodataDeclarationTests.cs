@@ -4,7 +4,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
-using iSynaptic.Commons.Data.ExodataDeclarations;
 using NUnit.Framework;
 using Rhino.Mocks;
 
