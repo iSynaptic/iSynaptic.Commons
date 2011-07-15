@@ -9,7 +9,7 @@ namespace iSynaptic.Commons.Data
 {
     public static class ExodataRequest
     {
-        public static ExodataRequest<TExodata, TContext, TSubject> Create<TExodata, TContext, TSubject>(ISymbol<TExodata> symbol, IMaybe<TContext> context, IMaybe<TSubject> subject, MemberInfo member)
+        public static ExodataRequest<TExodata, TContext, TSubject> Create<TExodata, TContext, TSubject>(ISymbol<TExodata> symbol, Maybe<TContext> context, Maybe<TSubject> subject, MemberInfo member)
         {
             return new ExodataRequest<TExodata, TContext, TSubject>(symbol, context, subject, member);
         }
@@ -17,7 +17,7 @@ namespace iSynaptic.Commons.Data
 
     public class ExodataRequest<TExodata, TContext, TSubject> : IExodataRequest<TExodata, TContext, TSubject>, IEquatable<IExodataRequest<TExodata, TContext, TSubject>>
     {
-        public ExodataRequest(ISymbol<TExodata> symbol, IMaybe<TContext> context, IMaybe<TSubject> subject, MemberInfo member)
+        public ExodataRequest(ISymbol<TExodata> symbol, Maybe<TContext> context, Maybe<TSubject> subject, MemberInfo member)
         {
             Symbol = Guard.NotNull(symbol, "symbol");
             Context = context;
@@ -27,8 +27,8 @@ namespace iSynaptic.Commons.Data
 
         public ISymbol<TExodata> Symbol { get; private set; }
 
-        public IMaybe<TContext> Context { get; private set; }
-        public IMaybe<TSubject> Subject { get; private set; }
+        public Maybe<TContext> Context { get; private set; }
+        public Maybe<TSubject> Subject { get; private set; }
         public MemberInfo Member { get; private set; }
 
         public bool Equals(IExodataRequest<TExodata, TContext, TSubject> other)

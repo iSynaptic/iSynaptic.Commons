@@ -50,18 +50,28 @@ namespace iSynaptic.Commons.Data
                 Source = source;
             }
 
-            private bool Matches<TRequestExodata, TRequestContext, TRequestSubject>(IExodataRequest<TRequestExodata, TRequestContext, TRequestSubject> request)
-            {
-                var predicate = Predicate as Func<IExodataRequest<TRequestExodata, TRequestContext, TRequestSubject>, bool>;
-                return predicate != null && predicate(request);
-            }
-
             public Maybe<TRequestExodata> TryResolve<TRequestExodata, TRequestContext, TRequestSubject>(IExodataRequest<TRequestExodata, TRequestContext, TRequestSubject> request)
             {
-                if (Matches(request) != true)
-                    return Maybe<TRequestExodata>.NoValue;
+                return TryGetRequest(request)
+                    .Where(Predicate)
+                    .Select(ValueFactory)
+                    .Cast<TRequestExodata>();
+            }
 
-                return (ValueFactory as Func<IExodataRequest<TRequestExodata, TRequestContext, TRequestSubject>, TRequestExodata>)(request);
+            private static Maybe<IExodataRequest<TExodata, TContext, TSubject>> TryGetRequest<TRequestExodata, TRequestContext, TRequestSubject>(IExodataRequest<TRequestExodata, TRequestContext, TRequestSubject> request)
+            {
+                var typedRequest = request as IExodataRequest<TExodata, TContext, TSubject>;
+                if(typedRequest != null)
+                    return typedRequest.ToMaybe();
+
+                if (typeof(TRequestExodata).IsAssignableFrom(typeof(TExodata)) &&
+                    typeof(TContext).IsAssignableFrom(typeof(TRequestContext)) &&
+                    typeof(TSubject).IsAssignableFrom(typeof(TRequestSubject)))
+                {
+                    return new RequestAdapter<TRequestExodata, TRequestContext, TRequestSubject>(request);
+                }
+
+                return Maybe<IExodataRequest<TExodata, TContext, TSubject>>.NoValue;
             }
 
             public Type ContextType { get; set; }
@@ -73,6 +83,38 @@ namespace iSynaptic.Commons.Data
 
             public Func<IExodataRequest<TExodata, TContext, TSubject>, bool> Predicate { get; set; }
             public Func<IExodataRequest<TExodata, TContext, TSubject>, TExodata> ValueFactory { get; set; }
+
+            private class RequestAdapter<TSourceExodata, TSourceContext, TSourceSubject>
+                : IExodataRequest<TExodata, TContext, TSubject>
+            {
+                private readonly IExodataRequest<TSourceExodata, TSourceContext, TSourceSubject> _Request;
+
+                public RequestAdapter(IExodataRequest<TSourceExodata, TSourceContext, TSourceSubject> request)
+                {
+                    _Request = request;
+                }
+
+                public ISymbol<TExodata> Symbol
+                {
+                    get { return _Request.Symbol as ISymbol<TExodata>; }
+                }
+
+                public Maybe<TContext> Context
+                {
+                    get { return _Request.Context.OfType<TContext>(); }
+                }
+
+                public Maybe<TSubject> Subject
+                {
+                    get { return _Request.Subject.OfType<TSubject>(); }
+                }
+
+                public MemberInfo Member
+                {
+                    get { return _Request.Member; }
+                }
+            }
+
         }
     }
 }
