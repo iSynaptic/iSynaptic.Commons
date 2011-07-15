@@ -98,7 +98,7 @@ namespace iSynaptic.Commons.Data.Syntax
             To(r => value);
         }
 
-        public void To(Func<IExodataRequest<TExodata, TContext, TSubject>, TExodata> valueFactory)
+        public void To(Func<IExodataRequest<TExodata, TContext, TSubject>, Maybe<TExodata>> valueFactory)
         {
             Guard.NotNull(valueFactory, "valueFactory");
             OnBuildComplete(ExodataBinding.Create(Source, Matches, valueFactory, Context.HasValue, Subject.HasValue));

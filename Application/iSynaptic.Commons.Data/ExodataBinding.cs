@@ -10,7 +10,7 @@ namespace iSynaptic.Commons.Data
 
     public static class ExodataBinding
     {
-        public static IExodataBinding Create<TExodata, TContext, TSubject>(IExodataBindingSource source, Func<IExodataRequest<TExodata, TContext, TSubject>, bool> predicate, Func<IExodataRequest<TExodata, TContext, TSubject>, TExodata> valueFactory, bool boundToContextInstance = false, bool boundToSubjectInstance = false)
+        public static IExodataBinding Create<TExodata, TContext, TSubject>(IExodataBindingSource source, Func<IExodataRequest<TExodata, TContext, TSubject>, bool> predicate, Func<IExodataRequest<TExodata, TContext, TSubject>, Maybe<TExodata>> valueFactory, bool boundToContextInstance = false, bool boundToSubjectInstance = false)
         {
             Guard.NotNull(predicate, "predicate");
             Guard.NotNull(valueFactory, "valueFactory");
@@ -27,23 +27,11 @@ namespace iSynaptic.Commons.Data
 
         private class TypedBinding<TExodata, TContext, TSubject> : IExodataBinding, IExodataBindingDetails
         {
-            private class CacheValue
-            {
-                public TExodata Exodata { get; set; }
-                public int RequestHashCode { get; set; }
-            }
-
-            private readonly WeakKeyDictionary<object, ICollection<CacheValue>> _CacheDictionary;
-            private readonly MultiMap<object, CacheValue> _Cache;
-
-            public TypedBinding(Func<IExodataRequest<TExodata, TContext, TSubject>, bool> predicate, Func<IExodataRequest<TExodata, TContext, TSubject>, TExodata> valueFactory, IExodataBindingSource source)
+            public TypedBinding(Func<IExodataRequest<TExodata, TContext, TSubject>, bool> predicate, Func<IExodataRequest<TExodata, TContext, TSubject>, Maybe<TExodata>> valueFactory, IExodataBindingSource source)
             {
                 Guard.NotNull(predicate, "predicate");
                 Guard.NotNull(valueFactory, "valueFactory");
                 Guard.NotNull(source, "source");
-
-                _CacheDictionary = new WeakKeyDictionary<object, ICollection<CacheValue>>();
-                _Cache = new MultiMap<object, CacheValue>(_CacheDictionary);
 
                 Predicate = predicate;
                 ValueFactory = valueFactory;
@@ -54,7 +42,7 @@ namespace iSynaptic.Commons.Data
             {
                 return TryGetRequest(request)
                     .Where(Predicate)
-                    .Select(ValueFactory)
+                    .SelectMaybe(ValueFactory)
                     .Cast<TRequestExodata>();
             }
 
@@ -82,7 +70,7 @@ namespace iSynaptic.Commons.Data
             public bool BoundToSubjectInstance { get; set; }
 
             public Func<IExodataRequest<TExodata, TContext, TSubject>, bool> Predicate { get; set; }
-            public Func<IExodataRequest<TExodata, TContext, TSubject>, TExodata> ValueFactory { get; set; }
+            public Func<IExodataRequest<TExodata, TContext, TSubject>, Maybe<TExodata>> ValueFactory { get; set; }
 
             private class RequestAdapter<TSourceExodata, TSourceContext, TSourceSubject>
                 : IExodataRequest<TExodata, TContext, TSubject>
@@ -101,12 +89,12 @@ namespace iSynaptic.Commons.Data
 
                 public Maybe<TContext> Context
                 {
-                    get { return _Request.Context.OfType<TContext>(); }
+                    get { return _Request.Context.Cast<TContext>(); }
                 }
 
                 public Maybe<TSubject> Subject
                 {
-                    get { return _Request.Subject.OfType<TSubject>(); }
+                    get { return _Request.Subject.Cast<TSubject>(); }
                 }
 
                 public MemberInfo Member

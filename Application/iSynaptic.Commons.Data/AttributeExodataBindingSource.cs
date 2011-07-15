@@ -17,7 +17,7 @@ namespace iSynaptic.Commons.Data
 
             return provider.GetAttributesOfType<IExodataAttribute<TExodata>>()
                 .Where(x => x.ProvidesExodataFor(request))
-                .Select(x => ExodataBinding.Create<TExodata, TContext, TSubject>(this, y => true, x.Resolve));
+                .Select(x => ExodataBinding.Create<TExodata, TContext, TSubject>(this, y => true, r => x.Resolve(r).ToMaybe()));
         }
     }
 }
