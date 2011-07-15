@@ -21,29 +21,29 @@
             IsWhiteSpaceOnlyPermitted = isWhiteSpacePermitted;
         }
 
-        protected override void OnValidateValue(string value, string valueName)
+        protected override Maybe<string> EnsureValid(string value, string valueName)
         {
             if(value == null)
             {
                 if(IsNullPermitted != true)
-                    throw new ExodataValidationException<string>(this, value, string.Format("The {0} value must not be null.", valueName));
+                    return Maybe.Exception<string>(new ExodataValidationException<string>(this, value, string.Format("The {0} value must not be null.", valueName)));
 
-                return;
+                return base.EnsureValid(value, valueName);
             }
 
             if (value == string.Empty && IsEmptyPermitted != true)
-                throw new ExodataValidationException<string>(this, value, string.Format("The {0} value must not be empty.", valueName));
+                return Maybe.Exception<string>(new ExodataValidationException<string>(this, value, string.Format("The {0} value must not be empty.", valueName)));
 
             if(string.IsNullOrWhiteSpace(value) && IsWhiteSpaceOnlyPermitted)
-                throw new ExodataValidationException<string>(this, value, string.Format("The {0} value must not be only whitespace.", valueName));
+                return Maybe.Exception<string>(new ExodataValidationException<string>(this, value, string.Format("The {0} value must not be only whitespace.", valueName)));
 
             if (valueName.Length < MinLength)
-                throw new ExodataValidationException<string>(this, value, string.Format("The {0} value must be at least {1} characters long.", valueName, MinLength));
+                return Maybe.Exception<string>(new ExodataValidationException<string>(this, value, string.Format("The {0} value must be at least {1} characters long.", valueName, MinLength)));
 
             if (valueName.Length > MaxLength)
-                throw new ExodataValidationException<string>(this, value, string.Format("The {0} value must be no more than {1} characters long.", valueName, MaxLength));
-            
-            base.OnValidateValue(value, valueName);
+                return Maybe.Exception<string>(new ExodataValidationException<string>(this, value, string.Format("The {0} value must be no more than {1} characters long.", valueName, MaxLength)));
+
+            return base.EnsureValid(value, valueName);
         }
 
         public int MinLength { get; private set; }

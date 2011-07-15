@@ -22,12 +22,12 @@ namespace iSynaptic.Commons.Data
             IsEmptyValid = isEmptyValid;
         }
 
-        protected override void OnValidateValue(Guid value, string valueName)
+        protected override Maybe<Guid> EnsureValid(Guid value, string valueName)
         {
             if (value == Guid.Empty && IsEmptyValid != true)
-                throw new ExodataValidationException<Guid>(this, value, string.Format("The {0} value must not equal to Guid.Empty.", valueName));
+                return Maybe.Exception<Guid>(new ExodataValidationException<Guid>(this, value, string.Format("The {0} value must not equal to Guid.Empty.", valueName)));
 
-            base.OnValidateValue(value, valueName);
+            return base.EnsureValid(value, valueName);
         }
 
         public bool IsEmptyValid { get; private set; }

@@ -100,13 +100,14 @@ namespace iSynaptic.Commons.Data
                 .NotNull(ExodataResolver)
                 .Or(Ioc.TryResolve<IExodataResolver>)
                 .SelectMaybe(x => x.TryResolve(this, context, subject, member))
-                .OnValue(x => OnValidateValue(x, "bound"));
+                .SelectMaybe(x => EnsureValid(x, "bound"));
         }
 
         #endregion
 
-        protected virtual void OnValidateValue(TExodata value, string valueName)
+        protected virtual Maybe<TExodata> EnsureValid(TExodata value, string valueName)
         {
+            return value.ToMaybe();
         }
 
         public static implicit operator TExodata(ExodataDeclaration<TExodata> declaration)
@@ -116,7 +117,7 @@ namespace iSynaptic.Commons.Data
 
         protected virtual Maybe<TExodata> TryGetDefault<TContext, TSubject>(Maybe<TContext> context, Maybe<TSubject> subject, MemberInfo member)
         {
-            return _Default.OnValue(x => OnValidateValue(x, "default"));
+            return _Default.SelectMaybe(x => EnsureValid(x, "default"));
         }
     }
 

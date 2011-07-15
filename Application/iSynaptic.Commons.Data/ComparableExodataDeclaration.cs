@@ -17,15 +17,15 @@ namespace iSynaptic.Commons.Data
             MaxValue = maxValue;
         }
 
-        protected override void OnValidateValue(T value, string valueName)
+        protected override Maybe<T> EnsureValid(T value, string valueName)
         {
             if(value.CompareTo(MinValue) < 0)
-                throw new ExodataValidationException<T>(this, value, string.Format("The {0} value must be greater than or equal to {1}.", valueName, MinValue));
+                return Maybe.Exception<T>(new ExodataValidationException<T>(this, value, string.Format("The {0} value must be greater than or equal to {1}.", valueName, MinValue)));
 
             if(value.CompareTo(MaxValue) > 0)
-                throw new ExodataValidationException<T>(this, value, string.Format("The {0} value must be less than or equal to {1}.", valueName, MaxValue));
+                return Maybe.Exception<T>(new ExodataValidationException<T>(this, value, string.Format("The {0} value must be less than or equal to {1}.", valueName, MaxValue)));
 
-            base.OnValidateValue(value, valueName);
+            return base.EnsureValid(value, valueName);
         }
 
         public T MinValue { get; private set; }
