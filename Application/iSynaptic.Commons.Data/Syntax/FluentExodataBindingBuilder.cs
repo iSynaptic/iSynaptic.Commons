@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace iSynaptic.Commons.Data.Syntax
 {
-    internal class FluentExodataBindingBuilder<TExodata, TContext, TSubject> : IFluentExodataBindingGivenSubjectWhenScopeTo<TExodata, TContext, TSubject>
+    internal class FluentExodataBindingBuilder<TExodata, TContext, TSubject> : IFluentExodataBindingGivenSubjectWhenTo<TExodata, TContext, TSubject>
     {
         public FluentExodataBindingBuilder(IExodataBindingSource source, ISymbol<TExodata> symbol, Action<IExodataBinding> onBuildComplete)
         {
@@ -20,7 +20,7 @@ namespace iSynaptic.Commons.Data.Syntax
         }
 
 
-        public IFluentExodataBindingSubjectWhenScopeTo<TExodata, TDerivedContext, TSubject> Given<TDerivedContext>() where TDerivedContext : TContext
+        public IFluentExodataBindingSubjectWhenTo<TExodata, TDerivedContext, TSubject> Given<TDerivedContext>() where TDerivedContext : TContext
         {
             return new FluentExodataBindingBuilder<TExodata, TDerivedContext, TSubject>(Source, Symbol, OnBuildComplete)
             {
@@ -28,7 +28,7 @@ namespace iSynaptic.Commons.Data.Syntax
             };
         }
 
-        public IFluentExodataBindingSubjectWhenScopeTo<TExodata, TDerivedContext, TSubject> Given<TDerivedContext>(TDerivedContext context) where TDerivedContext : TContext
+        public IFluentExodataBindingSubjectWhenTo<TExodata, TDerivedContext, TSubject> Given<TDerivedContext>(TDerivedContext context) where TDerivedContext : TContext
         {
             return new FluentExodataBindingBuilder<TExodata, TDerivedContext, TSubject>(Source, Symbol, OnBuildComplete)
             {
@@ -36,46 +36,46 @@ namespace iSynaptic.Commons.Data.Syntax
             };
         }
 
-        public IFluentExodataBindingWhenScopeTo<TExodata, TContext, TSubject> For(TSubject subject)
+        public IFluentExodataBindingWhenTo<TExodata, TContext, TSubject> For(TSubject subject)
         {
             return ForCore<TSubject>(subject, null);
         }
 
-        public IFluentExodataBindingWhenScopeTo<TExodata, TContext, TSubject> For(params Expression<Func<TSubject, object>>[] members)
+        public IFluentExodataBindingWhenTo<TExodata, TContext, TSubject> For(params Expression<Func<TSubject, object>>[] members)
         {
             Guard.NotNullOrEmpty(members, "members");
             return ForCore(Maybe<TSubject>.NoValue, members);
         }
 
-        public IFluentExodataBindingWhenScopeTo<TExodata, TContext, TSubject> For(TSubject subject, params Expression<Func<TSubject, object>>[] members)
+        public IFluentExodataBindingWhenTo<TExodata, TContext, TSubject> For(TSubject subject, params Expression<Func<TSubject, object>>[] members)
         {
             Guard.NotNullOrEmpty(members, "members");
             return ForCore(subject, members);
         }
 
-        public IFluentExodataBindingWhenScopeTo<TExodata, TContext, TDerivedSubject> For<TDerivedSubject>() where TDerivedSubject : TSubject
+        public IFluentExodataBindingWhenTo<TExodata, TContext, TDerivedSubject> For<TDerivedSubject>() where TDerivedSubject : TSubject
         {
             return ForCore(Maybe<TDerivedSubject>.NoValue, null);
         }
 
-        public IFluentExodataBindingWhenScopeTo<TExodata, TContext, TDerivedSubject> For<TDerivedSubject>(TDerivedSubject subject) where TDerivedSubject : TSubject
+        public IFluentExodataBindingWhenTo<TExodata, TContext, TDerivedSubject> For<TDerivedSubject>(TDerivedSubject subject) where TDerivedSubject : TSubject
         {
             return ForCore<TDerivedSubject>(subject, null);
         }
 
-        public IFluentExodataBindingWhenScopeTo<TExodata, TContext, TDerivedSubject> For<TDerivedSubject>(params Expression<Func<TDerivedSubject, object>>[] members) where TDerivedSubject : TSubject
+        public IFluentExodataBindingWhenTo<TExodata, TContext, TDerivedSubject> For<TDerivedSubject>(params Expression<Func<TDerivedSubject, object>>[] members) where TDerivedSubject : TSubject
         {
             Guard.NotNullOrEmpty(members, "members");
             return ForCore(Maybe<TDerivedSubject>.NoValue, members);
         }
 
-        public IFluentExodataBindingWhenScopeTo<TExodata, TContext, TDerivedSubject> For<TDerivedSubject>(TDerivedSubject subject, params Expression<Func<TDerivedSubject, object>>[] members) where TDerivedSubject : TSubject
+        public IFluentExodataBindingWhenTo<TExodata, TContext, TDerivedSubject> For<TDerivedSubject>(TDerivedSubject subject, params Expression<Func<TDerivedSubject, object>>[] members) where TDerivedSubject : TSubject
         {
             Guard.NotNullOrEmpty(members, "members");
             return ForCore(subject, members);
         }
 
-        private IFluentExodataBindingWhenScopeTo<TExodata, TContext, TDerivedSubject> ForCore<TDerivedSubject>(Maybe<TDerivedSubject> subject, IEnumerable<Expression<Func<TDerivedSubject, object>>> members) where TDerivedSubject : TSubject
+        private IFluentExodataBindingWhenTo<TExodata, TContext, TDerivedSubject> ForCore<TDerivedSubject>(Maybe<TDerivedSubject> subject, IEnumerable<Expression<Func<TDerivedSubject, object>>> members) where TDerivedSubject : TSubject
         {
             return new FluentExodataBindingBuilder<TExodata, TContext, TDerivedSubject>(Source, Symbol, OnBuildComplete)
             {
@@ -87,22 +87,9 @@ namespace iSynaptic.Commons.Data.Syntax
             };
         }
 
-        public IFluentExodataBindingScopeTo<TExodata, TContext, TSubject> When(Func<IExodataRequest<TExodata, TContext, TSubject>, bool> userPredicate)
+        public IFluentExodataBindingTo<TExodata, TContext, TSubject> When(Func<IExodataRequest<TExodata, TContext, TSubject>, bool> predicate)
         {
-            UserPredicate = Guard.NotNull(userPredicate, "userPredicate");
-            return this;
-        }
-
-        public IFluentExodataBindingTo<TExodata, TContext, TSubject> InScope(object scopeObject)
-        {
-            Guard.NotNull(scopeObject, "scopeObject");
-            ScopeFactory = r => scopeObject;
-            return this;
-        }
-
-        public IFluentExodataBindingTo<TExodata, TContext, TSubject> InScope(Func<IExodataRequest<TExodata, TContext, TSubject>, object> scopeFactory)
-        {
-            ScopeFactory = Guard.NotNull(scopeFactory, "scopeFactory");
+            WhenPredicate = Guard.NotNull(predicate, "predicate");
             return this;
         }
 
@@ -114,7 +101,7 @@ namespace iSynaptic.Commons.Data.Syntax
         public void To(Func<IExodataRequest<TExodata, TContext, TSubject>, TExodata> valueFactory)
         {
             Guard.NotNull(valueFactory, "valueFactory");
-            OnBuildComplete(ExodataBinding.Create(Source, Matches, valueFactory, ScopeFactory, Context.HasValue, Subject.HasValue));
+            OnBuildComplete(ExodataBinding.Create(Source, Matches, valueFactory, Context.HasValue, Subject.HasValue));
         }
 
         private bool Matches(IExodataRequest<TExodata, TContext, TSubject> request)
@@ -142,8 +129,8 @@ namespace iSynaptic.Commons.Data.Syntax
             if (Subject.HasValue && !EqualityComparer<TSubject>.Default.Equals(request.Subject.Value, Subject.Value))
                 return false;
 
-            if (UserPredicate != null)
-                return UserPredicate(request);
+            if (WhenPredicate != null)
+                return WhenPredicate(request);
 
             return true;
         }
@@ -156,9 +143,7 @@ namespace iSynaptic.Commons.Data.Syntax
 
         protected ISymbol<TExodata> Symbol { get; set; }
 
-        protected Func<IExodataRequest<TExodata, TContext, TSubject>, bool> UserPredicate { get; set; }
-        protected Func<IExodataRequest<TExodata, TContext, TSubject>, object> ScopeFactory { get; set; }
-
+        protected Func<IExodataRequest<TExodata, TContext, TSubject>, bool> WhenPredicate { get; set; }
         protected Action<IExodataBinding> OnBuildComplete { get; set; }
     }
 }

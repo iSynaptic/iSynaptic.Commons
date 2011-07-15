@@ -9,8 +9,6 @@ namespace iSynaptic.Commons.Data
 
         public TestSubjectExodataSurrogate()
         {
-            ScopeObject = new object();
-
             Bind(StringExodata.MaxLength)
                 .For(x => x.MiddleName)
                 .To(74088);
@@ -22,31 +20,26 @@ namespace iSynaptic.Commons.Data
             Bind(CommonExodata.Description)
                 .For(Subject)
                 .When(r => ShouldYieldInstanceExodata)
-                .InScope(ScopeObject)
                 .To(r => "Special Instance Description");
 
             Bind(CommonExodata.Description)
                 .For(Subject, x => x.FirstName)
                 .When(r => ShouldYieldInstanceExodata)
-                .InScope(r => ScopeObject)
                 .To("Special Member Description");
 
             Bind(CommonExodata.Description)
                 .Given<string>()
                 .For(x => x.FirstName)
                 .When(r => ShouldYieldInstanceExodata)
-                .InScope(r => ScopeObject)
                 .To("Contextual Member Description");
 
             Bind(CommonExodata.Description)
                 .Given("Context")
                 .For(x => x.FirstName)
                 .When(r => ShouldYieldInstanceExodata)
-                .InScope(r => ScopeObject)
                 .To("Specific Contextual Member Description");
         }
 
         public static bool ShouldYieldInstanceExodata { get; set; }
-        public static object ScopeObject { get; set; }
     }
 }

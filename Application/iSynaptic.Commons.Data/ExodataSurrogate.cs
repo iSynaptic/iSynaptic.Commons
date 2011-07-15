@@ -16,7 +16,7 @@ namespace iSynaptic.Commons.Data
             return _Bindings;
         }
 
-        public IFluentExodataBindingGivenSubjectWhenScopeTo<TExodata, object, TSubject> Bind<TExodata>(ISymbol<TExodata> symbol)
+        public IFluentExodataBindingGivenSubjectWhenTo<TExodata, object, TSubject> Bind<TExodata>(ISymbol<TExodata> symbol)
         {
             Guard.NotNull(symbol, "symbol");
             return new FluentExodataBindingBuilder<TExodata, object, TSubject>(this, symbol, b => _Bindings.Add(b));

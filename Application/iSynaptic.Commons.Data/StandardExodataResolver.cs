@@ -91,7 +91,7 @@ namespace iSynaptic.Commons.Data
             _Modules.Remove(module);
         }
 
-        public IFluentExodataBindingGivenSubjectWhenScopeTo<TExodata, object, object> Bind<TExodata>(ISymbol<TExodata> symbol)
+        public IFluentExodataBindingGivenSubjectWhenTo<TExodata, object, object> Bind<TExodata>(ISymbol<TExodata> symbol)
         {
             return _ResolverModule.Bind(symbol);
         }
