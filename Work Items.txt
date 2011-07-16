@@ -28,7 +28,5 @@
 - Make entire library localizable via Exodata
 	* Create tool that generates ExodataDeclarations from resource files
 	* Create separate DependencyDeclaration (symbol) for retrieving localization ExodataResolver
-- Investigate/create ISymbol and ISymbol<T> to capture "declaration" as a general concept
-	* Collapse/refactor IDependencyDeclaration<T> and IExodataDeclaration<T> to use ISymbol<T>
-	* Create simple SymbolTable scope that uses symbols
+- Create simple SymbolTable scope that uses ISymbol/ISymbol<T>
 - Scan types for Command-Query Separation opportunities

@@ -86,7 +86,7 @@ namespace iSynaptic.Commons.Data
                 .For<string>()
                 .To(42);
 
-            Ioc.SetDependencyResolver(new DependencyResolver(decl => decl.DependencyType == typeof(IExodataResolver) ? exodataResolver : null));
+            Ioc.SetDependencyResolver(new DependencyResolver(symbol => symbol is ISymbol<IExodataResolver> ? exodataResolver : null));
 
             var value = maxLength.For<string>();
             Assert.AreEqual(42, value);

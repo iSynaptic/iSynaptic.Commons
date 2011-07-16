@@ -23,7 +23,7 @@ namespace iSynaptic.Commons.Data
 
             Ioc.SetDependencyResolver(new DependencyResolver(x =>
             {
-                if (x.DependencyType == typeof(TestSubjectExodataSurrogate))
+                if (x is ISymbol<TestSubjectExodataSurrogate>)
                 {
                     executed = true;
                     return new TestSubjectExodataSurrogate();

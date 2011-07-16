@@ -16,7 +16,7 @@ namespace iSynaptic.Commons
         public void Resolve_WithNoParameters_ReturnsExpectedValue()
         {
             var resolver = new DependencyResolver(x =>
-                x.DependencyType == typeof(int)
+                x is ISymbol<int>
                 ? 42
                 : Maybe<object>.NoValue);
 
@@ -30,7 +30,7 @@ namespace iSynaptic.Commons
         public void Resolve_WithKeyAndRequestingType_ReturnsExpectedValue()
         {
             var resolver = new DependencyResolver(x =>
-                x.DependencyType == typeof(int) && ((INamedDependencyDeclaration)x).Name == "ultimateAnswerTimesThree"
+                x is INamedSymbol<int> && ((INamedSymbol<int>)x).Name == "ultimateAnswerTimesThree"
                 ? 126
                 : Maybe<object>.NoValue);
 

@@ -7,7 +7,7 @@ namespace iSynaptic.Commons
     {
         private class NullDependencyResolver : IDependencyResolver
         {
-            public Maybe<object> TryResolve(IDependencyDeclaration declaration)
+            public Maybe<object> TryResolve(ISymbol symbol)
             {
                 return Maybe<object>.NoValue;
             }

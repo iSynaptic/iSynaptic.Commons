@@ -64,7 +64,7 @@ namespace iSynaptic.Commons
             Guard.NotNull(resolver, "resolver");
             Guard.NotNull(dependencyType, "dependencyType");
 
-            return resolver.TryResolve(new DepencencyDeclaration(dependencyType, name));
+            return resolver.TryResolve((ISymbol)Activator.CreateInstance(typeof(NamedSymbol<>).MakeGenericType(dependencyType), name));
         }
     }
 }
