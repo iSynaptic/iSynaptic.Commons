@@ -72,12 +72,9 @@ namespace iSynaptic.Commons.Collections.Generic
 
         public override IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
-            return (_Dictionary
-                .Select(pair => UnwrapKey(pair.Key)
-                    .SelectMaybe(k => UnwrapValue(pair.Value)
-                        .Select(v => KeyValuePair.Create(k, v))))
-                .Where(x => x.HasValue)
-                .Select(x => x.Value))
+            return _Dictionary
+                .Select(pair => UnwrapKey(pair.Key).Join(UnwrapValue(pair.Value), KeyValuePair.Create))
+                .Squash()
                 .GetEnumerator();
         }
 

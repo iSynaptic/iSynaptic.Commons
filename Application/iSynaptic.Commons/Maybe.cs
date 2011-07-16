@@ -5,6 +5,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
+using iSynaptic.Commons.Collections.Generic;
+
 namespace iSynaptic.Commons
 {
     // Implementation of the Maybe monad. http://en.wikipedia.org/wiki/Monad_%28functional_programming%29#Maybe_monad
@@ -506,7 +508,13 @@ namespace iSynaptic.Commons
         public static Maybe<TResult> Join<T, U, TResult>(this Maybe<T> self, Maybe<U> other, Func<T, U, TResult> selector)
         {
             Guard.NotNull(selector, "selector");
-            return self.SelectMaybe(t => other.Select(r => selector(t, r)));
+            return self.Join(other, (t, u) => selector(t, u).ToMaybe());
+        }
+
+        public static Maybe<TResult> Join<T, U, TResult>(this Maybe<T> self, Maybe<U> other, Func<T, U, Maybe<TResult>> selector)
+        {
+            Guard.NotNull(selector, "selector");
+            return self.SelectMaybe(t => other.SelectMaybe(r => selector(t, r)));
         }
 
         #endregion
@@ -606,8 +614,7 @@ namespace iSynaptic.Commons
 
             return values
                 .Select(x => x.ThrowOnException())
-                .Where(x => x.HasValue)
-                .Select(x => x.Value);
+                .Squash();
         }
 
         public static IEnumerable<T> ToEnumerable<T>(this Maybe<T> self)
@@ -618,9 +625,11 @@ namespace iSynaptic.Commons
         public static IEnumerable<T> ToEnumerable<T>(this Maybe<T> self, params Maybe<T>[] others)
         {
             if (others != null && others.Length > 0)
-                return ToEnumerable(new[] { self }.Concat(others).ToArray());
+                return new[] {self}
+                    .Concat(others)
+                    .Squash();
 
-            return ToEnumerable(new[] {self});
+            return new[] {self}.Squash();
         }
 
         #endregion
@@ -675,6 +684,11 @@ namespace iSynaptic.Commons
         {
             Guard.NotNull(exception, "exception");
             return new Maybe<T>((Func<T>)(() => { throw exception; }));
+        }
+
+        public static Maybe<T> Unwrap<T>(this Maybe<Maybe<T>> self)
+        {
+            return self.SelectMaybe(x => x);
         }
 
         // This is an alias of Bind and SelectMany.  Since SelectMany doesn't make sense (because there is at most one value),

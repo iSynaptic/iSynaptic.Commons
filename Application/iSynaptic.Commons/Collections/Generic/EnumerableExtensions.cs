@@ -31,9 +31,9 @@ namespace iSynaptic.Commons.Collections.Generic
             Guard.NotNull(source, "source");
             Guard.NotNull(higherPrioritySelector, "higherPrioritySelector");
 
-            IEnumerable<Func<TSource, TSource, bool>> selectors = new[] {higherPrioritySelector};
+            IEnumerable<Func<TSource, TSource, bool>> selectors = new[] { higherPrioritySelector };
 
-            if(additionalPrioritySelectors != null)
+            if (additionalPrioritySelectors != null)
                 selectors = selectors.Concat(additionalPrioritySelectors);
 
             return source.OrderBy(x => x, (l, r) => (from selector in selectors
@@ -96,25 +96,25 @@ namespace iSynaptic.Commons.Collections.Generic
 
         private static IEnumerable<Batch<T>> BatchCore<T>(IEnumerable<T> self, int batchSize)
         {
-            using(var enumerator = self.GetEnumerator())
+            using (var enumerator = self.GetEnumerator())
             {
                 int batchIndex = 0;
                 int count = 0;
                 T[] buffer = new T[batchSize];
 
-                while(enumerator.MoveNext())
+                while (enumerator.MoveNext())
                 {
                     buffer[count++] = enumerator.Current;
                     if (count == batchSize)
                     {
                         yield return new Batch<T>(batchIndex, batchSize, buffer);
-                        count = 0; 
+                        count = 0;
                         batchIndex++;
                         buffer = new T[batchSize];
                     }
                 }
 
-                if(count != 0)
+                if (count != 0)
                     yield return new Batch<T>(batchIndex, count, buffer.Take(count));
             }
         }
@@ -206,7 +206,7 @@ namespace iSynaptic.Commons.Collections.Generic
             foreach (var item in source)
                 yield return item.ToMaybe();
 
-            while(true)
+            while (true)
                 yield return Maybe<T>.NoValue;
         }
 
@@ -246,14 +246,6 @@ namespace iSynaptic.Commons.Collections.Generic
             return new SmartLoop<T>(items);
         }
 
-        public static IEnumerable<T> Recurse<T>(this IEnumerable<T> self, Func<T, IEnumerable<T>> selector)
-        {
-            Guard.NotNull(self, "self");
-            Guard.NotNull(selector, "selector");
-
-            return self.SelectMany(x => new[] { x }.Concat((selector(x) ?? Enumerable.Empty<T>()).Recurse(selector)));
-        }
-
         public static IEnumerable<T> Recurse<T>(this T self, Func<T, IEnumerable<T>> selector)
         {
             Guard.NotNull(self, "self");
@@ -262,12 +254,29 @@ namespace iSynaptic.Commons.Collections.Generic
             return new[] { self }.Recurse(selector);
         }
 
+        public static IEnumerable<T> Recurse<T>(this IEnumerable<T> self, Func<T, IEnumerable<T>> selector)
+        {
+            Guard.NotNull(self, "self");
+            Guard.NotNull(selector, "selector");
+
+            return self.SelectMany(x => new[] { x }.Concat((selector(x) ?? Enumerable.Empty<T>()).Recurse(selector)));
+        }
+
         public static IEnumerable<T> Recurse<T>(this T self, Func<T, Maybe<T>> selector)
         {
             Guard.NotNull(self, "self");
             Guard.NotNull(selector, "selector");
 
             return new[] { self }.Concat(selector(self).Select(x => Recurse(x, selector)).ValueOrDefault(Enumerable.Empty<T>()));
+        }
+
+        public static IEnumerable<T> Squash<T>(this IEnumerable<Maybe<T>> self)
+        {
+            Guard.NotNull(self, "self");
+
+            return self.Select(x => x.ThrowOnException())
+                .Where(x => x.HasValue)
+                .Select(x => x.Value);
         }
     }
 }

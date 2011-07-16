@@ -270,7 +270,6 @@ namespace iSynaptic.Commons.Collections.Generic
         {
             var dictionary = CreateDictionary();
             var array = dictionary
-                .Select(x => x)
                 .ToArray();
 
             Assert.AreEqual(0, array.Length);
