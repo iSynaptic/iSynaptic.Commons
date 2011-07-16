@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using iSynaptic.Commons.Linq;
 
 namespace iSynaptic.Commons.Collections.Generic
 {

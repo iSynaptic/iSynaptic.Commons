@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using iSynaptic.Commons.Linq;
 using NUnit.Framework;
 
 namespace iSynaptic.Commons.Collections.Generic

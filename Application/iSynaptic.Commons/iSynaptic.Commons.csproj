@@ -127,7 +127,7 @@
     <Compile Include="ReadableQualifier.cs" />
     <Compile Include="ReadWriteQualifier.cs" />
     <Compile Include="Reflection\Emit\DynamicMethodExtensions.cs" />
-    <Compile Include="Collections\Generic\EnumerableExtensions.cs" />
+    <Compile Include="Linq\EnumerableExtensions.cs" />
     <Compile Include="EnumExtensions.cs" />
     <Compile Include="FuncExtensions.cs" />
     <Compile Include="Collections\Generic\IndexedValue.cs" />

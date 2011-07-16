@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using iSynaptic.Commons.Collections.Generic;
 
-namespace iSynaptic.Commons.Collections.Generic
+namespace iSynaptic.Commons.Linq
 {
     public static class EnumerableExtensions
     {
@@ -129,9 +130,8 @@ namespace iSynaptic.Commons.Collections.Generic
         {
             Guard.NotNull(self, "self");
 
-            return self
-                .ToDictionary()
-                .ToReadOnlyDictionary();
+            return DictionaryExtensions.ToReadOnlyDictionary(self
+                                          .ToDictionary());
         }
 
         public static string Delimit<T>(this IEnumerable<T> self, string delimiter)

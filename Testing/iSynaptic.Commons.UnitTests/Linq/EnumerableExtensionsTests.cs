@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using iSynaptic.Commons.Collections.Generic;
 using NUnit.Framework;
 using System.Linq;
 using System.Collections;
 using Rhino.Mocks;
 
-using iSynaptic.Commons;
-
-namespace iSynaptic.Commons.Collections.Generic
+namespace iSynaptic.Commons.Linq
 {
     [TestFixture]
     public class EnumerableExtensionsTests

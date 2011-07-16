@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 
 using iSynaptic.Commons.Collections.Generic;
+using iSynaptic.Commons.Linq;
 
 namespace iSynaptic.Commons.Reflection
 {

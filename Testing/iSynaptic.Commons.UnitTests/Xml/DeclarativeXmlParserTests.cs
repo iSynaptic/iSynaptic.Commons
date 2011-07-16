@@ -6,6 +6,7 @@ using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 using iSynaptic.Commons.Collections.Generic;
+using iSynaptic.Commons.Linq;
 using NUnit.Framework;
 
 namespace iSynaptic.Commons.Xml

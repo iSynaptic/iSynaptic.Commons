@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using iSynaptic.Commons.Collections.Generic;
+using iSynaptic.Commons.Linq;
 using NUnit.Framework;
 
 namespace iSynaptic.Commons

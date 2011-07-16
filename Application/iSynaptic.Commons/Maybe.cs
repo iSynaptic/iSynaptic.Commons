@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using iSynaptic.Commons.Collections.Generic;
+using iSynaptic.Commons.Linq;
 
 namespace iSynaptic.Commons
 {
