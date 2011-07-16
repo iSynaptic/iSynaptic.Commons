@@ -292,16 +292,6 @@ namespace iSynaptic.Commons.Collections.Generic
         }
 
         [Test]
-        public void AllSatisfy()
-        {
-            Func<int, bool> isEven = x => x % 2 == 0;
-            var spec = isEven.ToSpecification();
-
-            var numbers = new[] { 2, 4, 6, 8, 10 };
-            Assert.IsTrue(numbers.AllSatisfy(spec));
-        }
-
-        [Test]
         public void ToDictionary_WithNull_ThrowsArgumentNullException()
         {
             IEnumerable<KeyValuePair<string, string>> pairs = null;

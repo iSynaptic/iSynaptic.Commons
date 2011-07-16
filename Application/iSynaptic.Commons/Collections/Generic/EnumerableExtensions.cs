@@ -216,30 +216,6 @@ namespace iSynaptic.Commons.Collections.Generic
             self.All(x => true);
         }
 
-        public static IEnumerable<T> MeetsSpecifcation<T>(this IEnumerable<T> candidates, Specification<T> specification)
-        {
-            Guard.NotNull(candidates, "candidates");
-            Guard.NotNull(specification, "specification");
-
-            return candidates.Where(specification.IsSatisfiedBy);
-        }
-
-        public static IEnumerable<T> FailsSpecification<T>(this IEnumerable<T> candidates, Specification<T> specification)
-        {
-            Guard.NotNull(candidates, "candidates");
-            Guard.NotNull(specification, "specification");
-
-            return candidates.Where(x => specification.IsSatisfiedBy(x) != true);
-        }
-
-        public static bool AllSatisfy<T>(this IEnumerable<T> candidates, Specification<T> specification)
-        {
-            Guard.NotNull(candidates, "candidates");
-            Guard.NotNull(specification, "specification");
-
-            return candidates.All(specification.IsSatisfiedBy);
-        }
-
         public static SmartLoop<T> SmartLoop<T>(this IEnumerable<T> items)
         {
             Guard.NotNull(items, "items");

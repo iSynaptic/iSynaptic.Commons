@@ -149,7 +149,6 @@
     <Compile Include="Runtime\Serialization\Cloneable.cs" />
     <Compile Include="Runtime\Serialization\CloneContext.cs" />
     <Compile Include="Runtime\Serialization\CloneReferenceOnlyAttribute.cs" />
-    <Compile Include="Specification.cs" />
     <Compile Include="Symbol.cs" />
     <Compile Include="SystemClock.cs" />
     <Compile Include="Text\Parsing\ScanningTextReader.cs" />
