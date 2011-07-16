@@ -26,19 +26,21 @@ namespace iSynaptic.Commons.Data
                 request.Symbol == CommonExodata.Description;
         }
 
-        public StringExodataDefinition Resolve<TContext, TSubject>(IExodataRequest<StringExodataDefinition, TContext, TSubject> request)
+        public IMaybe<StringExodataDefinition> TryResolve<TContext, TSubject>(IExodataRequest<StringExodataDefinition, TContext, TSubject> request)
         {
-            return new StringExodataDefinition(_MinLength, _MaxLength, _Description);
+            return Maybe.If(request.Symbol == StringExodata.All || request.Symbol == CommonExodata.All, 
+                 new StringExodataDefinition(_MinLength, _MaxLength, _Description).ToMaybe());
         }
 
-        public string Resolve<TContext, TSubject>(IExodataRequest<string, TContext, TSubject> request)
+        public IMaybe<string> TryResolve<TContext, TSubject>(IExodataRequest<string, TContext, TSubject> request)
         {
-            return _Description;
+            return Maybe.If(request.Symbol == CommonExodata.Description, _Description.ToMaybe());
         }
 
-        public int Resolve<TContext, TSubject>(IExodataRequest<int, TContext, TSubject> request)
+        public IMaybe<int> TryResolve<TContext, TSubject>(IExodataRequest<int, TContext, TSubject> request)
         {
-            return request.Symbol == StringExodata.MinLength ? _MinLength : _MaxLength;
+            return Maybe.If(request.Symbol == StringExodata.MinLength, _MinLength.ToMaybe())
+                .Or(Maybe.If(request.Symbol == StringExodata.MaxLength, _MaxLength.ToMaybe()));
         }
     }
 }

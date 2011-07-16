@@ -16,8 +16,7 @@ namespace iSynaptic.Commons.Data
             ICustomAttributeProvider provider = request.Member ?? typeof(TSubject);
 
             return provider.GetAttributesOfType<IExodataAttribute<TExodata>>()
-                .Where(x => x.ProvidesExodataFor(request))
-                .Select(x => ExodataBinding.Create<TExodata, TContext, TSubject>(this, y => true, r => x.Resolve(r).ToMaybe()));
+                .Select(x => ExodataBinding.Create<TExodata, TContext, TSubject>(this, y => true, r => Maybe.NotNull(x.TryResolve(r)).SelectMaybe(m => m.AsMaybe())));
         }
     }
 }

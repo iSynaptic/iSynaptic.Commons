@@ -15,14 +15,9 @@ namespace iSynaptic.Commons.Data
             _Description = description;
         }
 
-        public bool ProvidesExodataFor<TExodata, TContext, TSubject>(IExodataRequest<TExodata, TContext, TSubject> request)
+        public IMaybe<string> TryResolve<TContext, TSubject>(IExodataRequest<string, TContext, TSubject> request)
         {
-            return request.Symbol == CommonExodata.Description;
-        }
-
-        public string Resolve<TContext, TSubject>(IExodataRequest<string, TContext, TSubject> request)
-        {
-            return _Description;
+            return Maybe.If(request.Symbol == CommonExodata.Description, _Description.ToMaybe());
         }
     }
 }
