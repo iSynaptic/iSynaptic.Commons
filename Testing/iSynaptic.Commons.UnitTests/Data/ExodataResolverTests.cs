@@ -22,7 +22,7 @@ namespace iSynaptic.Commons.Data
         }
 
         [Test]
-        public void TryResolve_WithAmbiguousBindingSelection_ThrowsException()
+        public void TryResolve_WithAmbiguousBindingSelection_YieldsAmbiguousExodataBindingsException()
         {
             var binding1 = MockRepository.GenerateStub<IExodataBinding>();
             var binding2 = MockRepository.GenerateStub<IExodataBinding>();
@@ -48,8 +48,14 @@ namespace iSynaptic.Commons.Data
             var result = resolver.TryGet(symbol);
 
             Assert.IsFalse(result.HasValue);
+
             Assert.IsNotNull(result.Exception);
-            Assert.IsInstanceOf<InvalidOperationException>(result.Exception);
+            Assert.IsInstanceOf<AmbiguousExodataBindingsException>(result.Exception);
+            
+            var exception = (AmbiguousExodataBindingsException)result.Exception;
+
+            Assert.IsTrue(exception.Bindings.Contains(binding1));
+            Assert.IsTrue(exception.Bindings.Contains(binding2));
         }
     }
 }

@@ -7,6 +7,8 @@ namespace iSynaptic.Commons.Data
 {
     public interface IExodataBindingDetails
     {
+        string Name { get; }
+
         IExodataBindingSource Source { get; }
 
         bool BoundToContextInstance { get; }

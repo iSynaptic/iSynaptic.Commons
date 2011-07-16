@@ -5,8 +5,13 @@ namespace iSynaptic.Commons.Data.Syntax
 {
     public interface IFluentExodataBindingRoot<TContextBase, TSubjectBase>
     {
-        IFluentExodataBindingGivenSubjectWhenTo<TExodata, TContextBase, TSubjectBase> Bind<TExodata>(ISymbol<TExodata> symbol);
-        void Bind<TExodata>(ISymbol<TExodata> symbol, TExodata value);
+        IFluentExodataBindingNamedGivenSubjectWhenTo<TExodata, TContextBase, TSubjectBase> Bind<TExodata>(ISymbol<TExodata> symbol);
+        void Bind<TExodata>(ISymbol<TExodata> symbol, TExodata value, string name = null);
+    }
+
+    public interface IFluentExodataBindingNamedGivenSubjectWhenTo<TExodata, TContextBase, TSubjectBase> : IFluentExodataBindingGivenSubjectWhenTo<TExodata, TContextBase, TSubjectBase>
+    {
+        IFluentExodataBindingGivenSubjectWhenTo<TExodata, TContextBase, TSubjectBase> Named(string name);
     }
 
     public interface IFluentExodataBindingGivenSubjectWhenTo<TExodata, TContextBase, TSubjectBase> : IFluentExodataBindingSubjectWhenTo<TExodata, TContextBase, TSubjectBase>

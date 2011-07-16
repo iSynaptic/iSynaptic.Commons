@@ -41,10 +41,7 @@ namespace iSynaptic.Commons.Data
                     .ToArray();
 
                 if (finalBindings.Length > 1)
-                    return
-                        Maybe.Exception<TExodata>(
-                            new InvalidOperationException(
-                                "More than one Exodata binding was found. Remove duplicate bindings or apply additional conditions to existing bindings to make them unambiguous."));
+                    return Maybe.Exception<TExodata>(new AmbiguousExodataBindingsException("More than one Exodata binding was found. Remove duplicate bindings or apply additional conditions to existing bindings to make them unambiguous.", finalBindings.Select(x => x.Binding)));
 
                 if (finalBindings.Length == 1)
                     return finalBindings[0].Result;

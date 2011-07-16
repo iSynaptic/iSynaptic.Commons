@@ -91,14 +91,14 @@ namespace iSynaptic.Commons.Data
             _Modules.Remove(module);
         }
 
-        public IFluentExodataBindingGivenSubjectWhenTo<TExodata, object, object> Bind<TExodata>(ISymbol<TExodata> symbol)
+        public IFluentExodataBindingNamedGivenSubjectWhenTo<TExodata, object, object> Bind<TExodata>(ISymbol<TExodata> symbol)
         {
             return _ResolverModule.Bind(symbol);
         }
 
-        public void Bind<TExodata>(ISymbol<TExodata> symbol, TExodata value)
+        public void Bind<TExodata>(ISymbol<TExodata> symbol, TExodata value, string name = null)
         {
-            Bind(symbol).To(value);
+            Bind(symbol).Named(name).To(value);
         }
     }
 }

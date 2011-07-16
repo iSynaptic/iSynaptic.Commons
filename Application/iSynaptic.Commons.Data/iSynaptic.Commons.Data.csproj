@@ -39,6 +39,7 @@
     <Compile Include="..\..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="AmbiguousExodataBindingsException.cs" />
     <Compile Include="AttributeExodataBindingSource.cs" />
     <Compile Include="ComparableExodataDeclaration.cs" />
     <Compile Include="GuidExodataDeclaration.cs" />

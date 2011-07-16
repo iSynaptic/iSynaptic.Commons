@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace iSynaptic.Commons.Data.Syntax
 {
-    internal class FluentExodataBindingBuilder<TExodata, TContext, TSubject> : IFluentExodataBindingGivenSubjectWhenTo<TExodata, TContext, TSubject>
+    internal class FluentExodataBindingBuilder<TExodata, TContext, TSubject> : IFluentExodataBindingNamedGivenSubjectWhenTo<TExodata, TContext, TSubject>
     {
         public FluentExodataBindingBuilder(IExodataBindingSource source, ISymbol<TExodata> symbol, Action<IExodataBinding> onBuildComplete)
         {
@@ -19,6 +19,11 @@ namespace iSynaptic.Commons.Data.Syntax
             Members = new MemberInfo[0];
         }
 
+        public IFluentExodataBindingGivenSubjectWhenTo<TExodata, TContext, TSubject> Named(string name)
+        {
+            Name = name;
+            return this;
+        }
 
         public IFluentExodataBindingSubjectWhenTo<TExodata, TDerivedContext, TSubject> Given<TDerivedContext>() where TDerivedContext : TContext
         {
@@ -101,7 +106,7 @@ namespace iSynaptic.Commons.Data.Syntax
         public void To(Func<IExodataRequest<TExodata, TContext, TSubject>, Maybe<TExodata>> valueFactory)
         {
             Guard.NotNull(valueFactory, "valueFactory");
-            OnBuildComplete(ExodataBinding.Create(Source, Matches, valueFactory, Context.HasValue, Subject.HasValue));
+            OnBuildComplete(ExodataBinding.Create(Source, Matches, valueFactory, Name, Context.HasValue, Subject.HasValue));
         }
 
         private bool Matches(IExodataRequest<TExodata, TContext, TSubject> request)
@@ -135,6 +140,7 @@ namespace iSynaptic.Commons.Data.Syntax
             return true;
         }
 
+        protected string Name { get; set; }
         protected IExodataBindingSource Source { get; set; }
 
         protected Maybe<TContext> Context { get; set; }
