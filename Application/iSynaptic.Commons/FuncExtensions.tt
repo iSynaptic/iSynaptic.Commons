@@ -13,85 +13,85 @@ using iSynaptic.Commons.Collections.Generic;
 
 namespace iSynaptic.Commons
 {
-	public static partial class FuncExtensions
-	{
-		<# foreach(var i in Enumerable.Range(1, 16))
-		{
-			string typeArgs = Delimit(Enumerable.Range(1, i), ", ", x => "T" + x.ToString());
-			string args = Delimit(Enumerable.Range(1, i), ", ", x => "t" + x.ToString());
-			
-			string reverseTypeArgs = Delimit(Enumerable.Range(1, i).Reverse(), ", ", x => "T" + x.ToString());
-			string reverseArgs = Delimit(Enumerable.Range(1, i).Reverse(), ", ", x => "t" + x.ToString());
-
-			string curriedTypeArgs = Delimit(Enumerable.Range(1, i).Skip(1), ", ", x => "T" + x.ToString());
-			string curriedArgs = Delimit(Enumerable.Range(1, i).Skip(1), ", ", x => "t" + x.ToString());
-	    #>
-
-		<# if(i > 1) { #>
-
-		public static Func<<#= reverseTypeArgs #>, TRet> Flip<<#= typeArgs #>, TRet>(this Func<<#= typeArgs #>, TRet> self)
+    public static partial class FuncExtensions
+    {
+        <# foreach(var i in Enumerable.Range(1, 16))
         {
-            Guard.NotNull(self, "self");
-            return (<#= reverseArgs #>) => self(<#= args #>);
+            string typeArgs = Delimit(Enumerable.Range(1, i), ", ", x => "T" + x.ToString());
+            string args = Delimit(Enumerable.Range(1, i), ", ", x => "t" + x.ToString());
+            
+            string reverseTypeArgs = Delimit(Enumerable.Range(1, i).Reverse(), ", ", x => "T" + x.ToString());
+            string reverseArgs = Delimit(Enumerable.Range(1, i).Reverse(), ", ", x => "t" + x.ToString());
+
+            string curriedTypeArgs = Delimit(Enumerable.Range(1, i).Skip(1), ", ", x => "T" + x.ToString());
+            string curriedArgs = Delimit(Enumerable.Range(1, i).Skip(1), ", ", x => "t" + x.ToString());
+        #>
+
+        <# if(i > 1) { #>
+
+        public static Func<<#= reverseTypeArgs #>, TRet> Flip<<#= typeArgs #>, TRet>(this Func<<#= typeArgs #>, TRet> @this)
+        {
+            Guard.NotNull(@this, "@this");
+            return (<#= reverseArgs #>) => @this(<#= args #>);
         }
 
-		public static Func<<#= curriedTypeArgs #>, TRet> Curry<<#= typeArgs #>, TRet>(this Func<<#= typeArgs #>, TRet> self, T1 t1)
+        public static Func<<#= curriedTypeArgs #>, TRet> Curry<<#= typeArgs #>, TRet>(this Func<<#= typeArgs #>, TRet> @this, T1 t1)
         {
-            Guard.NotNull(self, "self");
-            return (<#= curriedArgs #>) => self(t1, <#= curriedArgs #>);
+            Guard.NotNull(@this, "@this");
+            return (<#= curriedArgs #>) => @this(t1, <#= curriedArgs #>);
         }
 
-		<# } #>
+        <# } #>
 
-		public static Action<<#= typeArgs #>> ToAction<<#= typeArgs #>, TRet>(this Func<<#= typeArgs #>, TRet> self)
+        public static Action<<#= typeArgs #>> ToAction<<#= typeArgs #>, TRet>(this Func<<#= typeArgs #>, TRet> @this)
         {
-            Guard.NotNull(self, "self");
-            return (<#= args #>) => self(<#= args #>);
+            Guard.NotNull(@this, "@this");
+            return (<#= args #>) => @this(<#= args #>);
         }
 
-		public static Func<<#= typeArgs #>, bool> And<<#= typeArgs #>>(this Func<<#= typeArgs #>, bool> self, Func<<#= typeArgs #>, bool> right)
+        public static Func<<#= typeArgs #>, bool> And<<#= typeArgs #>>(this Func<<#= typeArgs #>, bool> @this, Func<<#= typeArgs #>, bool> right)
         {
-            Guard.NotNull(self, "self");
+            Guard.NotNull(@this, "@this");
             Guard.NotNull(right, "right");
 
-            return (<#= args #>) => self(<#= args #>) && right(<#= args #>);
+            return (<#= args #>) => @this(<#= args #>) && right(<#= args #>);
         }
 
-        public static Func<<#= typeArgs #>, bool> Or<<#= typeArgs #>>(this Func<<#= typeArgs #>, bool> self, Func<<#= typeArgs #>, bool> right)
+        public static Func<<#= typeArgs #>, bool> Or<<#= typeArgs #>>(this Func<<#= typeArgs #>, bool> @this, Func<<#= typeArgs #>, bool> right)
         {
-            Guard.NotNull(self, "self");
+            Guard.NotNull(@this, "@this");
             Guard.NotNull(right, "right");
             
-            return (<#= args #>) => self(<#= args #>) || right(<#= args #>);
+            return (<#= args #>) => @this(<#= args #>) || right(<#= args #>);
         }
 
-        public static Func<<#= typeArgs #>, bool> XOr<<#= typeArgs #>>(this Func<<#= typeArgs #>, bool> self, Func<<#= typeArgs #>, bool> right)
+        public static Func<<#= typeArgs #>, bool> XOr<<#= typeArgs #>>(this Func<<#= typeArgs #>, bool> @this, Func<<#= typeArgs #>, bool> right)
         {
-            Guard.NotNull(self, "self");
+            Guard.NotNull(@this, "@this");
             Guard.NotNull(right, "right");
 
-            return (<#= args #>) => self(<#= args #>) ^ right(<#= args #>);
+            return (<#= args #>) => @this(<#= args #>) ^ right(<#= args #>);
         }
 
-		public static Func<<#= typeArgs #>, TResult> MakeConditional<<#= typeArgs #>, TResult>(this Func<<#= typeArgs #>, TResult> self, Func<<#= typeArgs #>, bool> condition)
+        public static Func<<#= typeArgs #>, TResult> MakeConditional<<#= typeArgs #>, TResult>(this Func<<#= typeArgs #>, TResult> @this, Func<<#= typeArgs #>, bool> condition)
         {
-            return MakeConditional(self, condition, null);
+            return MakeConditional(@this, condition, null);
         }
 
-        public static Func<<#= typeArgs #>, TResult> MakeConditional<<#= typeArgs #>, TResult>(this Func<<#= typeArgs #>, TResult> self, Func<<#= typeArgs #>, bool> condition, TResult defaultValue)
+        public static Func<<#= typeArgs #>, TResult> MakeConditional<<#= typeArgs #>, TResult>(this Func<<#= typeArgs #>, TResult> @this, Func<<#= typeArgs #>, bool> condition, TResult defaultValue)
         {
-            return MakeConditional(self, condition, (<#= args #>) => defaultValue);
+            return MakeConditional(@this, condition, (<#= args #>) => defaultValue);
         }
 
-        public static Func<<#= typeArgs #>, TResult> MakeConditional<<#= typeArgs #>, TResult>(this Func<<#= typeArgs #>, TResult> self, Func<<#= typeArgs #>, bool> condition, Func<<#= typeArgs #>, TResult> falseFunc)
+        public static Func<<#= typeArgs #>, TResult> MakeConditional<<#= typeArgs #>, TResult>(this Func<<#= typeArgs #>, TResult> @this, Func<<#= typeArgs #>, bool> condition, Func<<#= typeArgs #>, TResult> falseFunc)
         {
-            Guard.NotNull(self, "self");
+            Guard.NotNull(@this, "@this");
             Guard.NotNull(condition, "condition");
 
             return (<#= args #>) =>
             {
                 if (condition(<#= args #>))
-                    return self(<#= args #>);
+                    return @this(<#= args #>);
 
                 if (falseFunc != null)
                     return falseFunc(<#= args #>);
@@ -100,38 +100,38 @@ namespace iSynaptic.Commons
             };
         }
 
-        public static Func<<#= typeArgs #>, Maybe<TResult>> Or<<#= typeArgs #>, TResult>(this Func<<#= typeArgs #>, Maybe<TResult>> self, Func<<#= typeArgs #>, Maybe<TResult>> orFunc)
+        public static Func<<#= typeArgs #>, Maybe<TResult>> Or<<#= typeArgs #>, TResult>(this Func<<#= typeArgs #>, Maybe<TResult>> @this, Func<<#= typeArgs #>, Maybe<TResult>> orFunc)
         {
-            if (self == null || orFunc == null)
-                return self ?? orFunc;
+            if (@this == null || orFunc == null)
+                return @this ?? orFunc;
 
             return (<#= args #>) =>
-			{
-				var results = self(<#= args #>);
+            {
+                var results = @this(<#= args #>);
 
-				if(results.HasValue != true && results.Exception == null)
-					return orFunc(<#= args #>);
+                if(results.HasValue != true && results.Exception == null)
+                    return orFunc(<#= args #>);
 
-				return results;
-			};
+                return results;
+            };
         }
 
-		public static Func<<#= typeArgs #>, TResult> Synchronize<<#= typeArgs #>, TResult>(this Func<<#= typeArgs #>, TResult> self)
+        public static Func<<#= typeArgs #>, TResult> Synchronize<<#= typeArgs #>, TResult>(this Func<<#= typeArgs #>, TResult> @this)
         {
-            return self.Synchronize((<#= args #>) => true);
+            return @this.Synchronize((<#= args #>) => true);
         }
 
-        public static Func<<#= typeArgs #>, TResult> Synchronize<<#= typeArgs #>, TResult>(this Func<<#= typeArgs #>, TResult> self, Func<<#= typeArgs #>, bool> needsSynchronizationPredicate)
+        public static Func<<#= typeArgs #>, TResult> Synchronize<<#= typeArgs #>, TResult>(this Func<<#= typeArgs #>, TResult> @this, Func<<#= typeArgs #>, bool> needsSynchronizationPredicate)
         {
-            Guard.NotNull(self, "self");
+            Guard.NotNull(@this, "@this");
             Guard.NotNull(needsSynchronizationPredicate, "needsSynchronizationPredicate");
 
-            return Synchronize(self, needsSynchronizationPredicate, new object());
+            return Synchronize(@this, needsSynchronizationPredicate, new object());
         }
 
-		public static Func<<#= typeArgs #>, TResult> Synchronize<<#= typeArgs #>, TResult>(this Func<<#= typeArgs #>, TResult> self, Func<<#= typeArgs #>, bool> needsSynchronizationPredicate, object gate)
+        public static Func<<#= typeArgs #>, TResult> Synchronize<<#= typeArgs #>, TResult>(this Func<<#= typeArgs #>, TResult> @this, Func<<#= typeArgs #>, bool> needsSynchronizationPredicate, object gate)
         {
-            Guard.NotNull(self, "self");
+            Guard.NotNull(@this, "@this");
             Guard.NotNull(needsSynchronizationPredicate, "needsSynchronizationPredicate");
             Guard.NotNull(gate, "gate");
 
@@ -141,57 +141,57 @@ namespace iSynaptic.Commons
                 {
                     lock (gate)
                     {
-                        return self(<#= args #>);
+                        return @this(<#= args #>);
                     }
                 }
 
-                return self(<#= args #>);
+                return @this(<#= args #>);
             };
         }
 
-		<# } #>
+        <# } #>
 
-		<# foreach(var i in Enumerable.Range(1, 16))
-		{
-			string fullTypeArgs = Delimit(Enumerable.Range(1, i), ", ", x => "T" + x.ToString());
-			string fullArgs = Delimit(Enumerable.Range(1, i), ", ", x => "t" + x.ToString());
+        <# foreach(var i in Enumerable.Range(1, 16))
+        {
+            string fullTypeArgs = Delimit(Enumerable.Range(1, i), ", ", x => "T" + x.ToString());
+            string fullArgs = Delimit(Enumerable.Range(1, i), ", ", x => "t" + x.ToString());
 
-			string nestedTupleType = "";
-			string nestedTupleCreate = "";
-			string nestedArgs = "";
+            string nestedTupleType = "";
+            string nestedTupleCreate = "";
+            string nestedArgs = "";
 
-			foreach(var batch in Batch(Enumerable.Range(1, i), 7).Reverse())
-			{
-				string typePrefix = "Tuple<" + Delimit(batch, ", ", x => "T" + x.ToString());
+            foreach(var batch in Batch(Enumerable.Range(1, i), 7).Reverse())
+            {
+                string typePrefix = "Tuple<" + Delimit(batch, ", ", x => "T" + x.ToString());
 
-				string createPrefix = "new Tuple<" + Delimit(batch, ", ", x => "T" + x.ToString());
-				string argCreatePrefix = ">(" + Delimit(batch, ", ", x => "t" + x.ToString());
-				string argsList = "x" + string.Join("", Enumerable.Repeat(".Rest", batch.Index)) + Delimit(batch.Select(x => ((x - 1) % 7) + 1), ", x" + string.Join("", Enumerable.Repeat(".Rest", batch.Index)), x => ".Item" + x.ToString());
+                string createPrefix = "new Tuple<" + Delimit(batch, ", ", x => "T" + x.ToString());
+                string argCreatePrefix = ">(" + Delimit(batch, ", ", x => "t" + x.ToString());
+                string argsList = "x" + string.Join("", Enumerable.Repeat(".Rest", batch.Index)) + Delimit(batch.Select(x => ((x - 1) % 7) + 1), ", x" + string.Join("", Enumerable.Repeat(".Rest", batch.Index)), x => ".Item" + x.ToString());
 
 
-				if(string.IsNullOrWhiteSpace(nestedTupleType))
-				{
-					nestedTupleType = typePrefix + ">";
-					nestedTupleCreate = createPrefix + argCreatePrefix + ")";
-					nestedArgs = argsList;
-				}
-				else
-				{
-					nestedTupleCreate = createPrefix + ", " + nestedTupleType + argCreatePrefix + ", " + nestedTupleCreate + ")";
-					nestedTupleType = typePrefix + ", " + nestedTupleType + ">";
-					nestedArgs = argsList + ", " + nestedArgs;
+                if(string.IsNullOrWhiteSpace(nestedTupleType))
+                {
+                    nestedTupleType = typePrefix + ">";
+                    nestedTupleCreate = createPrefix + argCreatePrefix + ")";
+                    nestedArgs = argsList;
+                }
+                else
+                {
+                    nestedTupleCreate = createPrefix + ", " + nestedTupleType + argCreatePrefix + ", " + nestedTupleCreate + ")";
+                    nestedTupleType = typePrefix + ", " + nestedTupleType + ">";
+                    nestedArgs = argsList + ", " + nestedArgs;
 
-				}
-			}
-	    #>
+                }
+            }
+        #>
 
-		public static Func<<#= fullTypeArgs #>, TResult> Memoize<<#= fullTypeArgs #>, TResult>(this Func<<#= fullTypeArgs #>, TResult> self)
-		{
-			Guard.NotNull(self, "self");
-			var dictionary = new LazySelectionDictionary<<#= nestedTupleType #>, TResult>(x => self(<#= nestedArgs #>));
+        public static Func<<#= fullTypeArgs #>, TResult> Memoize<<#= fullTypeArgs #>, TResult>(this Func<<#= fullTypeArgs #>, TResult> @this)
+        {
+            Guard.NotNull(@this, "@this");
+            var dictionary = new LazySelectionDictionary<<#= nestedTupleType #>, TResult>(x => @this(<#= nestedArgs #>));
 
-			return (<#= fullArgs #>) => dictionary[<#= nestedTupleCreate #>];
-		}
-		<# } #>
-	}
+            return (<#= fullArgs #>) => dictionary[<#= nestedTupleCreate #>];
+        }
+        <# } #>
+    }
 }

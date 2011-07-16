@@ -5,10 +5,10 @@ namespace iSynaptic.Commons.Reflection
 {
     internal static class MethodInfoExtensions
     {
-        public static T ToDelegate<T>(this MethodInfo self)
+        public static T ToDelegate<T>(this MethodInfo @this)
         {
-            Guard.NotNull(self, "self");
-            return (T)(object)Delegate.CreateDelegate(typeof(T), self);
+            Guard.NotNull(@this, "@this");
+            return (T)(object)Delegate.CreateDelegate(typeof(T), @this);
         }
     }
 }

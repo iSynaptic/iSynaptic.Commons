@@ -6,45 +6,45 @@ namespace iSynaptic.Commons.Collections.Generic
 {
     public static class CollectionExtensions
     {
-        public static void AddRange<T>(this ICollection<T> self, IEnumerable<T> items)
+        public static void AddRange<T>(this ICollection<T> @this, IEnumerable<T> items)
         {
-            Guard.NotNull(self, "self");
+            Guard.NotNull(@this, "@this");
             Guard.NotNull(items, "items");
 
             foreach(var item in items)
-                self.Add(item);
+                @this.Add(item);
         }
 
-        public static void Remove<T>(this ICollection<T> self, params T[] itemsToRemove)
+        public static void Remove<T>(this ICollection<T> @this, params T[] itemsToRemove)
         {
-            Guard.NotNull(self, "self");
+            Guard.NotNull(@this, "@this");
 
             if (itemsToRemove == null || itemsToRemove.Length <= 0)
                 return;
 
             foreach (T item in itemsToRemove)
-                self.Remove(item);
+                @this.Remove(item);
         }
 
-        public static void RemoveAll<T>(this ICollection<T> self, Func<T, bool> predicate)
+        public static void RemoveAll<T>(this ICollection<T> @this, Func<T, bool> predicate)
         {
-            Guard.NotNull(self, "self");
+            Guard.NotNull(@this, "@this");
             Guard.NotNull(predicate, "predicate");
 
-            var itemsToRemove = self
+            var itemsToRemove = @this
                 .Where(predicate)
                 .ToArray();
 
             foreach (var itemToRemove in itemsToRemove)
-                self.Remove(itemToRemove);
+                @this.Remove(itemToRemove);
         }
 
-        public static ProjectionCollection<TSourceItem, TProjectedItem> ToProjectedCollection<TSourceItem, TProjectedItem>(this ICollection<TSourceItem> self, Func<TSourceItem, TProjectedItem> selector)
+        public static ProjectionCollection<TSourceItem, TProjectedItem> ToProjectedCollection<TSourceItem, TProjectedItem>(this ICollection<TSourceItem> @this, Func<TSourceItem, TProjectedItem> selector)
         {
-            Guard.NotNull(self, "self");
+            Guard.NotNull(@this, "@this");
             Guard.NotNull(selector, "selector");
 
-            return new ProjectionCollection<TSourceItem, TProjectedItem>(self, selector);
+            return new ProjectionCollection<TSourceItem, TProjectedItem>(@this, selector);
         }
     }
 }

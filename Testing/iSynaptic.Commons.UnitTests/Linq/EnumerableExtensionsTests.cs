@@ -229,9 +229,10 @@ namespace iSynaptic.Commons.Linq
 
             IEnumerable<int> nullEnumerable = null;
 
-            Assert.Throws<ArgumentNullException>(() => { nullEnumerable.Delimit(""); });
-            Assert.Throws<ArgumentNullException>(() => { range.Delimit(null); });
-            Assert.Throws<ArgumentNullException>(() => { range.Delimit("", null); });
+            Assert.Throws<ArgumentNullException>(() => nullEnumerable.Delimit(""));
+            Assert.Throws<ArgumentNullException>(() => range.Delimit(null));
+            Assert.Throws<ArgumentNullException>(() => range.Delimit("", (string)null));
+            Assert.Throws<ArgumentNullException>(() => range.Delimit("", (Func<int, string>)null));
         }
 
         [Test]

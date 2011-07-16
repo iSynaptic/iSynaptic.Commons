@@ -23,14 +23,14 @@ namespace iSynaptic.Commons
             _SetInnerException = lambda.Compile();
         }
 
-        public static void ThrowAsInnerExceptionIfNeeded(this Exception self)
+        public static void ThrowAsInnerExceptionIfNeeded(this Exception @this)
         {
-            Guard.NotNull(self, "self");
+            Guard.NotNull(@this, "@this");
 
-            var newException = Cloneable<Exception>.ShallowClone(self);
+            var newException = Cloneable<Exception>.ShallowClone(@this);
 
             if (string.IsNullOrWhiteSpace(newException.StackTrace) != true)
-                _SetInnerException(newException, self);
+                _SetInnerException(newException, @this);
 
             throw newException;
         }

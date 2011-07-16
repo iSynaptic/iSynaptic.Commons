@@ -1,28 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
-using iSynaptic.Commons.Runtime.Serialization;
 
 namespace iSynaptic.Commons
 {
     public static partial class FuncExtensions
     {
-        public static Action ToAction<TRet>(this Func<TRet> self)
+        public static Action ToAction<TRet>(this Func<TRet> @this)
         {
-            Guard.NotNull(self, "self");
-            return () => self();
+            Guard.NotNull(@this, "@this");
+            return () => @this();
         }
 
-        public static Func<TRet> Curry<T1, TRet>(this Func<T1, TRet> self, T1 t1)
+        public static Func<TRet> Curry<T1, TRet>(this Func<T1, TRet> @this, T1 t1)
         {
-            Guard.NotNull(self, "self");
-            return () => self(t1);
+            Guard.NotNull(@this, "@this");
+            return () => @this(t1);
         }
 
-        public static IComparer<T> ToComparer<T>(this Func<T, T, int> self)
+        public static IComparer<T> ToComparer<T>(this Func<T, T, int> @this)
         {
-            Guard.NotNull(self, "self");
-            return new FuncComparer<T>(self);
+            Guard.NotNull(@this, "@this");
+            return new FuncComparer<T>(@this);
         }
 
         public static IEqualityComparer<T> ToEqualityComparer<T, TResult>(this Func<T, TResult> selector)
@@ -41,9 +39,9 @@ namespace iSynaptic.Commons
             return new FuncEqualityComparer<T>(equalsStrategy, hashCodeStrategy);
         }
 
-        public static Func<TResult> Memoize<TResult>(this Func<TResult> self)
+        public static Func<TResult> Memoize<TResult>(this Func<TResult> @this)
         {
-            Guard.NotNull(self, "self");
+            Guard.NotNull(@this, "@this");
 
             TResult result = default(TResult);
             Exception exception = null;
@@ -55,7 +53,7 @@ namespace iSynaptic.Commons
                 {
                     try
                     {
-                        result = self();
+                        result = @this();
                     }
                     catch (Exception ex)
                     {
@@ -64,7 +62,7 @@ namespace iSynaptic.Commons
                     }
                     finally
                     {
-                        self = null;
+                        @this = null;
                         executed = true;
                     }
                 }
@@ -76,22 +74,22 @@ namespace iSynaptic.Commons
             };
         }
 
-        public static Func<TResult> Synchronize<TResult>(this Func<TResult> self)
+        public static Func<TResult> Synchronize<TResult>(this Func<TResult> @this)
         {
-            return self.Synchronize(() => true);
+            return @this.Synchronize(() => true);
         }
 
-        public static Func<TResult> Synchronize<TResult>(this Func<TResult> self, Func<bool> needsSynchronizationPredicate)
+        public static Func<TResult> Synchronize<TResult>(this Func<TResult> @this, Func<bool> needsSynchronizationPredicate)
         {
-            Guard.NotNull(self, "self");
+            Guard.NotNull(@this, "@this");
             Guard.NotNull(needsSynchronizationPredicate, "needsSynchronizationPredicate");
 
-            return Synchronize(self, needsSynchronizationPredicate, new object());
+            return Synchronize(@this, needsSynchronizationPredicate, new object());
         }
 
-        public static Func<TResult> Synchronize<TResult>(this Func<TResult> self, Func<bool> needsSynchronizationPredicate, object gate)
+        public static Func<TResult> Synchronize<TResult>(this Func<TResult> @this, Func<bool> needsSynchronizationPredicate, object gate)
         {
-            Guard.NotNull(self, "self");
+            Guard.NotNull(@this, "@this");
             Guard.NotNull(needsSynchronizationPredicate, "needsSynchronizationPredicate");
             Guard.NotNull(gate, "gate");
 
@@ -101,20 +99,20 @@ namespace iSynaptic.Commons
                 {
                     lock (gate)
                     {
-                        return self();
+                        return @this();
                     }
                 }
 
-                return self();
+                return @this();
             };
         }
 
-        public static Func<Maybe<TResult>> Or<TResult>(this Func<Maybe<TResult>> self, Func<Maybe<TResult>> orFunc)
+        public static Func<Maybe<TResult>> Or<TResult>(this Func<Maybe<TResult>> @this, Func<Maybe<TResult>> orFunc)
         {
-            if (self == null || orFunc == null)
-                return self ?? orFunc;
+            if (@this == null || orFunc == null)
+                return @this ?? orFunc;
 
-            return () => self().Or(orFunc);
+            return () => @this().Or(orFunc);
         }
 
         private class FuncComparer<T> : IComparer<T>

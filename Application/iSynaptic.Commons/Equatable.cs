@@ -4,14 +4,14 @@ namespace iSynaptic.Commons
 {
     //public static class Equatable
     //{
-    //    public static bool IsEqualsTo<T>(this T self, T other)
+    //    public static bool IsEqualsTo<T>(this T @this, T other)
     //    {
-    //        return Equatable<T>.IsEqualsTo(self, other);
+    //        return Equatable<T>.IsEqualsTo(this, other);
     //    }
 
-    //    public static int ToHashCode<T>(this T self)
+    //    public static int ToHashCode<T>(this T this)
     //    {
-    //        return Equatable<T>.ToHashCode(self);
+    //        return Equatable<T>.ToHashCode(this);
     //    }
     //}
 

@@ -5,34 +5,34 @@ namespace iSynaptic.Commons.Reflection.Emit
 {
     public static class DynamicMethodExtensions
     {
-        public static Func<TRet> ToFunc<TRet>(this DynamicMethod self)
+        public static Func<TRet> ToFunc<TRet>(this DynamicMethod @this)
         {
-            Guard.NotNull(self, "self");
-            return (Func<TRet>)self.CreateDelegate(typeof(Func<TRet>));
+            Guard.NotNull(@this, "@this");
+            return (Func<TRet>)@this.CreateDelegate(typeof(Func<TRet>));
         }
 
-        public static Func<T1, TRet> ToFunc<T1, TRet>(this DynamicMethod self)
+        public static Func<T1, TRet> ToFunc<T1, TRet>(this DynamicMethod @this)
         {
-            Guard.NotNull(self, "self");
-            return (Func<T1, TRet>)self.CreateDelegate(typeof(Func<T1, TRet>));
+            Guard.NotNull(@this, "@this");
+            return (Func<T1, TRet>)@this.CreateDelegate(typeof(Func<T1, TRet>));
         }
 
-        public static Func<T1, T2, TRet> ToFunc<T1, T2, TRet>(this DynamicMethod self)
+        public static Func<T1, T2, TRet> ToFunc<T1, T2, TRet>(this DynamicMethod @this)
         {
-            Guard.NotNull(self, "self");
-            return (Func<T1, T2, TRet>)self.CreateDelegate(typeof(Func<T1, T2, TRet>));
+            Guard.NotNull(@this, "@this");
+            return (Func<T1, T2, TRet>)@this.CreateDelegate(typeof(Func<T1, T2, TRet>));
         }
 
-        public static Func<T1, T2, T3, TRet> ToFunc<T1, T2, T3, TRet>(this DynamicMethod self)
+        public static Func<T1, T2, T3, TRet> ToFunc<T1, T2, T3, TRet>(this DynamicMethod @this)
         {
-            Guard.NotNull(self, "self");
-            return (Func<T1, T2, T3, TRet>)self.CreateDelegate(typeof(Func<T1, T2, T3, TRet>));
+            Guard.NotNull(@this, "@this");
+            return (Func<T1, T2, T3, TRet>)@this.CreateDelegate(typeof(Func<T1, T2, T3, TRet>));
         }
 
-        public static Func<T1, T2, T3, T4, TRet> ToFunc<T1, T2, T3, T4, TRet>(this DynamicMethod self)
+        public static Func<T1, T2, T3, T4, TRet> ToFunc<T1, T2, T3, T4, TRet>(this DynamicMethod @this)
         {
-            Guard.NotNull(self, "self");
-            return (Func<T1, T2, T3, T4, TRet>)self.CreateDelegate(typeof(Func<T1, T2, T3, T4, TRet>));
+            Guard.NotNull(@this, "@this");
+            return (Func<T1, T2, T3, T4, TRet>)@this.CreateDelegate(typeof(Func<T1, T2, T3, T4, TRet>));
         }
     }
 

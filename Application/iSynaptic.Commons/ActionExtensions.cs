@@ -6,21 +6,21 @@ namespace iSynaptic.Commons
 {
     public static partial class ActionExtensions
     {
-        public static Action Curry<T1>(this Action<T1> self, T1 t1)
+        public static Action Curry<T1>(this Action<T1> @this, T1 t1)
         {
-            Guard.NotNull(self, "self");
-            return () => self(t1);
+            Guard.NotNull(@this, "@this");
+            return () => @this(t1);
         }
 
-        public static IDisposable ToDisposable(this Action self)
+        public static IDisposable ToDisposable(this Action @this)
         {
-            Guard.NotNull(self, "self");
-            return ToDisposable(disposing => self());
+            Guard.NotNull(@this, "@this");
+            return ToDisposable(disposing => @this());
         }
 
-        public static IDisposable ToDisposable(this Action<bool> self)
+        public static IDisposable ToDisposable(this Action<bool> @this)
         {
-            return new ActionDisposer(Guard.NotNull(self, "self"));
+            return new ActionDisposer(Guard.NotNull(@this, "@this"));
         }
 
         private sealed class ActionDisposer : IDisposable
@@ -56,9 +56,9 @@ namespace iSynaptic.Commons
             }
         }
 
-        public static Action MakeIdempotent(this Action self)
+        public static Action MakeIdempotent(this Action @this)
         {
-            Guard.NotNull(self, "self");
+            Guard.NotNull(@this, "@this");
 
             int beenExecuted = 0;
 
@@ -68,25 +68,26 @@ namespace iSynaptic.Commons
 
                 if (previousValue == 0)
                 {
-                    self();
-                    self = null;
+                    @this();
+                    @this = null;
                 }
             };
         }
 
-        public static Action CatchExceptions(this Action self)
+        public static Action CatchExceptions(this Action @this)
         {
-            return CatchExceptions(self, null);
+            Guard.NotNull(@this, "@this");
+            return CatchExceptions(@this, null);
         }
 
-        public static Action CatchExceptions(this Action self, ICollection<Exception> exceptions)
+        public static Action CatchExceptions(this Action @this, ICollection<Exception> exceptions)
         {
-            Guard.NotNull(self, "self");
+            Guard.NotNull(@this, "@this");
             return () =>
             {
                 try
                 {
-                    self();
+                    @this();
                 }
                 catch (Exception ex)
                 {
@@ -96,14 +97,14 @@ namespace iSynaptic.Commons
             };
         }
 
-        public static Action FollowedBy(this Action self, Action followedBy)
+        public static Action FollowedBy(this Action @this, Action followedBy)
         {
-            if(self == null || followedBy == null)
-                return self ?? followedBy;
+            if (@this == null || followedBy == null)
+                return @this ?? followedBy;
 
             return () =>
             {
-                self();
+                @this();
                 followedBy();
             };
         }
