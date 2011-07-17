@@ -895,6 +895,14 @@ namespace iSynaptic.Commons
         }
 
         [Test]
+        public void Cast_WithNullIMaybe_ReturnsNoValue()
+        {
+            IMaybe value = null;
+
+            Assert.IsTrue(Maybe<object>.NoValue == value.Cast<object>());
+        }
+
+        [Test]
         public void Cast_ReturnsCastedType()
         {
             object foo = new List<string>();
@@ -919,14 +927,16 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void Cast_ThrowsException_WhenCastIsNotPossible()
+        public void Cast_YieldsException_WhenCastIsNotPossible()
         {
             object foo = new List<string>();
 
             var value = Maybe.Return(foo)
                 .Cast<DateTime>();
 
-            Assert.Throws<InvalidCastException>(() => value.ValueOrDefault());
+            Assert.IsFalse(value.HasValue);
+            Assert.IsNotNull(value.Exception);
+            Assert.IsInstanceOf<InvalidCastException>(value.Exception);
         }
 
         [Test]
@@ -962,6 +972,14 @@ namespace iSynaptic.Commons
 
             Assert.IsTrue(ReferenceEquals(foo, value.Value));
             Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void OfType_WithNullIMaybe_ReturnsNoValue()
+        {
+            IMaybe value = null;
+
+            Assert.IsTrue(Maybe<object>.NoValue == value.OfType<object>());
         }
 
         [Test]
@@ -1416,6 +1434,74 @@ namespace iSynaptic.Commons
             Assert.IsNull(value.Exception);
             Assert.IsTrue(value.HasValue);
             Assert.AreEqual("42", value.Value);
+        }
+
+        [Test]
+        public void Unwrap_WithNullOuterIMaybe_ReturnsNoValue()
+        {
+            IMaybe<IMaybe<int>> value = null;
+
+            Assert.IsTrue(Maybe<int>.NoValue == value.Unwrap());
+        }
+
+        [Test]
+        public void Unwrap_WithNullInnerIMaybe_ReturnsNoValue()
+        {
+            IMaybe<IMaybe<int>> value = Maybe.Return<IMaybe<int>>(null);
+
+            Assert.IsTrue(Maybe<int>.NoValue == value.Unwrap());
+        }
+
+        [Test]
+        public void Unwrap_WithNoValueOuterIMaybe_ReturnsNoValue()
+        {
+            IMaybe<IMaybe<int>> value = Maybe<IMaybe<int>>.NoValue;
+
+            Assert.IsTrue(Maybe<int>.NoValue == value.Unwrap());
+        }
+
+        [Test]
+        public void Unwrap_WithNoValueInnerIMaybe_ReturnsNoValue()
+        {
+            IMaybe<IMaybe<int>> value = Maybe.Return<IMaybe<int>>(Maybe<int>.NoValue);
+
+            Assert.IsTrue(Maybe<int>.NoValue == value.Unwrap());
+        }
+
+        [Test]
+        public void Unwrap_WithExceptionOuterIMaybe_ReturnsException()
+        {
+            IMaybe<IMaybe<int>> value = Maybe.Exception<IMaybe<int>>(new InvalidOperationException());
+
+            var result = value.Unwrap();
+
+            Assert.IsFalse(result.HasValue);
+            Assert.IsNotNull(result.Exception);
+            Assert.IsInstanceOf<InvalidOperationException>(result.Exception);
+        }
+
+        [Test]
+        public void Unwrap_WithExceptionInnerIMaybe_ReturnsException()
+        {
+            IMaybe<IMaybe<int>> value = Maybe.Return<IMaybe<int>>(Maybe.Exception<int>(new InvalidOperationException()));
+
+            var result = value.Unwrap();
+
+            Assert.IsFalse(result.HasValue);
+            Assert.IsNotNull(result.Exception);
+            Assert.IsInstanceOf<InvalidOperationException>(result.Exception);
+        }
+
+        [Test]
+        public void Unwrap_WithValue_ReturnsValue()
+        {
+            IMaybe<IMaybe<int>> value = Maybe.Return<IMaybe<int>>(42.ToMaybe());
+
+            var result = value.Unwrap();
+
+            Assert.IsTrue(result.HasValue);
+            Assert.IsNull(result.Exception);
+            Assert.AreEqual(42, result.Value);
         }
     }
 }

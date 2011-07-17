@@ -604,28 +604,38 @@ namespace iSynaptic.Commons
 
         #region ToEnumerable Operator
 
+        public static IEnumerable<T> ToEnumerable<T>(this Maybe<T> @this)
+        {
+            return ToEnumerable(new[] {@this});
+        }
+
         public static IEnumerable<T> ToEnumerable<T>(params Maybe<T>[] values)
         {
             Guard.NotNull(values, "values");
+            return Maybe<T>.NoValue.ToEnumerable(values);
+        }
 
-            return values
-                .Select(x => x.ThrowOnException())
+        public static IEnumerable<T> ToEnumerable<T>(this Maybe<T> @this, IEnumerable<Maybe<T>> others)
+        {
+            Guard.NotNull(others, "others");
+
+            return new[] {@this}
+                .Concat(others)
                 .Squash();
         }
 
-        public static IEnumerable<T> ToEnumerable<T>(this Maybe<T> @this)
+        #endregion
+
+        #region Unwrap Operator
+
+        public static Maybe<T> Unwrap<T>(this IMaybe<IMaybe<T>> @this)
         {
-            return @this.ToEnumerable(null);
+            return @this.AsMaybe().Select(x => x.AsMaybe()).Unwrap();
         }
 
-        public static IEnumerable<T> ToEnumerable<T>(this Maybe<T> @this, params Maybe<T>[] others)
+        public static Maybe<T> Unwrap<T>(this Maybe<Maybe<T>> @this)
         {
-            if (others != null && others.Length > 0)
-                return new[] {@this}
-                    .Concat(others)
-                    .Squash();
-
-            return new[] {@this}.Squash();
+            return @this.SelectMaybe(x => x);
         }
 
         #endregion
@@ -680,11 +690,6 @@ namespace iSynaptic.Commons
         {
             Guard.NotNull(exception, "exception");
             return new Maybe<T>((Func<T>)(() => { throw exception; }));
-        }
-
-        public static Maybe<T> Unwrap<T>(this Maybe<Maybe<T>> @this)
-        {
-            return @this.SelectMaybe(x => x);
         }
 
         // This is an alias of Bind and SelectMany.  Since SelectMany doesn't make sense (because there is at most one value),
@@ -821,7 +826,8 @@ namespace iSynaptic.Commons
 
         public static Maybe<TResult> Cast<TResult>(this IMaybe @this)
         {
-            Guard.NotNull(@this, "@this");
+            if(@this == null)
+                return Maybe<TResult>.NoValue;
 
             if(@this is Maybe<TResult>)
                 return (Maybe<TResult>) @this;
@@ -834,13 +840,17 @@ namespace iSynaptic.Commons
                 if (@this.HasValue != true)
                     return Maybe<TResult>.NoValue;
 
+                if (!(@this.Value is TResult))
+                    return new Maybe<TResult>(new InvalidCastException());
+
                 return ((TResult) @this.Value).ToMaybe();
             });
         }
 
         public static Maybe<TResult> OfType<TResult>(this IMaybe @this)
         {
-            Guard.NotNull(@this, "@this");
+            if (@this == null)
+                return Maybe<TResult>.NoValue;
 
             if (@this is Maybe<TResult>)
                 return (Maybe<TResult>) @this;
@@ -876,13 +886,11 @@ namespace iSynaptic.Commons
 
         public static Maybe<T> AsMaybe<T>(this IMaybe<T> value)
         {
-            Guard.NotNull(value, "value");
             return value.Cast<T>();
         }
 
         public static Maybe<object> AsMaybe(this IMaybe value)
         {
-            Guard.NotNull(value, "value");
             return value.Cast<object>();
         }
     }
