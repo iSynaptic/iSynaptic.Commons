@@ -27,7 +27,7 @@ namespace iSynaptic.Commons.Collections.Generic
         public SmartLoop<T> Each(Action<T> action)
         {
             Guard.NotNull(action, "action");
-            _Action = _Action.FollowedBy((l, x) => action(x));
+            _Action = Concat(_Action, (l, x) => action(x));
 
             return this;
         }
@@ -35,7 +35,7 @@ namespace iSynaptic.Commons.Collections.Generic
         public SmartLoop<T> OnlyOne(Action<T> action)
         {
             Guard.NotNull(action, "action");
-            _Action = _Action.FollowedBy((l, x) => { if (l.Count == 1) action(x); });
+            _Action = Concat(_Action, (l, x) => { if (l.Count == 1) action(x); });
 
             return this;
         }
@@ -43,7 +43,7 @@ namespace iSynaptic.Commons.Collections.Generic
         public SmartLoop<T> MoreThanOne(Action<T> action)
         {
             Guard.NotNull(action, "action");
-            _Action = _Action.FollowedBy((l, x) => { if (l.Count > 1) action(x); });
+            _Action = Concat(_Action, (l, x) => { if (l.Count > 1) action(x); });
 
             return this;
         }
@@ -59,9 +59,11 @@ namespace iSynaptic.Commons.Collections.Generic
         public SmartLoop<T> Ignore(Func<T, bool> ignorePredicate)
         {
             Guard.NotNull(ignorePredicate, "ignorePredicate");
-            _IgnorePredicate = _IgnorePredicate == null
-                ? ignorePredicate
-                : _IgnorePredicate.Or(ignorePredicate);
+
+            if (_IgnorePredicate == null)
+                _IgnorePredicate = ignorePredicate;
+            else
+                _IgnorePredicate = x => _IgnorePredicate(x) || ignorePredicate(x);
 
             return this;
         }
@@ -76,8 +78,7 @@ namespace iSynaptic.Commons.Collections.Generic
             Guard.NotNull(predicate, "predicate");
             Guard.NotNull(action, "action");
 
-            action = action.MakeConditional(predicate);
-            _Action = _Action.FollowedBy((l, x) => action(x));
+            _Action = Concat(_Action, (l, x) => { if(predicate(x)) action(x); });
 
             return this;
         }
@@ -85,7 +86,7 @@ namespace iSynaptic.Commons.Collections.Generic
         public SmartLoop<T> BeforeAll(Action<IEnumerable<T>> action)
         {
             Guard.NotNull(action, "action");
-            _BeforeAllAction = _BeforeAllAction.FollowedBy(action);
+            _BeforeAllAction = Concat(_BeforeAllAction, action);
 
             return this;
         }
@@ -93,7 +94,7 @@ namespace iSynaptic.Commons.Collections.Generic
         public SmartLoop<T> AfterAll(Action<IEnumerable<T>> action)
         {
             Guard.NotNull(action, "action");
-            _AfterAllAction = _AfterAllAction.FollowedBy(action);
+            _AfterAllAction = Concat(_AfterAllAction, action);
 
             return this;
         }
@@ -101,7 +102,7 @@ namespace iSynaptic.Commons.Collections.Generic
         public SmartLoop<T> None(Action action)
         {
             Guard.NotNull(action, "action");
-            _NoneAction = _NoneAction.FollowedBy(action);
+            _NoneAction = Concat(_NoneAction, action);
 
             return this;
         }
@@ -109,14 +110,9 @@ namespace iSynaptic.Commons.Collections.Generic
         public SmartLoop<T> Between(Action<T, T> action)
         {
             Guard.NotNull(action, "action");
-            _BetweenAction = _BetweenAction.FollowedBy(action);
+            _BetweenAction = Concat(_BetweenAction, action);
 
             return this;
-        }
-
-        protected List<T> IgnoreItems
-        {
-            get { return _IgnoreItems ?? (_IgnoreItems = new List<T>()); }
         }
 
         public void Execute()
@@ -150,6 +146,35 @@ namespace iSynaptic.Commons.Collections.Generic
 
             if (_AfterAllAction != null)
                 _AfterAllAction(finalItems);
+        }
+
+        private static Action Concat(Action left, Action right)
+        {
+            if (left == null || right == null)
+                return left ?? right;
+
+            return () => { left(); right(); };
+        }
+
+        private static Action<T1> Concat<T1>(Action<T1> left, Action<T1> right)
+        {
+            if (left == null || right == null)
+                return left ?? right;
+
+            return t1 => { left(t1); right(t1); };
+        }
+
+        private static Action<T1, T2> Concat<T1, T2>(Action<T1, T2> left, Action<T1, T2> right)
+        {
+            if (left == null || right == null)
+                return left ?? right;
+
+            return (t1, t2) => { left(t1, t2); right(t1, t2); };
+        }
+
+        protected List<T> IgnoreItems
+        {
+            get { return _IgnoreItems ?? (_IgnoreItems = new List<T>()); }
         }
     }
 

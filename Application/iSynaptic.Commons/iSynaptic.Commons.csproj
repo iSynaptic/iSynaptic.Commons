@@ -64,11 +64,6 @@
     <Compile Include="..\..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="ActionExtensions.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ActionExtensions.tt</DependentUpon>
-    </Compile>
     <Compile Include="AOP\DisposableContext.cs" />
     <Compile Include="AOP\IEnlistmentScope.cs" />
     <Compile Include="AOP\IUnitOfWork.cs" />
@@ -181,10 +176,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ActionExtensions.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>ActionExtensions.generated.cs</LastGenOutput>
-    </None>
     <None Include="FuncExtensions.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>FuncExtensions.generated.cs</LastGenOutput>

@@ -15,7 +15,7 @@ namespace iSynaptic.Commons
 {
     public static partial class FuncExtensions
     {
-        <# foreach(var i in Enumerable.Range(1, 16))
+        <# foreach(var i in Enumerable.Range(1, 7))
         {
             string typeArgs = Delimit(Enumerable.Range(1, i), ", ", x => "T" + x.ToString());
             string args = Delimit(Enumerable.Range(1, i), ", ", x => "t" + x.ToString());
@@ -26,95 +26,6 @@ namespace iSynaptic.Commons
             string curriedTypeArgs = Delimit(Enumerable.Range(1, i).Skip(1), ", ", x => "T" + x.ToString());
             string curriedArgs = Delimit(Enumerable.Range(1, i).Skip(1), ", ", x => "t" + x.ToString());
         #>
-
-        <# if(i > 1) { #>
-
-        public static Func<<#= reverseTypeArgs #>, TRet> Flip<<#= typeArgs #>, TRet>(this Func<<#= typeArgs #>, TRet> @this)
-        {
-            Guard.NotNull(@this, "@this");
-            return (<#= reverseArgs #>) => @this(<#= args #>);
-        }
-
-        public static Func<<#= curriedTypeArgs #>, TRet> Curry<<#= typeArgs #>, TRet>(this Func<<#= typeArgs #>, TRet> @this, T1 t1)
-        {
-            Guard.NotNull(@this, "@this");
-            return (<#= curriedArgs #>) => @this(t1, <#= curriedArgs #>);
-        }
-
-        <# } #>
-
-        public static Action<<#= typeArgs #>> ToAction<<#= typeArgs #>, TRet>(this Func<<#= typeArgs #>, TRet> @this)
-        {
-            Guard.NotNull(@this, "@this");
-            return (<#= args #>) => @this(<#= args #>);
-        }
-
-        public static Func<<#= typeArgs #>, bool> And<<#= typeArgs #>>(this Func<<#= typeArgs #>, bool> @this, Func<<#= typeArgs #>, bool> right)
-        {
-            Guard.NotNull(@this, "@this");
-            Guard.NotNull(right, "right");
-
-            return (<#= args #>) => @this(<#= args #>) && right(<#= args #>);
-        }
-
-        public static Func<<#= typeArgs #>, bool> Or<<#= typeArgs #>>(this Func<<#= typeArgs #>, bool> @this, Func<<#= typeArgs #>, bool> right)
-        {
-            Guard.NotNull(@this, "@this");
-            Guard.NotNull(right, "right");
-            
-            return (<#= args #>) => @this(<#= args #>) || right(<#= args #>);
-        }
-
-        public static Func<<#= typeArgs #>, bool> XOr<<#= typeArgs #>>(this Func<<#= typeArgs #>, bool> @this, Func<<#= typeArgs #>, bool> right)
-        {
-            Guard.NotNull(@this, "@this");
-            Guard.NotNull(right, "right");
-
-            return (<#= args #>) => @this(<#= args #>) ^ right(<#= args #>);
-        }
-
-        public static Func<<#= typeArgs #>, TResult> MakeConditional<<#= typeArgs #>, TResult>(this Func<<#= typeArgs #>, TResult> @this, Func<<#= typeArgs #>, bool> condition)
-        {
-            return MakeConditional(@this, condition, null);
-        }
-
-        public static Func<<#= typeArgs #>, TResult> MakeConditional<<#= typeArgs #>, TResult>(this Func<<#= typeArgs #>, TResult> @this, Func<<#= typeArgs #>, bool> condition, TResult defaultValue)
-        {
-            return MakeConditional(@this, condition, (<#= args #>) => defaultValue);
-        }
-
-        public static Func<<#= typeArgs #>, TResult> MakeConditional<<#= typeArgs #>, TResult>(this Func<<#= typeArgs #>, TResult> @this, Func<<#= typeArgs #>, bool> condition, Func<<#= typeArgs #>, TResult> falseFunc)
-        {
-            Guard.NotNull(@this, "@this");
-            Guard.NotNull(condition, "condition");
-
-            return (<#= args #>) =>
-            {
-                if (condition(<#= args #>))
-                    return @this(<#= args #>);
-
-                if (falseFunc != null)
-                    return falseFunc(<#= args #>);
-                
-                return default(TResult);
-            };
-        }
-
-        public static Func<<#= typeArgs #>, Maybe<TResult>> Or<<#= typeArgs #>, TResult>(this Func<<#= typeArgs #>, Maybe<TResult>> @this, Func<<#= typeArgs #>, Maybe<TResult>> orFunc)
-        {
-            if (@this == null || orFunc == null)
-                return @this ?? orFunc;
-
-            return (<#= args #>) =>
-            {
-                var results = @this(<#= args #>);
-
-                if(results.HasValue != true && results.Exception == null)
-                    return orFunc(<#= args #>);
-
-                return results;
-            };
-        }
 
         public static Func<<#= typeArgs #>, TResult> Synchronize<<#= typeArgs #>, TResult>(this Func<<#= typeArgs #>, TResult> @this)
         {
@@ -151,7 +62,7 @@ namespace iSynaptic.Commons
 
         <# } #>
 
-        <# foreach(var i in Enumerable.Range(1, 16))
+        <# foreach(var i in Enumerable.Range(1, 7))
         {
             string fullTypeArgs = Delimit(Enumerable.Range(1, i), ", ", x => "T" + x.ToString());
             string fullArgs = Delimit(Enumerable.Range(1, i), ", ", x => "t" + x.ToString());

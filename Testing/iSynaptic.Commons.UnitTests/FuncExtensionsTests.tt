@@ -18,7 +18,7 @@ namespace iSynaptic.Commons
 {
     public partial class FuncExtensionsTests
     {
-		<# foreach(var i in Enumerable.Range(1, 16))
+		<# foreach(var i in Enumerable.Range(1, 7))
 		{
 			string nameSuffix = Delimit(Enumerable.Range(1, i), "", x => "T" + x.ToString());
 			string typeArgs = Delimit(Enumerable.Range(1, i), ", ", x => "T" + x.ToString());
@@ -26,115 +26,6 @@ namespace iSynaptic.Commons
 			string args = Delimit(Enumerable.Range(1, i), ", ", x => "t" + x.ToString());
 			string fixedArgs = Delimit(Enumerable.Range(1, i), ", ", x => x.ToString());
 	    #>
-
-		[Test]
-        public void ToActionOf<#= nameSuffix #>()
-        {
-            int val = 0;
-
-            Func<<#= fixedTypes #>, int> func = (<#= args #>) => { val = <#= Delimit(Enumerable.Range(1, i), " + ", x => "t" + x.ToString()) #>; return val; };
-            var action = func.ToAction();
-
-            action(<#= fixedArgs #>);
-
-			int expected = <#= Delimit(Enumerable.Range(1, i), " + ", x => x.ToString()) #>;
-            Assert.AreEqual(expected, val);
-        }
-
-		[Test]
-        public void AndOf<#= nameSuffix #>_WithNullFuncs_ThrowsArgumentNullException()
-        {
-            Func<<#= fixedTypes #>, bool> nullFunc = null;
-            Func<<#= fixedTypes #>, bool> notNullFunc = (<#= args #>) => true;
-
-            Assert.Throws<ArgumentNullException>(() => nullFunc.And(notNullFunc));
-            Assert.Throws<ArgumentNullException>(() => notNullFunc.And(nullFunc));
-        }
-
-        [Test]
-        public void AndOf<#= nameSuffix #>_WithValidFuncs_ComposesCorrectly()
-        {
-			bool leftResult = true;
-			bool rightResult = true;
-
-            Func<<#= fixedTypes #>, bool> left = (<#= args #>) => leftResult;
-            Func<<#= fixedTypes #>, bool> right = (<#= args #>) => rightResult;
-
-            var andFunc = left.And(right);
-
-            Assert.IsTrue(andFunc(<#= fixedArgs #>));
-
-			leftResult = false;
-            Assert.IsFalse(andFunc(<#= fixedArgs #>));
-
-			leftResult = true;
-			rightResult = false;
-            Assert.IsFalse(andFunc(<#= fixedArgs #>));
-        }
-
-        [Test]
-        public void OrOf<#= nameSuffix #>ReturningBool_WithNullFuncs_ThrowsArgumentNullException()
-        {
-            Func<<#= fixedTypes #>, bool> nullFunc = null;
-            Func<<#= fixedTypes #>, bool> notNullFunc = (<#= args #>) => true;
-
-            Assert.Throws<ArgumentNullException>(() => nullFunc.Or(notNullFunc));
-            Assert.Throws<ArgumentNullException>(() => notNullFunc.Or(nullFunc));
-        }
-
-        [Test]
-        public void OrOf<#= nameSuffix #>ReturningBool_WithValidFuncs_ComposesCorrectly()
-        {
-            bool leftResult = true;
-			bool rightResult = true;
-
-            Func<<#= fixedTypes #>, bool> left = (<#= args #>) => leftResult;
-            Func<<#= fixedTypes #>, bool> right = (<#= args #>) => rightResult;
-
-            var orFunc = left.Or(right);
-
-            Assert.IsTrue(orFunc(<#= fixedArgs #>));
-
-			leftResult = false;
-            Assert.IsTrue(orFunc(<#= fixedArgs #>));
-
-			rightResult = false;
-            Assert.IsFalse(orFunc(<#= fixedArgs #>));
-        }
-
-        [Test]
-        public void XOrOf<#= nameSuffix #>_WithNullFuncs_ThrowsArgumentNullException()
-        {
-            Func<<#= fixedTypes #>, bool> nullFunc = null;
-            Func<<#= fixedTypes #>, bool> notNullFunc = (<#= args #>) => true;
-
-            Assert.Throws<ArgumentNullException>(() => nullFunc.XOr(notNullFunc));
-            Assert.Throws<ArgumentNullException>(() => notNullFunc.XOr(nullFunc));
-        }
-
-        [Test]
-        public void XOrOf<#= nameSuffix #>_WithValidFuncs_ComposesCorrectly()
-        {
-            bool leftResult = true;
-			bool rightResult = true;
-
-            Func<<#= fixedTypes #>, bool> left = (<#= args #>) => leftResult;
-            Func<<#= fixedTypes #>, bool> right = (<#= args #>) => rightResult;
-
-            var orFunc = left.XOr(right);
-
-            Assert.IsFalse(orFunc(<#= fixedArgs #>));
-
-			leftResult = false;
-            Assert.IsTrue(orFunc(<#= fixedArgs #>));
-
-			leftResult = true;
-			rightResult = false;
-            Assert.IsTrue(orFunc(<#= fixedArgs #>));
-
-			leftResult = false;
-            Assert.IsFalse(orFunc(<#= fixedArgs #>));
-        }
 
 		[Test]
 		public void SynchronizeOf<#= nameSuffix #>_PreventsConcurrentAccess()
@@ -161,33 +52,6 @@ namespace iSynaptic.Commons
 			int expected = <#= Enumerable.Range(1, i).Sum().ToString() #>;
 			
 			Assert.AreEqual(expected, func(<#= fixedArgs #>));
-		}
-
-		[Test]
-		public void MakeConditionalOf<#= nameSuffix #>()
-		{
-			<# string halvedFixedArgs = Delimit(Enumerable.Range(1, i), ", ", x => (x / 2).ToString()); #>
-
-			Func<<#= fixedTypes #>, int> func = null;
-
-            Assert.Throws<ArgumentNullException>(() => { func.MakeConditional((<#= args #>) => true); });
-
-            func = (<#= args #>) => <#= Delimit(Enumerable.Range(1, i), " + ", x => "t" + x.ToString()) #>;
-            Assert.Throws<ArgumentNullException>(() => { func.MakeConditional(null); });
-
-			int expected = <#= Delimit(Enumerable.Range(1, i), " + ", x => x.ToString()) #>;
-
-            var simpleConditionalFunc = func.MakeConditional((<#= args #>) => <#= Delimit(Enumerable.Range(1, i), " + ", x => "t" + x.ToString()) #> == expected);
-            Assert.AreEqual(0, simpleConditionalFunc(<#= halvedFixedArgs #>));
-            Assert.AreEqual(expected, simpleConditionalFunc(<#= fixedArgs #>));
-
-            var withDefaultValueFunc = func.MakeConditional((<#= args #>) => <#= Delimit(Enumerable.Range(1, i), " + ", x => "t" + x.ToString()) #> == expected, -1);
-            Assert.AreEqual(-1, withDefaultValueFunc(<#= halvedFixedArgs #>));
-            Assert.AreEqual(expected, withDefaultValueFunc(<#= fixedArgs #>));
-
-            var withFalseFunc = func.MakeConditional((<#= args #>) => <#= Delimit(Enumerable.Range(1, i), " + ", x => "t" + x.ToString()) #> == expected, (<#= args #>) => 42);
-            Assert.AreEqual(42, withFalseFunc(<#= halvedFixedArgs #>));
-            Assert.AreEqual(expected, withFalseFunc(<#= fixedArgs #>));
 		}
 
 		[Test]
@@ -219,56 +83,6 @@ namespace iSynaptic.Commons
 			Assert.AreEqual(2, count);
 
 		}
-
-		[Test]
-        public void OrOf<#= nameSuffix #>ReturningMaybe_WithNullArgument_ReturnsOriginal()
-        {
-            Func<<#= fixedTypes #>, Maybe<int>> originalFunc = (<#= args #>) => 42.ToMaybe();
-            var func = originalFunc.Or(null);
-
-            var result = func(<#= fixedArgs #>);
-
-            Assert.IsTrue(ReferenceEquals(originalFunc, func));
-            Assert.AreEqual(42, result.Value);
-        }
-
-        [Test]
-        public void OrOf<#= nameSuffix #>ReturningMaybe_ExtendingNullFunc_ReturnsOriginal()
-        {
-            Func<<#= fixedTypes #>, Maybe<int>> originalFunc = (<#= args #>) => 42.ToMaybe();
-            var func = ((Func<<#= fixedTypes #>, Maybe<int>>)null).Or(originalFunc);
-
-            var result = func(<#= fixedArgs #>);
-
-            Assert.IsTrue(ReferenceEquals(originalFunc, func));
-            Assert.AreEqual(42, result.Value);
-        }
-
-        [Test]
-        public void OrOf<#= nameSuffix #>ReturningMaybe_CallsFirstFunc()
-        {
-            Func<<#= fixedTypes #>, Maybe<int>> left = (<#= args #>) => 42.ToMaybe();
-            Func<<#= fixedTypes #>, Maybe<int>> right = (<#= args #>) => 7.ToMaybe();
-
-            var func = left.Or(right);
-
-            var results = func(<#= fixedArgs #>);
-
-            Assert.AreEqual(42, results.Value);
-        }
-
-        [Test]
-        public void OrOf<#= nameSuffix #>ReturningMaybe_CallsSecondFunc()
-        {
-            Func<<#= fixedTypes #>, Maybe<int>> left = (<#= args #>) => Maybe<int>.NoValue;
-            Func<<#= fixedTypes #>, Maybe<int>> right = (<#= args #>) => 42.ToMaybe();
-
-            var func = left.Or(right);
-
-            var results = func(<#= fixedArgs #>);
-
-            Assert.AreEqual(42, results.Value);
-        }
 
 		<# } #>
 	}

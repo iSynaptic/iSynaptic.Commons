@@ -68,17 +68,16 @@ namespace iSynaptic.Commons
         {
             var exceptions = new List<Exception>();
 
-            Action<IDisposable> dispose = d => d.Dispose();
-            dispose = dispose.CatchExceptions(exceptions);
-
-            _Disposables
-                .ToList()
-                .ForEach(dispose);
+            foreach(var disposable in _Disposables)
+            {
+                try { disposable.Dispose(); }
+                catch (Exception ex) { exceptions.Add(ex); }
+            }
 
             Clear();
 
             if (exceptions.Count > 0)
-                throw new AggregateException("Exception(s) occured during disposal.", exceptions);
+                throw new AggregateException("Exception(s) occurred during disposal.", exceptions);
         }
 
     }

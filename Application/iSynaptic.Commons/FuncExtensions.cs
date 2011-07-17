@@ -5,18 +5,6 @@ namespace iSynaptic.Commons
 {
     public static partial class FuncExtensions
     {
-        public static Action ToAction<TRet>(this Func<TRet> @this)
-        {
-            Guard.NotNull(@this, "@this");
-            return () => @this();
-        }
-
-        public static Func<TRet> Curry<T1, TRet>(this Func<T1, TRet> @this, T1 t1)
-        {
-            Guard.NotNull(@this, "@this");
-            return () => @this(t1);
-        }
-
         public static IComparer<T> ToComparer<T>(this Func<T, T, int> @this)
         {
             Guard.NotNull(@this, "@this");
@@ -105,14 +93,6 @@ namespace iSynaptic.Commons
 
                 return @this();
             };
-        }
-
-        public static Func<Maybe<TResult>> Or<TResult>(this Func<Maybe<TResult>> @this, Func<Maybe<TResult>> orFunc)
-        {
-            if (@this == null || orFunc == null)
-                return @this ?? orFunc;
-
-            return () => @this().Or(orFunc);
         }
 
         private class FuncComparer<T> : IComparer<T>

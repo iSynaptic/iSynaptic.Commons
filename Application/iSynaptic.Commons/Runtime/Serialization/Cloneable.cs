@@ -450,7 +450,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
             if (IsRootTypeCloneablePrimitive(typeToCheck))
                 return true;
 
-            Func<FieldInfo, bool> includeFilter = FieldIncludeFilter.And(f => f.FieldType != typeToCheck);
+            Func<FieldInfo, bool> includeFilter = f => FieldIncludeFilter(f) && f.FieldType != typeToCheck;
 
             foreach (FieldInfo field in typeToCheck.GetFieldsDeeply(includeFilter))
             {

@@ -75,11 +75,6 @@
     <Compile Include="..\..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="ActionExtensionsTests.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ActionExtensionsTests.tt</DependentUpon>
-    </Compile>
     <Compile Include="AOP\DisposableContextTests.cs" />
     <Compile Include="AOP\ScopeTests.cs" />
     <Compile Include="AOP\StubScope.cs" />
@@ -179,10 +174,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ActionExtensionsTests.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>ActionExtensionsTests.generated.cs</LastGenOutput>
-    </None>
     <None Include="FuncExtensionsTests.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>FuncExtensionsTests.generated.cs</LastGenOutput>
