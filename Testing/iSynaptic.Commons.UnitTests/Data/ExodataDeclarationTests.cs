@@ -86,7 +86,7 @@ namespace iSynaptic.Commons.Data
                 .For<string>()
                 .To(42);
 
-            Ioc.SetDependencyResolver(new DependencyResolver(symbol => symbol is ISymbol<IExodataResolver> ? exodataResolver : null));
+            Ioc.SetDependencyResolver(new DependencyResolver(symbol => symbol.ToMaybe().OfType<IDependencySymbol>().Where(x => x.DependencyType == typeof(IExodataResolver)).Select(x => (object)exodataResolver)));
 
             var value = maxLength.For<string>();
             Assert.AreEqual(42, value);
@@ -99,7 +99,7 @@ namespace iSynaptic.Commons.Data
 
             var resolver = MockRepository.GenerateMock<IExodataResolver>();
             resolver.Expect(x => x.TryResolve(maxLength, Maybe<object>.NoValue, Maybe<object>.NoValue, null))
-                .Return(42);
+                .Return(42.ToMaybe());
 
             ExodataDeclaration.SetResolver(resolver);
 
@@ -114,7 +114,7 @@ namespace iSynaptic.Commons.Data
 
             var resolver = MockRepository.GenerateMock<IExodataResolver>();
             resolver.Expect(x => x.TryResolve(maxLength, Maybe<object>.NoValue, Maybe<string>.NoValue, null))
-                .Return(42);
+                .Return(42.ToMaybe());
 
             ExodataDeclaration.SetResolver(resolver);
 
@@ -130,7 +130,7 @@ namespace iSynaptic.Commons.Data
 
             var resolver = MockRepository.GenerateMock<IExodataResolver>();
             resolver.Expect(x => x.TryResolve(maxLength, Maybe<object>.NoValue, subject.ToMaybe(), null))
-                .Return(42);
+                .Return(42.ToMaybe());
 
             ExodataDeclaration.SetResolver(resolver);
 
@@ -148,7 +148,7 @@ namespace iSynaptic.Commons.Data
 
             var resolver = MockRepository.GenerateMock<IExodataResolver>();
             resolver.Expect(x => x.TryResolve(maxLength, Maybe<object>.NoValue, Maybe<string>.NoValue, member))
-                .Return(42);
+                .Return(42.ToMaybe());
 
             ExodataDeclaration.SetResolver(resolver);
 
@@ -167,7 +167,7 @@ namespace iSynaptic.Commons.Data
 
             var resolver = MockRepository.GenerateMock<IExodataResolver>();
             resolver.Expect(x => x.TryResolve(maxLength, Maybe<object>.NoValue, subject.ToMaybe(), member))
-                .Return(42);
+                .Return(42.ToMaybe());
 
             ExodataDeclaration.SetResolver(resolver);
 

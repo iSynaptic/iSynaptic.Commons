@@ -188,7 +188,7 @@ namespace iSynaptic.Commons
         public static Func<<#= fullTypeArgs #>, TResult> Memoize<<#= fullTypeArgs #>, TResult>(this Func<<#= fullTypeArgs #>, TResult> @this)
         {
             Guard.NotNull(@this, "@this");
-            var dictionary = new LazySelectionDictionary<<#= nestedTupleType #>, TResult>(x => @this(<#= nestedArgs #>));
+            var dictionary = new LazySelectionDictionary<<#= nestedTupleType #>, TResult>(x => @this(<#= nestedArgs #>).ToMaybe());
 
             return (<#= fullArgs #>) => dictionary[<#= nestedTupleCreate #>];
         }

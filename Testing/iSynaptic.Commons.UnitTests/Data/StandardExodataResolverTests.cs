@@ -21,16 +21,12 @@ namespace iSynaptic.Commons.Data
         {
             bool executed = false;
 
-            Ioc.SetDependencyResolver(new DependencyResolver(x =>
-            {
-                if (x is ISymbol<TestSubjectExodataSurrogate>)
-                {
-                    executed = true;
-                    return new TestSubjectExodataSurrogate();
-                }
-
-                return null;
-            }));
+            Ioc.SetDependencyResolver(new DependencyResolver(x => x
+                .ToMaybe()
+                .OfType<IDependencySymbol>()
+                .Where(y => y.DependencyType == typeof(TestSubjectExodataSurrogate))
+                .Select(y => (object) new TestSubjectExodataSurrogate())
+                .OnValue(y => executed = true)));
 
             var resolver = new StandardExodataResolver();
 

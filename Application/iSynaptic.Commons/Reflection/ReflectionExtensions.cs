@@ -43,13 +43,8 @@ namespace iSynaptic.Commons.Reflection
 
         public static Maybe<Type> TryGetGenericTypeDefinition(this Type source)
         {
-            if (source.IsGenericTypeDefinition)
-                return source;
-
-            if (source.IsGenericType)
-                return source.GetGenericTypeDefinition();
-
-            return Maybe<Type>.NoValue;
+            return Maybe.If(source.IsGenericTypeDefinition, source.ToMaybe())
+                .Or(() => Maybe.If(source.IsGenericType, source.GetGenericTypeDefinition().ToMaybe()));
         }
 
         public static MethodInfo FindConversionMethod(this Type onType, Type fromType, Type toType)

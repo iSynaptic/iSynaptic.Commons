@@ -34,7 +34,7 @@ namespace iSynaptic.Commons.Collections.Generic
         [Test]
         public void ContainsKey_OnlyReturnsTrue_IfValueCanBeLoaded()
         {
-            var dictionary = new LazySelectionDictionary<int, string>(x => x == 1 ? Maybe<string>.NoValue : x.ToString());
+            var dictionary = new LazySelectionDictionary<int, string>(x => x.ToMaybe().Where(y => y != 1).Select(y => y.ToString()));
             Assert.IsFalse(dictionary.ContainsKey(1));
             Assert.IsTrue(dictionary.ContainsKey(42));
         }
@@ -43,7 +43,7 @@ namespace iSynaptic.Commons.Collections.Generic
         public void GetValue_EvaluatesOnce()
         {
             int executed = 0;
-            var dictionary = new LazySelectionDictionary<int, string>(x => { executed++; return x.ToString(); });
+            var dictionary = new LazySelectionDictionary<int, string>(x => { executed++; return x.ToString().ToMaybe(); });
 
             string value = dictionary[1];
             value = dictionary[1];
@@ -55,7 +55,7 @@ namespace iSynaptic.Commons.Collections.Generic
         [Test]
         public void TryGetValue_InvokesSelectionFunc()
         {
-            var dictionary = new LazySelectionDictionary<int, string>(x => x % 2 == 0 ? x.ToString() : Maybe<string>.NoValue);
+            var dictionary = new LazySelectionDictionary<int, string>(x => x.ToMaybe().Where(y => y % 2 == 0).Select(y => x.ToString()));
             string value = null;
 
             Assert.IsFalse(dictionary.TryGetValue(1, out value));

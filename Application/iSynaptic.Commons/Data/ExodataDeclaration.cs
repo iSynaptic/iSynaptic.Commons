@@ -17,7 +17,7 @@ namespace iSynaptic.Commons.Data
 
         public ExodataDeclaration(TExodata @default) : this()
         {
-            _Default = @default;
+            _Default = @default.ToMaybe();
         }
 
         #region Fluent Resolution
@@ -29,7 +29,7 @@ namespace iSynaptic.Commons.Data
 
         public IFluentExodataResolutionRoot<TExodata> Given<TContext>(TContext context)
         {
-            return new ExodataDeclarationResolutionRoot<TExodata, TContext>(this, context);
+            return new ExodataDeclarationResolutionRoot<TExodata, TContext>(this, context.ToMaybe());
         }
 
         public Maybe<TExodata> TryGet()

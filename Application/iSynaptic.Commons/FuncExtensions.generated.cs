@@ -1937,7 +1937,7 @@ namespace iSynaptic.Commons
         public static Func<T1, TResult> Memoize<T1, TResult>(this Func<T1, TResult> @this)
         {
             Guard.NotNull(@this, "@this");
-            var dictionary = new LazySelectionDictionary<Tuple<T1>, TResult>(x => @this(x.Item1));
+            var dictionary = new LazySelectionDictionary<Tuple<T1>, TResult>(x => @this(x.Item1).ToMaybe());
 
             return (t1) => dictionary[new Tuple<T1>(t1)];
         }
@@ -1945,7 +1945,7 @@ namespace iSynaptic.Commons
         public static Func<T1, T2, TResult> Memoize<T1, T2, TResult>(this Func<T1, T2, TResult> @this)
         {
             Guard.NotNull(@this, "@this");
-            var dictionary = new LazySelectionDictionary<Tuple<T1, T2>, TResult>(x => @this(x.Item1, x.Item2));
+            var dictionary = new LazySelectionDictionary<Tuple<T1, T2>, TResult>(x => @this(x.Item1, x.Item2).ToMaybe());
 
             return (t1, t2) => dictionary[new Tuple<T1, T2>(t1, t2)];
         }
@@ -1953,7 +1953,7 @@ namespace iSynaptic.Commons
         public static Func<T1, T2, T3, TResult> Memoize<T1, T2, T3, TResult>(this Func<T1, T2, T3, TResult> @this)
         {
             Guard.NotNull(@this, "@this");
-            var dictionary = new LazySelectionDictionary<Tuple<T1, T2, T3>, TResult>(x => @this(x.Item1, x.Item2, x.Item3));
+            var dictionary = new LazySelectionDictionary<Tuple<T1, T2, T3>, TResult>(x => @this(x.Item1, x.Item2, x.Item3).ToMaybe());
 
             return (t1, t2, t3) => dictionary[new Tuple<T1, T2, T3>(t1, t2, t3)];
         }
@@ -1961,7 +1961,7 @@ namespace iSynaptic.Commons
         public static Func<T1, T2, T3, T4, TResult> Memoize<T1, T2, T3, T4, TResult>(this Func<T1, T2, T3, T4, TResult> @this)
         {
             Guard.NotNull(@this, "@this");
-            var dictionary = new LazySelectionDictionary<Tuple<T1, T2, T3, T4>, TResult>(x => @this(x.Item1, x.Item2, x.Item3, x.Item4));
+            var dictionary = new LazySelectionDictionary<Tuple<T1, T2, T3, T4>, TResult>(x => @this(x.Item1, x.Item2, x.Item3, x.Item4).ToMaybe());
 
             return (t1, t2, t3, t4) => dictionary[new Tuple<T1, T2, T3, T4>(t1, t2, t3, t4)];
         }
@@ -1969,7 +1969,7 @@ namespace iSynaptic.Commons
         public static Func<T1, T2, T3, T4, T5, TResult> Memoize<T1, T2, T3, T4, T5, TResult>(this Func<T1, T2, T3, T4, T5, TResult> @this)
         {
             Guard.NotNull(@this, "@this");
-            var dictionary = new LazySelectionDictionary<Tuple<T1, T2, T3, T4, T5>, TResult>(x => @this(x.Item1, x.Item2, x.Item3, x.Item4, x.Item5));
+            var dictionary = new LazySelectionDictionary<Tuple<T1, T2, T3, T4, T5>, TResult>(x => @this(x.Item1, x.Item2, x.Item3, x.Item4, x.Item5).ToMaybe());
 
             return (t1, t2, t3, t4, t5) => dictionary[new Tuple<T1, T2, T3, T4, T5>(t1, t2, t3, t4, t5)];
         }
@@ -1977,7 +1977,7 @@ namespace iSynaptic.Commons
         public static Func<T1, T2, T3, T4, T5, T6, TResult> Memoize<T1, T2, T3, T4, T5, T6, TResult>(this Func<T1, T2, T3, T4, T5, T6, TResult> @this)
         {
             Guard.NotNull(@this, "@this");
-            var dictionary = new LazySelectionDictionary<Tuple<T1, T2, T3, T4, T5, T6>, TResult>(x => @this(x.Item1, x.Item2, x.Item3, x.Item4, x.Item5, x.Item6));
+            var dictionary = new LazySelectionDictionary<Tuple<T1, T2, T3, T4, T5, T6>, TResult>(x => @this(x.Item1, x.Item2, x.Item3, x.Item4, x.Item5, x.Item6).ToMaybe());
 
             return (t1, t2, t3, t4, t5, t6) => dictionary[new Tuple<T1, T2, T3, T4, T5, T6>(t1, t2, t3, t4, t5, t6)];
         }
@@ -1985,7 +1985,7 @@ namespace iSynaptic.Commons
         public static Func<T1, T2, T3, T4, T5, T6, T7, TResult> Memoize<T1, T2, T3, T4, T5, T6, T7, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, TResult> @this)
         {
             Guard.NotNull(@this, "@this");
-            var dictionary = new LazySelectionDictionary<Tuple<T1, T2, T3, T4, T5, T6, T7>, TResult>(x => @this(x.Item1, x.Item2, x.Item3, x.Item4, x.Item5, x.Item6, x.Item7));
+            var dictionary = new LazySelectionDictionary<Tuple<T1, T2, T3, T4, T5, T6, T7>, TResult>(x => @this(x.Item1, x.Item2, x.Item3, x.Item4, x.Item5, x.Item6, x.Item7).ToMaybe());
 
             return (t1, t2, t3, t4, t5, t6, t7) => dictionary[new Tuple<T1, T2, T3, T4, T5, T6, T7>(t1, t2, t3, t4, t5, t6, t7)];
         }
@@ -1993,7 +1993,7 @@ namespace iSynaptic.Commons
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, TResult> Memoize<T1, T2, T3, T4, T5, T6, T7, T8, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, TResult> @this)
         {
             Guard.NotNull(@this, "@this");
-            var dictionary = new LazySelectionDictionary<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8>>, TResult>(x => @this(x.Item1, x.Item2, x.Item3, x.Item4, x.Item5, x.Item6, x.Item7, x.Rest.Item1));
+            var dictionary = new LazySelectionDictionary<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8>>, TResult>(x => @this(x.Item1, x.Item2, x.Item3, x.Item4, x.Item5, x.Item6, x.Item7, x.Rest.Item1).ToMaybe());
 
             return (t1, t2, t3, t4, t5, t6, t7, t8) => dictionary[new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8>>(t1, t2, t3, t4, t5, t6, t7, new Tuple<T8>(t8))];
         }
@@ -2001,7 +2001,7 @@ namespace iSynaptic.Commons
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult> Memoize<T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult> @this)
         {
             Guard.NotNull(@this, "@this");
-            var dictionary = new LazySelectionDictionary<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9>>, TResult>(x => @this(x.Item1, x.Item2, x.Item3, x.Item4, x.Item5, x.Item6, x.Item7, x.Rest.Item1, x.Rest.Item2));
+            var dictionary = new LazySelectionDictionary<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9>>, TResult>(x => @this(x.Item1, x.Item2, x.Item3, x.Item4, x.Item5, x.Item6, x.Item7, x.Rest.Item1, x.Rest.Item2).ToMaybe());
 
             return (t1, t2, t3, t4, t5, t6, t7, t8, t9) => dictionary[new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9>>(t1, t2, t3, t4, t5, t6, t7, new Tuple<T8, T9>(t8, t9))];
         }
@@ -2009,7 +2009,7 @@ namespace iSynaptic.Commons
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult> Memoize<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult> @this)
         {
             Guard.NotNull(@this, "@this");
-            var dictionary = new LazySelectionDictionary<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10>>, TResult>(x => @this(x.Item1, x.Item2, x.Item3, x.Item4, x.Item5, x.Item6, x.Item7, x.Rest.Item1, x.Rest.Item2, x.Rest.Item3));
+            var dictionary = new LazySelectionDictionary<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10>>, TResult>(x => @this(x.Item1, x.Item2, x.Item3, x.Item4, x.Item5, x.Item6, x.Item7, x.Rest.Item1, x.Rest.Item2, x.Rest.Item3).ToMaybe());
 
             return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) => dictionary[new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10>>(t1, t2, t3, t4, t5, t6, t7, new Tuple<T8, T9, T10>(t8, t9, t10))];
         }
@@ -2017,7 +2017,7 @@ namespace iSynaptic.Commons
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult> Memoize<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult> @this)
         {
             Guard.NotNull(@this, "@this");
-            var dictionary = new LazySelectionDictionary<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11>>, TResult>(x => @this(x.Item1, x.Item2, x.Item3, x.Item4, x.Item5, x.Item6, x.Item7, x.Rest.Item1, x.Rest.Item2, x.Rest.Item3, x.Rest.Item4));
+            var dictionary = new LazySelectionDictionary<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11>>, TResult>(x => @this(x.Item1, x.Item2, x.Item3, x.Item4, x.Item5, x.Item6, x.Item7, x.Rest.Item1, x.Rest.Item2, x.Rest.Item3, x.Rest.Item4).ToMaybe());
 
             return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) => dictionary[new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11>>(t1, t2, t3, t4, t5, t6, t7, new Tuple<T8, T9, T10, T11>(t8, t9, t10, t11))];
         }
@@ -2025,7 +2025,7 @@ namespace iSynaptic.Commons
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult> Memoize<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult> @this)
         {
             Guard.NotNull(@this, "@this");
-            var dictionary = new LazySelectionDictionary<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12>>, TResult>(x => @this(x.Item1, x.Item2, x.Item3, x.Item4, x.Item5, x.Item6, x.Item7, x.Rest.Item1, x.Rest.Item2, x.Rest.Item3, x.Rest.Item4, x.Rest.Item5));
+            var dictionary = new LazySelectionDictionary<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12>>, TResult>(x => @this(x.Item1, x.Item2, x.Item3, x.Item4, x.Item5, x.Item6, x.Item7, x.Rest.Item1, x.Rest.Item2, x.Rest.Item3, x.Rest.Item4, x.Rest.Item5).ToMaybe());
 
             return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) => dictionary[new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12>>(t1, t2, t3, t4, t5, t6, t7, new Tuple<T8, T9, T10, T11, T12>(t8, t9, t10, t11, t12))];
         }
@@ -2033,7 +2033,7 @@ namespace iSynaptic.Commons
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TResult> Memoize<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TResult> @this)
         {
             Guard.NotNull(@this, "@this");
-            var dictionary = new LazySelectionDictionary<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13>>, TResult>(x => @this(x.Item1, x.Item2, x.Item3, x.Item4, x.Item5, x.Item6, x.Item7, x.Rest.Item1, x.Rest.Item2, x.Rest.Item3, x.Rest.Item4, x.Rest.Item5, x.Rest.Item6));
+            var dictionary = new LazySelectionDictionary<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13>>, TResult>(x => @this(x.Item1, x.Item2, x.Item3, x.Item4, x.Item5, x.Item6, x.Item7, x.Rest.Item1, x.Rest.Item2, x.Rest.Item3, x.Rest.Item4, x.Rest.Item5, x.Rest.Item6).ToMaybe());
 
             return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) => dictionary[new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13>>(t1, t2, t3, t4, t5, t6, t7, new Tuple<T8, T9, T10, T11, T12, T13>(t8, t9, t10, t11, t12, t13))];
         }
@@ -2041,7 +2041,7 @@ namespace iSynaptic.Commons
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult> Memoize<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult> @this)
         {
             Guard.NotNull(@this, "@this");
-            var dictionary = new LazySelectionDictionary<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14>>, TResult>(x => @this(x.Item1, x.Item2, x.Item3, x.Item4, x.Item5, x.Item6, x.Item7, x.Rest.Item1, x.Rest.Item2, x.Rest.Item3, x.Rest.Item4, x.Rest.Item5, x.Rest.Item6, x.Rest.Item7));
+            var dictionary = new LazySelectionDictionary<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14>>, TResult>(x => @this(x.Item1, x.Item2, x.Item3, x.Item4, x.Item5, x.Item6, x.Item7, x.Rest.Item1, x.Rest.Item2, x.Rest.Item3, x.Rest.Item4, x.Rest.Item5, x.Rest.Item6, x.Rest.Item7).ToMaybe());
 
             return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) => dictionary[new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14>>(t1, t2, t3, t4, t5, t6, t7, new Tuple<T8, T9, T10, T11, T12, T13, T14>(t8, t9, t10, t11, t12, t13, t14))];
         }
@@ -2049,7 +2049,7 @@ namespace iSynaptic.Commons
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult> Memoize<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult> @this)
         {
             Guard.NotNull(@this, "@this");
-            var dictionary = new LazySelectionDictionary<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15>>>, TResult>(x => @this(x.Item1, x.Item2, x.Item3, x.Item4, x.Item5, x.Item6, x.Item7, x.Rest.Item1, x.Rest.Item2, x.Rest.Item3, x.Rest.Item4, x.Rest.Item5, x.Rest.Item6, x.Rest.Item7, x.Rest.Rest.Item1));
+            var dictionary = new LazySelectionDictionary<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15>>>, TResult>(x => @this(x.Item1, x.Item2, x.Item3, x.Item4, x.Item5, x.Item6, x.Item7, x.Rest.Item1, x.Rest.Item2, x.Rest.Item3, x.Rest.Item4, x.Rest.Item5, x.Rest.Item6, x.Rest.Item7, x.Rest.Rest.Item1).ToMaybe());
 
             return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) => dictionary[new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15>>>(t1, t2, t3, t4, t5, t6, t7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15>>(t8, t9, t10, t11, t12, t13, t14, new Tuple<T15>(t15)))];
         }
@@ -2057,7 +2057,7 @@ namespace iSynaptic.Commons
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TResult> Memoize<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TResult>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TResult> @this)
         {
             Guard.NotNull(@this, "@this");
-            var dictionary = new LazySelectionDictionary<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16>>>, TResult>(x => @this(x.Item1, x.Item2, x.Item3, x.Item4, x.Item5, x.Item6, x.Item7, x.Rest.Item1, x.Rest.Item2, x.Rest.Item3, x.Rest.Item4, x.Rest.Item5, x.Rest.Item6, x.Rest.Item7, x.Rest.Rest.Item1, x.Rest.Rest.Item2));
+            var dictionary = new LazySelectionDictionary<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16>>>, TResult>(x => @this(x.Item1, x.Item2, x.Item3, x.Item4, x.Item5, x.Item6, x.Item7, x.Rest.Item1, x.Rest.Item2, x.Rest.Item3, x.Rest.Item4, x.Rest.Item5, x.Rest.Item6, x.Rest.Item7, x.Rest.Rest.Item1, x.Rest.Rest.Item2).ToMaybe());
 
             return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) => dictionary[new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16>>>(t1, t2, t3, t4, t5, t6, t7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16>>(t8, t9, t10, t11, t12, t13, t14, new Tuple<T15, T16>(t15, t16)))];
         }

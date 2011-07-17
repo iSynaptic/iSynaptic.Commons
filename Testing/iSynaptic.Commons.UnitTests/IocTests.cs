@@ -15,10 +15,11 @@ namespace iSynaptic.Commons
         [Test]
         public void Resolve_WithNoParameters_ReturnsExpectedValue()
         {
-            var resolver = new DependencyResolver(x =>
-                x is ISymbol<int>
-                ? 42
-                : Maybe<object>.NoValue);
+            var resolver = new DependencyResolver(x => x
+                .ToMaybe()
+                .OfType<IDependencySymbol>()
+                .Where(s => s.DependencyType == typeof(int))
+                .Select(s => 42).OfType<object>());
 
             Ioc.SetDependencyResolver(resolver);
 
@@ -29,10 +30,11 @@ namespace iSynaptic.Commons
         [Test]
         public void Resolve_WithKeyAndRequestingType_ReturnsExpectedValue()
         {
-            var resolver = new DependencyResolver(x =>
-                x is INamedSymbol<int> && ((INamedSymbol<int>)x).Name == "ultimateAnswerTimesThree"
-                ? 126
-                : Maybe<object>.NoValue);
+            var resolver = new DependencyResolver(x => x
+                .ToMaybe()
+                .OfType<IDependencySymbol>()
+                .Where(s => s.DependencyType == typeof(int) && s.Name == "ultimateAnswerTimesThree")
+                .Select(s => 126).OfType<object>());
 
             Ioc.SetDependencyResolver(resolver);
 

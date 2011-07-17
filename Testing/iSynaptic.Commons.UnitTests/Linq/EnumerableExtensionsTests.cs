@@ -288,7 +288,7 @@ namespace iSynaptic.Commons.Linq
 
             var zipped = left.ZipAll(right).SelectMany(x => x);
 
-            Assert.IsTrue(zipped.SequenceEqual(new[] { 1, 1, 2, 2, 3, 3, 4, Maybe<int>.NoValue }));
+            Assert.IsTrue(zipped.SequenceEqual(new[] { 1, 1, 2, 2, 3, 3, 4}.Select(x => x.ToMaybe()).Concat(new[]{Maybe<int>.NoValue})));
         }
 
         [Test]

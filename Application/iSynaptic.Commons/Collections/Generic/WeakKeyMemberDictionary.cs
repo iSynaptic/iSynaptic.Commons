@@ -36,7 +36,7 @@ namespace iSynaptic.Commons.Collections.Generic
 
         protected override Maybe<TValue> UnwrapValue(TValue value)
         {
-            return value;
+            return value.ToMaybe();
         }
     }
 }

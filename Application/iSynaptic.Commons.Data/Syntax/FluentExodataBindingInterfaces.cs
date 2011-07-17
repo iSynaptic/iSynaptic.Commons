@@ -40,6 +40,7 @@ namespace iSynaptic.Commons.Data.Syntax
     public interface IFluentExodataBindingTo<TExodata, TContext, TSubject> : IFluentInterface
     {
         void To(TExodata value);
+        void To(Func<IExodataRequest<TExodata, TContext, TSubject>, TExodata> valueFactory);
         void To(Func<IExodataRequest<TExodata, TContext, TSubject>, Maybe<TExodata>> valueFactory);
     }
 }

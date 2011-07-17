@@ -37,13 +37,13 @@ namespace iSynaptic.Commons.Data.Syntax
         {
             return new FluentExodataBindingBuilder<TExodata, TDerivedContext, TSubject>(Source, Symbol, OnBuildComplete)
             {
-                Context = context
+                Context = context.ToMaybe()
             };
         }
 
         public IFluentExodataBindingWhenTo<TExodata, TContext, TSubject> For(TSubject subject)
         {
-            return ForCore<TSubject>(subject, null);
+            return ForCore<TSubject>(subject.ToMaybe(), null);
         }
 
         public IFluentExodataBindingWhenTo<TExodata, TContext, TSubject> For(params Expression<Func<TSubject, object>>[] members)
@@ -55,7 +55,7 @@ namespace iSynaptic.Commons.Data.Syntax
         public IFluentExodataBindingWhenTo<TExodata, TContext, TSubject> For(TSubject subject, params Expression<Func<TSubject, object>>[] members)
         {
             Guard.NotNullOrEmpty(members, "members");
-            return ForCore(subject, members);
+            return ForCore(subject.ToMaybe(), members);
         }
 
         public IFluentExodataBindingWhenTo<TExodata, TContext, TDerivedSubject> For<TDerivedSubject>() where TDerivedSubject : TSubject
@@ -65,7 +65,7 @@ namespace iSynaptic.Commons.Data.Syntax
 
         public IFluentExodataBindingWhenTo<TExodata, TContext, TDerivedSubject> For<TDerivedSubject>(TDerivedSubject subject) where TDerivedSubject : TSubject
         {
-            return ForCore<TDerivedSubject>(subject, null);
+            return ForCore<TDerivedSubject>(subject.ToMaybe(), null);
         }
 
         public IFluentExodataBindingWhenTo<TExodata, TContext, TDerivedSubject> For<TDerivedSubject>(params Expression<Func<TDerivedSubject, object>>[] members) where TDerivedSubject : TSubject
@@ -77,7 +77,7 @@ namespace iSynaptic.Commons.Data.Syntax
         public IFluentExodataBindingWhenTo<TExodata, TContext, TDerivedSubject> For<TDerivedSubject>(TDerivedSubject subject, params Expression<Func<TDerivedSubject, object>>[] members) where TDerivedSubject : TSubject
         {
             Guard.NotNullOrEmpty(members, "members");
-            return ForCore(subject, members);
+            return ForCore(subject.ToMaybe(), members);
         }
 
         private IFluentExodataBindingWhenTo<TExodata, TContext, TDerivedSubject> ForCore<TDerivedSubject>(Maybe<TDerivedSubject> subject, IEnumerable<Expression<Func<TDerivedSubject, object>>> members) where TDerivedSubject : TSubject
@@ -101,6 +101,12 @@ namespace iSynaptic.Commons.Data.Syntax
         public void To(TExodata value)
         {
             To(r => value);
+        }
+
+        public void To(Func<IExodataRequest<TExodata, TContext, TSubject>, TExodata> valueFactory)
+        {
+            Guard.NotNull(valueFactory, "valueFactory");
+            To(r => valueFactory(r).ToMaybe());
         }
 
         public void To(Func<IExodataRequest<TExodata, TContext, TSubject>, Maybe<TExodata>> valueFactory)

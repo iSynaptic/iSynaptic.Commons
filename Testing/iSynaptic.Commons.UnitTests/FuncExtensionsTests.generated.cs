@@ -207,7 +207,7 @@ namespace iSynaptic.Commons
 		[Test]
         public void OrOfT1ReturningMaybe_WithNullArgument_ReturnsOriginal()
         {
-            Func<int, Maybe<int>> originalFunc = (t1) => 42;
+            Func<int, Maybe<int>> originalFunc = (t1) => 42.ToMaybe();
             var func = originalFunc.Or(null);
 
             var result = func(1);
@@ -219,7 +219,7 @@ namespace iSynaptic.Commons
         [Test]
         public void OrOfT1ReturningMaybe_ExtendingNullFunc_ReturnsOriginal()
         {
-            Func<int, Maybe<int>> originalFunc = (t1) => 42;
+            Func<int, Maybe<int>> originalFunc = (t1) => 42.ToMaybe();
             var func = ((Func<int, Maybe<int>>)null).Or(originalFunc);
 
             var result = func(1);
@@ -231,8 +231,8 @@ namespace iSynaptic.Commons
         [Test]
         public void OrOfT1ReturningMaybe_CallsFirstFunc()
         {
-            Func<int, Maybe<int>> left = (t1) => 42;
-            Func<int, Maybe<int>> right = (t1) => 7;
+            Func<int, Maybe<int>> left = (t1) => 42.ToMaybe();
+            Func<int, Maybe<int>> right = (t1) => 7.ToMaybe();
 
             var func = left.Or(right);
 
@@ -245,7 +245,7 @@ namespace iSynaptic.Commons
         public void OrOfT1ReturningMaybe_CallsSecondFunc()
         {
             Func<int, Maybe<int>> left = (t1) => Maybe<int>.NoValue;
-            Func<int, Maybe<int>> right = (t1) => 42;
+            Func<int, Maybe<int>> right = (t1) => 42.ToMaybe();
 
             var func = left.Or(right);
 
@@ -449,7 +449,7 @@ namespace iSynaptic.Commons
 		[Test]
         public void OrOfT1T2ReturningMaybe_WithNullArgument_ReturnsOriginal()
         {
-            Func<int, int, Maybe<int>> originalFunc = (t1, t2) => 42;
+            Func<int, int, Maybe<int>> originalFunc = (t1, t2) => 42.ToMaybe();
             var func = originalFunc.Or(null);
 
             var result = func(1, 2);
@@ -461,7 +461,7 @@ namespace iSynaptic.Commons
         [Test]
         public void OrOfT1T2ReturningMaybe_ExtendingNullFunc_ReturnsOriginal()
         {
-            Func<int, int, Maybe<int>> originalFunc = (t1, t2) => 42;
+            Func<int, int, Maybe<int>> originalFunc = (t1, t2) => 42.ToMaybe();
             var func = ((Func<int, int, Maybe<int>>)null).Or(originalFunc);
 
             var result = func(1, 2);
@@ -473,8 +473,8 @@ namespace iSynaptic.Commons
         [Test]
         public void OrOfT1T2ReturningMaybe_CallsFirstFunc()
         {
-            Func<int, int, Maybe<int>> left = (t1, t2) => 42;
-            Func<int, int, Maybe<int>> right = (t1, t2) => 7;
+            Func<int, int, Maybe<int>> left = (t1, t2) => 42.ToMaybe();
+            Func<int, int, Maybe<int>> right = (t1, t2) => 7.ToMaybe();
 
             var func = left.Or(right);
 
@@ -487,7 +487,7 @@ namespace iSynaptic.Commons
         public void OrOfT1T2ReturningMaybe_CallsSecondFunc()
         {
             Func<int, int, Maybe<int>> left = (t1, t2) => Maybe<int>.NoValue;
-            Func<int, int, Maybe<int>> right = (t1, t2) => 42;
+            Func<int, int, Maybe<int>> right = (t1, t2) => 42.ToMaybe();
 
             var func = left.Or(right);
 
@@ -691,7 +691,7 @@ namespace iSynaptic.Commons
 		[Test]
         public void OrOfT1T2T3ReturningMaybe_WithNullArgument_ReturnsOriginal()
         {
-            Func<int, int, int, Maybe<int>> originalFunc = (t1, t2, t3) => 42;
+            Func<int, int, int, Maybe<int>> originalFunc = (t1, t2, t3) => 42.ToMaybe();
             var func = originalFunc.Or(null);
 
             var result = func(1, 2, 3);
@@ -703,7 +703,7 @@ namespace iSynaptic.Commons
         [Test]
         public void OrOfT1T2T3ReturningMaybe_ExtendingNullFunc_ReturnsOriginal()
         {
-            Func<int, int, int, Maybe<int>> originalFunc = (t1, t2, t3) => 42;
+            Func<int, int, int, Maybe<int>> originalFunc = (t1, t2, t3) => 42.ToMaybe();
             var func = ((Func<int, int, int, Maybe<int>>)null).Or(originalFunc);
 
             var result = func(1, 2, 3);
@@ -715,8 +715,8 @@ namespace iSynaptic.Commons
         [Test]
         public void OrOfT1T2T3ReturningMaybe_CallsFirstFunc()
         {
-            Func<int, int, int, Maybe<int>> left = (t1, t2, t3) => 42;
-            Func<int, int, int, Maybe<int>> right = (t1, t2, t3) => 7;
+            Func<int, int, int, Maybe<int>> left = (t1, t2, t3) => 42.ToMaybe();
+            Func<int, int, int, Maybe<int>> right = (t1, t2, t3) => 7.ToMaybe();
 
             var func = left.Or(right);
 
@@ -729,7 +729,7 @@ namespace iSynaptic.Commons
         public void OrOfT1T2T3ReturningMaybe_CallsSecondFunc()
         {
             Func<int, int, int, Maybe<int>> left = (t1, t2, t3) => Maybe<int>.NoValue;
-            Func<int, int, int, Maybe<int>> right = (t1, t2, t3) => 42;
+            Func<int, int, int, Maybe<int>> right = (t1, t2, t3) => 42.ToMaybe();
 
             var func = left.Or(right);
 
@@ -933,7 +933,7 @@ namespace iSynaptic.Commons
 		[Test]
         public void OrOfT1T2T3T4ReturningMaybe_WithNullArgument_ReturnsOriginal()
         {
-            Func<int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4) => 42;
+            Func<int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4) => 42.ToMaybe();
             var func = originalFunc.Or(null);
 
             var result = func(1, 2, 3, 4);
@@ -945,7 +945,7 @@ namespace iSynaptic.Commons
         [Test]
         public void OrOfT1T2T3T4ReturningMaybe_ExtendingNullFunc_ReturnsOriginal()
         {
-            Func<int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4) => 42;
+            Func<int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4) => 42.ToMaybe();
             var func = ((Func<int, int, int, int, Maybe<int>>)null).Or(originalFunc);
 
             var result = func(1, 2, 3, 4);
@@ -957,8 +957,8 @@ namespace iSynaptic.Commons
         [Test]
         public void OrOfT1T2T3T4ReturningMaybe_CallsFirstFunc()
         {
-            Func<int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4) => 42;
-            Func<int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4) => 7;
+            Func<int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4) => 42.ToMaybe();
+            Func<int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4) => 7.ToMaybe();
 
             var func = left.Or(right);
 
@@ -971,7 +971,7 @@ namespace iSynaptic.Commons
         public void OrOfT1T2T3T4ReturningMaybe_CallsSecondFunc()
         {
             Func<int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4) => Maybe<int>.NoValue;
-            Func<int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4) => 42;
+            Func<int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4) => 42.ToMaybe();
 
             var func = left.Or(right);
 
@@ -1175,7 +1175,7 @@ namespace iSynaptic.Commons
 		[Test]
         public void OrOfT1T2T3T4T5ReturningMaybe_WithNullArgument_ReturnsOriginal()
         {
-            Func<int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5) => 42;
+            Func<int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5) => 42.ToMaybe();
             var func = originalFunc.Or(null);
 
             var result = func(1, 2, 3, 4, 5);
@@ -1187,7 +1187,7 @@ namespace iSynaptic.Commons
         [Test]
         public void OrOfT1T2T3T4T5ReturningMaybe_ExtendingNullFunc_ReturnsOriginal()
         {
-            Func<int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5) => 42;
+            Func<int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5) => 42.ToMaybe();
             var func = ((Func<int, int, int, int, int, Maybe<int>>)null).Or(originalFunc);
 
             var result = func(1, 2, 3, 4, 5);
@@ -1199,8 +1199,8 @@ namespace iSynaptic.Commons
         [Test]
         public void OrOfT1T2T3T4T5ReturningMaybe_CallsFirstFunc()
         {
-            Func<int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5) => 42;
-            Func<int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5) => 7;
+            Func<int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5) => 42.ToMaybe();
+            Func<int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5) => 7.ToMaybe();
 
             var func = left.Or(right);
 
@@ -1213,7 +1213,7 @@ namespace iSynaptic.Commons
         public void OrOfT1T2T3T4T5ReturningMaybe_CallsSecondFunc()
         {
             Func<int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5) => Maybe<int>.NoValue;
-            Func<int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5) => 42;
+            Func<int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5) => 42.ToMaybe();
 
             var func = left.Or(right);
 
@@ -1417,7 +1417,7 @@ namespace iSynaptic.Commons
 		[Test]
         public void OrOfT1T2T3T4T5T6ReturningMaybe_WithNullArgument_ReturnsOriginal()
         {
-            Func<int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6) => 42;
+            Func<int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6) => 42.ToMaybe();
             var func = originalFunc.Or(null);
 
             var result = func(1, 2, 3, 4, 5, 6);
@@ -1429,7 +1429,7 @@ namespace iSynaptic.Commons
         [Test]
         public void OrOfT1T2T3T4T5T6ReturningMaybe_ExtendingNullFunc_ReturnsOriginal()
         {
-            Func<int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6) => 42;
+            Func<int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6) => 42.ToMaybe();
             var func = ((Func<int, int, int, int, int, int, Maybe<int>>)null).Or(originalFunc);
 
             var result = func(1, 2, 3, 4, 5, 6);
@@ -1441,8 +1441,8 @@ namespace iSynaptic.Commons
         [Test]
         public void OrOfT1T2T3T4T5T6ReturningMaybe_CallsFirstFunc()
         {
-            Func<int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6) => 42;
-            Func<int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6) => 7;
+            Func<int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6) => 42.ToMaybe();
+            Func<int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6) => 7.ToMaybe();
 
             var func = left.Or(right);
 
@@ -1455,7 +1455,7 @@ namespace iSynaptic.Commons
         public void OrOfT1T2T3T4T5T6ReturningMaybe_CallsSecondFunc()
         {
             Func<int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6) => Maybe<int>.NoValue;
-            Func<int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6) => 42;
+            Func<int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6) => 42.ToMaybe();
 
             var func = left.Or(right);
 
@@ -1659,7 +1659,7 @@ namespace iSynaptic.Commons
 		[Test]
         public void OrOfT1T2T3T4T5T6T7ReturningMaybe_WithNullArgument_ReturnsOriginal()
         {
-            Func<int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7) => 42;
+            Func<int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7) => 42.ToMaybe();
             var func = originalFunc.Or(null);
 
             var result = func(1, 2, 3, 4, 5, 6, 7);
@@ -1671,7 +1671,7 @@ namespace iSynaptic.Commons
         [Test]
         public void OrOfT1T2T3T4T5T6T7ReturningMaybe_ExtendingNullFunc_ReturnsOriginal()
         {
-            Func<int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7) => 42;
+            Func<int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7) => 42.ToMaybe();
             var func = ((Func<int, int, int, int, int, int, int, Maybe<int>>)null).Or(originalFunc);
 
             var result = func(1, 2, 3, 4, 5, 6, 7);
@@ -1683,8 +1683,8 @@ namespace iSynaptic.Commons
         [Test]
         public void OrOfT1T2T3T4T5T6T7ReturningMaybe_CallsFirstFunc()
         {
-            Func<int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7) => 42;
-            Func<int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7) => 7;
+            Func<int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7) => 42.ToMaybe();
+            Func<int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7) => 7.ToMaybe();
 
             var func = left.Or(right);
 
@@ -1697,7 +1697,7 @@ namespace iSynaptic.Commons
         public void OrOfT1T2T3T4T5T6T7ReturningMaybe_CallsSecondFunc()
         {
             Func<int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7) => Maybe<int>.NoValue;
-            Func<int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7) => 42;
+            Func<int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7) => 42.ToMaybe();
 
             var func = left.Or(right);
 
@@ -1901,7 +1901,7 @@ namespace iSynaptic.Commons
 		[Test]
         public void OrOfT1T2T3T4T5T6T7T8ReturningMaybe_WithNullArgument_ReturnsOriginal()
         {
-            Func<int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8) => 42;
+            Func<int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8) => 42.ToMaybe();
             var func = originalFunc.Or(null);
 
             var result = func(1, 2, 3, 4, 5, 6, 7, 8);
@@ -1913,7 +1913,7 @@ namespace iSynaptic.Commons
         [Test]
         public void OrOfT1T2T3T4T5T6T7T8ReturningMaybe_ExtendingNullFunc_ReturnsOriginal()
         {
-            Func<int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8) => 42;
+            Func<int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8) => 42.ToMaybe();
             var func = ((Func<int, int, int, int, int, int, int, int, Maybe<int>>)null).Or(originalFunc);
 
             var result = func(1, 2, 3, 4, 5, 6, 7, 8);
@@ -1925,8 +1925,8 @@ namespace iSynaptic.Commons
         [Test]
         public void OrOfT1T2T3T4T5T6T7T8ReturningMaybe_CallsFirstFunc()
         {
-            Func<int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8) => 42;
-            Func<int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8) => 7;
+            Func<int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8) => 42.ToMaybe();
+            Func<int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8) => 7.ToMaybe();
 
             var func = left.Or(right);
 
@@ -1939,7 +1939,7 @@ namespace iSynaptic.Commons
         public void OrOfT1T2T3T4T5T6T7T8ReturningMaybe_CallsSecondFunc()
         {
             Func<int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8) => Maybe<int>.NoValue;
-            Func<int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8) => 42;
+            Func<int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8) => 42.ToMaybe();
 
             var func = left.Or(right);
 
@@ -2143,7 +2143,7 @@ namespace iSynaptic.Commons
 		[Test]
         public void OrOfT1T2T3T4T5T6T7T8T9ReturningMaybe_WithNullArgument_ReturnsOriginal()
         {
-            Func<int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9) => 42;
+            Func<int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9) => 42.ToMaybe();
             var func = originalFunc.Or(null);
 
             var result = func(1, 2, 3, 4, 5, 6, 7, 8, 9);
@@ -2155,7 +2155,7 @@ namespace iSynaptic.Commons
         [Test]
         public void OrOfT1T2T3T4T5T6T7T8T9ReturningMaybe_ExtendingNullFunc_ReturnsOriginal()
         {
-            Func<int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9) => 42;
+            Func<int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9) => 42.ToMaybe();
             var func = ((Func<int, int, int, int, int, int, int, int, int, Maybe<int>>)null).Or(originalFunc);
 
             var result = func(1, 2, 3, 4, 5, 6, 7, 8, 9);
@@ -2167,8 +2167,8 @@ namespace iSynaptic.Commons
         [Test]
         public void OrOfT1T2T3T4T5T6T7T8T9ReturningMaybe_CallsFirstFunc()
         {
-            Func<int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9) => 42;
-            Func<int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9) => 7;
+            Func<int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9) => 42.ToMaybe();
+            Func<int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9) => 7.ToMaybe();
 
             var func = left.Or(right);
 
@@ -2181,7 +2181,7 @@ namespace iSynaptic.Commons
         public void OrOfT1T2T3T4T5T6T7T8T9ReturningMaybe_CallsSecondFunc()
         {
             Func<int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9) => Maybe<int>.NoValue;
-            Func<int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9) => 42;
+            Func<int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9) => 42.ToMaybe();
 
             var func = left.Or(right);
 
@@ -2385,7 +2385,7 @@ namespace iSynaptic.Commons
 		[Test]
         public void OrOfT1T2T3T4T5T6T7T8T9T10ReturningMaybe_WithNullArgument_ReturnsOriginal()
         {
-            Func<int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) => 42;
+            Func<int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) => 42.ToMaybe();
             var func = originalFunc.Or(null);
 
             var result = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
@@ -2397,7 +2397,7 @@ namespace iSynaptic.Commons
         [Test]
         public void OrOfT1T2T3T4T5T6T7T8T9T10ReturningMaybe_ExtendingNullFunc_ReturnsOriginal()
         {
-            Func<int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) => 42;
+            Func<int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) => 42.ToMaybe();
             var func = ((Func<int, int, int, int, int, int, int, int, int, int, Maybe<int>>)null).Or(originalFunc);
 
             var result = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
@@ -2409,8 +2409,8 @@ namespace iSynaptic.Commons
         [Test]
         public void OrOfT1T2T3T4T5T6T7T8T9T10ReturningMaybe_CallsFirstFunc()
         {
-            Func<int, int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) => 42;
-            Func<int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) => 7;
+            Func<int, int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) => 42.ToMaybe();
+            Func<int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) => 7.ToMaybe();
 
             var func = left.Or(right);
 
@@ -2423,7 +2423,7 @@ namespace iSynaptic.Commons
         public void OrOfT1T2T3T4T5T6T7T8T9T10ReturningMaybe_CallsSecondFunc()
         {
             Func<int, int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) => Maybe<int>.NoValue;
-            Func<int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) => 42;
+            Func<int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) => 42.ToMaybe();
 
             var func = left.Or(right);
 
@@ -2627,7 +2627,7 @@ namespace iSynaptic.Commons
 		[Test]
         public void OrOfT1T2T3T4T5T6T7T8T9T10T11ReturningMaybe_WithNullArgument_ReturnsOriginal()
         {
-            Func<int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) => 42;
+            Func<int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) => 42.ToMaybe();
             var func = originalFunc.Or(null);
 
             var result = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11);
@@ -2639,7 +2639,7 @@ namespace iSynaptic.Commons
         [Test]
         public void OrOfT1T2T3T4T5T6T7T8T9T10T11ReturningMaybe_ExtendingNullFunc_ReturnsOriginal()
         {
-            Func<int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) => 42;
+            Func<int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) => 42.ToMaybe();
             var func = ((Func<int, int, int, int, int, int, int, int, int, int, int, Maybe<int>>)null).Or(originalFunc);
 
             var result = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11);
@@ -2651,8 +2651,8 @@ namespace iSynaptic.Commons
         [Test]
         public void OrOfT1T2T3T4T5T6T7T8T9T10T11ReturningMaybe_CallsFirstFunc()
         {
-            Func<int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) => 42;
-            Func<int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) => 7;
+            Func<int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) => 42.ToMaybe();
+            Func<int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) => 7.ToMaybe();
 
             var func = left.Or(right);
 
@@ -2665,7 +2665,7 @@ namespace iSynaptic.Commons
         public void OrOfT1T2T3T4T5T6T7T8T9T10T11ReturningMaybe_CallsSecondFunc()
         {
             Func<int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) => Maybe<int>.NoValue;
-            Func<int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) => 42;
+            Func<int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) => 42.ToMaybe();
 
             var func = left.Or(right);
 
@@ -2869,7 +2869,7 @@ namespace iSynaptic.Commons
 		[Test]
         public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12ReturningMaybe_WithNullArgument_ReturnsOriginal()
         {
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) => 42;
+            Func<int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) => 42.ToMaybe();
             var func = originalFunc.Or(null);
 
             var result = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
@@ -2881,7 +2881,7 @@ namespace iSynaptic.Commons
         [Test]
         public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12ReturningMaybe_ExtendingNullFunc_ReturnsOriginal()
         {
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) => 42;
+            Func<int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) => 42.ToMaybe();
             var func = ((Func<int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>>)null).Or(originalFunc);
 
             var result = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
@@ -2893,8 +2893,8 @@ namespace iSynaptic.Commons
         [Test]
         public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12ReturningMaybe_CallsFirstFunc()
         {
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) => 42;
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) => 7;
+            Func<int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) => 42.ToMaybe();
+            Func<int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) => 7.ToMaybe();
 
             var func = left.Or(right);
 
@@ -2907,7 +2907,7 @@ namespace iSynaptic.Commons
         public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12ReturningMaybe_CallsSecondFunc()
         {
             Func<int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) => Maybe<int>.NoValue;
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) => 42;
+            Func<int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) => 42.ToMaybe();
 
             var func = left.Or(right);
 
@@ -3111,7 +3111,7 @@ namespace iSynaptic.Commons
 		[Test]
         public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12T13ReturningMaybe_WithNullArgument_ReturnsOriginal()
         {
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) => 42;
+            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) => 42.ToMaybe();
             var func = originalFunc.Or(null);
 
             var result = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13);
@@ -3123,7 +3123,7 @@ namespace iSynaptic.Commons
         [Test]
         public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12T13ReturningMaybe_ExtendingNullFunc_ReturnsOriginal()
         {
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) => 42;
+            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) => 42.ToMaybe();
             var func = ((Func<int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>>)null).Or(originalFunc);
 
             var result = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13);
@@ -3135,8 +3135,8 @@ namespace iSynaptic.Commons
         [Test]
         public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12T13ReturningMaybe_CallsFirstFunc()
         {
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) => 42;
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) => 7;
+            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) => 42.ToMaybe();
+            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) => 7.ToMaybe();
 
             var func = left.Or(right);
 
@@ -3149,7 +3149,7 @@ namespace iSynaptic.Commons
         public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12T13ReturningMaybe_CallsSecondFunc()
         {
             Func<int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) => Maybe<int>.NoValue;
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) => 42;
+            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) => 42.ToMaybe();
 
             var func = left.Or(right);
 
@@ -3353,7 +3353,7 @@ namespace iSynaptic.Commons
 		[Test]
         public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14ReturningMaybe_WithNullArgument_ReturnsOriginal()
         {
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) => 42;
+            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) => 42.ToMaybe();
             var func = originalFunc.Or(null);
 
             var result = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14);
@@ -3365,7 +3365,7 @@ namespace iSynaptic.Commons
         [Test]
         public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14ReturningMaybe_ExtendingNullFunc_ReturnsOriginal()
         {
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) => 42;
+            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) => 42.ToMaybe();
             var func = ((Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>>)null).Or(originalFunc);
 
             var result = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14);
@@ -3377,8 +3377,8 @@ namespace iSynaptic.Commons
         [Test]
         public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14ReturningMaybe_CallsFirstFunc()
         {
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) => 42;
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) => 7;
+            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) => 42.ToMaybe();
+            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) => 7.ToMaybe();
 
             var func = left.Or(right);
 
@@ -3391,7 +3391,7 @@ namespace iSynaptic.Commons
         public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14ReturningMaybe_CallsSecondFunc()
         {
             Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) => Maybe<int>.NoValue;
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) => 42;
+            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) => 42.ToMaybe();
 
             var func = left.Or(right);
 
@@ -3595,7 +3595,7 @@ namespace iSynaptic.Commons
 		[Test]
         public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15ReturningMaybe_WithNullArgument_ReturnsOriginal()
         {
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) => 42;
+            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) => 42.ToMaybe();
             var func = originalFunc.Or(null);
 
             var result = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
@@ -3607,7 +3607,7 @@ namespace iSynaptic.Commons
         [Test]
         public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15ReturningMaybe_ExtendingNullFunc_ReturnsOriginal()
         {
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) => 42;
+            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) => 42.ToMaybe();
             var func = ((Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>>)null).Or(originalFunc);
 
             var result = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
@@ -3619,8 +3619,8 @@ namespace iSynaptic.Commons
         [Test]
         public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15ReturningMaybe_CallsFirstFunc()
         {
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) => 42;
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) => 7;
+            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) => 42.ToMaybe();
+            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) => 7.ToMaybe();
 
             var func = left.Or(right);
 
@@ -3633,7 +3633,7 @@ namespace iSynaptic.Commons
         public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15ReturningMaybe_CallsSecondFunc()
         {
             Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) => Maybe<int>.NoValue;
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) => 42;
+            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) => 42.ToMaybe();
 
             var func = left.Or(right);
 
@@ -3837,7 +3837,7 @@ namespace iSynaptic.Commons
 		[Test]
         public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15T16ReturningMaybe_WithNullArgument_ReturnsOriginal()
         {
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) => 42;
+            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) => 42.ToMaybe();
             var func = originalFunc.Or(null);
 
             var result = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
@@ -3849,7 +3849,7 @@ namespace iSynaptic.Commons
         [Test]
         public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15T16ReturningMaybe_ExtendingNullFunc_ReturnsOriginal()
         {
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) => 42;
+            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> originalFunc = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) => 42.ToMaybe();
             var func = ((Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>>)null).Or(originalFunc);
 
             var result = func(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
@@ -3861,8 +3861,8 @@ namespace iSynaptic.Commons
         [Test]
         public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15T16ReturningMaybe_CallsFirstFunc()
         {
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) => 42;
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) => 7;
+            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) => 42.ToMaybe();
+            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) => 7.ToMaybe();
 
             var func = left.Or(right);
 
@@ -3875,7 +3875,7 @@ namespace iSynaptic.Commons
         public void OrOfT1T2T3T4T5T6T7T8T9T10T11T12T13T14T15T16ReturningMaybe_CallsSecondFunc()
         {
             Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> left = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) => Maybe<int>.NoValue;
-            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) => 42;
+            Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, Maybe<int>> right = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) => 42.ToMaybe();
 
             var func = left.Or(right);
 

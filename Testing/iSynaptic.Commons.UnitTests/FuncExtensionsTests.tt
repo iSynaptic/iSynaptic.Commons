@@ -223,7 +223,7 @@ namespace iSynaptic.Commons
 		[Test]
         public void OrOf<#= nameSuffix #>ReturningMaybe_WithNullArgument_ReturnsOriginal()
         {
-            Func<<#= fixedTypes #>, Maybe<int>> originalFunc = (<#= args #>) => 42;
+            Func<<#= fixedTypes #>, Maybe<int>> originalFunc = (<#= args #>) => 42.ToMaybe();
             var func = originalFunc.Or(null);
 
             var result = func(<#= fixedArgs #>);
@@ -235,7 +235,7 @@ namespace iSynaptic.Commons
         [Test]
         public void OrOf<#= nameSuffix #>ReturningMaybe_ExtendingNullFunc_ReturnsOriginal()
         {
-            Func<<#= fixedTypes #>, Maybe<int>> originalFunc = (<#= args #>) => 42;
+            Func<<#= fixedTypes #>, Maybe<int>> originalFunc = (<#= args #>) => 42.ToMaybe();
             var func = ((Func<<#= fixedTypes #>, Maybe<int>>)null).Or(originalFunc);
 
             var result = func(<#= fixedArgs #>);
@@ -247,8 +247,8 @@ namespace iSynaptic.Commons
         [Test]
         public void OrOf<#= nameSuffix #>ReturningMaybe_CallsFirstFunc()
         {
-            Func<<#= fixedTypes #>, Maybe<int>> left = (<#= args #>) => 42;
-            Func<<#= fixedTypes #>, Maybe<int>> right = (<#= args #>) => 7;
+            Func<<#= fixedTypes #>, Maybe<int>> left = (<#= args #>) => 42.ToMaybe();
+            Func<<#= fixedTypes #>, Maybe<int>> right = (<#= args #>) => 7.ToMaybe();
 
             var func = left.Or(right);
 
@@ -261,7 +261,7 @@ namespace iSynaptic.Commons
         public void OrOf<#= nameSuffix #>ReturningMaybe_CallsSecondFunc()
         {
             Func<<#= fixedTypes #>, Maybe<int>> left = (<#= args #>) => Maybe<int>.NoValue;
-            Func<<#= fixedTypes #>, Maybe<int>> right = (<#= args #>) => 42;
+            Func<<#= fixedTypes #>, Maybe<int>> right = (<#= args #>) => 42.ToMaybe();
 
             var func = left.Or(right);
 

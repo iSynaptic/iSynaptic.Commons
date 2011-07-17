@@ -648,7 +648,7 @@ namespace iSynaptic.Commons
         {
             var value = Maybe
                 .Return("Hello")
-                .When("Hello", "World");
+                .When("Hello", "World".ToMaybe());
 
             Assert.IsTrue(value.HasValue);
             Assert.AreEqual("World", value.Value);
@@ -658,7 +658,7 @@ namespace iSynaptic.Commons
         public void When_PredicateIsFalse_UsesOriginalValue()
         {
             var value = Maybe.Return("Hello")
-                .When("Goodbye", "World");
+                .When("Goodbye", "World".ToMaybe());
 
             Assert.IsTrue(value.HasValue);
             Assert.AreEqual("Hello", value.Value);

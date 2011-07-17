@@ -87,7 +87,7 @@ namespace iSynaptic.Commons
         [Test]
         public void OrReturningMaybe_WithNullArgument_ReturnsOriginal()
         {
-            Func<Maybe<int>> originalFunc = () => 42;
+            Func<Maybe<int>> originalFunc = () => 42.ToMaybe();
             var func = originalFunc.Or(null);
 
             var result = func();
@@ -99,7 +99,7 @@ namespace iSynaptic.Commons
         [Test]
         public void OrReturningMaybe_ExtendingNullFunc_ReturnsOriginal()
         {
-            Func<Maybe<int>> originalFunc = () => 42;
+            Func<Maybe<int>> originalFunc = () => 42.ToMaybe();
             var func = ((Func<Maybe<int>>)null).Or(originalFunc);
 
             var result = func();
@@ -111,8 +111,8 @@ namespace iSynaptic.Commons
         [Test]
         public void OrReturningMaybe_CallsFirstFunc()
         {
-            Func<Maybe<int>> left = () => 42;
-            Func<Maybe<int>> right = () => 7;
+            Func<Maybe<int>> left = () => 42.ToMaybe();
+            Func<Maybe<int>> right = () => 7.ToMaybe();
 
             var func = left.Or(right);
 
@@ -125,7 +125,7 @@ namespace iSynaptic.Commons
         public void OrReturningMaybe_CallsSecondFunc()
         {
             Func<Maybe<int>> left = () => Maybe<int>.NoValue;
-            Func<Maybe<int>> right = () => 42;
+            Func<Maybe<int>> right = () => 42.ToMaybe();
 
             var func = left.Or(right);
 

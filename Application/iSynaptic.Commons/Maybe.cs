@@ -187,11 +187,6 @@ namespace iSynaptic.Commons
             return !(left == right);
         }
 
-        public static implicit operator Maybe<T>(T value)
-        {
-            return new Maybe<T>(value);
-        }
-
         public static explicit operator T(Maybe<T> value)
         {
             return value.Value;
@@ -494,7 +489,7 @@ namespace iSynaptic.Commons
         public static Maybe<T> Suppress<T>(this Maybe<T> @this, Func<Exception, T> valueFactory)
         {
             Guard.NotNull(valueFactory, "valueFactory");
-            return @this.Express(x => x.Exception != null ? valueFactory(x.Exception) : x);
+            return @this.Express(x => x.Exception != null ? valueFactory(x.Exception).ToMaybe() : x);
         }
 
         #endregion
@@ -767,13 +762,13 @@ namespace iSynaptic.Commons
         public static Maybe<T> Where<T>(this Maybe<T> @this, Func<T, bool> predicate)
         {
             Guard.NotNull(predicate, "predicate");
-            return @this.SelectMaybe(x => predicate(x) ? x : Maybe<T>.NoValue);
+            return @this.SelectMaybe(x => predicate(x) ? x.ToMaybe() : Maybe<T>.NoValue);
         }
 
         public static Maybe<T> Unless<T>(this Maybe<T> @this, Func<T, bool> predicate)
         {
             Guard.NotNull(predicate, "predicate");
-            return @this.SelectMaybe(x => predicate(x) ? Maybe<T>.NoValue : x);
+            return @this.SelectMaybe(x => predicate(x) ? Maybe<T>.NoValue : x.ToMaybe());
         }
 
         public static Maybe<T> Assign<T>(this Maybe<T> @this, ref T target)
@@ -839,7 +834,7 @@ namespace iSynaptic.Commons
                 if (@this.HasValue != true)
                     return Maybe<TResult>.NoValue;
 
-                return (TResult) @this.Value;
+                return ((TResult) @this.Value).ToMaybe();
             });
         }
 
@@ -859,7 +854,7 @@ namespace iSynaptic.Commons
                     return Maybe<TResult>.NoValue;
 
                 if (@this.Value is TResult)
-                    return (TResult) @this.Value;
+                    return ((TResult) @this.Value).ToMaybe();
 
                 return Maybe<TResult>.NoValue;
             });

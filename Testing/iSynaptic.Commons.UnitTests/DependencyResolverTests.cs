@@ -23,8 +23,8 @@ namespace iSynaptic.Commons
 
             Func<ISymbol, Maybe<object>> strategy = symbol =>
                                                 {
-                                                    name = ((INamedSymbol)symbol).Name;
-                                                    dependencyType = symbol.GetType().GetGenericArguments()[0];
+                                                    name = ((IDependencySymbol) symbol).Name;
+                                                    dependencyType = ((IDependencySymbol) symbol).DependencyType;
                                                     return Maybe<object>.NoValue;
                                                 };
 
@@ -39,7 +39,7 @@ namespace iSynaptic.Commons
         [Test]
         public void Resolve_WithAbritraryParameters_ReturnsResultCorrectly()
         {
-            Func<ISymbol, Maybe<object>> strategy = _ => "Baz";
+            Func<ISymbol, Maybe<object>> strategy = _ => "Baz".ToMaybe<object>();
 
             var resolver = new DependencyResolver(strategy);
             var result = resolver.Resolve(typeof (IDisposable), "Foo");

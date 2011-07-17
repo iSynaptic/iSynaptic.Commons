@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 
 namespace iSynaptic.Commons
@@ -64,7 +65,17 @@ namespace iSynaptic.Commons
             Guard.NotNull(resolver, "resolver");
             Guard.NotNull(dependencyType, "dependencyType");
 
-            return resolver.TryResolve((ISymbol)Activator.CreateInstance(typeof(NamedSymbol<>).MakeGenericType(dependencyType), name));
+            return resolver.TryResolve(new DependencySymbol(dependencyType, name));
+        }
+
+        private class DependencySymbol : NamedSymbol, IDependencySymbol
+        {
+            public DependencySymbol(Type dependencyType, string name) : base(name)
+            {
+                DependencyType = dependencyType;
+            }
+
+            public Type DependencyType { get; private set; }
         }
     }
 }

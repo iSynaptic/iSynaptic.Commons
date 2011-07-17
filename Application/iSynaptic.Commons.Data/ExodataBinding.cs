@@ -57,7 +57,8 @@ namespace iSynaptic.Commons.Data
                     typeof(TContext).IsAssignableFrom(typeof(TRequestContext)) &&
                     typeof(TSubject).IsAssignableFrom(typeof(TRequestSubject)))
                 {
-                    return new RequestAdapter<TRequestExodata, TRequestContext, TRequestSubject>(request);
+                    return new RequestAdapter<TRequestExodata, TRequestContext, TRequestSubject>(request)
+                        .ToMaybe<IExodataRequest<TExodata, TContext, TSubject>>();
                 }
 
                 return Maybe<IExodataRequest<TExodata, TContext, TSubject>>.NoValue;

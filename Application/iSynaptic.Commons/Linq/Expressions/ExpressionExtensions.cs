@@ -21,7 +21,7 @@ namespace iSynaptic.Commons.Linq.Expressions
                 .SelectMaybe(x =>
                         {
                             var memberInfo = Maybe<MemberInfo>.NoValue;
-                            new ExtractMemberInfoFromMemberExpressionVisitor(y => memberInfo = y).Visit(x);
+                            new ExtractMemberInfoFromMemberExpressionVisitor(y => memberInfo = y.ToMaybe()).Visit(x);
                             return memberInfo;
                         });
         }
