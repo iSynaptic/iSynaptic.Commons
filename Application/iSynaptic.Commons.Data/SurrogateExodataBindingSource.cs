@@ -33,7 +33,7 @@ namespace iSynaptic.Commons.Data
                 surrogate = Activator.CreateInstance(type);
 
             if (surrogate == null)
-                throw new InvalidOperationException(string.Format("Unable to instantiate Exodata surrogate '{0}'.", type.FullName));
+                throw new InvalidOperationException(string.Format("Unable to instantiate Exodata surrogate '{0}'. The surrogate is not registered with Ioc and has no public parameterless constructor.", type.FullName));
 
             return KeyValuePair.Create(surrogatesFor, surrogate);
         }

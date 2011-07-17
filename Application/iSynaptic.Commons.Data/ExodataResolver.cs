@@ -52,19 +52,7 @@ namespace iSynaptic.Commons.Data
 
         protected virtual int CompareBindingPrecidence<TExodata, TContext, TSubject>(IExodataRequest<TExodata, TContext, TSubject> request, IExodataBinding left, IExodataBinding right)
         {
-            Guard.NotNull(request, "request");
-            Guard.NotNull(left, "left");
-            Guard.NotNull(right, "right");
-
             return 0;
-            //try
-            //{
-            //    return candidates.SingleOrDefault();
-            //}
-            //catch (Exception ex)
-            //{
-            //    throw new InvalidOperationException("More than one Exodata binding was found. Remove duplicate bindings or apply additional conditions to existing bindings to make them unambiguous.", ex);
-            //}
         }
 
         public T AddExodataBindingSource<T>() where T : IExodataBindingSource, new()
