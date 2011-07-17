@@ -2,7 +2,6 @@
 - Scan thru Reactive/Interactive Extensions for potential new/renamed Maybe<T> operators...
 	* Add Retry method
 - Allow Exodata bindings to bind to types of symbols, not just instances...
-- Add the ability to give names to Exodata bindings for debugging purposes
 - Add the ability to turn logging on for Exodata resolution
 - Add the ability to resolve and bind Exodata to untyped symbols...
 - Implement Equatable<T>, using same approach as Cloneable<T>...
@@ -23,10 +22,6 @@
 	* Create Push() method to create child scope
 	* Collapse CompositeDisposable into DisposableContext
 - Change LookAheadValue from class to struct
-- Create JSON LoggerContextSerializer
 - Enhance GetDelegate extension method to work with generic methods
-- Make entire library localizable via Exodata
-	* Create tool that generates ExodataDeclarations from resource files
-	* Create separate DependencyDeclaration (symbol) for retrieving localization ExodataResolver
 - Create simple SymbolTable scope that uses ISymbol/ISymbol<T>
 - Scan types for Command-Query Separation opportunities

@@ -9,7 +9,7 @@ namespace iSynaptic.Commons
         public ArrayIndex(Array target)
         {
             _Target = Guard.NotNull(target, "target");
-            Index = new int[target.Rank];
+            Index = new int[_Target.Rank];
         }
 
         public void Increment()

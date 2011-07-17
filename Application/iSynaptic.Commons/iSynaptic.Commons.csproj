@@ -101,7 +101,6 @@
     <Compile Include="DependencyResolver.cs" />
     <Compile Include="DependencyResolverExtensions.cs" />
     <Compile Include="Diagnostics\ILogger.cs" />
-    <Compile Include="Diagnostics\ILoggerContextSerializer.cs" />
     <Compile Include="Diagnostics\LoggerExtensions.cs" />
     <Compile Include="Diagnostics\LogLevel.cs" />
     <Compile Include="ActionExtensions.cs" />
