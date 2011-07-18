@@ -10,16 +10,21 @@ namespace iSynaptic.Commons.Data
 
     public static class ExodataBinding
     {
-        public static IExodataBinding Create<TExodata, TContext, TSubject>(IExodataBindingSource source, Func<IExodataRequest<TExodata, TContext, TSubject>, bool> predicate, Func<IExodataRequest<TExodata, TContext, TSubject>, Maybe<TExodata>> valueFactory, string name, bool boundToContextInstance = false, bool boundToSubjectInstance = false)
+        public static IExodataBinding Create<TExodata, TContext, TSubject>(IExodataBindingSource source, Func<IExodataRequest<TExodata, TContext, TSubject>, bool> predicate, Func<IExodataRequest<TExodata, TContext, TSubject>, Maybe<TExodata>> valueFactory, string name = null, bool boundToContextInstance = false, bool boundToSubjectInstance = false)
         {
             Guard.NotNull(predicate, "predicate");
             Guard.NotNull(valueFactory, "valueFactory");
             Guard.NotNull(source, "source");
 
-            return new TypedBinding<TExodata, TContext, TSubject>(predicate, valueFactory, source, name)
+            return new TypedBinding<TExodata, TContext, TSubject>()
             {
+                Name = name,
+                ExodataType = typeof(TExodata),
                 ContextType = typeof(TContext),
                 SubjectType = typeof(TSubject),
+                Predicate = predicate,
+                ValueFactory = valueFactory,
+                Source = source,
                 BoundToContextInstance = boundToContextInstance,
                 BoundToSubjectInstance = boundToSubjectInstance
             };
@@ -27,18 +32,6 @@ namespace iSynaptic.Commons.Data
 
         private class TypedBinding<TExodata, TContext, TSubject> : IExodataBinding, IExodataBindingDetails
         {
-            public TypedBinding(Func<IExodataRequest<TExodata, TContext, TSubject>, bool> predicate, Func<IExodataRequest<TExodata, TContext, TSubject>, Maybe<TExodata>> valueFactory, IExodataBindingSource source, string name)
-            {
-                Guard.NotNull(predicate, "predicate");
-                Guard.NotNull(valueFactory, "valueFactory");
-                Guard.NotNull(source, "source");
-
-                Predicate = predicate;
-                ValueFactory = valueFactory;
-                Source = source;
-                Name = name;
-            }
-
             public Maybe<TRequestExodata> TryResolve<TRequestExodata, TRequestContext, TRequestSubject>(IExodataRequest<TRequestExodata, TRequestContext, TRequestSubject> request)
             {
                 return TryGetRequest(request)
@@ -50,7 +43,7 @@ namespace iSynaptic.Commons.Data
             private static Maybe<IExodataRequest<TExodata, TContext, TSubject>> TryGetRequest<TRequestExodata, TRequestContext, TRequestSubject>(IExodataRequest<TRequestExodata, TRequestContext, TRequestSubject> request)
             {
                 var typedRequest = request as IExodataRequest<TExodata, TContext, TSubject>;
-                if(typedRequest != null)
+                if (typedRequest != null)
                     return typedRequest.ToMaybe();
 
                 if (typeof(TRequestExodata).IsAssignableFrom(typeof(TExodata)) &&
@@ -66,6 +59,7 @@ namespace iSynaptic.Commons.Data
 
             public string Name { get; set; }
 
+            public Type ExodataType { get; set; }
             public Type ContextType { get; set; }
             public Type SubjectType { get; set; }
             public IExodataBindingSource Source { get; set; }
@@ -86,9 +80,9 @@ namespace iSynaptic.Commons.Data
                     _Request = request;
                 }
 
-                public ISymbol<TExodata> Symbol
+                public ISymbol Symbol
                 {
-                    get { return _Request.Symbol as ISymbol<TExodata>; }
+                    get { return _Request.Symbol; }
                 }
 
                 public Maybe<TContext> Context

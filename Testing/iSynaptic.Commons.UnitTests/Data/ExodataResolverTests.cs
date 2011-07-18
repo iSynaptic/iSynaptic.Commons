@@ -13,10 +13,12 @@ namespace iSynaptic.Commons.Data
         [Test]
         public void TryResolve_WithNoBindings_ReturnsNoValue()
         {
-            var resolver = new ExodataResolver();
-            var symbol = new Symbol<int>();
+            var symbol = new Symbol();
+            var source = new ExodataBindingModule();
 
-            var value = resolver.TryGet(symbol);
+            var resolver = new ExodataResolver(new[] { source });
+
+            Maybe<int> value = resolver.TryResolve<int, object, object>(symbol, Maybe<object>.NoValue, Maybe<object>.NoValue, null);
 
             Assert.AreEqual(Maybe<int>.NoValue, value);
         }
@@ -24,38 +26,33 @@ namespace iSynaptic.Commons.Data
         [Test]
         public void TryResolve_WithAmbiguousBindingSelection_YieldsAmbiguousExodataBindingsException()
         {
-            var binding1 = MockRepository.GenerateStub<IExodataBinding>();
-            var binding2 = MockRepository.GenerateStub<IExodataBinding>();
+            var symbol = new Symbol();
+            var source = new ExodataBindingModule();
+            source.Bind(symbol, 42);
+            source.Bind(symbol, 42);
 
-            Action<IExodataBinding> expectations = b =>
-                b.Expect(x => x.TryResolve<int, object, object>(null))
-                    .IgnoreArguments()
-                    .Return(42.ToMaybe());
+            var resolver = new ExodataResolver(new[] { source });
 
-            expectations(binding1);
-            expectations(binding2);
+            Maybe<int> result = resolver.TryResolve<int, object, object>(symbol, Maybe<object>.NoValue, Maybe<object>.NoValue, null);
 
-            var source = MockRepository.GenerateStub<IExodataBindingSource>();
-            source.Expect(x => x.GetBindingsFor<int, object, object>(null))
-                .IgnoreArguments()
-                .Return(new[] { binding1, binding2 });
+            var exception = result.Exception as AmbiguousExodataBindingsException;
 
-            var resolver = new ExodataResolver();
-            resolver.AddExodataBindingSource(source);
+            Assert.IsNotNull(exception);
+            Assert.AreEqual(2, exception.Bindings.Count());
+        }
 
-            var symbol = new Symbol<int>();
+        [Test]
+        public void TryResolve_WithNonAmbiguousBindingSelection_YieldsAmbiguousExodataBindingsException()
+        {
+            var symbol = new Symbol();
+            var source = new ExodataBindingModule();
+            source.Bind(symbol, 42);
 
-            var result = resolver.TryGet(symbol);
+            var resolver = new ExodataResolver(new[] { source });
 
-            Assert.IsFalse(result.HasValue);
+            Maybe<int> result = resolver.TryResolve<int, object, object>(symbol, Maybe<object>.NoValue, Maybe<object>.NoValue, null);
 
-            Assert.IsNotNull(result.Exception);
-            Assert.IsInstanceOf<AmbiguousExodataBindingsException>(result.Exception);
-            
-            var exception = (AmbiguousExodataBindingsException)result.Exception;
-
-            Assert.IsTrue(exception.Bindings.Contains(binding1));
-            Assert.IsTrue(exception.Bindings.Contains(binding2));
+            Assert.AreEqual(42, result.Value);
         }
     }
 }

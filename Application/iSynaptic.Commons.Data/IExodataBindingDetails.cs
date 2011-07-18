@@ -14,6 +14,7 @@ namespace iSynaptic.Commons.Data
         bool BoundToContextInstance { get; }
         bool BoundToSubjectInstance { get; }
 
+        Type ExodataType { get; }
         Type ContextType { get; }
         Type SubjectType { get; }
     }

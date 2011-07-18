@@ -99,7 +99,7 @@ namespace iSynaptic.Commons.Data
             return Maybe
                 .NotNull(ExodataResolver)
                 .Or(Ioc.TryResolve<IExodataResolver>)
-                .SelectMaybe(x => x.TryResolve(this, context, subject, member))
+                .SelectMaybe(x => x.TryResolve<TExodata, TContext, TSubject>(this, context, subject, member))
                 .SelectMaybe(x => EnsureValid(x, "bound"));
         }
 

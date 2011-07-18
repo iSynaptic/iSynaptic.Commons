@@ -10,15 +10,26 @@ namespace iSynaptic.Commons.Data
 {
     public class ExodataResolver : IExodataResolver
     {
-        private readonly HashSet<IExodataBindingSource> _BindingSources = new HashSet<IExodataBindingSource>();
+        private readonly IExodataBindingSource[] _BindingSources = null;
 
-        public Maybe<TExodata> TryResolve<TExodata, TContext, TSubject>(ISymbol<TExodata> symbol, Maybe<TContext> context, Maybe<TSubject> subject, MemberInfo member)
+        public ExodataResolver(IEnumerable<IExodataBindingSource> bindingSources)
+        {
+            _BindingSources = Guard.NotNullOrEmpty(bindingSources, "bindingSources")
+                .ToArray();
+        }
+
+        protected ExodataResolver()
+        {
+            _BindingSources = new IExodataBindingSource[0];
+        }
+
+        public Maybe<TExodata> TryResolve<TExodata, TContext, TSubject>(ISymbol symbol, Maybe<TContext> context, Maybe<TSubject> subject, MemberInfo member)
         {
             Guard.NotNull(symbol, "symbol");
 
-            var request = ExodataRequest.Create(symbol, context, subject, member);
+            var request = ExodataRequest.Create<TExodata, TContext, TSubject>(symbol, context, subject, member);
 
-            var candidateBindings = _BindingSources
+            var candidateBindings = GetBindingSources()
                 .SelectMany(x => x.GetBindingsFor(request))
                 .Select(x => new { Binding = x, Result = x.TryResolve(request) })
                 .TakeWhile(x => x.Result.Exception == null)
@@ -55,25 +66,9 @@ namespace iSynaptic.Commons.Data
             return 0;
         }
 
-        public T AddExodataBindingSource<T>() where T : IExodataBindingSource, new()
+        public virtual IEnumerable<IExodataBindingSource> GetBindingSources()
         {
-            T source = new T();
-            AddExodataBindingSource(source);
-
-            return source;
-        }
-
-        public void AddExodataBindingSource(IExodataBindingSource source)
-        {
-            Guard.NotNull(source, "source");
-
-            _BindingSources.Add(source);
-        }
-
-        public void RemoveExodataBindingSource(IExodataBindingSource source)
-        {
-            Guard.NotNull(source, "source");
-            _BindingSources.Remove(source);
+            return _BindingSources;
         }
     }
 }

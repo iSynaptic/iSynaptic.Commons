@@ -20,12 +20,23 @@ namespace iSynaptic.Commons.Data
         public IFluentExodataBindingNamedGivenSubjectWhenTo<TExodata, object, object> Bind<TExodata>(ISymbol<TExodata> symbol)
         {
             Guard.NotNull(symbol, "symbol");
+            return Bind<TExodata>((ISymbol)symbol);
+        }
+
+        public IFluentExodataBindingNamedGivenSubjectWhenTo<TExodata, object, object> Bind<TExodata>(ISymbol symbol)
+        {
+            Guard.NotNull(symbol, "symbol");
             return new FluentExodataBindingBuilder<TExodata, object, object>(this, symbol, b => _Bindings.Add(b));
         }
 
         public void Bind<TExodata>(ISymbol<TExodata> symbol, TExodata value, string name = null)
         {
-            Bind(symbol).Named(name).To(value);
+            Bind<TExodata>((ISymbol)symbol).Named(name).To(value);
+        }
+
+        public void Bind<TExodata>(ISymbol symbol, TExodata value, string name = null)
+        {
+            Bind<TExodata>(symbol).Named(name).To(value);
         }
     }
 }

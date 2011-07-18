@@ -16,14 +16,6 @@ namespace iSynaptic.Commons.Data
 
             return new ExodataResolverFluentExodataResolutionRoot<TExodata, object>(resolver, symbol);
         }
-
-        public static Maybe<TExodata> TryGet<TExodata>(this IExodataResolver resolver, ISymbol<TExodata> symbol)
-        {
-            Guard.NotNull(resolver, "resolver");
-            Guard.NotNull(symbol, "symbol");
-
-            return resolver.TryResolve(symbol).TryGet();
-        }
     }
 
     internal class ExodataResolverFluentExodataResolutionRoot<TExodata, TContext> : FluentExodataResolutionRoot<TExodata, TContext>
@@ -45,12 +37,12 @@ namespace iSynaptic.Commons.Data
 
         protected override TExodata Resolve<TSubject>(Maybe<TContext> context, Maybe<TSubject> subject, MemberInfo member)
         {
-            return _Resolver.TryResolve(_Symbol, context, subject, member).Value;
+            return _Resolver.TryResolve<TExodata, TContext, TSubject>(_Symbol, context, subject, member).Value;
         }
 
         protected override Maybe<TExodata> TryResolve<TSubject>(Maybe<TContext> context, Maybe<TSubject> subject, MemberInfo member)
         {
-            return _Resolver.TryResolve(_Symbol, context, subject, member);
+            return _Resolver.TryResolve<TExodata, TContext, TSubject>(_Symbol, context, subject, member);
         }
     }
 

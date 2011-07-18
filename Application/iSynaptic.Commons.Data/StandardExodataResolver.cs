@@ -8,6 +8,8 @@ namespace iSynaptic.Commons.Data
 {
     public class StandardExodataResolver : ExodataResolver, IFluentExodataBindingRoot<object, object>
     {
+        private readonly HashSet<IExodataBindingSource> _BindingSources = new HashSet<IExodataBindingSource>();
+
         private readonly List<ExodataBindingModule> _Modules = new List<ExodataBindingModule>();
         private readonly ExodataBindingModule _ResolverModule = new ExodataBindingModule();
 
@@ -41,6 +43,11 @@ namespace iSynaptic.Commons.Data
             AddExodataBindingSource(new ModuleExodataBindingSource(this));
             AddExodataBindingSource<SurrogateExodataBindingSource>();
             AddExodataBindingSource<AttributeExodataBindingSource>();
+        }
+
+        public override IEnumerable<IExodataBindingSource> GetBindingSources()
+        {
+            return _BindingSources;
         }
 
         protected override int CompareBindingPrecidence<TExodata, TContext, TSubject>(IExodataRequest<TExodata, TContext, TSubject> request, IExodataBinding left, IExodataBinding right)
@@ -78,6 +85,26 @@ namespace iSynaptic.Commons.Data
             return 0;
         }
 
+        public T AddExodataBindingSource<T>() where T : IExodataBindingSource, new()
+        {
+            T source = new T();
+            AddExodataBindingSource(source);
+
+            return source;
+        }
+
+        public void AddExodataBindingSource(IExodataBindingSource source)
+        {
+            Guard.NotNull(source, "source");
+
+            _BindingSources.Add(source);
+        }
+
+        public void RemoveExodataBindingSource(IExodataBindingSource source)
+        {
+            Guard.NotNull(source, "source");
+            _BindingSources.Remove(source);
+        }
 
         public void LoadModule(ExodataBindingModule module)
         {
@@ -91,14 +118,28 @@ namespace iSynaptic.Commons.Data
             _Modules.Remove(module);
         }
 
+        #region IFluentExodataBindingRoot Members
+
         public IFluentExodataBindingNamedGivenSubjectWhenTo<TExodata, object, object> Bind<TExodata>(ISymbol<TExodata> symbol)
         {
-            return _ResolverModule.Bind(symbol);
+            return Bind<TExodata>((ISymbol) symbol);
+        }
+
+        public IFluentExodataBindingNamedGivenSubjectWhenTo<TExodata, object, object> Bind<TExodata>(ISymbol symbol)
+        {
+            return _ResolverModule.Bind<TExodata>(symbol);
         }
 
         public void Bind<TExodata>(ISymbol<TExodata> symbol, TExodata value, string name = null)
         {
-            Bind(symbol).Named(name).To(value);
+            Bind((ISymbol) symbol, value, name);
         }
+
+        public void Bind<TExodata>(ISymbol symbol, TExodata value, string name = null)
+        {
+            Bind<TExodata>(symbol).Named(name).To(value);
+        }
+
+        #endregion
     }
 }

@@ -8,7 +8,7 @@ namespace iSynaptic.Commons.Data.Syntax
 {
     internal class FluentExodataBindingBuilder<TExodata, TContext, TSubject> : IFluentExodataBindingNamedGivenSubjectWhenTo<TExodata, TContext, TSubject>
     {
-        public FluentExodataBindingBuilder(IExodataBindingSource source, ISymbol<TExodata> symbol, Action<IExodataBinding> onBuildComplete)
+        public FluentExodataBindingBuilder(IExodataBindingSource source, ISymbol symbol, Action<IExodataBinding> onBuildComplete)
         {
             Source = Guard.NotNull(source, "source");
             Symbol = Guard.NotNull(symbol, "symbol");
@@ -153,7 +153,7 @@ namespace iSynaptic.Commons.Data.Syntax
         protected Maybe<TSubject> Subject { get; set; }
         protected MemberInfo[] Members { get; set; }
 
-        protected ISymbol<TExodata> Symbol { get; set; }
+        protected ISymbol Symbol { get; set; }
 
         protected Func<IExodataRequest<TExodata, TContext, TSubject>, bool> WhenPredicate { get; set; }
         protected Action<IExodataBinding> OnBuildComplete { get; set; }

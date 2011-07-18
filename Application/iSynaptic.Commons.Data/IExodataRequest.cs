@@ -5,7 +5,7 @@ namespace iSynaptic.Commons.Data
 {
     public interface IExodataRequest<in TExodata, TContext, TSubject>
     {
-        ISymbol<TExodata> Symbol { get; }
+        ISymbol Symbol { get; }
 
         Maybe<TContext> Context { get; }
         Maybe<TSubject> Subject { get; }

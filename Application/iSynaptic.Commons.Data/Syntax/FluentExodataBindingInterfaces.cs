@@ -6,7 +6,10 @@ namespace iSynaptic.Commons.Data.Syntax
     public interface IFluentExodataBindingRoot<TContextBase, TSubjectBase>
     {
         IFluentExodataBindingNamedGivenSubjectWhenTo<TExodata, TContextBase, TSubjectBase> Bind<TExodata>(ISymbol<TExodata> symbol);
+        IFluentExodataBindingNamedGivenSubjectWhenTo<TExodata, TContextBase, TSubjectBase> Bind<TExodata>(ISymbol symbol);
+
         void Bind<TExodata>(ISymbol<TExodata> symbol, TExodata value, string name = null);
+        void Bind<TExodata>(ISymbol symbol, TExodata value, string name = null);
     }
 
     public interface IFluentExodataBindingNamedGivenSubjectWhenTo<TExodata, TContextBase, TSubjectBase> : IFluentExodataBindingGivenSubjectWhenTo<TExodata, TContextBase, TSubjectBase>
