@@ -95,7 +95,7 @@
     <Compile Include="Data\StringExodataSurrogate.cs" />
     <Compile Include="Data\TestExodataBindingModule.cs" />
     <Compile Include="Data\TestSubject.cs" />
-    <Compile Include="Data\TestSubjectExodataSurrogate.cs" />
+    <Compile Include="Data\BaseTestSubjectExodataSurrogate.cs" />
     <Compile Include="Collections\Generic\ProjectionCollectionTests.cs" />
     <Compile Include="ExceptionExtensionsTests.cs" />
     <Compile Include="Linq\Expressions\ExpressionExtensionsTests.cs" />

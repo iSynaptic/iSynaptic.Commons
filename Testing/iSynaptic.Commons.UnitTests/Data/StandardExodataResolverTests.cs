@@ -13,7 +13,7 @@ namespace iSynaptic.Commons.Data
         public void BeforeTest()
         {
             Ioc.SetDependencyResolver(null);
-            TestSubjectExodataSurrogate.ShouldYieldInstanceExodata = false;
+            BaseTestSubjectExodataSurrogate.ShouldYieldInstanceExodata = false;
         }
 
         [Test]
@@ -24,8 +24,8 @@ namespace iSynaptic.Commons.Data
             Ioc.SetDependencyResolver(new DependencyResolver(x => x
                 .ToMaybe()
                 .OfType<IDependencySymbol>()
-                .Where(y => y.DependencyType == typeof(TestSubjectExodataSurrogate))
-                .Select(y => (object) new TestSubjectExodataSurrogate())
+                .Where(y => typeof(BaseTestSubjectExodataSurrogate).IsAssignableFrom(y.DependencyType))
+                .Select(y => Activator.CreateInstance(y.DependencyType))
                 .OnValue(y => executed = true)));
 
             var resolver = new StandardExodataResolver();
@@ -141,9 +141,9 @@ namespace iSynaptic.Commons.Data
         {
             var resolver = new StandardExodataResolver();
 
-            TestSubjectExodataSurrogate.ShouldYieldInstanceExodata = true;
+            BaseTestSubjectExodataSurrogate.ShouldYieldInstanceExodata = true;
 
-            var value = resolver.TryResolve(CommonExodata.Description).For(TestSubjectExodataSurrogate.Subject);
+            var value = resolver.TryResolve(CommonExodata.Description).For(BaseTestSubjectExodataSurrogate.Subject);
             Assert.AreEqual("Special Instance Description", value);
         }
 
@@ -152,7 +152,7 @@ namespace iSynaptic.Commons.Data
         {
             var resolver = new StandardExodataResolver();
 
-            TestSubjectExodataSurrogate.ShouldYieldInstanceExodata = false;
+            BaseTestSubjectExodataSurrogate.ShouldYieldInstanceExodata = false;
 
             var value = resolver.TryResolve(CommonExodata.Description).For(new TestSubject());
             Assert.AreEqual("Test Subject", value);
@@ -163,7 +163,7 @@ namespace iSynaptic.Commons.Data
         {
             var resolver = new StandardExodataResolver();
 
-            TestSubjectExodataSurrogate.ShouldYieldInstanceExodata = true;
+            BaseTestSubjectExodataSurrogate.ShouldYieldInstanceExodata = true;
 
             var value = resolver.TryResolve(CommonExodata.Description).For(new TestSubject());
             Assert.AreEqual("Surrogate Description", value);
@@ -174,9 +174,9 @@ namespace iSynaptic.Commons.Data
         {
             var resolver = new StandardExodataResolver();
 
-            TestSubjectExodataSurrogate.ShouldYieldInstanceExodata = false;
+            BaseTestSubjectExodataSurrogate.ShouldYieldInstanceExodata = false;
 
-            var value = resolver.TryResolve(CommonExodata.Description).For(TestSubjectExodataSurrogate.Subject);
+            var value = resolver.TryResolve(CommonExodata.Description).For(BaseTestSubjectExodataSurrogate.Subject);
             Assert.AreEqual("Test Subject", value);
         }
 
@@ -185,7 +185,7 @@ namespace iSynaptic.Commons.Data
         {
             var resolver = new StandardExodataResolver();
 
-            TestSubjectExodataSurrogate.ShouldYieldInstanceExodata = true;
+            BaseTestSubjectExodataSurrogate.ShouldYieldInstanceExodata = true;
 
             var value = resolver.TryResolve(CommonExodata.Description).For(new DerivedTestSubject());
             Assert.AreEqual("Surrogate Description", value);
@@ -200,7 +200,7 @@ namespace iSynaptic.Commons.Data
                 .To("Derived Surrogate Description");
 
 
-            TestSubjectExodataSurrogate.ShouldYieldInstanceExodata = true;
+            BaseTestSubjectExodataSurrogate.ShouldYieldInstanceExodata = true;
 
             var value = resolver.TryResolve(CommonExodata.Description).For(new DerivedTestSubject());
             Assert.AreEqual("Derived Surrogate Description", value);
@@ -211,9 +211,9 @@ namespace iSynaptic.Commons.Data
         {
             var resolver = new StandardExodataResolver();
 
-            TestSubjectExodataSurrogate.ShouldYieldInstanceExodata = true;
+            BaseTestSubjectExodataSurrogate.ShouldYieldInstanceExodata = true;
 
-            var value = resolver.TryResolve(CommonExodata.Description).For(TestSubjectExodataSurrogate.Subject, x => x.FirstName);
+            var value = resolver.TryResolve(CommonExodata.Description).For(BaseTestSubjectExodataSurrogate.Subject, x => x.FirstName);
             Assert.AreEqual("Special Member Description", value);
         }
 
@@ -230,7 +230,7 @@ namespace iSynaptic.Commons.Data
         {
             var resolver = new StandardExodataResolver();
 
-            TestSubjectExodataSurrogate.ShouldYieldInstanceExodata = true;
+            BaseTestSubjectExodataSurrogate.ShouldYieldInstanceExodata = true;
 
             Assert.AreEqual("Contextual Member Description", resolver.TryResolve(CommonExodata.Description).Given<string>().For<TestSubject>(x => x.FirstName));
         }
@@ -240,7 +240,7 @@ namespace iSynaptic.Commons.Data
         {
             var resolver = new StandardExodataResolver();
 
-            TestSubjectExodataSurrogate.ShouldYieldInstanceExodata = true;
+            BaseTestSubjectExodataSurrogate.ShouldYieldInstanceExodata = true;
 
             Assert.AreEqual("Specific Contextual Member Description", resolver.TryResolve(CommonExodata.Description).Given("Context").For<TestSubject>(x => x.FirstName));
         }

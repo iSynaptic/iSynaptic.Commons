@@ -3,11 +3,15 @@ using System.Collections.Generic;
 
 namespace iSynaptic.Commons.Data
 {
-    public class TestSubjectExodataSurrogate : ExodataSurrogate<TestSubject>
+    public abstract class BaseTestSubjectExodataSurrogate : ExodataSurrogate<TestSubject>
     {
         public static readonly TestSubject Subject = new TestSubject();
+        public static bool ShouldYieldInstanceExodata { get; set; }
+    }
 
-        public TestSubjectExodataSurrogate()
+    public class TestSubjectExodataSurrogateOne : BaseTestSubjectExodataSurrogate
+    {
+        public TestSubjectExodataSurrogateOne()
         {
             Bind(StringExodata.MaxLength)
                 .For(x => x.MiddleName)
@@ -22,6 +26,13 @@ namespace iSynaptic.Commons.Data
                 .When(r => ShouldYieldInstanceExodata)
                 .To(r => "Special Instance Description");
 
+        }
+    }
+
+    public class TestSubjectExodataSurrogateTwo : BaseTestSubjectExodataSurrogate
+    {
+        public TestSubjectExodataSurrogateTwo()
+        {
             Bind(CommonExodata.Description)
                 .For(Subject, x => x.FirstName)
                 .When(r => ShouldYieldInstanceExodata)
@@ -39,7 +50,5 @@ namespace iSynaptic.Commons.Data
                 .When(r => ShouldYieldInstanceExodata)
                 .To("Specific Contextual Member Description");
         }
-
-        public static bool ShouldYieldInstanceExodata { get; set; }
     }
 }

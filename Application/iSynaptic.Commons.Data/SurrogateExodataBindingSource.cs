@@ -10,7 +10,7 @@ namespace iSynaptic.Commons.Data
 {
     public class SurrogateExodataBindingSource : IExodataBindingSource
     {
-        private readonly Lazy<IDictionary<Type, object>> _Surrogates = new Lazy<IDictionary<Type, object>>(() =>
+        private readonly Lazy<KeyValuePair<Type, IExodataBindingSource>[]> _Surrogates = new Lazy<KeyValuePair<Type, IExodataBindingSource>[]>(() =>
         {
             Type bindingSourceType = typeof(IExodataBindingSource);
 
@@ -18,15 +18,24 @@ namespace iSynaptic.Commons.Data
                 .GetAssemblies()
                 .Where(x => x.IsDynamic != true)
                 .SelectMany(x => x.GetExportedTypes())
-                .Where(bindingSourceType.IsAssignableFrom)
-                .Where(x => x.BaseType != null && x.BaseType.IsGenericType && x.BaseType.GetGenericTypeDefinition() == typeof(ExodataSurrogate<>))
-                .Select(InstantiateSurrogate)
-                .ToReadOnlyDictionary();
+                .Where(x => !x.IsAbstract && !x.IsGenericTypeDefinition && bindingSourceType.IsAssignableFrom(x))
+                .Select(x => new { Type = x, BaseType = GetExodataSurrgateBaseClass(x) })
+                .Where(x => x.BaseType.HasValue)
+                .Select(x => KeyValuePair.Create(x.BaseType.Value.GetGenericArguments()[0], InstantiateSurrogate(x.Type)))
+                .ToArray();
         });
 
-        private static KeyValuePair<Type, object> InstantiateSurrogate(Type type)
+        private static Maybe<Type> GetExodataSurrgateBaseClass(Type type)
         {
-            var surrogatesFor = type.BaseType.GetGenericArguments()[0];
+            return type.Recurse(x => Maybe.NotNull(x.BaseType))
+                .Where(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof (ExodataSurrogate<>))
+                .FirstOrDefault()
+                .ToMaybe()
+                .NotNull();
+        }
+
+        private static IExodataBindingSource InstantiateSurrogate(Type type)
+        {
             object surrogate = Ioc.Resolve(type);
             
             if(surrogate == null && type.GetConstructors().Any(x => x.GetParameters().Length == 0))
@@ -35,7 +44,7 @@ namespace iSynaptic.Commons.Data
             if (surrogate == null)
                 throw new InvalidOperationException(string.Format("Unable to instantiate Exodata surrogate '{0}'. The surrogate is not registered with Ioc and has no public parameterless constructor.", type.FullName));
 
-            return KeyValuePair.Create(surrogatesFor, surrogate);
+            return (IExodataBindingSource)surrogate;
         }
 
         public IEnumerable<IExodataBinding> GetBindingsFor<TExodata, TContext, TSubject>(IExodataRequest<TExodata, TContext, TSubject> request)
@@ -45,7 +54,6 @@ namespace iSynaptic.Commons.Data
             return _Surrogates.Value
                 .Where(x => x.Key.IsAssignableFrom(subjectType))
                 .Select(x => x.Value)
-                .Cast<IExodataBindingSource>()
                 .SelectMany(x => x.GetBindingsFor(request));
         }
     }
