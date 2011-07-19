@@ -76,6 +76,12 @@ namespace iSynaptic.Commons.Data
             if (leftBoundToSubject ^ rightBoundToSubject)
                 return leftBoundToSubject ? -1 : 1;
 
+            bool leftBoundToSymbol = l.BoundToSymbolInstance;
+            bool rightBoundToSymbol = r.BoundToSymbolInstance;
+
+            if (leftBoundToSymbol ^ rightBoundToSymbol)
+                return leftBoundToSymbol ? -1 : 1;
+
             if (l.ContextType != r.ContextType)
                 return l.ContextType.IsAssignableFrom(r.ContextType) ? 1 : -1;
 

@@ -25,7 +25,7 @@ namespace iSynaptic.Commons.Data
         public IFluentExodataBindingNamedGivenSubjectWhenTo<TExodata, object, TSubject> Bind<TExodata>(ISymbol symbol)
         {
             Guard.NotNull(symbol, "symbol");
-            return new FluentExodataBindingBuilder<TExodata, object, TSubject>(this, symbol, b => _Bindings.Add(b));
+            return new FluentExodataBindingBuilder<TExodata, object, TSubject>(this, symbol.ToMaybe(), b => _Bindings.Add(b));
         }
 
         public void Bind<TExodata>(ISymbol<TExodata> symbol, TExodata value, string name = null)

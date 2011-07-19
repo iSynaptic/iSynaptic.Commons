@@ -11,6 +11,7 @@ namespace iSynaptic.Commons.Data
 
         IExodataBindingSource Source { get; }
 
+        bool BoundToSymbolInstance { get; }
         bool BoundToContextInstance { get; }
         bool BoundToSubjectInstance { get; }
 
