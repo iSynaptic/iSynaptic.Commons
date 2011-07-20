@@ -83,7 +83,6 @@ namespace iSynaptic.Commons.Data
             public bool BoundToContextInstance { get { return Context.HasValue; } }
             public bool BoundToSubjectInstance { get { return Subject.HasValue; } }
 
-            public Type ExodataType { get { return typeof(TExodata); } }
             public Type ContextType { get { return typeof(TContext); } }
             public Type SubjectType { get { return typeof(TSubject); } }
         }

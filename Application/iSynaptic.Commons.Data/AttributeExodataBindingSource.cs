@@ -9,7 +9,7 @@ namespace iSynaptic.Commons.Data
 {
     public class AttributeExodataBindingSource : IExodataBindingSource
     {
-        private LazySelectionDictionary<ICustomAttributeProvider, IEnumerable<IExodataBinding>> _Bindings =
+        private readonly LazySelectionDictionary<ICustomAttributeProvider, IEnumerable<IExodataBinding>> _Bindings =
             new LazySelectionDictionary<ICustomAttributeProvider, IEnumerable<IExodataBinding>>(x => GetBindings(x).ToMaybe());
 
         public IEnumerable<IExodataBinding> GetBindingsFor<TExodata, TContext, TSubject>(IExodataRequest<TExodata, TContext, TSubject> request)
