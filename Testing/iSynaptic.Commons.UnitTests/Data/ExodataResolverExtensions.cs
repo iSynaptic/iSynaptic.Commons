@@ -37,12 +37,12 @@ namespace iSynaptic.Commons.Data
 
         protected override TExodata Resolve<TSubject>(Maybe<TContext> context, Maybe<TSubject> subject, MemberInfo member)
         {
-            return _Resolver.TryResolve<TExodata, TContext, TSubject>(_Symbol, context, subject, member).Value;
+            return _Resolver.TryResolve(ExodataRequest.Create<TExodata, TContext, TSubject>(_Symbol, context, subject, member)).Value;
         }
 
         protected override Maybe<TExodata> TryResolve<TSubject>(Maybe<TContext> context, Maybe<TSubject> subject, MemberInfo member)
         {
-            return _Resolver.TryResolve<TExodata, TContext, TSubject>(_Symbol, context, subject, member);
+            return _Resolver.TryResolve(ExodataRequest.Create<TExodata, TContext, TSubject>(_Symbol, context, subject, member));
         }
     }
 

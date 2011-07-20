@@ -94,6 +94,8 @@
     <Compile Include="Convert.cs" />
     <Compile Include="DataEventArgs.cs" />
     <Compile Include="Data\ExodataHelper.cs" />
+    <Compile Include="Data\ExodataRequest.cs" />
+    <Compile Include="Data\IExodataRequest.cs" />
     <Compile Include="Data\Syntax\FluentExodataResolutionRoot.cs" />
     <Compile Include="Data\Syntax\IFluentExodataResolutionRoot.cs" />
     <Compile Include="Data\IExodataResolver.cs" />

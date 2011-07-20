@@ -23,11 +23,10 @@ namespace iSynaptic.Commons.Data
             _BindingSources = new IExodataBindingSource[0];
         }
 
-        public Maybe<TExodata> TryResolve<TExodata, TContext, TSubject>(ISymbol symbol, Maybe<TContext> context, Maybe<TSubject> subject, MemberInfo member)
+        public Maybe<TExodata> TryResolve<TExodata, TContext, TSubject>(IExodataRequest<TExodata, TContext, TSubject> request)
         {
-            Guard.NotNull(symbol, "symbol");
-
-            var request = ExodataRequest.Create<TExodata, TContext, TSubject>(symbol, context, subject, member);
+            Guard.NotNull(request, "request");
+            Guard.MustSatisfy(request, r => r.Symbol != null, "request", "The request's symbol cannot be null.");
 
             var candidateBindings = GetBindingSources()
                 .SelectMany(x => x.GetBindingsFor(request))

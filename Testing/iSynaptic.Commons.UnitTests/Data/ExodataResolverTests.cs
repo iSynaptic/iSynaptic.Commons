@@ -18,7 +18,7 @@ namespace iSynaptic.Commons.Data
 
             var resolver = new ExodataResolver(new[] { source });
 
-            Maybe<int> value = resolver.TryResolve<int, object, object>(symbol, Maybe<object>.NoValue, Maybe<object>.NoValue, null);
+            Maybe<int> value = resolver.TryResolve(ExodataRequest.Create<int, object, object>(symbol, Maybe<object>.NoValue, Maybe<object>.NoValue, null));
 
             Assert.AreEqual(Maybe<int>.NoValue, value);
         }
@@ -33,7 +33,7 @@ namespace iSynaptic.Commons.Data
 
             var resolver = new ExodataResolver(new[] { source });
 
-            Maybe<int> result = resolver.TryResolve<int, object, object>(symbol, Maybe<object>.NoValue, Maybe<object>.NoValue, null);
+            Maybe<int> result = resolver.TryResolve(ExodataRequest.Create<int, object, object>(symbol, Maybe<object>.NoValue, Maybe<object>.NoValue, null));
 
             var exception = result.Exception as AmbiguousExodataBindingsException;
 
@@ -50,7 +50,7 @@ namespace iSynaptic.Commons.Data
 
             var resolver = new ExodataResolver(new[] { source });
 
-            Maybe<int> result = resolver.TryResolve<int, object, object>(symbol, Maybe<object>.NoValue, Maybe<object>.NoValue, null);
+            Maybe<int> result = resolver.TryResolve(ExodataRequest.Create<int, object, object>(symbol, Maybe<object>.NoValue, Maybe<object>.NoValue, null));
 
             Assert.AreEqual(42, result.Value);
         }

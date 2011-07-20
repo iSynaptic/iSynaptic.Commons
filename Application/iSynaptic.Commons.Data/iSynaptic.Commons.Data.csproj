@@ -44,10 +44,8 @@
     <Compile Include="ComparableExodataDeclaration.cs" />
     <Compile Include="GuidExodataDeclaration.cs" />
     <Compile Include="StringExodataDeclaration.cs" />
-    <Compile Include="ExodataRequest.cs" />
     <Compile Include="ExodataValidationException.cs" />
     <Compile Include="IExodataBindingDetails.cs" />
-    <Compile Include="IExodataRequest.cs" />
     <Compile Include="IExodataScopeObject.cs" />
     <Compile Include="Syntax\FluentExodataBindingBuilder.cs" />
     <Compile Include="IExodataAttribute.cs" />
