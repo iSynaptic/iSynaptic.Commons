@@ -16,16 +16,6 @@ namespace iSynaptic.Commons.Data
             _Description = description;
         }
 
-        public bool ProvidesExodataFor<TExodata, TContext, TSubject>(IExodataRequest<TExodata, TContext, TSubject> request)
-        {
-            return
-                request.Symbol == StringExodata.All ||
-                request.Symbol == StringExodata.MinLength ||
-                request.Symbol == StringExodata.MaxLength ||
-                request.Symbol == CommonExodata.All ||
-                request.Symbol == CommonExodata.Description;
-        }
-
         public IMaybe<StringExodataDefinition> TryResolve<TContext, TSubject>(IExodataRequest<StringExodataDefinition, TContext, TSubject> request)
         {
             return Maybe.If(request.Symbol == StringExodata.All || request.Symbol == CommonExodata.All, 

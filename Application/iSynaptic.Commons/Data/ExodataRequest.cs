@@ -17,6 +17,37 @@ namespace iSynaptic.Commons.Data
 
     public class ExodataRequest<TExodata, TContext, TSubject> : IExodataRequest<TExodata, TContext, TSubject>, IEquatable<IExodataRequest<TExodata, TContext, TSubject>>
     {
+        private class RequestAdapter<TSourceExodata, TSourceContext, TSourceSubject>
+            : IExodataRequest<TExodata, TContext, TSubject>
+        {
+            private readonly IExodataRequest<TSourceExodata, TSourceContext, TSourceSubject> _Request;
+
+            public RequestAdapter(IExodataRequest<TSourceExodata, TSourceContext, TSourceSubject> request)
+            {
+                _Request = request;
+            }
+
+            public ISymbol Symbol
+            {
+                get { return _Request.Symbol; }
+            }
+
+            public Maybe<TContext> Context
+            {
+                get { return _Request.Context.Cast<TContext>(); }
+            }
+
+            public Maybe<TSubject> Subject
+            {
+                get { return _Request.Subject.Cast<TSubject>(); }
+            }
+
+            public MemberInfo Member
+            {
+                get { return _Request.Member; }
+            }
+        }
+
         public ExodataRequest(ISymbol symbol, Maybe<TContext> context, Maybe<TSubject> subject, MemberInfo member)
         {
             Symbol = Guard.NotNull(symbol, "symbol");
@@ -25,11 +56,24 @@ namespace iSynaptic.Commons.Data
             Member = member;
         }
 
-        public ISymbol Symbol { get; private set; }
+        public static Maybe<IExodataRequest<TExodata, TContext, TSubject>> TryToAdapt<TSourceExodata, TSourceContext, TSourceSubject>(IExodataRequest<TSourceExodata, TSourceContext, TSourceSubject> request)
+        {
+            Guard.NotNull(request, "request");
 
-        public Maybe<TContext> Context { get; private set; }
-        public Maybe<TSubject> Subject { get; private set; }
-        public MemberInfo Member { get; private set; }
+            var typedRequest = request as IExodataRequest<TExodata, TContext, TSubject>;
+            if (typedRequest != null)
+                return typedRequest.ToMaybe();
+
+            if (typeof(TSourceExodata).IsAssignableFrom(typeof(TExodata)) &&
+                typeof(TContext).IsAssignableFrom(typeof(TSourceContext)) &&
+                typeof(TSubject).IsAssignableFrom(typeof(TSourceSubject)))
+            {
+                return new RequestAdapter<TSourceExodata, TSourceContext, TSourceSubject>(request)
+                    .ToMaybe<IExodataRequest<TExodata, TContext, TSubject>>();
+            }
+
+            return Maybe<IExodataRequest<TExodata, TContext, TSubject>>.NoValue;
+        }
 
         public bool Equals(IExodataRequest<TExodata, TContext, TSubject> other)
         {
@@ -60,5 +104,11 @@ namespace iSynaptic.Commons.Data
 
             return results;
         }
+
+        public ISymbol Symbol { get; private set; }
+
+        public Maybe<TContext> Context { get; private set; }
+        public Maybe<TSubject> Subject { get; private set; }
+        public MemberInfo Member { get; private set; }
     }
 }

@@ -31,7 +31,8 @@ namespace iSynaptic.Commons.Data
         {
             public Maybe<TRequestExodata> TryResolve<TRequestExodata, TRequestContext, TRequestSubject>(IExodataRequest<TRequestExodata, TRequestContext, TRequestSubject> request)
             {
-                return TryGetRequest(request)
+                return ExodataRequest<TExodata, TContext, TSubject>
+                    .TryToAdapt(request)
                     .Where(Matches)
                     .SelectMaybe(ValueFactory)
                     .Cast<TRequestExodata>();
@@ -67,24 +68,6 @@ namespace iSynaptic.Commons.Data
 
                 return true;
             }
-
-            private static Maybe<IExodataRequest<TExodata, TContext, TSubject>> TryGetRequest<TRequestExodata, TRequestContext, TRequestSubject>(IExodataRequest<TRequestExodata, TRequestContext, TRequestSubject> request)
-            {
-                var typedRequest = request as IExodataRequest<TExodata, TContext, TSubject>;
-                if (typedRequest != null)
-                    return typedRequest.ToMaybe();
-
-                if (typeof(TRequestExodata).IsAssignableFrom(typeof(TExodata)) &&
-                    typeof(TContext).IsAssignableFrom(typeof(TRequestContext)) &&
-                    typeof(TSubject).IsAssignableFrom(typeof(TRequestSubject)))
-                {
-                    return new RequestAdapter<TRequestExodata, TRequestContext, TRequestSubject>(request)
-                        .ToMaybe<IExodataRequest<TExodata, TContext, TSubject>>();
-                }
-
-                return Maybe<IExodataRequest<TExodata, TContext, TSubject>>.NoValue;
-            }
-
             public string Name { get; set; }
             public IExodataBindingSource Source { get; set; }
 
@@ -103,37 +86,6 @@ namespace iSynaptic.Commons.Data
             public Type ExodataType { get { return typeof(TExodata); } }
             public Type ContextType { get { return typeof(TContext); } }
             public Type SubjectType { get { return typeof(TSubject); } }
-
-            private class RequestAdapter<TSourceExodata, TSourceContext, TSourceSubject>
-                : IExodataRequest<TExodata, TContext, TSubject>
-            {
-                private readonly IExodataRequest<TSourceExodata, TSourceContext, TSourceSubject> _Request;
-
-                public RequestAdapter(IExodataRequest<TSourceExodata, TSourceContext, TSourceSubject> request)
-                {
-                    _Request = request;
-                }
-
-                public ISymbol Symbol
-                {
-                    get { return _Request.Symbol; }
-                }
-
-                public Maybe<TContext> Context
-                {
-                    get { return _Request.Context.Cast<TContext>(); }
-                }
-
-                public Maybe<TSubject> Subject
-                {
-                    get { return _Request.Subject.Cast<TSubject>(); }
-                }
-
-                public MemberInfo Member
-                {
-                    get { return _Request.Member; }
-                }
-            }
         }
     }
 }
