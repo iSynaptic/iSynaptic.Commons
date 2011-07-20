@@ -5,8 +5,8 @@ using System.Text;
 
 namespace iSynaptic.Commons.Data
 {
-    public interface IExodataAttribute<out TExodata>
+    public interface IExodataAttribute<TExodata>
     {
-        IMaybe<TExodata> TryResolve<TContext, TSubject>(IExodataRequest<TExodata, TContext, TSubject> request);
+        Maybe<TExodata> TryResolve<TContext, TSubject>(IExodataRequest<TExodata, TContext, TSubject> request);
     }
 }

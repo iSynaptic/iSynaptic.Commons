@@ -15,7 +15,7 @@ namespace iSynaptic.Commons.Data
             _Description = description;
         }
 
-        public IMaybe<string> TryResolve<TContext, TSubject>(IExodataRequest<string, TContext, TSubject> request)
+        public Maybe<string> TryResolve<TContext, TSubject>(IExodataRequest<string, TContext, TSubject> request)
         {
             return Maybe.If(request.Symbol == CommonExodata.Description, _Description.ToMaybe());
         }

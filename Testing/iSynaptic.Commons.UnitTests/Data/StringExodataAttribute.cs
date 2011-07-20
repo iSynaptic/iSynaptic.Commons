@@ -16,18 +16,18 @@ namespace iSynaptic.Commons.Data
             _Description = description;
         }
 
-        public IMaybe<StringExodataDefinition> TryResolve<TContext, TSubject>(IExodataRequest<StringExodataDefinition, TContext, TSubject> request)
+        public Maybe<StringExodataDefinition> TryResolve<TContext, TSubject>(IExodataRequest<StringExodataDefinition, TContext, TSubject> request)
         {
             return Maybe.If(request.Symbol == StringExodata.All || request.Symbol == CommonExodata.All, 
                  new StringExodataDefinition(_MinLength, _MaxLength, _Description).ToMaybe());
         }
 
-        public IMaybe<string> TryResolve<TContext, TSubject>(IExodataRequest<string, TContext, TSubject> request)
+        public Maybe<string> TryResolve<TContext, TSubject>(IExodataRequest<string, TContext, TSubject> request)
         {
             return Maybe.If(request.Symbol == CommonExodata.Description, _Description.ToMaybe());
         }
 
-        public IMaybe<int> TryResolve<TContext, TSubject>(IExodataRequest<int, TContext, TSubject> request)
+        public Maybe<int> TryResolve<TContext, TSubject>(IExodataRequest<int, TContext, TSubject> request)
         {
             return Maybe.If(request.Symbol == StringExodata.MinLength, _MinLength.ToMaybe())
                 .Or(Maybe.If(request.Symbol == StringExodata.MaxLength, _MaxLength.ToMaybe()));
