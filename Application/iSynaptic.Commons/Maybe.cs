@@ -64,10 +64,18 @@ namespace iSynaptic.Commons
             Guard.NotNull(computation, "computation");
 
             Maybe<T>? memoizedResult = null;
+            var cachedComputation = computation;
 
-            _Computation = () => memoizedResult.HasValue
-                    ? memoizedResult.Value
-                    : (memoizedResult = computation()).Value;
+            _Computation = () =>
+            {
+                if(memoizedResult.HasValue)
+                    return memoizedResult.Value;
+
+                memoizedResult = cachedComputation();
+                cachedComputation = null;
+
+                return memoizedResult.Value;
+            };
         }
 
         public Maybe(Exception exception)
@@ -835,15 +843,14 @@ namespace iSynaptic.Commons
         {
             Guard.NotNull(gate, "gate");
 
-            Func<Maybe<T>> synchronizedComputation = () =>
+            var self = @this;
+            return new Maybe<T>(() =>
             {
                 lock (gate)
                 {
-                    return @this.Run();
+                    return self.Run();
                 }
-            };
-
-            return new Maybe<T>(synchronizedComputation);
+            });
         }
 
         public static Maybe<TResult> Cast<TResult>(this IMaybe @this)
