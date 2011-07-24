@@ -23,7 +23,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using NUnit.Framework;
 
 namespace iSynaptic.Commons
@@ -42,7 +41,7 @@ namespace iSynaptic.Commons
         [Test]
         public void MustBeDefined_CannotBeUsedWithNonEnumTypeArgument()
         {
-            Assert.Throws<ArgumentException>(() => Guard.MustBeDefined<int>(DayOfWeek.Wednesday, "value"));
+            Assert.Throws<ArgumentException>(() => Guard.MustBeDefined<int>(5, "value"));
         }
 
         [Test]
@@ -66,7 +65,7 @@ namespace iSynaptic.Commons
         [Test]
         public void NotNullOrEmpty_WithNullString_ThrowsException()
         {
-            Assert.Throws<ArgumentNullException>(() => Guard.NotNullOrEmpty(null, "value"));
+            Assert.Throws<ArgumentException>(() => Guard.NotNullOrEmpty(null, "value"));
         }
 
         [Test]
@@ -84,7 +83,7 @@ namespace iSynaptic.Commons
         [Test]
         public void NotNullOrWhiteSpace_WithNullString_ThrowsException()
         {
-            Assert.Throws<ArgumentNullException>(() => Guard.NotNullOrWhiteSpace(null, "value"));
+            Assert.Throws<ArgumentException>(() => Guard.NotNullOrWhiteSpace(null, "value"));
         }
 
         [Test]
@@ -103,12 +102,6 @@ namespace iSynaptic.Commons
         public void NotNullOrWhiteSpace_WithNonNullOrWhiteSpaceString_DoesNothing()
         {
             Guard.NotNullOrWhiteSpace("Hello, World!", "value");
-        }
-
-        [Test]
-        public void NotWhiteSpace_WithNullString_DoesNothing()
-        {
-            Guard.NotWhiteSpace(null, "value");
         }
 
         [Test]
@@ -138,7 +131,7 @@ namespace iSynaptic.Commons
         [Test]
         public void NotNullOrEmpty_WithNullEnumerable_ThrowsException()
         {
-            Assert.Throws<ArgumentNullException>(() => Guard.NotNullOrEmpty((IEnumerable<int>) null, "value"));
+            Assert.Throws<ArgumentException>(() => Guard.NotNullOrEmpty((IEnumerable<int>) null, "value"));
         }
 
         [Test]
@@ -151,70 +144,6 @@ namespace iSynaptic.Commons
         public void NotNullOrEmpty_WithNonNullOrEmptyEnumerable_DoesNothing()
         {
             Guard.NotNullOrEmpty(Enumerable.Range(1,1), "value");
-        }
-
-        [Test]
-        public void MustBeGreaterThan_WhenValueLessThanOrEqualToComparisionValue_ThrowsException()
-        {
-            Assert.Throws<ArgumentOutOfRangeException>(() => Guard.MustBeGreaterThan(42, 42, "value"));
-            Assert.Throws<ArgumentOutOfRangeException>(() => Guard.MustBeGreaterThan(42, 43, "value"));
-        }
-
-        [Test]
-        public void MustBeGreaterThan_WhenValueIsGreater_ReturnsValue()
-        {
-            Assert.AreEqual(42, Guard.MustBeGreaterThan(42, 0, "value"));
-        }
-
-        [Test]
-        public void MustBeGreaterThanOrEqual_WhenValueLessThanComparisionValue_ThrowsException()
-        {
-            Assert.Throws<ArgumentOutOfRangeException>(() => Guard.MustBeGreaterThanOrEqual(42, 43, "value"));
-        }
-
-        [Test]
-        public void MustBeGreaterThanOrEqual_WhenValueIsGreaterOrEqual_ReturnsValue()
-        {
-            Assert.AreEqual(42, Guard.MustBeGreaterThanOrEqual(42, 41, "value"));
-            Assert.AreEqual(42, Guard.MustBeGreaterThanOrEqual(42, 42, "value"));
-        }
-
-        [Test]
-        public void MustBeLessThan_WhenValueGreaterThanOrEqualToComparisionValue_ThrowsException()
-        {
-            Assert.Throws<ArgumentOutOfRangeException>(() => Guard.MustBeLessThan(42, 42, "value"));
-            Assert.Throws<ArgumentOutOfRangeException>(() => Guard.MustBeLessThan(42, 41, "value"));
-        }
-
-        [Test]
-        public void MustBeLessThan_WhenValueIsLessThan_ReturnsValue()
-        {
-            Assert.AreEqual(42, Guard.MustBeLessThan(42, 43, "value"));
-        }
-
-        [Test]
-        public void MustBeLessThanOrEqual_WhenValueGreaterThanComparisionValue_ThrowsException()
-        {
-            Assert.Throws<ArgumentOutOfRangeException>(() => Guard.MustBeLessThanOrEqual(42, 41, "value"));
-        }
-
-        [Test]
-        public void MustBeLessThanOrEqual_WhenValueIsLessOrEqual_ReturnsValue()
-        {
-            Assert.AreEqual(42, Guard.MustBeLessThanOrEqual(42, 43, "value"));
-            Assert.AreEqual(42, Guard.MustBeLessThanOrEqual(42, 42, "value"));
-        }
-
-        [Test]
-        public void Matches_WithMatch_DoesNothing()
-        {
-            Assert.AreEqual("Hello", Guard.Matches("Hello", @"^H\w+$", "value"));
-        }
-
-        [Test]
-        public void Matches_WithoutMatch_ThrowsException()
-        {
-            Assert.Throws<ArgumentException>(() => Guard.Matches("Bye", @"^H\w+$", "value"));
         }
     }
 }

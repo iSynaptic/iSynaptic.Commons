@@ -79,8 +79,8 @@ namespace iSynaptic.Commons.Linq
             Guard.NotNull(@this, "@this");
             Guard.NotNull(destination, "destination");
 
-            Guard.MustBeGreaterThanOrEqual(index, 0, "index");
-            Guard.MustBeLessThan(index, destination.Length, "index", "The destination is not large enough for the given index.");
+            if(index < 0 || index >= destination.Length)
+                throw new ArgumentOutOfRangeException("index", "Index must be between zero and one less than the destinations length.");
 
             var buffer = new List<T>();
             
@@ -122,7 +122,9 @@ namespace iSynaptic.Commons.Linq
         public static IEnumerable<Batch<T>> Batch<T>(this IEnumerable<T> @this, int batchSize)
         {
             Guard.NotNull(@this, "@this");
-            Guard.MustBeGreaterThan(batchSize, 0, "batchSize");
+
+            if (batchSize < 0)
+                throw new ArgumentOutOfRangeException("batchSize", "Batch size must not be negative.");
 
             return BatchCore(@this, batchSize);
         }
@@ -140,7 +142,7 @@ namespace iSynaptic.Commons.Linq
                     buffer[count++] = enumerator.Current;
                     if (count == batchSize)
                     {
-                        yield return new Batch<T>(batchIndex, batchSize, buffer);
+                        yield return new Batch<T>(buffer, batchIndex, batchSize);
                         count = 0;
                         batchIndex++;
                         buffer = new T[batchSize];
@@ -148,7 +150,7 @@ namespace iSynaptic.Commons.Linq
                 }
 
                 if (count != 0)
-                    yield return new Batch<T>(batchIndex, count, buffer.Take(count));
+                    yield return new Batch<T>(buffer.Take(count), batchIndex, count);
             }
         }
 

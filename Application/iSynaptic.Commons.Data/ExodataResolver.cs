@@ -48,7 +48,9 @@ namespace iSynaptic.Commons.Data
         public Maybe<TExodata> TryResolve<TExodata, TContext, TSubject>(IExodataRequest<TExodata, TContext, TSubject> request)
         {
             Guard.NotNull(request, "request");
-            Guard.MustSatisfy(request, r => r.Symbol != null, "request", "The request's symbol cannot be null.");
+
+            if(request.Symbol == null)
+                throw new ArgumentException("The request's symbol must not be null.", "request");
 
             var candidateBindings = GetBindingSources()
                 .SelectMany(x => x.GetBindingsFor(request))

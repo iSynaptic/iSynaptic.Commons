@@ -32,11 +32,18 @@ namespace iSynaptic.Commons.Collections.Generic
     {
         private readonly IEnumerable<T> _Batch = null;
 
-        public Batch(int index, int size, IEnumerable<T> batch)
+        public Batch(IEnumerable<T> batch, int index, int size)
         {
-            Index = Guard.MustBeGreaterThanOrEqual(index, 0, "index");
-            Size = Guard.MustBeGreaterThan(size, 0, "size");
             _Batch = Guard.NotNull(batch, "batch");
+
+            if(index < 0)
+                throw new ArgumentOutOfRangeException("index", "Index must be not be negative.");
+
+            if(size <= 0)
+                throw new ArgumentOutOfRangeException("size", "Size must be greater than zero.");
+
+            Index = index;
+            Size = size;
         }
 
         public int Index { get; private set; }

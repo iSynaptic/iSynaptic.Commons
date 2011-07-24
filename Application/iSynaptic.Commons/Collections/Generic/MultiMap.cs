@@ -50,7 +50,9 @@ namespace iSynaptic.Commons.Collections.Generic
         private static Func<TKey, ICollection<TValue>> GetDictionaryBackedCollectionFactory(IDictionary<TKey, ICollection<TValue>> dictionary)
         {
             Guard.NotNull(dictionary, "dictionary");
-            Guard.MustSatisfy(dictionary, x => !x.IsReadOnly, "dictionary", "Dictionary must not be read-only.");
+
+            if(dictionary.IsReadOnly)
+                throw new ArgumentException("Dictionary must not be read-only.", "dictionary");
 
             return x => dictionary
                 .TryGetValue(x)

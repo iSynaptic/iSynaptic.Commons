@@ -47,7 +47,11 @@ namespace iSynaptic.Commons.Collections.Generic
             _Selector = Guard.NotNull(selector, "selector");
 
             Guard.NotNull(underlying, "underlying");
-            _Underlying = Guard.MustSatisfy(underlying, x => !x.IsReadOnly, "underlying", "Underlying dictionary must not be read-only.");
+            
+            if(underlying.IsReadOnly)
+                throw new ArgumentException("Underlying dictionary must not be read-only.", "underlying");
+
+            _Underlying = underlying;
         }
 
         public override int Count
