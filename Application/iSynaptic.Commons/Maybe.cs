@@ -486,12 +486,27 @@ namespace iSynaptic.Commons
         public static Maybe<T> When<T>(this Maybe<T> @this, T value, Action<T> action)
         {
             Guard.NotNull(action, "action");
-            return @this.When(x => EqualityComparer<T>.Default.Equals(x, value), action);
+
+            var self = @this;
+            return new Maybe<T>(() =>
+            {
+                if (self.HasValue && EqualityComparer<T>.Default.Equals(self.Value, value))
+                    action(self.Value);
+
+                return self;
+            });
         }
 
         public static Maybe<T> When<T>(this Maybe<T> @this, T value, Maybe<T> newValue)
         {
-            return @this.When(x => EqualityComparer<T>.Default.Equals(x, value), newValue);
+            var self = @this;
+            return new Maybe<T>(() =>
+            {
+                if (self.HasValue && EqualityComparer<T>.Default.Equals(self.Value, value))
+                    return newValue;
+
+                return self;
+            });
         }
 
         public static Maybe<T> When<T>(this Maybe<T> @this, Func<T, bool> predicate, Action<T> action)
@@ -499,14 +514,28 @@ namespace iSynaptic.Commons
             Guard.NotNull(predicate, "predicate");
             Guard.NotNull(action, "action");
 
-            return @this.When(predicate, @this.OnValue(action));
+            var self = @this;
+            return new Maybe<T>(() =>
+            {
+                if (self.HasValue && predicate(self.Value))
+                    action(self.Value);
+
+                return self;
+            });
         }
 
         public static Maybe<T> When<T>(this Maybe<T> @this, Func<T, bool> predicate, Maybe<T> newValue)
         {
             Guard.NotNull(predicate, "predicate");
 
-            return @this.SelectMaybe(x => predicate(x) ? newValue : x.ToMaybe());
+            var self = @this;
+            return new Maybe<T>(() =>
+            {
+                if (self.HasValue && predicate(self.Value))
+                    return newValue;
+
+                return self;
+            });
         }
 
         #endregion
