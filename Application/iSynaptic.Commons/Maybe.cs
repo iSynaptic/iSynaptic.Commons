@@ -56,25 +56,26 @@ namespace iSynaptic.Commons
         public Maybe(Func<T> computation)
             : this(() => new Maybe<T>(computation()))
         {
+            Guard.NotNull(computation, "computation");
         }
 
         public Maybe(Func<Maybe<T>> computation)
             : this()
         {
-            Guard.NotNull(computation, "computation");
-
-            Maybe<T>? memoizedResult = null;
-            var cachedComputation = computation;
+            var cachedComputation = Guard.NotNull(computation, "computation");
+            var memoizedResult = default(Maybe<T>);
+            var resultComputed = false;
 
             _Computation = () =>
             {
-                if(memoizedResult.HasValue)
-                    return memoizedResult.Value;
+                if (resultComputed)
+                    return memoizedResult;
 
                 memoizedResult = cachedComputation();
+                resultComputed = true;
                 cachedComputation = null;
 
-                return memoizedResult.Value;
+                return memoizedResult;
             };
         }
 
@@ -88,18 +89,16 @@ namespace iSynaptic.Commons
         {
             get
             {
-                if(_Computation == null)
-                {
-                    if (_Exception != null)
-                        _Exception.ThrowAsInnerExceptionIfNeeded();
+                if(_Computation != null)
+                    return _Computation().Value;
 
-                    if (_HasValue != true)
-                        throw new InvalidOperationException("No value can be computed.");
+                if(_HasValue)
+                    return _Value;
 
-                    return _Value;    
-                }
+                if (_Exception != null)
+                    _Exception.ThrowAsInnerExceptionIfNeeded();
 
-                return _Computation().Value;
+                throw new InvalidOperationException("No value can be computed.");
             }
         }
 
@@ -229,13 +228,11 @@ namespace iSynaptic.Commons
 
         public static Maybe<T> Defer<T>(Func<T> computation)
         {
-            Guard.NotNull(computation, "computation");
             return new Maybe<T>(computation);
         }
 
         public static Maybe<T> Defer<T>(Func<Maybe<T>> computation)
         {
-            Guard.NotNull(computation, "computation");
             return new Maybe<T>(computation);
         }
 
@@ -245,24 +242,24 @@ namespace iSynaptic.Commons
 
         public static Maybe<T> If<T>(bool predicate, Maybe<T> thenValue)
         {
-            return If(() => predicate, thenValue);
+            return predicate ? thenValue : Maybe<T>.NoValue;
+        }
+
+        public static Maybe<T> If<T>(bool predicate, Maybe<T> thenValue, Maybe<T> elseValue)
+        {
+            return predicate ? thenValue : elseValue;
         }
 
         public static Maybe<T> If<T>(Func<bool> predicate, Maybe<T> thenValue)
         {
             Guard.NotNull(predicate, "predicate");
-            return If(predicate, thenValue, Maybe<T>.NoValue);
-        }
-
-        public static Maybe<T> If<T>(bool predicate, Maybe<T> thenValue, Maybe<T> elseValue)
-        {
-            return If(() => predicate, thenValue, elseValue);
+            return new Maybe<T>(() => predicate() ? thenValue : Maybe<T>.NoValue);
         }
 
         public static Maybe<T> If<T>(Func<bool> predicate, Maybe<T> thenValue, Maybe<T> elseValue)
         {
             Guard.NotNull(predicate, "predicate");
-            return Defer(() => predicate() ? thenValue : elseValue);
+            return new Maybe<T>(() => predicate() ? thenValue : elseValue);
         }
 
         #endregion
@@ -271,46 +268,54 @@ namespace iSynaptic.Commons
 
         public static Maybe<T> NotNull<T>(T value) where T : class
         {
-            return value.ToMaybe().NotNull();
+            return value != null ? new Maybe<T>(value) : Maybe<T>.NoValue;
         }
 
         public static Maybe<T> NotNull<T>(Func<T> computation) where T : class
         {
             Guard.NotNull(computation, "computation");
-            return Defer(computation).NotNull();
+            return new Maybe<T>(() =>
+            {
+                var result = computation();
+                return result != null ? new Maybe<T>(result) : Maybe<T>.NoValue;
+            });
         }
 
         public static Maybe<T> NotNull<T>(T? value) where T : struct
         {
-            return value.ToMaybe().NotNull();
+            return value.HasValue ? new Maybe<T>(value.Value) : Maybe<T>.NoValue;
         }
 
         public static Maybe<T> NotNull<T>(Func<T?> computation) where T : struct
         {
             Guard.NotNull(computation, "computation");
-            return Defer(computation).NotNull();
+            return new Maybe<T>(() =>
+            {
+                var result = computation();
+                return result.HasValue ? new Maybe<T>(result.Value) : Maybe<T>.NoValue;
+            });
         }
 
         public static Maybe<T> NotNull<T>(this Maybe<T> @this) where T : class
         {
-            return @this.NotNull(x => x);
+            return @this.Bind(x => x != null ? new Maybe<T>(x) : Maybe<T>.NoValue);
         }
 
         public static Maybe<T> NotNull<T>(this Maybe<T?> @this) where T : struct
         {
-            return @this.NotNull(x => x).Select(x => x.Value);
+            return @this.Bind(x => x.HasValue ? new Maybe<T>(x.Value) : Maybe<T>.NoValue);
         }
 
         public static Maybe<T> NotNull<T, TResult>(this Maybe<T> @this, Func<T, TResult> selector) where TResult : class
         {
             Guard.NotNull(selector, "selector");
-            return @this.Where(x => selector(x) != null);
+            return @this.Bind(x => selector(x) != null ? new Maybe<T>(x) : Maybe<T>.NoValue);
         }
 
         public static Maybe<T> NotNull<T, TResult>(this Maybe<T> @this, Func<T, TResult?> selector) where TResult : struct
         {
             Guard.NotNull(selector, "selector");
-            return @this.Where(x => selector(x).HasValue);
+            return @this.Bind(x => selector(x).HasValue ? new Maybe<T>(x) : Maybe<T>.NoValue);
         }
 
         #endregion
@@ -322,8 +327,11 @@ namespace iSynaptic.Commons
             Guard.NotNull(resourceFactory, "resourceFactory");
             Guard.NotNull(selector, "selector");
 
-            return Maybe<TResource>.Default
-                .Using(x => resourceFactory(), selector);
+            return new Maybe<T>(() =>
+            {
+                using (var resource = resourceFactory())
+                    return selector(resource);
+            });
         }
 
         public static Maybe<TResult> Using<T, TResource, TResult>(this Maybe<T> @this, Func<T, TResource> resourceSelector, Func<TResource, Maybe<TResult>> selector) where TResource : IDisposable
@@ -331,7 +339,7 @@ namespace iSynaptic.Commons
             Guard.NotNull(resourceSelector, "resourceSelector");
             Guard.NotNull(selector, "selector");
 
-            return @this.SelectMaybe(x =>
+            return @this.Bind(x =>
             {
                 using (var resource = resourceSelector(x))
                     return selector(resource);
@@ -344,34 +352,34 @@ namespace iSynaptic.Commons
 
         public static Maybe<TResult> Coalesce<T, TResult>(this Maybe<T> @this, Func<T, TResult> selector) where TResult : class
         {
-            Guard.NotNull(selector, "selector");
-            return @this.Coalesce(selector, Defer(() => Maybe<TResult>.NoValue));
+            return @this.Coalesce(selector, Maybe<TResult>.NoValue);
         }
 
         public static Maybe<TResult> Coalesce<T, TResult>(this Maybe<T> @this, Func<T, TResult?> selector) where TResult : struct
         {
-            Guard.NotNull(selector, "selector");
-            return @this.Coalesce(selector, Defer(() => Maybe<TResult>.NoValue));
+            return @this.Coalesce(selector, Maybe<TResult>.NoValue);
         }
 
         public static Maybe<TResult> Coalesce<T, TResult>(this Maybe<T> @this, Func<T, TResult> selector, Maybe<TResult> valueIfNull) where TResult : class
         {
             Guard.NotNull(selector, "selector");
 
-            return @this
-                .Select(selector)
-                .NotNull()
-                .Or(valueIfNull);
+            return @this.Bind(x =>
+            {
+                var result = selector(x);
+                return result != null ? new Maybe<TResult>(result) : valueIfNull;
+            });
         }
 
         public static Maybe<TResult> Coalesce<T, TResult>(this Maybe<T> @this, Func<T, TResult?> selector, Maybe<TResult> valueIfNull) where TResult : struct
         {
             Guard.NotNull(selector, "selector");
 
-            return @this
-                .Select(selector)
-                .NotNull()
-                .Or(valueIfNull);
+            return @this.Bind(x =>
+            {
+                var result = selector(x);
+                return result.HasValue ? new Maybe<TResult>(result.Value) : valueIfNull;
+            });
         }
 
         #endregion
@@ -670,19 +678,21 @@ namespace iSynaptic.Commons
 
         #endregion
 
-        public static Maybe<TResult> Bind<T, TResult>(this Maybe<T> @this, Func<T, Maybe<TResult>> func)
+        public static Maybe<TResult> Bind<T, TResult>(this Maybe<T> @this, Func<T, Maybe<TResult>> selector)
         {
-            Guard.NotNull(func, "func");
+            Guard.NotNull(selector, "selector");
 
-            return @this.Express(x =>
+            var self = @this;
+
+            return new Maybe<TResult>(() =>
             {
-                if (x.Exception != null)
-                    return new Maybe<TResult>(x.Exception);
+                if (self.Exception != null)
+                    return new Maybe<TResult>(self.Exception);
 
-                if (x.HasValue != true)
+                if (self.HasValue != true)
                     return Maybe<TResult>.NoValue;
 
-                return func(x.Value);
+                return selector(self.Value);
             });
         }
 
