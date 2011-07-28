@@ -193,23 +193,19 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void Select_ValueReturnsCorrectly()
+        public void Select_BehavesCorrectly()
         {
-            var results = 0.ToMaybe()
-                .Select(x => x + 7)
-                .Select(x => x * 6);
-
-            Assert.AreEqual(42, results.Value);
+            AssertMaybe.Behavior(42, x => x.Select(y => y), MAssertResult.SameValue, MAssertResult.NoValue, MAssertResult.SameException);
+            AssertMaybe.Behavior(42, x => x.Select(y => 5), MAssertResult.Value, MAssertResult.NoValue, MAssertResult.SameException);
+            AssertMaybe.Behavior(42, x => x.Select<int, int>(null), MAssertResult.ThrowExceptionImmediately, MAssertResult.ThrowExceptionImmediately, MAssertResult.ThrowExceptionImmediately);
         }
 
         [Test]
-        public void SelectMaybe_ValueReturnsCorrectly()
+        public void SelectMaybe_BehavesCorrectly()
         {
-            var results = 0.ToMaybe()
-                .SelectMaybe(x => (x + 7).ToMaybe())
-                .SelectMaybe(x => (x * 6).ToMaybe());
-
-            Assert.AreEqual(42, results.Value);
+            AssertMaybe.Behavior(42, x => x.SelectMaybe(y => y.ToMaybe()), MAssertResult.SameValue, MAssertResult.NoValue, MAssertResult.SameException);
+            AssertMaybe.Behavior(42, x => x.SelectMaybe(y => 5.ToMaybe()), MAssertResult.Value, MAssertResult.NoValue, MAssertResult.SameException);
+            AssertMaybe.Behavior(42, x => x.SelectMaybe<int, int>(null), MAssertResult.ThrowExceptionImmediately, MAssertResult.ThrowExceptionImmediately, MAssertResult.ThrowExceptionImmediately);
         }
 
         [Test]
@@ -317,19 +313,43 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void NotNull_WithNullReferenceType_ReturnsNoValue()
+        public void NotNull_WithReferenceTypes_BehavesCorrectly()
         {
-            Assert.That(Maybe.NotNull((string)null) == Maybe<string>.NoValue);
+            AssertMaybe.Behavior<string>(null, x => x.NotNull(), MAssertResult.NoValue, MAssertResult.NoValue, MAssertResult.SameException);
+            AssertMaybe.Behavior("", x => x.NotNull(), MAssertResult.SameValue, MAssertResult.NoValue, MAssertResult.SameException);
+            AssertMaybe.Behavior("   ", x => x.NotNull(), MAssertResult.SameValue, MAssertResult.NoValue, MAssertResult.SameException);
+            AssertMaybe.Behavior("42", x => x.NotNull(), MAssertResult.SameValue, MAssertResult.NoValue, MAssertResult.SameException);
+
+            AssertMaybe.Behavior("", x => x.NotNull((Func<string, string>)null), MAssertResult.ThrowExceptionImmediately, MAssertResult.ThrowExceptionImmediately, MAssertResult.ThrowExceptionImmediately);
+
+            AssertMaybe.Behavior<string>(null, x => x.NotNull(y => ""), MAssertResult.SameValue, MAssertResult.NoValue, MAssertResult.SameException);
+            AssertMaybe.Behavior("", x => x.NotNull(y => ""), MAssertResult.SameValue, MAssertResult.NoValue, MAssertResult.SameException);
+            AssertMaybe.Behavior("   ", x => x.NotNull(y => ""), MAssertResult.SameValue, MAssertResult.NoValue, MAssertResult.SameException);
+            AssertMaybe.Behavior("42", x => x.NotNull(y => ""), MAssertResult.SameValue, MAssertResult.NoValue, MAssertResult.SameException);
+
+            AssertMaybe.Behavior<string>(null, x => x.NotNull(y => (string)null), MAssertResult.NoValue, MAssertResult.NoValue, MAssertResult.SameException);
+            AssertMaybe.Behavior("", x => x.NotNull(y => (string)null), MAssertResult.NoValue, MAssertResult.NoValue, MAssertResult.SameException);
+            AssertMaybe.Behavior("   ", x => x.NotNull(y => (string)null), MAssertResult.NoValue, MAssertResult.NoValue, MAssertResult.SameException);
+            AssertMaybe.Behavior("42", x => x.NotNull(y => (string)null), MAssertResult.NoValue, MAssertResult.NoValue, MAssertResult.SameException);
         }
 
         [Test]
-        public void NotNull_WithNullValueType_ReturnsNoValue()
+        public void NotNull_WithValueTypes_BehavesCorrectly()
         {
-            Assert.That(Maybe.NotNull((int?)null) == Maybe<int>.NoValue);
+            AssertMaybe.Behavior<int?>(null, x => x.NotNull(), MAssertResult.NoValue, MAssertResult.NoValue, MAssertResult.SameException);
+            AssertMaybe.Behavior<int?>(42, x => x.NotNull(), MAssertResult.SameValue, MAssertResult.NoValue, MAssertResult.SameException);
+
+            AssertMaybe.Behavior(42, x => x.NotNull((Func<int, int?>)null), MAssertResult.ThrowExceptionImmediately, MAssertResult.ThrowExceptionImmediately, MAssertResult.ThrowExceptionImmediately);
+
+            AssertMaybe.Behavior<int?>(null, x => x.NotNull(y => y), MAssertResult.NoValue, MAssertResult.NoValue, MAssertResult.SameException);
+            AssertMaybe.Behavior(42, x => x.NotNull(y => (int?)y), MAssertResult.SameValue, MAssertResult.NoValue, MAssertResult.SameException);
+
+            AssertMaybe.Behavior<int?>(null, x => x.NotNull(y => (int?)null), MAssertResult.NoValue, MAssertResult.NoValue, MAssertResult.SameException);
+            AssertMaybe.Behavior(42, x => x.NotNull(y => (int?)null), MAssertResult.NoValue, MAssertResult.NoValue, MAssertResult.SameException);
         }
 
         [Test]
-        public void NotNull_WithNonNullReferenceType_ReturnsValue()
+        public void NotNull_EntryPoint_WithNonNullReferenceType_ReturnsValue()
         {
             var value = Maybe.NotNull("Hello World!");
 
@@ -338,7 +358,7 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void NotNull_WithNonNullValueType_ReturnsValue()
+        public void NotNull_EntryPoint_WithNonNullValueType_ReturnsValue()
         {
             var value = Maybe.NotNull((int?) 42);
 
@@ -347,41 +367,25 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void Coalesce_WithNonNullReferenceType_ReturnsValue()
+        public void Coalesce_SelectingReferenceType_BehavesCorrectly()
         {
-            var value = Maybe.Return("Hello World!")
-                .Coalesce(x => x);
+            AssertMaybe.Behavior("", x => x.Coalesce(y => y), MAssertResult.SameValue, MAssertResult.NoValue, MAssertResult.SameException);
+            AssertMaybe.Behavior("", x => x.Coalesce(y => (string)null), MAssertResult.NoValue, MAssertResult.NoValue, MAssertResult.SameException);
+            AssertMaybe.Behavior<string>(null, x => x.Coalesce(y => "Foo"), MAssertResult.Value, MAssertResult.NoValue, MAssertResult.SameException);
+            AssertMaybe.Behavior("", x => x.Coalesce(y => "SomeOtherValue"), MAssertResult.Value, MAssertResult.NoValue, MAssertResult.SameException);
 
-            Assert.IsTrue(value.HasValue);
-            Assert.AreEqual("Hello World!", value.Value);
+            AssertMaybe.Behavior("", x => x.Coalesce((Func<string, string>)null), MAssertResult.ThrowExceptionImmediately, MAssertResult.ThrowExceptionImmediately, MAssertResult.ThrowExceptionImmediately);
         }
 
         [Test]
-        public void Coalesce_WithNonNullValueType_ReturnsValue()
+        public void Coalesce_SelectingNullableValueType_BehavesCorrectly()
         {
-            var value = Maybe.Return((int?)42)
-                .Coalesce(x => x);
+            AssertMaybe.Behavior(42, x => x.Coalesce(y => (int?)y), MAssertResult.SameValue, MAssertResult.NoValue, MAssertResult.SameException);
+            AssertMaybe.Behavior(42, x => x.Coalesce(y => (int?)null), MAssertResult.NoValue, MAssertResult.NoValue, MAssertResult.SameException);
+            AssertMaybe.Behavior<int?>(null, x => x.Coalesce(y => (int?)42), MAssertResult.Value, MAssertResult.NoValue, MAssertResult.SameException);
+            AssertMaybe.Behavior(42, x => x.Coalesce(y => (int?)1337), MAssertResult.Value, MAssertResult.NoValue, MAssertResult.SameException);
 
-            Assert.IsTrue(value.HasValue);
-            Assert.AreEqual(42, value.Value);
-        }
-
-        [Test]
-        public void Coalesce_WithNullReferenceType_ReturnsNoValue()
-        {
-            var value = Maybe.Return("Hello World!")
-                .Coalesce(x => (string)null);
-
-            Assert.That(value == Maybe<string>.NoValue);
-        }
-
-        [Test]
-        public void Coalesce_WithNullValueType_ReturnsNoValue()
-        {
-            var value = Maybe.Return(42)
-                .Coalesce(x => (int?)null);
-
-            Assert.That(value == Maybe<int>.NoValue);
+            AssertMaybe.Behavior(42, x => x.Coalesce((Func<int, int?>)null), MAssertResult.ThrowExceptionImmediately, MAssertResult.ThrowExceptionImmediately, MAssertResult.ThrowExceptionImmediately);
         }
 
         [Test]
@@ -1525,5 +1529,83 @@ namespace iSynaptic.Commons
             Assert.IsNull(result.Exception);
             Assert.AreEqual(42, result.Value);
         }
+    }
+
+    internal static class AssertMaybe
+    {
+        public static void Behavior<T>(T value, Expression<Func<Maybe<T>, IMaybe>> opExpression, MAssertResult withValue, MAssertResult withNoValue, MAssertResult withException)
+        {
+            Guard.NotNull(opExpression, "opExpression");
+            var op = opExpression.Compile();
+
+            var body = opExpression.Body;
+
+            if (body.NodeType == ExpressionType.Convert)
+                body = ((UnaryExpression)body).Operand;
+
+            string expression = body.ToString();
+
+            EnsureBehavior(string.Format("{0} with a value", expression), new Maybe<T>(value), op, withValue);
+            EnsureBehavior(string.Format("{0} with no value", expression), Maybe<T>.NoValue, op, withNoValue);
+            EnsureBehavior(string.Format("{0} with an exception", expression), Maybe<T>.NoValue, op, withException);
+        }
+
+        private static void EnsureBehavior<T>(string name, Maybe<T> value, Func<Maybe<T>, IMaybe> op, MAssertResult expectedResult)
+        {
+            IMaybe result = null;
+            try
+            {
+                result = op(value);
+            }
+            catch (Exception)
+            {
+                if (expectedResult != MAssertResult.ThrowExceptionImmediately)
+                    Assert.Fail(string.Format("{0} threw an unexpected immediate exception.", name));
+
+                return;
+            }
+
+            if(expectedResult == MAssertResult.ThrowExceptionImmediately)
+                Assert.Fail(string.Format("{0} did not throw an exception immediately.", name));
+
+            if(expectedResult == MAssertResult.ThrowException)
+            {
+                try
+                {
+                    var discard = result.Exception;
+                    Assert.Fail(string.Format("{0} did not throw an exception upon evaluation.", name));
+                }
+                catch (Exception)
+                {
+                    return;
+                }
+            }
+
+            if (expectedResult == MAssertResult.SameException && result.Exception != value.Exception)
+                Assert.Fail(string.Format("{0} did not contain the same exception.", name));
+
+            if(expectedResult == MAssertResult.Exception && result.Exception == null)
+                Assert.Fail(string.Format("{0} did not contain an exception.", name));
+
+            if (expectedResult == MAssertResult.NoValue && (result.Exception != null || result.HasValue))
+                Assert.Fail(string.Format("{0} did not result in the absence of a value.", name));
+
+            if (expectedResult == MAssertResult.Value && (result.Exception != null || !result.HasValue))
+                Assert.Fail(string.Format("{0} did not result in a value.", name));
+
+            if (expectedResult == MAssertResult.SameValue && (result.Exception != null || !result.HasValue || !EqualityComparer<T>.Default.Equals((T)result.Value, value.Value)))
+                Assert.Fail(string.Format("{0} did not result in the same value.", name));
+        }
+    }
+
+    public enum MAssertResult
+    {
+        SameValue,
+        Value,
+        NoValue,
+        SameException,
+        Exception,
+        ThrowException,
+        ThrowExceptionImmediately
     }
 }
