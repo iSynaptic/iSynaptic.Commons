@@ -36,11 +36,10 @@ namespace iSynaptic.Commons.Collections.Generic
 
         public IEnumerator<LookAheadableValue<T>> GetEnumerator()
         {
-            return _InnerEnumerable
-                .ToMaybe()
-                .Coalesce(x => x.GetEnumerator())
-                .Select(x => new LookAheadEnumerator<T>(x))
-                .ValueOrDefault();
+            var enumerator = _InnerEnumerable.GetEnumerator();
+            return enumerator != null
+                ? new LookAheadEnumerator<T>(enumerator)
+                : null;
         }
 
         IEnumerator IEnumerable.GetEnumerator()

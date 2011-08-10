@@ -49,11 +49,9 @@ namespace iSynaptic.Commons.Data
 
         private static Maybe<Type> GetExodataSurrgateBaseClass(Type type)
         {
-            return type.Recurse(x => Maybe.NotNull(x.BaseType))
+            return Maybe.NotNull(type.Recurse(x => Maybe.NotNull(x.BaseType))
                 .Where(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof (ExodataSurrogate<>))
-                .FirstOrDefault()
-                .ToMaybe()
-                .NotNull();
+                .FirstOrDefault());
         }
 
         private static IExodataBindingSource InstantiateSurrogate(Type type)
