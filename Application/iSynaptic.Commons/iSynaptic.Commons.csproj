@@ -86,6 +86,7 @@
     <Compile Include="Collections\Generic\ProjectionCollection.cs" />
     <Compile Include="Collections\Generic\ReadOnlyDictionary.cs" />
     <Compile Include="Collections\Generic\SmartLoop.cs" />
+    <Compile Include="Collections\Generic\SymbolDictionary.cs" />
     <Compile Include="Collections\Generic\WeakDictionary.cs" />
     <Compile Include="Collections\Generic\WeakKeyDictionary.cs" />
     <Compile Include="Collections\Generic\WeakKeyMemberDictionary.cs" />
@@ -110,7 +111,9 @@
     <Compile Include="Equatable.cs" />
     <Compile Include="ExceptionExtensions.cs" />
     <Compile Include="IDependencySymbol.cs" />
+    <Compile Include="IKeyedReaderWriter.cs" />
     <Compile Include="ISymbol.cs" />
+    <Compile Include="KeyedReaderWriter.cs" />
     <Compile Include="Linq\Expressions\ExpressionExtensions.cs" />
     <Compile Include="FuncExtensions.generated.cs">
       <AutoGen>True</AutoGen>

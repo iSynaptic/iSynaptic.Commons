@@ -85,6 +85,7 @@
     <Compile Include="Collections\Generic\LazySelectionDictionaryTests.cs" />
     <Compile Include="Collections\Generic\MultiMapTests.cs" />
     <Compile Include="Collections\Generic\SmartLoopTests.cs" />
+    <Compile Include="Collections\Generic\SymbolDictionaryTests.cs" />
     <Compile Include="Collections\Generic\WeakDictionaryTestsBase.cs" />
     <Compile Include="Collections\Generic\WeakKeyMemberDictionaryTests.cs" />
     <Compile Include="Data\CommonExodata.cs" />
@@ -98,6 +99,7 @@
     <Compile Include="Data\BaseTestSubjectExodataSurrogate.cs" />
     <Compile Include="Collections\Generic\ProjectionCollectionTests.cs" />
     <Compile Include="ExceptionExtensionsTests.cs" />
+    <Compile Include="KeyedReaderWriterTests.cs" />
     <Compile Include="Linq\Expressions\ExpressionExtensionsTests.cs" />
     <Compile Include="FuncExtensionsTests.generated.cs">
       <AutoGen>True</AutoGen>
