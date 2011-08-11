@@ -99,6 +99,7 @@
     <Compile Include="Data\BaseTestSubjectExodataSurrogate.cs" />
     <Compile Include="Collections\Generic\ProjectionCollectionTests.cs" />
     <Compile Include="ExceptionExtensionsTests.cs" />
+    <Compile Include="IndexerTests.cs" />
     <Compile Include="KeyedReaderWriterTests.cs" />
     <Compile Include="Linq\Expressions\ExpressionExtensionsTests.cs" />
     <Compile Include="FuncExtensionsTests.generated.cs">

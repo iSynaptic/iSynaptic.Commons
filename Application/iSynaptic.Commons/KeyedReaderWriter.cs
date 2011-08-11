@@ -29,23 +29,23 @@ namespace iSynaptic.Commons
 {
     public class KeyedReaderWriter<TKey, TValue> : IKeyedReaderWriter<TKey, TValue>
     {
-        private readonly Func<TKey, Maybe<TValue>> _Getter = null;
-        private readonly Func<TKey, Maybe<TValue>, bool> _Setter = null;
+        private readonly Func<TKey, TValue> _Getter = null;
+        private readonly Func<TKey, TValue, bool> _Setter = null;
 
-        public KeyedReaderWriter(Func<TKey, Maybe<TValue>> getter, Func<TKey, Maybe<TValue>, bool> setter)
+        public KeyedReaderWriter(Func<TKey, TValue> getter, Func<TKey, TValue, bool> setter)
         {
-            _Getter = Guard.NotNull(getter, "getter");
-            _Setter = Guard.NotNull(setter, "setter");
+            _Getter = getter;
+            _Setter = setter;
         }
 
-        public Maybe<TValue> TryGet(TKey key)
+        public TValue Get(TKey key)
         {
-            return _Getter(key);
+            return _Getter != null ? _Getter(key) : default(TValue);
         }
 
-        public bool TrySet(TKey key, Maybe<TValue> value)
+        public bool Set(TKey key, TValue value)
         {
-            return _Setter(key, value);
+            return _Setter != null && _Setter(key, value);
         }
     }
 }

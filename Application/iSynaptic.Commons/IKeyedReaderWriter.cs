@@ -29,7 +29,7 @@ namespace iSynaptic.Commons
 {
     public interface IKeyedReaderWriter<in TKey, TValue>
     {
-        Maybe<TValue> TryGet(TKey key);
-        bool TrySet(TKey key, Maybe<TValue> value);
+        TValue Get(TKey key);
+        bool Set(TKey key, TValue value);
     }
 }

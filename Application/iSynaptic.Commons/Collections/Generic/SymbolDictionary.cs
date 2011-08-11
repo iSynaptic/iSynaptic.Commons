@@ -29,7 +29,7 @@ namespace iSynaptic.Commons.Collections.Generic
 {
     public class SymbolDictionary
     {
-        private readonly IKeyedReaderWriter<ISymbol, object> _KeyedReaderWriter = null;
+        private readonly IKeyedReaderWriter<ISymbol, Maybe<object>> _KeyedReaderWriter = null;
 
         public SymbolDictionary()
             : this(new Dictionary<ISymbol, object>())
@@ -42,19 +42,19 @@ namespace iSynaptic.Commons.Collections.Generic
         {
         }
         
-        public SymbolDictionary(IKeyedReaderWriter<ISymbol, object> keyedReaderWriter)
+        public SymbolDictionary(IKeyedReaderWriter<ISymbol, Maybe<object>> keyedReaderWriter)
         {
             _KeyedReaderWriter = Guard.NotNull(keyedReaderWriter, "keyedReaderWriter");
         }
 
-        private static IKeyedReaderWriter<ISymbol, object> GetDictionaryBackedKeyedReaderWriter(IDictionary<ISymbol, object> dictionary)
+        private static IKeyedReaderWriter<ISymbol, Maybe<object>> GetDictionaryBackedKeyedReaderWriter(IDictionary<ISymbol, object> dictionary)
         {
             Guard.NotNull(dictionary, "dictionary");
             
             if(dictionary.IsReadOnly)
                 throw new ArgumentException("Dictionary provided must not be read-only.", "dictionary");
 
-            return new KeyedReaderWriter<ISymbol, object>(s => dictionary.TryGetValue(s), (s, v) =>
+            return new KeyedReaderWriter<ISymbol, Maybe<object>>(s => dictionary.TryGetValue(s), (s, v) =>
             {
                 if (v.HasValue != true)
                     return dictionary.Remove(s);
@@ -68,7 +68,7 @@ namespace iSynaptic.Commons.Collections.Generic
         {
             Guard.NotNull(symbol, "symbol");
 
-            return _KeyedReaderWriter.TryGet(symbol)
+            return _KeyedReaderWriter.Get(symbol)
                 .Cast<T>();
         }
 
@@ -91,7 +91,7 @@ namespace iSynaptic.Commons.Collections.Generic
         public bool Set<T>(ISymbol symbol, Maybe<T> value)
         {
             Guard.NotNull(symbol, "symbol");
-            return _KeyedReaderWriter.TrySet(symbol, value.Cast<object>());
+            return _KeyedReaderWriter.Set(symbol, value.Cast<object>());
         }
 
         public bool Set<T>(ISymbol<T> symbol, Maybe<T> value)

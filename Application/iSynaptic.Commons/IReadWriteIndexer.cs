@@ -20,10 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Collections.Generic;
+
 namespace iSynaptic.Commons
 {
-    public interface IReadableQualifier<in TQualifier, out TItem>
+    public interface IReadWriteIndexer<TIndex, TValue> : IEnumerable<TIndex>
     {
-        TItem this[TQualifier qualifier] { get; }
+        TValue this[TIndex index] { get; set; }
     }
 }

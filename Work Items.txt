@@ -25,7 +25,4 @@
 	* Collapse CompositeDisposable into DisposableContext
 - Change LookAheadValue from class to struct
 - Enhance GetDelegate extension method to work with generic methods
-- Create simple SymbolDictionary that uses ISymbol/ISymbol<T>
-- Update ReadWriteQualifier to use KeyedReaderWriter...
-- Change IKnownQualifier, IReadableQualifier, IReadWriteQualifier, ReadableQualifer and ReadWriteQualifier to have "Indexer" suffix instead of "Qualifier"...
 - Scan types for Command-Query Separation opportunities

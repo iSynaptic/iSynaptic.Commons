@@ -35,28 +35,28 @@ namespace iSynaptic.Commons
         public void Getter_IsCalled()
         {
             bool executed = false;
-            var krw = new KeyedReaderWriter<object, object>(k => { executed = true; return Maybe<object>.NoValue; }, (k, v) => false);
+            var krw = new KeyedReaderWriter<object, object>(k => { executed = true; return null; }, (k, v) => false);
 
-            krw.TryGet(null);
+            krw.Get(null);
             Assert.IsTrue(executed);
         }
 
         [Test]
         public void Getter_ResultIsReturned()
         {
-            var krw = new KeyedReaderWriter<object, object>(k => 42.ToMaybe<object>(), (k, v) => false);
-            var result = krw.TryGet(null);
+            var krw = new KeyedReaderWriter<object, object>(k => 42, (k, v) => false);
+            var result = krw.Get(null);
 
-            Assert.IsTrue(42.ToMaybe<object>() == result);
+            Assert.IsTrue(42 == (int)result);
         }
 
         [Test]
         public void Setter_IsCalled()
         {
             bool executed = false;
-            var krw = new KeyedReaderWriter<object, object>(k => Maybe<object>.NoValue, (k, v) => { executed = true; return false; });
+            var krw = new KeyedReaderWriter<object, object>(k => null, (k, v) => { executed = true; return false; });
 
-            krw.TrySet(null, Maybe<object>.NoValue);
+            krw.Set(null, null);
             Assert.IsTrue(executed);
         }
 
@@ -65,8 +65,8 @@ namespace iSynaptic.Commons
         {
             object result = null;
 
-            var krw = new KeyedReaderWriter<object, object>(k => Maybe<object>.NoValue, (k, v) => { result = k; return true; });
-            krw.TrySet(42, Maybe<object>.NoValue);
+            var krw = new KeyedReaderWriter<object, object>(k => null, (k, v) => { result = k; return true; });
+            krw.Set(42, null);
 
             Assert.IsTrue(42 == (int)result);
         }
@@ -74,12 +74,12 @@ namespace iSynaptic.Commons
         [Test]
         public void Setter_ValueIsUsed()
         {
-            var result = Maybe<object>.NoValue;
+            object result = null;
 
-            var krw = new KeyedReaderWriter<object, object>(k => Maybe<object>.NoValue, (k, v) => { result = v; return true; });
-            krw.TrySet(null, 42.ToMaybe<object>());
+            var krw = new KeyedReaderWriter<object, object>(k => null, (k, v) => { result = v; return true; });
+            krw.Set(null, 42);
 
-            Assert.IsTrue(42.ToMaybe<object>() == result);
+            Assert.IsTrue(42 == (int)result);
         }
 
         [Test]
@@ -87,11 +87,11 @@ namespace iSynaptic.Commons
         {
             bool returnValue = false;
 
-            var krw = new KeyedReaderWriter<object, object>(k => Maybe<object>.NoValue, (k, v) => returnValue);
-            Assert.IsFalse(krw.TrySet(null, Maybe<object>.NoValue));
+            var krw = new KeyedReaderWriter<object, object>(k => null, (k, v) => returnValue);
+            Assert.IsFalse(krw.Set(null, null));
 
             returnValue = true;
-            Assert.IsTrue(krw.TrySet(null, Maybe<object>.NoValue));
+            Assert.IsTrue(krw.Set(null, null));
         }
     }
 }
