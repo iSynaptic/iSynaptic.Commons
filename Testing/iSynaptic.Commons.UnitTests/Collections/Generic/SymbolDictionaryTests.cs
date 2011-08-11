@@ -32,6 +32,13 @@ namespace iSynaptic.Commons.Collections.Generic
     public class SymbolDictionaryTests
     {
         [Test]
+        public void ReadOnlyDictionaries_NotAllowed()
+        {
+            Assert.Throws<ArgumentException>(
+                () => new SymbolDictionary(new Dictionary<ISymbol, object>().ToReadOnlyDictionary()));
+        }
+
+        [Test]
         public void GetSet_RoundTrip_WithTypedSymbol()
         {
             var symbol = new Symbol<int>();
@@ -51,6 +58,18 @@ namespace iSynaptic.Commons.Collections.Generic
             dictionary.Set(symbol, 42);
 
             Assert.AreEqual(42, dictionary.Get<int>(symbol));
+        }
+
+        [Test]
+        public void Set_WithNoValue_RemovesFromDictionary()
+        {
+            var symbol = new Symbol<int>();
+            var innerDictionary = new Dictionary<ISymbol, object> { {symbol, 42}};
+            var dictionary = new SymbolDictionary(innerDictionary);
+
+            dictionary.Set(symbol, Maybe<int>.NoValue);
+
+            Assert.AreEqual(0, innerDictionary.Count);
         }
 
         [Test]
