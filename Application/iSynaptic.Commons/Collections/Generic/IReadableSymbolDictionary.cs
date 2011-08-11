@@ -22,11 +22,8 @@
 
 namespace iSynaptic.Commons.Collections.Generic
 {
-    public interface IReadOnlySymbolDictionary
+    public interface IReadableSymbolDictionary
     {
         Maybe<T> TryGet<T>(ISymbol symbol);
-        Maybe<T> TryGet<T>(ISymbol<T> symbol);
-        T Get<T>(ISymbol symbol);
-        T Get<T>(ISymbol<T> symbol);
     }
 }

@@ -22,15 +22,8 @@
 
 namespace iSynaptic.Commons.Collections.Generic
 {
-    public interface ISymbolDictionary
+    public interface ISymbolDictionary : IReadableSymbolDictionary
     {
-        Maybe<T> TryGet<T>(ISymbol symbol);
-        Maybe<T> TryGet<T>(ISymbol<T> symbol);
-        T Get<T>(ISymbol symbol);
-        T Get<T>(ISymbol<T> symbol);
         bool Set<T>(ISymbol symbol, Maybe<T> value);
-        bool Set<T>(ISymbol<T> symbol, Maybe<T> value);
-        bool Set<T>(ISymbol symbol, T value);
-        bool Set<T>(ISymbol<T> symbol, T value);
     }
 }

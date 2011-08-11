@@ -27,7 +27,7 @@ using System.Text;
 
 namespace iSynaptic.Commons.Collections.Generic
 {
-    public class SymbolDictionary : IReadOnlySymbolDictionary, ISymbolDictionary
+    public class SymbolDictionary : IReadableSymbolDictionary, ISymbolDictionary
     {
         private readonly IKeyedReaderWriter<ISymbol, Maybe<object>> _KeyedReaderWriter = null;
 
@@ -71,42 +71,11 @@ namespace iSynaptic.Commons.Collections.Generic
             return _KeyedReaderWriter.Get(symbol)
                 .Cast<T>();
         }
-
-        public Maybe<T> TryGet<T>(ISymbol<T> symbol)
-        {
-            return TryGet<T>((ISymbol) symbol);
-        }
-
-        public T Get<T>(ISymbol symbol)
-        {
-            return TryGet<T>(symbol)
-                .Value;
-        }
-
-        public T Get<T>(ISymbol<T> symbol)
-        {
-            return Get<T>((ISymbol) symbol);
-        }
-
+        
         public bool Set<T>(ISymbol symbol, Maybe<T> value)
         {
             Guard.NotNull(symbol, "symbol");
             return _KeyedReaderWriter.Set(symbol, value.Cast<object>());
-        }
-
-        public bool Set<T>(ISymbol<T> symbol, Maybe<T> value)
-        {
-            return Set((ISymbol) symbol, value);
-        }
-
-        public bool Set<T>(ISymbol symbol, T value)
-        {
-            return Set(symbol, new Maybe<T>(value));
-        }
-
-        public bool Set<T>(ISymbol<T> symbol, T value)
-        {
-            return Set((ISymbol)symbol, value);
         }
     }
 }

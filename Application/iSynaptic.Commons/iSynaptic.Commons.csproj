@@ -78,7 +78,7 @@
     <Compile Include="Collections\Generic\BaseReadOnlyDictionary.cs" />
     <Compile Include="Collections\Generic\BaseWeakDictionary.cs" />
     <Compile Include="Collections\Generic\Batch.cs" />
-    <Compile Include="Collections\Generic\IReadOnlySymbolDictionary.cs" />
+    <Compile Include="Collections\Generic\IReadableSymbolDictionary.cs" />
     <Compile Include="Collections\Generic\ISymbolDictionary.cs" />
     <Compile Include="Collections\Generic\IWeakDictionary.cs" />
     <Compile Include="Collections\Generic\KeyValuePair.cs" />
@@ -89,6 +89,7 @@
     <Compile Include="Collections\Generic\ReadOnlyDictionary.cs" />
     <Compile Include="Collections\Generic\SmartLoop.cs" />
     <Compile Include="Collections\Generic\SymbolDictionary.cs" />
+    <Compile Include="Collections\Generic\SymbolDictionaryExtensions.cs" />
     <Compile Include="Collections\Generic\WeakDictionary.cs" />
     <Compile Include="Collections\Generic\WeakKeyDictionary.cs" />
     <Compile Include="Collections\Generic\WeakKeyMemberDictionary.cs" />
@@ -142,7 +143,7 @@
     <Compile Include="IDependencyResolver.cs" />
     <Compile Include="IIdentifiable.cs" />
     <Compile Include="Ioc.cs" />
-    <Compile Include="IReadOnlyIndexer.cs" />
+    <Compile Include="IReadableIndexer.cs" />
     <Compile Include="IReadWriteIndexer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Runtime\Serialization\Cloneable.cs" />
