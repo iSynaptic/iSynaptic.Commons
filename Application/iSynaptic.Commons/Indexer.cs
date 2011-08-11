@@ -29,7 +29,7 @@ namespace iSynaptic.Commons
 {
     public static class Indexer
     {
-        private class KeyedIndexer<TIndex, TValue> : IReadableIndexer<TIndex, TValue>, IReadWriteIndexer<TIndex, TValue>
+        private class KeyedIndexer<TIndex, TValue> : IReadOnlyIndexer<TIndex, TValue>, IReadWriteIndexer<TIndex, TValue>
         {
             private readonly IKeyedReaderWriter<TIndex, TValue> _KeyedReaderWriter;
             private readonly Func<IEnumerable<TIndex>> _KnownIndexes;
@@ -40,7 +40,7 @@ namespace iSynaptic.Commons
                 _KnownIndexes = knownIndexes;
             }
 
-            TValue IReadableIndexer<TIndex, TValue>.this[TIndex index]
+            TValue IReadOnlyIndexer<TIndex, TValue>.this[TIndex index]
             {
                 get { return _KeyedReaderWriter.Get(index); }
             }
@@ -63,7 +63,7 @@ namespace iSynaptic.Commons
             }
         }
 
-        public static IReadableIndexer<TIndex, TValue> ReadOnly<TIndex, TValue>(Func<TIndex, TValue> getter, Func<IEnumerable<TIndex>> knownIndexes = null)
+        public static IReadOnlyIndexer<TIndex, TValue> ReadOnly<TIndex, TValue>(Func<TIndex, TValue> getter, Func<IEnumerable<TIndex>> knownIndexes = null)
         {
             Guard.NotNull(getter, "getter");
             return new KeyedIndexer<TIndex, TValue>(new KeyedReaderWriter<TIndex, TValue>(getter, null), knownIndexes);

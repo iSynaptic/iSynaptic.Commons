@@ -27,7 +27,7 @@ using System.Text;
 
 namespace iSynaptic.Commons.Collections.Generic
 {
-    public class SymbolDictionary
+    public class SymbolDictionary : IReadOnlySymbolDictionary, ISymbolDictionary
     {
         private readonly IKeyedReaderWriter<ISymbol, Maybe<object>> _KeyedReaderWriter = null;
 

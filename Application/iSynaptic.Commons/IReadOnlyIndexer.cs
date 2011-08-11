@@ -24,7 +24,7 @@ using System.Collections.Generic;
 
 namespace iSynaptic.Commons
 {
-    public interface IReadableIndexer<TIndex, out TValue> : IEnumerable<TIndex>
+    public interface IReadOnlyIndexer<TIndex, out TValue> : IEnumerable<TIndex>
     {
         TValue this[TIndex index] { get; }
     }
