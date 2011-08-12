@@ -37,7 +37,7 @@ namespace iSynaptic.Commons.Data
         }
     }
 
-    public class ExodataRequest<TExodata, TContext, TSubject> : IExodataRequest<TExodata, TContext, TSubject>, IEquatable<IExodataRequest<TExodata, TContext, TSubject>>
+    public class ExodataRequest<TExodata, TContext, TSubject> : IExodataRequest<TExodata, TContext, TSubject>
     {
         private class RequestAdapter<TSourceExodata, TSourceContext, TSourceSubject>
             : IExodataRequest<TExodata, TContext, TSubject>
@@ -95,36 +95,6 @@ namespace iSynaptic.Commons.Data
             }
 
             return Maybe<IExodataRequest<TExodata, TContext, TSubject>>.NoValue;
-        }
-
-        public bool Equals(IExodataRequest<TExodata, TContext, TSubject> other)
-        {
-            return Maybe
-                .NotNull(other)
-                .Unless(x => Symbol != x.Symbol)
-                .Unless(x => ReferenceEquals(Subject, null) != ReferenceEquals(x.Subject, null))
-                .Unless(x => !ReferenceEquals(Subject, null) && !Subject.Equals(x.Subject))
-                .Unless(x => Member != x.Member)
-                .Select(x => true)
-                .ValueOrDefault(false);
-        }
-
-        public override bool Equals(object obj)
-        {
-            return !ReferenceEquals(obj, null) &&
-                Equals(obj as ExodataRequest<TExodata, TContext, TSubject>);
-        }
-
-        public override int GetHashCode()
-        {
-            int results = 42;
-
-            results = results ^ Symbol.GetHashCode();
-            results = results ^ (Context != null ? Context.GetHashCode() : 0);
-            results = results ^ (Subject != null ? Subject.GetHashCode() : 0);
-            results = results ^ (Member != null ? Member.GetHashCode() : 0);
-
-            return results;
         }
 
         public ISymbol Symbol { get; private set; }
