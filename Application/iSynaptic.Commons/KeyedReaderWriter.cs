@@ -31,21 +31,32 @@ namespace iSynaptic.Commons
     {
         private readonly Func<TKey, TValue> _Getter = null;
         private readonly Func<TKey, TValue, bool> _Setter = null;
+        private readonly Func<IEnumerable<TKey>> _Keys = null;
 
-        public KeyedReaderWriter(Func<TKey, TValue> getter, Func<TKey, TValue, bool> setter)
+        public KeyedReaderWriter(Func<TKey, TValue> getter, Func<TKey, TValue, bool> setter, Func<IEnumerable<TKey>> keys)
         {
             _Getter = getter;
             _Setter = setter;
+            _Keys = keys;
         }
 
         public TValue Get(TKey key)
         {
-            return _Getter != null ? _Getter(key) : default(TValue);
+            return _Getter != null 
+                ? _Getter(key) 
+                : default(TValue);
         }
 
         public bool Set(TKey key, TValue value)
         {
             return _Setter != null && _Setter(key, value);
+        }
+
+        public IEnumerable<TKey> GetKeys()
+        {
+            return _Keys != null
+                ? _Keys() 
+                : Enumerable.Empty<TKey>();
         }
     }
 }

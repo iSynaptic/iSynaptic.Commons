@@ -27,9 +27,11 @@ using System.Text;
 
 namespace iSynaptic.Commons
 {
-    public interface IKeyedReaderWriter<in TKey, TValue>
+    public interface IKeyedReaderWriter<TKey, TValue>
     {
         TValue Get(TKey key);
         bool Set(TKey key, TValue value);
+
+        IEnumerable<TKey> GetKeys();
     }
 }

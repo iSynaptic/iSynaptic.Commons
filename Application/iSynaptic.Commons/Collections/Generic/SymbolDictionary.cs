@@ -21,13 +21,14 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace iSynaptic.Commons.Collections.Generic
 {
-    public class SymbolDictionary : IReadableSymbolDictionary, ISymbolDictionary
+    public class SymbolDictionary : ISymbolDictionary
     {
         private readonly IKeyedReaderWriter<ISymbol, Maybe<object>> _KeyedReaderWriter = null;
 
@@ -61,7 +62,7 @@ namespace iSynaptic.Commons.Collections.Generic
 
                 dictionary.Add(s, v.Value);
                 return true;
-            });
+            }, () => dictionary.Keys);
         }
 
         public Maybe<T> TryGet<T>(ISymbol symbol)
@@ -72,10 +73,21 @@ namespace iSynaptic.Commons.Collections.Generic
                 .Cast<T>();
         }
         
-        public bool Set<T>(ISymbol symbol, Maybe<T> value)
+        public void Set<T>(ISymbol symbol, Maybe<T> value)
         {
             Guard.NotNull(symbol, "symbol");
-            return _KeyedReaderWriter.Set(symbol, value.Cast<object>());
+            _KeyedReaderWriter.Set(symbol, value.Cast<object>());
+        }
+
+        public IEnumerator<ISymbol> GetEnumerator()
+        {
+            return _KeyedReaderWriter.GetKeys()
+                .GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

@@ -32,12 +32,10 @@ namespace iSynaptic.Commons
         private class KeyedIndexer<TIndex, TValue> : IReadableIndexer<TIndex, TValue>, IReadWriteIndexer<TIndex, TValue>
         {
             private readonly IKeyedReaderWriter<TIndex, TValue> _KeyedReaderWriter;
-            private readonly Func<IEnumerable<TIndex>> _KnownIndexes;
 
-            public KeyedIndexer(IKeyedReaderWriter<TIndex, TValue> keyedReaderWriter, Func<IEnumerable<TIndex>> knownIndexes)
+            public KeyedIndexer(IKeyedReaderWriter<TIndex, TValue> keyedReaderWriter)
             {
                 _KeyedReaderWriter = keyedReaderWriter;
-                _KnownIndexes = knownIndexes;
             }
 
             TValue IReadableIndexer<TIndex, TValue>.this[TIndex index]
@@ -53,7 +51,7 @@ namespace iSynaptic.Commons
 
             public IEnumerator<TIndex> GetEnumerator()
             {
-                return (_KnownIndexes != null ? _KnownIndexes() : Enumerable.Empty<TIndex>())
+                return _KeyedReaderWriter.GetKeys()
                     .GetEnumerator();
             }
 
@@ -66,7 +64,7 @@ namespace iSynaptic.Commons
         public static IReadableIndexer<TIndex, TValue> ReadOnly<TIndex, TValue>(Func<TIndex, TValue> getter, Func<IEnumerable<TIndex>> knownIndexes = null)
         {
             Guard.NotNull(getter, "getter");
-            return new KeyedIndexer<TIndex, TValue>(new KeyedReaderWriter<TIndex, TValue>(getter, null), knownIndexes);
+            return new KeyedIndexer<TIndex, TValue>(new KeyedReaderWriter<TIndex, TValue>(getter, null, knownIndexes));
         }
 
         public static IReadWriteIndexer<TIndex, TValue> ReadWrite<TIndex, TValue>(Func<TIndex, TValue> getter, Action<TIndex, TValue> setter, Func<IEnumerable<TIndex>> knownIndexes = null)
@@ -74,12 +72,12 @@ namespace iSynaptic.Commons
             Guard.NotNull(getter, "getter");
             Guard.NotNull(setter, "setter");
 
-            return new KeyedIndexer<TIndex, TValue>(new KeyedReaderWriter<TIndex, TValue>(getter, (i, v) => { setter(i, v); return true; }), knownIndexes);
+            return new KeyedIndexer<TIndex, TValue>(new KeyedReaderWriter<TIndex, TValue>(getter, (i, v) => { setter(i, v); return true; }, knownIndexes));
         }
 
-        public static IReadWriteIndexer<TIndex, TValue> FromKeyedReaderWriter<TIndex, TValue>(IKeyedReaderWriter<TIndex, TValue> keyedReaderWriter, Func<IEnumerable<TIndex>> knownIndexes = null)
+        public static IReadWriteIndexer<TIndex, TValue> FromKeyedReaderWriter<TIndex, TValue>(IKeyedReaderWriter<TIndex, TValue> keyedReaderWriter)
         {
-            return new KeyedIndexer<TIndex, TValue>(Guard.NotNull(keyedReaderWriter, "keyedReaderWriter"), knownIndexes);
+            return new KeyedIndexer<TIndex, TValue>(Guard.NotNull(keyedReaderWriter, "keyedReaderWriter"));
         }
     }
 }

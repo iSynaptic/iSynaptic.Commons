@@ -35,7 +35,7 @@ namespace iSynaptic.Commons
         public void Getter_IsCalled()
         {
             bool executed = false;
-            var krw = new KeyedReaderWriter<object, object>(k => { executed = true; return null; }, (k, v) => false);
+            var krw = new KeyedReaderWriter<object, object>(k => { executed = true; return null; }, (k, v) => false, null);
 
             krw.Get(null);
             Assert.IsTrue(executed);
@@ -44,7 +44,7 @@ namespace iSynaptic.Commons
         [Test]
         public void Getter_ResultIsReturned()
         {
-            var krw = new KeyedReaderWriter<object, object>(k => 42, (k, v) => false);
+            var krw = new KeyedReaderWriter<object, object>(k => 42, (k, v) => false, null);
             var result = krw.Get(null);
 
             Assert.IsTrue(42 == (int)result);
@@ -54,7 +54,7 @@ namespace iSynaptic.Commons
         public void Setter_IsCalled()
         {
             bool executed = false;
-            var krw = new KeyedReaderWriter<object, object>(k => null, (k, v) => { executed = true; return false; });
+            var krw = new KeyedReaderWriter<object, object>(k => null, (k, v) => { executed = true; return false; }, null);
 
             krw.Set(null, null);
             Assert.IsTrue(executed);
@@ -65,7 +65,7 @@ namespace iSynaptic.Commons
         {
             object result = null;
 
-            var krw = new KeyedReaderWriter<object, object>(k => null, (k, v) => { result = k; return true; });
+            var krw = new KeyedReaderWriter<object, object>(k => null, (k, v) => { result = k; return true; }, null);
             krw.Set(42, null);
 
             Assert.IsTrue(42 == (int)result);
@@ -76,7 +76,7 @@ namespace iSynaptic.Commons
         {
             object result = null;
 
-            var krw = new KeyedReaderWriter<object, object>(k => null, (k, v) => { result = v; return true; });
+            var krw = new KeyedReaderWriter<object, object>(k => null, (k, v) => { result = v; return true; }, null);
             krw.Set(null, 42);
 
             Assert.IsTrue(42 == (int)result);
@@ -87,7 +87,7 @@ namespace iSynaptic.Commons
         {
             bool returnValue = false;
 
-            var krw = new KeyedReaderWriter<object, object>(k => null, (k, v) => returnValue);
+            var krw = new KeyedReaderWriter<object, object>(k => null, (k, v) => returnValue, null);
             Assert.IsFalse(krw.Set(null, null));
 
             returnValue = true;

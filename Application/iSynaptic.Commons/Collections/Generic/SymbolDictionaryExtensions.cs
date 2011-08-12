@@ -47,22 +47,22 @@ namespace iSynaptic.Commons.Collections.Generic
             return dictionary.Get<T>((ISymbol)symbol);
         }
 
-        public static bool Set<T>(this ISymbolDictionary dictionary, ISymbol<T> symbol, Maybe<T> value)
+        public static void Set<T>(this ISymbolDictionary dictionary, ISymbol<T> symbol, Maybe<T> value)
         {
             Guard.NotNull(dictionary, "dictionary");
-            return dictionary.Set((ISymbol)symbol, value);
+            dictionary.Set((ISymbol)symbol, value);
         }
 
-        public static bool Set<T>(this ISymbolDictionary dictionary, ISymbol symbol, T value)
+        public static void Set<T>(this ISymbolDictionary dictionary, ISymbol symbol, T value)
         {
             Guard.NotNull(dictionary, "dictionary");
-            return dictionary.Set(symbol, new Maybe<T>(value));
+            dictionary.Set(symbol, new Maybe<T>(value));
         }
 
-        public static bool Set<T>(this ISymbolDictionary dictionary, ISymbol<T> symbol, T value)
+        public static void Set<T>(this ISymbolDictionary dictionary, ISymbol<T> symbol, T value)
         {
             Guard.NotNull(dictionary, "dictionary");
-            return dictionary.Set(symbol, new Maybe<T>(value));
+            dictionary.Set(symbol, new Maybe<T>(value));
         }
     }
 }

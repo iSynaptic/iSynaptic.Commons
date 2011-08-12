@@ -20,9 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Collections.Generic;
+
 namespace iSynaptic.Commons.Collections.Generic
 {
-    public interface IReadableSymbolDictionary
+    public interface IReadableSymbolDictionary : IEnumerable<ISymbol>
     {
         Maybe<T> TryGet<T>(ISymbol symbol);
     }

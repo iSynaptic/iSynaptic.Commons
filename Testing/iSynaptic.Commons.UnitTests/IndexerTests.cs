@@ -84,7 +84,7 @@ namespace iSynaptic.Commons
         public void FromKeyedReaderWriter_UsesReaderWriter()
         {
             int result = 0;
-            var krw = new KeyedReaderWriter<int, int>(x => x * 2, (i, v) => { result = i * v; return true; });
+            var krw = new KeyedReaderWriter<int, int>(x => x * 2, (i, v) => { result = i * v; return true; }, null);
 
             var indexer = Indexer.FromKeyedReaderWriter(krw);
 
@@ -102,8 +102,8 @@ namespace iSynaptic.Commons
         [Test]
         public void FromKeyedReaderWriter_UsesKnownIndexes()
         {
-            var krw = new KeyedReaderWriter<int, int>(x => x, (i, v) => true);
-            var indexer = Indexer.FromKeyedReaderWriter(krw, () => new[]{1,2,3,4,5});
+            var krw = new KeyedReaderWriter<int, int>(x => x, (i, v) => true, () => new[]{1,2,3,4,5});
+            var indexer = Indexer.FromKeyedReaderWriter(krw);
 
             Assert.IsTrue(indexer.SequenceEqual(new[] { 1, 2, 3, 4, 5 }));
         }
