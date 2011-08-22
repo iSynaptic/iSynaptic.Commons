@@ -1181,9 +1181,23 @@ namespace iSynaptic.Commons
 
         // Conventionally, in LINQ, the monadic "return" operator is written "To...,"
         // as in "ToList," "ToArray," etc. These are synonyms for Return.
-        public static Maybe<T> ToMaybe<T>(this T value)
+        public static Maybe<T> ToMaybe<T>(this T @this)
         {
-            return new Maybe<T>(value);
+            return new Maybe<T>(@this);
+        }
+
+        public static Maybe<T> ToMaybe<T>(this object @this)
+        {
+            if (@this == null)
+            {
+                return typeof(T).IsValueType 
+                    ? Maybe<T>.NoValue 
+                    : new Maybe<T>(default(T));
+            }
+
+            return @this is T
+                ? new Maybe<T>((T) @this)
+                : Maybe<T>.NoValue;
         }
 
         public static Maybe<T> AsMaybe<T>(this IMaybe<T> value)

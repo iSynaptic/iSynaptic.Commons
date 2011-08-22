@@ -1209,6 +1209,42 @@ namespace iSynaptic.Commons
         }
 
         [Test]
+        public void ToMaybe_WhenValueIsOfTypeT_CastsCorrectly()
+        {
+            Base value = new Derived();
+
+            var result = value.ToMaybe<Derived>();
+            Assert.IsTrue(result.HasValue);
+            Assert.AreEqual(value, result.Value);
+        }
+
+        [Test]
+        public void ToMaybe_WhenValueIsNotOfTypeT_ReturnsNoValue()
+        {
+            var result = 42.ToMaybe<string>();
+            Assert.IsFalse(result.HasValue);
+        }
+
+        [Test]
+        public void ToMaybe_WhenValueIsNullAndTIsValueType_ReturnsNoValue()
+        {
+            object value = null;
+            var result = value.ToMaybe<int>();
+
+            Assert.IsFalse(result.HasValue);
+        }
+
+        [Test]
+        public void ToMaybe_WhenValueIsNullAndTIsReferenceType_ReturnsMaybeWrappedNull()
+        {
+            object value = null;
+            var result = value.ToMaybe<string>();
+
+            Assert.IsTrue(result.HasValue);
+            Assert.IsNull(result.Value);
+        }
+
+        [Test]
         public void Using_DisposesResource()
         {
             bool disposed = false;
@@ -1508,6 +1544,9 @@ namespace iSynaptic.Commons
             Assert.IsNull(result.Exception);
             Assert.AreEqual(42, result.Value);
         }
+
+        public class Base{}
+        public class Derived : Base{}
     }
 
     internal static class AssertMaybe
