@@ -1188,16 +1188,13 @@ namespace iSynaptic.Commons
 
         public static Maybe<T> ToMaybe<T>(this object @this)
         {
-            if (@this == null)
-            {
-                return typeof(T).IsValueType 
-                    ? Maybe<T>.NoValue 
-                    : new Maybe<T>(default(T));
-            }
+            if(@this is T)
+                return new Maybe<T>((T)@this);
 
-            return @this is T
-                ? new Maybe<T>((T) @this)
-                : Maybe<T>.NoValue;
+            if (@this == null && typeof(T).IsValueType != true)
+                return new Maybe<T>(default(T));
+
+            return Maybe<T>.NoValue;
         }
 
         public static Maybe<T> AsMaybe<T>(this IMaybe<T> value)
