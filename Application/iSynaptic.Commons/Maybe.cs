@@ -23,12 +23,8 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-
-using iSynaptic.Commons.Collections.Generic;
-using iSynaptic.Commons.Linq;
 
 namespace iSynaptic.Commons
 {
@@ -117,6 +113,7 @@ namespace iSynaptic.Commons
                 return _Computation().HasValue;
             }
         }
+
         public Exception Exception
         {
             get

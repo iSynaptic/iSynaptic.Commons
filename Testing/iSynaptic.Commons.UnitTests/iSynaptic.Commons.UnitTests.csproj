@@ -125,6 +125,7 @@
     <Compile Include="Collections\Generic\CollectionExtensionsTests.cs" />
     <Compile Include="Collections\Generic\DictionaryExtensionsTests.cs" />
     <Compile Include="MaybeTests.cs" />
+    <Compile Include="OutcomeTests.cs" />
     <Compile Include="Reflection\Emit\DynamicMethodExtensionsTests.cs" />
     <Compile Include="Linq\EnumerableExtensionsTests.cs" />
     <Compile Include="EnumExtensionsTests.cs" />

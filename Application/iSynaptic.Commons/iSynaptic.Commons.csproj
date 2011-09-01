@@ -128,6 +128,7 @@
     <Compile Include="IFluentInterface.cs" />
     <Compile Include="IMaybe.cs" />
     <Compile Include="Maybe.cs" />
+    <Compile Include="Outcome.cs" />
     <Compile Include="Reflection\Emit\DynamicMethodExtensions.cs" />
     <Compile Include="Linq\EnumerableExtensions.cs" />
     <Compile Include="EnumExtensions.cs" />
