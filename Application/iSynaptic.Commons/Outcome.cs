@@ -102,19 +102,14 @@ namespace iSynaptic.Commons
             }
         }
 
+        public static Outcome<T> operator&(Outcome<T> left, Outcome<T> right)
+        {
+            return new Outcome<T>(left.WasSuccessful & right.WasSuccessful, left.Observations.Concat(right.Observations).ToArray());
+        }
+
         public static implicit operator bool(Outcome<T> outcome)
         {
             return outcome.WasSuccessful;
-        }
-
-        public static bool operator true(Outcome<T> outcome)
-        {
-            return false;
-        }
-
-        public static bool operator false(Outcome<T> outcome)
-        {
-            return false;
         }
     }
 

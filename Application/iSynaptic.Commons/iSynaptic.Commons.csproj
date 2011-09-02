@@ -74,6 +74,7 @@
     <Compile Include="AOP\UnitOfWork.cs" />
     <Compile Include="ArrayIndex.cs" />
     <Compile Include="Cast.cs" />
+    <Compile Include="Check.cs" />
     <Compile Include="Collections\Generic\BaseDictionary.cs" />
     <Compile Include="Collections\Generic\BaseReadOnlyDictionary.cs" />
     <Compile Include="Collections\Generic\BaseWeakDictionary.cs" />
@@ -147,6 +148,7 @@
     <Compile Include="IReadableIndexer.cs" />
     <Compile Include="IReadWriteIndexer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Result.cs" />
     <Compile Include="Runtime\Serialization\Cloneable.cs" />
     <Compile Include="Runtime\Serialization\CloneContext.cs" />
     <Compile Include="Runtime\Serialization\CloneReferenceOnlyAttribute.cs" />
@@ -158,6 +160,7 @@
     <Compile Include="Transactions\TransactionalBase.cs" />
     <Compile Include="Transactions\TransactionalConcurrencyException.cs" />
     <Compile Include="Transactions\TransactionalGateway.cs" />
+    <Compile Include="Unit.cs" />
     <Compile Include="UnsafeCast.cs" />
     <Compile Include="WeakReference.cs" />
     <Compile Include="Xml\DeclarativeXmlParser.cs" />

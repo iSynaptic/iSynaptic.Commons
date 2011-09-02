@@ -2,6 +2,14 @@
 RELEASE NOTES: iSynaptic.Commons
 ======================================
 
+==== v0.3.1 (September 2, 2011) ====
+
+* Added Check class.
+
+* Added & Operator to Outcome<T> monad.
+
+* Stubbed Result<TValue, TObservation> monad and Unit struct
+
 ==== v0.3.0 (September 1, 2011) ====
 
 ---- Features ----
