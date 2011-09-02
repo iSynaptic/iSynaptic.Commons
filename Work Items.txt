@@ -26,3 +26,5 @@
 - Change LookAheadValue from class to struct
 - Enhance GetDelegate extension method to work with generic methods
 - Scan types for Command-Query Separation opportunities
+- Make unit tests run against ILMerged output assembly
+- Investigate alternative "merging" strategy for projects

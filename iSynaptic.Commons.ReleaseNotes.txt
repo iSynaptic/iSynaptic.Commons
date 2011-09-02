@@ -2,14 +2,52 @@
 RELEASE NOTES: iSynaptic.Commons
 ======================================
 
-==== v0.2.2 (July xx, 2011) ====
+==== v0.3.0 (September 1, 2011) ====
 
 ---- Features ----
 
-* Added two Maybe.If overloads that emit the elseValue and use Maybe<T>.NoValue
+* iSynaptic.Commons.Data assembly is now collapsed into iSynaptic.Commons
+  assembly.
+
+* Added initial implementation of the Outcome<T> monad.
+
+* Created KeyedReaderWriter and SymbolDictionary classes.
+
+* All Maybe<T> operators have undergone performance optimizations.
+
+* Added Join and Unwrap Maybe<T> operators.
+
+* Added ToMaybe operator that can also do casting.
+
+* Added Squash operator to squash IEnumerable<Maybe<T>> into a IEnumerabe<T>
+  stream.
+
+* Added new ISymbol and ISymbol<T> interfaces to represent the concept of
+  symbols that other languages have.
+
+* Added Maybe.If overloads that emit the elseValue and use Maybe<T>.NoValue
   if the predicate evaluates to false.
 
+* Added Maybe.ToEnumerable overloads that allow multiple Maybe<T> values to
+  be coerced into an IEnumerable<T>.
+
+* When inheriting from ExodataDeclaration, you can now completely override
+  how the declaration resolves data.
+
+* Exodata now supports the ability to non-deterministically retrieve data
+  (via Maybe<T>).
+
+* ExodataBindings can now carry a name; ambiguous Exodata resolution yields
+  a custom exception that provides a list of the ambiguous ExodataBindings.
+
+* ExodataSurrogate binding sources now allows multiple surrogates for the same
+  subject type and with arbitrary surrogate inheritance hierarchies.
+
+* ExodataRequest is now exposed to help in the creation of Exodata requests.
+
 ---- Breaking Changes ----
+
+* Renamed interfaces and classes suffixed with Qualifier to Indexer
 
 * All Maybe.Extract implementations have been renamed to ValueOrDefault. This 
   more accurately communicates the function's behavior.  This is similar to
@@ -18,13 +56,47 @@ RELEASE NOTES: iSynaptic.Commons
 * A new method, named Extract has been implemented that will throw an exception
   if no value is available.  This is similar to IEnumerable<T>'s First method.
 
+* Maybe<T> no longer has an implicit cast from T to Maybe<T> - this eliminates
+  a number of surprises in connection with type inference.
+
+* Maybe<T> operators Cast, OfType, and AsMaybe now treat null input as NoValue
+
+* Maybe<T> operator Cast no longer throws an exception, it just yields one a
+  Maybe<T> that contains an InvalidCastException.
+
 * Maybe<T>.Express has been moved to the static Maybe class as an extension
   method.  There are no more Maybe<T> operators directly implemented in the
   Maybe<T> structure.
 
+* Moved EnumerableExtensions to iSynaptic.Commons.Linq namespace.
+
 * Renamed EnumerableExtensions.Flatten to Recurse to better reflect what the
   method does.
 
+* Collapsed common ExodataDeclaration types in ExodataDeclarations namespace
+  into root namespace.
+
+* IExodataAttribute now has only one member: TryResolve.
+
+* IExodataBinding now only has one member: TryResolve.
+
+* IExodataRequest now exposes a Maybe<T> for the Context and Subject to enable
+  easy usage of Maybe operators.
+
+* The fluent interface used to define Exodata bindings now allows you to return
+  a Maybe<T> to represent the inability to resolve data.
+
+* Exodata resolution no-longer depends directly on ExodataDeclarations, it now
+  depends on Symbols.
+
+* Dropped direct support for LazyExodata - this behavior can be achieved easily
+  without direct support by Exodata.
+
+* Removed Specification pattern implementation.
+
+* Deleted IDependencyDeclaration - replaced with ISymbol.
+
+* Removed numerous Action<...>, Func<...>, and Predicate<...> extension methods.
 
 
 ==== v0.2.1 (June 29, 2011) ====

@@ -1,0 +1,1 @@
+﻿iSynaptic\.Commons\.Data\.*

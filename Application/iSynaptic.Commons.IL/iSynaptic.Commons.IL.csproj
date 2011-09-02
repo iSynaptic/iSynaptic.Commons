@@ -43,9 +43,6 @@
     <None Include="Manifest.il" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ILMergeInternalizationExcludes.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
