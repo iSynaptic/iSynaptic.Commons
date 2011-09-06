@@ -2,6 +2,13 @@
 RELEASE NOTES: iSynaptic.Commons
 ======================================
 
+==== v0.3.2 (September 6, 2011) ====
+
+---- Features ----
+
+* Fixed duplicate key bug for SymbolDictionary.Set method.
+
+
 ==== v0.3.1 (September 2, 2011) ====
 
 ---- Features ----

@@ -73,6 +73,20 @@ namespace iSynaptic.Commons.Collections.Generic
         }
 
         [Test]
+        public void Set_ValueTwice_ReturnsSecondValue()
+        {
+            var symbol = new Symbol<int>();
+            var innerDictionary = new Dictionary<ISymbol, object> { { symbol, 42 } };
+            var dictionary = new SymbolDictionary(innerDictionary);
+
+            dictionary.Set(symbol, 7);
+            dictionary.Set(symbol, 42);
+
+            Assert.AreEqual(1, innerDictionary.Count);
+            Assert.AreEqual(42, (int)innerDictionary[symbol]);
+        }
+
+        [Test]
         public void TryGet_WithEmptyDictionaryAndTypedSymbol_ReturnsNoValue()
         {
             var symbol = new Symbol<int>();

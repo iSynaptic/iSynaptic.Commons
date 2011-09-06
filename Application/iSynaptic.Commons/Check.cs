@@ -69,6 +69,13 @@ namespace iSynaptic.Commons
                 ? Outcome.Failure(new CheckFailure(CheckType.IsOfType, name, message ?? string.Format("The argument {0} must be an instance of the type {1}.", name, typeof(T).FullName)))
                 : Outcome<CheckFailure>.Success;
         }
+
+        public static Outcome<CheckFailure> That(bool result, string message)
+        {
+            return !result
+                ? Outcome.Failure(new CheckFailure(CheckType.That, null, message))
+                : Outcome<CheckFailure>.Success;
+        }
     }
 
     public class CheckFailure
@@ -92,6 +99,7 @@ namespace iSynaptic.Commons
         NotNullOrEmpty,
         NotNullOrWhiteSpace,
         MustBeDefined,
-        IsOfType
+        IsOfType,
+        That
     }
 }

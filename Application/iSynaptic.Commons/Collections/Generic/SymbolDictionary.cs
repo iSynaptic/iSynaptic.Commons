@@ -60,7 +60,7 @@ namespace iSynaptic.Commons.Collections.Generic
                 if (v.HasValue != true)
                     return dictionary.Remove(s);
 
-                dictionary.Add(s, v.Value);
+                dictionary[s] = v.Value;
                 return true;
             }, () => dictionary.Keys);
         }

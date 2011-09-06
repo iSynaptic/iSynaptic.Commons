@@ -41,5 +41,18 @@ namespace iSynaptic.Commons
             Assert.AreEqual(CheckType.NotNull, observations[0].Type);
             Assert.AreEqual("nullValue", observations[0].Name);
         }
+
+        [Test]
+        public void That_WithTwoFalseValues_ReturnsBothFailures()
+        {
+            var outcome = Check.That(false, "First") &
+                          Check.That(false, "Second");
+
+            Assert.IsFalse(outcome.WasSuccessful);
+
+            var observations = outcome.Observations.ToList();
+            Assert.AreEqual("First", observations[0].Message);
+            Assert.AreEqual("Second", observations[1].Message);
+        }
     }
 }
