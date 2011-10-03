@@ -99,5 +99,11 @@ namespace iSynaptic.Commons
 
             return (T) value;
         }
+
+        public static void Ensure(bool expectation, string name, string message)
+        {
+            if (!expectation)
+                throw new ArgumentException(name, message);
+        }
     }
 }

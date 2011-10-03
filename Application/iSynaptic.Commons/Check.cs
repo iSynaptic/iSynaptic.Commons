@@ -70,10 +70,10 @@ namespace iSynaptic.Commons
                 : Outcome<CheckFailure>.Success;
         }
 
-        public static Outcome<CheckFailure> That(bool result, string message)
+        public static Outcome<CheckFailure> That(bool expectation, string name, string message)
         {
-            return !result
-                ? Outcome.Failure(new CheckFailure(CheckType.That, null, message))
+            return !expectation
+                ? Outcome.Failure(new CheckFailure(CheckType.That, name, message))
                 : Outcome<CheckFailure>.Success;
         }
     }

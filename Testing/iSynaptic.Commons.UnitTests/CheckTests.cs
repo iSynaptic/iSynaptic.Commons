@@ -45,8 +45,8 @@ namespace iSynaptic.Commons
         [Test]
         public void That_WithTwoFalseValues_ReturnsBothFailures()
         {
-            var outcome = Check.That(false, "First") &
-                          Check.That(false, "Second");
+            var outcome = Check.That(false, "First", "First") &
+                          Check.That(false, "Second", "Second");
 
             Assert.IsFalse(outcome.WasSuccessful);
 
