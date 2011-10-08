@@ -2,6 +2,16 @@
 RELEASE NOTES: iSynaptic.Commons
 ======================================
 
+==== v0.3.3 (October 7, 2011) ====
+
+ ---- Features ----
+
+* Maybe<T> Join operator no-longer evaluates the second maybe if the
+  first maybe does not have a value.
+
+* Added TrySelect operator to Maybe<T>.
+
+
 ==== v0.3.2 (September 6, 2011) ====
 
 ---- Features ----
