@@ -1144,6 +1144,17 @@ namespace iSynaptic.Commons
         }
 
         [Test]
+        public void Join_DoesEvaluateSecondMaybeIfFirstDoesNotHaveValue()
+        {
+            bool executed = false;
+            var value = Maybe<int>.NoValue
+                .Join(Maybe.Defer(() => { executed = true; return 42; }));
+                
+            Assert.IsFalse(value.HasValue);
+            Assert.IsFalse(executed);
+        }
+
+        [Test]
         public void Join_YieldsExceptionIfFirstValueHasException()
         {
             var value = new Maybe<int>(new InvalidOperationException())
@@ -1180,6 +1191,46 @@ namespace iSynaptic.Commons
 
             Assert.Throws<InvalidOperationException>(() => value.ValueOrDefault());
             Assert.IsFalse(executed);
+        }
+
+        [Test]
+        public void TrySelect_ReturnsValueIfSelectorReturnsTrue()
+        {
+            var value = Maybe.Return("42")
+                .TrySelect<string, int>(int.TryParse);
+
+            Assert.IsTrue(value.HasValue);
+            Assert.AreEqual(42, value.Value);
+        }
+
+        [Test]
+        public void TrySelect_ReturnsNoValueIfSelectorReturnsFalse()
+        {
+            var value = Maybe.Return("Hello, World!")
+                .TrySelect<string, int>(int.TryParse);
+
+            Assert.IsFalse(value.HasValue);
+        }
+
+        [Test]
+        public void TrySelect_PassesExceptionThru()
+        {
+            var exception = new Exception();
+
+            var value = new Maybe<string>(exception)
+                .TrySelect<string, int>(int.TryParse);
+
+            Assert.IsFalse(value.HasValue);
+            Assert.IsTrue(ReferenceEquals(value.Exception, exception));
+        }
+
+        [Test]
+        public void TrySelect_NoValueThru()
+        {
+            var value = Maybe<string>.NoValue
+                .TrySelect<string, int>(int.TryParse);
+
+            Assert.IsFalse(value.HasValue);
         }
 
         [Test]

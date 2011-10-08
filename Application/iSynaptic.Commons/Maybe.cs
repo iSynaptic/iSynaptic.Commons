@@ -612,10 +612,16 @@ namespace iSynaptic.Commons
                 if (self.HasValue && other.HasValue)
                     return new Maybe<Tuple<T, U>>(Tuple.Create(self.Value, other.Value));
 
-                if (self.Exception != null || other.Exception != null)
-                    return new Maybe<Tuple<T, U>>(self.Exception ?? other.Exception);
+                if (!self.HasValue)
+                {
+                    return self.Exception != null 
+                        ? new Maybe<Tuple<T, U>>(self.Exception) 
+                        : Maybe<Tuple<T, U>>.NoValue;
+                }
 
-                return Maybe<Tuple<T, U>>.NoValue;
+                return other.Exception != null
+                    ? new Maybe<Tuple<T, U>>(other.Exception)
+                    : Maybe<Tuple<T, U>>.NoValue;
             });
         }
 
@@ -627,12 +633,18 @@ namespace iSynaptic.Commons
             return new Maybe<TResult>(() =>
             {
                 if (self.HasValue && other.HasValue)
-                return new Maybe<TResult>(selector(self.Value, other.Value));
+                    return new Maybe<TResult>(selector(self.Value, other.Value));
 
-                if (self.Exception != null || other.Exception != null)
-                    return new Maybe<TResult>(self.Exception ?? other.Exception);
-                
-                return Maybe<TResult>.NoValue;
+                if (!self.HasValue)
+                {
+                    return self.Exception != null
+                        ? new Maybe<TResult>(self.Exception)
+                        : Maybe<TResult>.NoValue;
+                }
+
+                return other.Exception != null
+                    ? new Maybe<TResult>(other.Exception)
+                    : Maybe<TResult>.NoValue;
             });
         }
 
@@ -646,10 +658,16 @@ namespace iSynaptic.Commons
                 if (self.HasValue && other.HasValue)
                     return selector(self.Value, other.Value);
 
-                if (self.Exception != null || other.Exception != null)
-                    return new Maybe<TResult>(self.Exception ?? other.Exception);
+                if(!self.HasValue)
+                {
+                    return self.Exception != null
+                        ? new Maybe<TResult>(self.Exception)
+                        : Maybe<TResult>.NoValue;
+                }
 
-                return Maybe<TResult>.NoValue;
+                return other.Exception != null
+                    ? new Maybe<TResult>(other.Exception)
+                    : Maybe<TResult>.NoValue;
             });
         }
 
@@ -883,6 +901,28 @@ namespace iSynaptic.Commons
         }
 
         #endregion
+
+        public static Maybe<TResult> TrySelect<T, TResult>(this Maybe<T> @this, TrySelector<T, TResult> selector)
+        {
+            Guard.NotNull(selector, "selector");
+
+            var self = @this;
+
+            return new Maybe<TResult>(() =>
+            {
+                if (self.Exception != null)
+                    return new Maybe<TResult>(self.Exception);
+
+                if(!self.HasValue)
+                    return Maybe<TResult>.NoValue;
+
+                TResult result = default(TResult);
+
+                return selector(self.Value, out result) 
+                    ? new Maybe<TResult>(result) 
+                    : Maybe<TResult>.NoValue;
+            });
+        }
 
         public static Maybe<TResult> Bind<T, TResult>(this Maybe<T> @this, Func<T, Maybe<TResult>> selector)
         {

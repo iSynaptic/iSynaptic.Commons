@@ -160,6 +160,7 @@
     <Compile Include="Transactions\TransactionalBase.cs" />
     <Compile Include="Transactions\TransactionalConcurrencyException.cs" />
     <Compile Include="Transactions\TransactionalGateway.cs" />
+    <Compile Include="TrySelector.cs" />
     <Compile Include="Unit.cs" />
     <Compile Include="UnsafeCast.cs" />
     <Compile Include="WeakReference.cs" />
