@@ -1194,6 +1194,46 @@ namespace iSynaptic.Commons
         }
 
         [Test]
+        public void TrySelect_ReturnsValueIfSelectorReturnsTrue()
+        {
+            var value = Maybe.Return("42")
+                .TrySelect<string, int>(int.TryParse);
+
+            Assert.IsTrue(value.HasValue);
+            Assert.AreEqual(42, value.Value);
+        }
+
+        [Test]
+        public void TrySelect_ReturnsNoValueIfSelectorReturnsFalse()
+        {
+            var value = Maybe.Return("Hello, World!")
+                .TrySelect<string, int>(int.TryParse);
+
+            Assert.IsFalse(value.HasValue);
+        }
+
+        [Test]
+        public void TrySelect_PassesExceptionThru()
+        {
+            var exception = new Exception();
+
+            var value = new Maybe<string>(exception)
+                .TrySelect<string, int>(int.TryParse);
+
+            Assert.IsFalse(value.HasValue);
+            Assert.IsTrue(ReferenceEquals(value.Exception, exception));
+        }
+
+        [Test]
+        public void TrySelect_NoValueThru()
+        {
+            var value = Maybe<string>.NoValue
+                .TrySelect<string, int>(int.TryParse);
+
+            Assert.IsFalse(value.HasValue);
+        }
+
+        [Test]
         public void ToNullable_WithNoValue_ReturnsNull()
         {
             var value = Maybe<int>.NoValue

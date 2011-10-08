@@ -902,6 +902,28 @@ namespace iSynaptic.Commons
 
         #endregion
 
+        public static Maybe<TResult> TrySelect<T, TResult>(this Maybe<T> @this, TrySelector<T, TResult> selector)
+        {
+            Guard.NotNull(selector, "selector");
+
+            var self = @this;
+
+            return new Maybe<TResult>(() =>
+            {
+                if (self.Exception != null)
+                    return new Maybe<TResult>(self.Exception);
+
+                if(!self.HasValue)
+                    return Maybe<TResult>.NoValue;
+
+                TResult result = default(TResult);
+
+                return selector(self.Value, out result) 
+                    ? new Maybe<TResult>(result) 
+                    : Maybe<TResult>.NoValue;
+            });
+        }
+
         public static Maybe<TResult> Bind<T, TResult>(this Maybe<T> @this, Func<T, Maybe<TResult>> selector)
         {
             Guard.NotNull(selector, "selector");
