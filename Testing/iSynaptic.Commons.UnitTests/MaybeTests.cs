@@ -1144,6 +1144,17 @@ namespace iSynaptic.Commons
         }
 
         [Test]
+        public void Join_DoesEvaluateSecondMaybeIfFirstDoesNotHaveValue()
+        {
+            bool executed = false;
+            var value = Maybe<int>.NoValue
+                .Join(Maybe.Defer(() => { executed = true; return 42; }));
+                
+            Assert.IsFalse(value.HasValue);
+            Assert.IsFalse(executed);
+        }
+
+        [Test]
         public void Join_YieldsExceptionIfFirstValueHasException()
         {
             var value = new Maybe<int>(new InvalidOperationException())
