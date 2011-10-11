@@ -176,5 +176,18 @@ namespace iSynaptic.Commons
             for (int i = 0; i < 10; i++)
                 Assert.AreEqual(1, maybe.Value);
         }
+
+        [Test]
+        public void ComprehensionSyntaxIsWorking()
+        {
+            var value = from x in 6.ToResult()
+                        from y in 7.ToResult()
+                        let ultimateAnswer = x * y
+                        where ultimateAnswer == 42
+                        select ultimateAnswer;
+
+            Assert.IsTrue(value.HasValue);
+            Assert.AreEqual(42, value.Value);
+        }
     }
 }
