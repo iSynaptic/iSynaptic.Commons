@@ -295,24 +295,24 @@ namespace iSynaptic.Commons
 
         public static Maybe<T> NotNull<T>(this Maybe<T> @this) where T : class
         {
-            return @this.Bind(x => x != null ? new Maybe<T>(x) : Maybe<T>.NoValue);
+            return @this.SelectMaybe(x => x != null ? new Maybe<T>(x) : Maybe<T>.NoValue);
         }
 
         public static Maybe<T> NotNull<T>(this Maybe<T?> @this) where T : struct
         {
-            return @this.Bind(x => x.HasValue ? new Maybe<T>(x.Value) : Maybe<T>.NoValue);
+            return @this.SelectMaybe(x => x.HasValue ? new Maybe<T>(x.Value) : Maybe<T>.NoValue);
         }
 
         public static Maybe<T> NotNull<T, TResult>(this Maybe<T> @this, Func<T, TResult> selector) where TResult : class
         {
             Guard.NotNull(selector, "selector");
-            return @this.Bind(x => selector(x) != null ? new Maybe<T>(x) : Maybe<T>.NoValue);
+            return @this.SelectMaybe(x => selector(x) != null ? new Maybe<T>(x) : Maybe<T>.NoValue);
         }
 
         public static Maybe<T> NotNull<T, TResult>(this Maybe<T> @this, Func<T, TResult?> selector) where TResult : struct
         {
             Guard.NotNull(selector, "selector");
-            return @this.Bind(x => selector(x).HasValue ? new Maybe<T>(x) : Maybe<T>.NoValue);
+            return @this.SelectMaybe(x => selector(x).HasValue ? new Maybe<T>(x) : Maybe<T>.NoValue);
         }
 
         #endregion
@@ -336,7 +336,7 @@ namespace iSynaptic.Commons
             Guard.NotNull(resourceSelector, "resourceSelector");
             Guard.NotNull(selector, "selector");
 
-            return @this.Bind(x =>
+            return @this.SelectMaybe(x =>
             {
                 using (var resource = resourceSelector(x))
                     return selector(resource);
@@ -361,7 +361,7 @@ namespace iSynaptic.Commons
         {
             Guard.NotNull(selector, "selector");
 
-            return @this.Bind(x =>
+            return @this.SelectMaybe(x =>
             {
                 var result = selector(x);
                 return result != null ? new Maybe<TResult>(result) : valueIfNull;
@@ -372,7 +372,7 @@ namespace iSynaptic.Commons
         {
             Guard.NotNull(selector, "selector");
 
-            return @this.Bind(x =>
+            return @this.SelectMaybe(x =>
             {
                 var result = selector(x);
                 return result.HasValue ? new Maybe<TResult>(result.Value) : valueIfNull;
@@ -786,45 +786,6 @@ namespace iSynaptic.Commons
 
         #endregion
 
-        #region SelectMany Operator
-        
-        // This is an alias of Bind, and exists only to satisfy C#'s LINQ comprehension syntax.
-        // The name "SelectMany" is confusing as there is only one value to "select".
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static Maybe<TResult> SelectMany<T, TResult>(this Maybe<T> @this, Func<T, Maybe<TResult>> selector)
-        {
-            return @this.Bind(selector);
-        }
-
-        // This operator is implemented only to satisfy C#'s LINQ comprehension syntax. 
-        // The name "SelectMany" is confusing as there is only one value to "select".
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static Maybe<TResult> SelectMany<T, TIntermediate, TResult>(this Maybe<T> @this, Func<T, Maybe<TIntermediate>> selector, Func<T, TIntermediate, TResult> combiner)
-        {
-            Guard.NotNull(selector, "selector");
-            Guard.NotNull(combiner, "combiner");
-
-            var self = @this;
-            return new Maybe<TResult>(() => 
-            {
-                if(self.Exception != null)
-                    return new Maybe<TResult>(self.Exception);
-
-                if(self.HasValue != true)
-                    return Maybe<TResult>.NoValue;
-
-                var value = self.Value;
-                var intermediate = selector(value);
-
-                if (intermediate.Exception != null)
-                    return new Maybe<TResult>(intermediate.Exception);
-
-                return intermediate.HasValue ? new Maybe<TResult>(combiner(value, intermediate.Value)) : Maybe<TResult>.NoValue;
-            });
-        }
-
-        #endregion
-
         #region ToEnumerable Operator
 
         public static IEnumerable<T> ToEnumerable<T>(this Maybe<T> @this)
@@ -924,21 +885,6 @@ namespace iSynaptic.Commons
             });
         }
 
-        public static Maybe<TResult> Bind<T, TResult>(this Maybe<T> @this, Func<T, Maybe<TResult>> selector)
-        {
-            Guard.NotNull(selector, "selector");
-
-            var self = @this;
-
-            return new Maybe<TResult>(() =>
-            {
-                if (self.Exception != null)
-                    return new Maybe<TResult>(self.Exception);
-
-                return self.HasValue ? selector(self.Value) : Maybe<TResult>.NoValue;
-            });
-        }
-
         public static Maybe<TResult> Select<T, TResult>(this Maybe<T> @this, Func<T, TResult> selector)
         {
             Guard.NotNull(selector, "selector");
@@ -954,7 +900,7 @@ namespace iSynaptic.Commons
             });
         }
 
-        public static Maybe<TResult> Express<T, TResult>(this Maybe<T> @this, Func<Maybe<T>, Maybe<TResult>> func)
+        public static Maybe<TResult> Let<T, TResult>(this Maybe<T> @this, Func<Maybe<T>, Maybe<TResult>> func)
         {
             Guard.NotNull(func, "func");
 
@@ -962,12 +908,7 @@ namespace iSynaptic.Commons
             return new Maybe<TResult>(() => func(self));
         }
 
-        public static T Extract<T>(this Maybe<T> @this)
-        {
-            return @this.Value;
-        }
-
-        public static Maybe<T> Return<T>(T value)
+        public static Maybe<T> Value<T>(T value)
         {
             return new Maybe<T>(value);
         }
@@ -984,11 +925,21 @@ namespace iSynaptic.Commons
             return new Maybe<T>((Func<Maybe<T>>)(() => { throw exception; }));
         }
 
-        // This is an alias of Bind and SelectMany.  Since SelectMany doesn't make sense (because there is at most one value),
+        // This functionally is the same as Bind and SelectMany.  Since SelectMany doesn't make sense (because there is at most one value),
         // the name SelectMaybe communicates better than Bind or SelectMany the semantics of the function.
         public static Maybe<TResult> SelectMaybe<T, TResult>(this Maybe<T> @this, Func<T, Maybe<TResult>> selector)
         {
-            return @this.Bind(selector);
+            Guard.NotNull(selector, "selector");
+
+            var self = @this;
+
+            return new Maybe<TResult>(() =>
+            {
+                if (self.Exception != null)
+                    return new Maybe<TResult>(self.Exception);
+
+                return self.HasValue ? selector(self.Value) : Maybe<TResult>.NoValue;
+            });
         }
 
         public static Maybe<T> Finally<T>(this Maybe<T> @this, Action finallyAction)
@@ -1236,12 +1187,12 @@ namespace iSynaptic.Commons
 
         public static Maybe<T> AsMaybe<T>(this IMaybe<T> value)
         {
-            return value.Cast<T>();
+            return value.OfType<T>();
         }
 
         public static Maybe<object> AsMaybe(this IMaybe value)
         {
-            return value.Cast<object>();
+            return value.OfType<object>();
         }
     }
 }

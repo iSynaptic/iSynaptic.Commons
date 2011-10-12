@@ -31,6 +31,8 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using Rhino.Mocks;
 
+using iSynaptic.Commons.Syntax;
+
 namespace iSynaptic.Commons
 {
     [TestFixture]
@@ -381,9 +383,9 @@ namespace iSynaptic.Commons
         [Test]
         public void Return_ReturnsValueWrapedInMaybe()
         {
-            AssertMaybe.Behavior(42, x => Maybe.Return(x), AssertMaybeResult.SameValue);
-            AssertMaybe.Behavior<string>(null, x => Maybe.Return(x), AssertMaybeResult.SameValue);
-            AssertMaybe.Behavior<int?>(null, x => Maybe.Return(x), AssertMaybeResult.SameValue);
+            AssertMaybe.Behavior(42, x => Maybe.Value(x), AssertMaybeResult.SameValue);
+            AssertMaybe.Behavior<string>(null, x => Maybe.Value(x), AssertMaybeResult.SameValue);
+            AssertMaybe.Behavior<int?>(null, x => Maybe.Value(x), AssertMaybeResult.SameValue);
         }
 
         [Test]
@@ -400,14 +402,14 @@ namespace iSynaptic.Commons
             string rawValue = "Hello World!";
 
             var value = Maybe
-                .Return(rawValue)
+                .Value(rawValue)
                 .Where(x => x.Length == rawValue.Length);
 
             Assert.IsTrue(value.HasValue);
             Assert.AreEqual(rawValue, value.Value);
 
             value = Maybe
-                .Return(rawValue)
+                .Value(rawValue)
                 .Where(x => x.Length == rawValue.Length - 1);
 
             Assert.IsFalse(value.HasValue);
@@ -419,14 +421,14 @@ namespace iSynaptic.Commons
             string rawValue = "Hello World!";
 
             var value = Maybe
-                .Return(rawValue)
+                .Value(rawValue)
                 .Unless(x => x.Length == rawValue.Length - 1);
 
             Assert.IsTrue(value.HasValue);
             Assert.AreEqual(rawValue, value.Value);
 
             value = Maybe
-                .Return(rawValue)
+                .Value(rawValue)
                 .Unless(x => x.Length == rawValue.Length);
 
             Assert.IsFalse(value.HasValue);
@@ -475,7 +477,7 @@ namespace iSynaptic.Commons
             Assert.IsFalse(value.HasValue);
             Assert.IsFalse(didExecute);
 
-            value = Maybe.Return("Hello World!")
+            value = Maybe.Value("Hello World!")
                 .OnValue(x => didExecute = true);
 
             Assert.IsTrue(value.HasValue);
@@ -568,7 +570,7 @@ namespace iSynaptic.Commons
             Assert.IsNull(refString);
             Assert.AreEqual(0, refInt);
 
-            Maybe.Return(rawValue)
+            Maybe.Value(rawValue)
                 .Assign(ref refString)
                 .Select(x => x.Length)
                 .Assign(ref refInt);
@@ -627,7 +629,7 @@ namespace iSynaptic.Commons
         {
             int checkValue = 0;
 
-            var value = Maybe.Return("Hello")
+            var value = Maybe.Value("Hello")
                 .With(x => x.Length, x => checkValue = x)
                 .ValueOrDefault();
 
@@ -640,7 +642,7 @@ namespace iSynaptic.Commons
         {
             int checkValue = 0;
 
-            var value = Maybe.Return("Hello")
+            var value = Maybe.Value("Hello")
                 .With(x => Maybe<int>.NoValue, x => checkValue = x)
                 .ValueOrDefault();
 
@@ -652,7 +654,7 @@ namespace iSynaptic.Commons
         public void When_PredicateIsTrue_UsesNewValue()
         {
             var value = Maybe
-                .Return("Hello")
+                .Value("Hello")
                 .When("Hello", "World".ToMaybe());
 
             Assert.IsTrue(value.HasValue);
@@ -662,7 +664,7 @@ namespace iSynaptic.Commons
         [Test]
         public void When_PredicateIsFalse_UsesOriginalValue()
         {
-            var value = Maybe.Return("Hello")
+            var value = Maybe.Value("Hello")
                 .When("Goodbye", "World".ToMaybe());
 
             Assert.IsTrue(value.HasValue);
@@ -674,7 +676,7 @@ namespace iSynaptic.Commons
         {
             string output = null;
 
-            Maybe.Return("Hello")
+            Maybe.Value("Hello")
                 .When("Hello", x => output = x)
                 .Run();
 
@@ -804,7 +806,7 @@ namespace iSynaptic.Commons
         public void Assign_ExecutesImmediately()
         {
             bool executed = false;
-            Maybe.Return(true)
+            Maybe.Value(true)
                 .Assign(ref executed);
 
             Assert.IsTrue(executed);
@@ -912,7 +914,7 @@ namespace iSynaptic.Commons
         {
             object foo = new List<string>();
 
-            ICollection<string> value = Maybe.Return(foo)
+            ICollection<string> value = Maybe.Value(foo)
                 .Cast<ICollection<string>>()
                 .Value;
 
@@ -924,7 +926,7 @@ namespace iSynaptic.Commons
         {
             List<string> foo = new List<string>();
 
-            List<string> value = ((IMaybe)Maybe.Return(foo))
+            List<string> value = ((IMaybe)Maybe.Value(foo))
                 .Cast<List<string>>()
                 .Value;
 
@@ -936,7 +938,7 @@ namespace iSynaptic.Commons
         {
             object foo = new List<string>();
 
-            var value = Maybe.Return(foo)
+            var value = Maybe.Value(foo)
                 .Cast<DateTime>();
 
             Assert.IsFalse(value.HasValue);
@@ -992,7 +994,7 @@ namespace iSynaptic.Commons
         {
             List<string> foo = new List<string>();
 
-            List<string> value = ((IMaybe)Maybe.Return(foo))
+            List<string> value = ((IMaybe)Maybe.Value(foo))
                 .OfType<List<string>>()
                 .Value;
 
@@ -1004,7 +1006,7 @@ namespace iSynaptic.Commons
         {
             object foo = new List<string>();
 
-            ICollection<string> value = Maybe.Return(foo)
+            ICollection<string> value = Maybe.Value(foo)
                 .OfType<ICollection<string>>()
                 .Value;
 
@@ -1034,7 +1036,7 @@ namespace iSynaptic.Commons
         {
             object foo = new List<string>();
 
-            var value = Maybe.Return(foo)
+            var value = Maybe.Value(foo)
                 .OfType<DateTime>();
 
             Assert.IsTrue(value == Maybe<DateTime>.NoValue);
@@ -1058,8 +1060,8 @@ namespace iSynaptic.Commons
         [Test]
         public void Or_ReturnsFirstValueIfHasValue()
         {
-            var value = Maybe.Return(1)
-                .Or(Maybe.Return(42))
+            var value = Maybe.Value(1)
+                .Or(Maybe.Value(42))
                 .ValueOrDefault();
 
             Assert.AreEqual(1, value);
@@ -1069,7 +1071,7 @@ namespace iSynaptic.Commons
         public void Or_ReturnsSecondValueIfFirstDoesNotHaveValue()
         {
             var value = Maybe<int>.NoValue
-                .Or(Maybe.Return(42))
+                .Or(Maybe.Value(42))
                 .ValueOrDefault();
 
             Assert.AreEqual(42, value);
@@ -1089,7 +1091,7 @@ namespace iSynaptic.Commons
         public void Or_YieldsExceptionIfFirstValueHasException()
         {
             var value = new Maybe<int>(new InvalidOperationException())
-                .Or(Maybe.Return(42));
+                .Or(Maybe.Value(42));
 
             Assert.Throws<InvalidOperationException>(() => value.ValueOrDefault());
         }
@@ -1127,8 +1129,8 @@ namespace iSynaptic.Commons
         [Test]
         public void Join_ReturnsBothValueIfHasValue()
         {
-            var value = Maybe.Return(1)
-                .Join(Maybe.Return(42))
+            var value = Maybe.Value(1)
+                .Join(Maybe.Value(42))
                 .ValueOrDefault();
 
             Assert.AreEqual(Tuple.Create(1, 42), value);
@@ -1138,7 +1140,7 @@ namespace iSynaptic.Commons
         public void Join_ReturnsNoValueIfFirstDoesNotHaveValue()
         {
             var value = Maybe<int>.NoValue
-                .Join(Maybe.Return(42));
+                .Join(Maybe.Value(42));
 
             Assert.IsFalse(value.HasValue);
         }
@@ -1158,7 +1160,7 @@ namespace iSynaptic.Commons
         public void Join_YieldsExceptionIfFirstValueHasException()
         {
             var value = new Maybe<int>(new InvalidOperationException())
-                .Join(Maybe.Return(42));
+                .Join(Maybe.Value(42));
 
             Assert.Throws<InvalidOperationException>(() => value.ValueOrDefault());
         }
@@ -1166,7 +1168,7 @@ namespace iSynaptic.Commons
         [Test]
         public void Join_YieldsExceptionIfSecondValueHasExceptionAndFirstHasValue()
         {
-            var value = Maybe.Return(1)
+            var value = Maybe.Value(1)
                 .Join(new Maybe<int>(new InvalidOperationException()));
 
             Assert.Throws<InvalidOperationException>(() => value.ValueOrDefault());
@@ -1196,7 +1198,7 @@ namespace iSynaptic.Commons
         [Test]
         public void TrySelect_ReturnsValueIfSelectorReturnsTrue()
         {
-            var value = Maybe.Return("42")
+            var value = Maybe.Value("42")
                 .TrySelect<string, int>(int.TryParse);
 
             Assert.IsTrue(value.HasValue);
@@ -1206,7 +1208,7 @@ namespace iSynaptic.Commons
         [Test]
         public void TrySelect_ReturnsNoValueIfSelectorReturnsFalse()
         {
-            var value = Maybe.Return("Hello, World!")
+            var value = Maybe.Value("Hello, World!")
                 .TrySelect<string, int>(int.TryParse);
 
             Assert.IsFalse(value.HasValue);
@@ -1245,7 +1247,7 @@ namespace iSynaptic.Commons
         [Test]
         public void ToNullable_WithValue_ReturnsValue()
         {
-            var value = Maybe.Return(42)
+            var value = Maybe.Value(42)
                 .ToNullable();
 
             Assert.AreEqual(42, value.Value);
@@ -1331,7 +1333,7 @@ namespace iSynaptic.Commons
             bool actionExecuted = false;
 
             var waitEvent = new ManualResetEventSlim();
-            var value = Maybe.Return(42)
+            var value = Maybe.Value(42)
                 .OnValue(x => started = 1)
                 .Select(x =>
                         {
@@ -1539,7 +1541,7 @@ namespace iSynaptic.Commons
         [Test]
         public void Unwrap_WithNullInnerIMaybe_ReturnsNoValue()
         {
-            IMaybe<IMaybe<int>> value = Maybe.Return<IMaybe<int>>(null);
+            IMaybe<IMaybe<int>> value = Maybe.Value<IMaybe<int>>(null);
 
             Assert.IsTrue(Maybe<int>.NoValue == value.Unwrap());
         }
@@ -1555,7 +1557,7 @@ namespace iSynaptic.Commons
         [Test]
         public void Unwrap_WithNoValueInnerIMaybe_ReturnsNoValue()
         {
-            IMaybe<IMaybe<int>> value = Maybe.Return<IMaybe<int>>(Maybe<int>.NoValue);
+            IMaybe<IMaybe<int>> value = Maybe.Value<IMaybe<int>>(Maybe<int>.NoValue);
 
             Assert.IsTrue(Maybe<int>.NoValue == value.Unwrap());
         }
@@ -1575,7 +1577,7 @@ namespace iSynaptic.Commons
         [Test]
         public void Unwrap_WithExceptionInnerIMaybe_ReturnsException()
         {
-            IMaybe<IMaybe<int>> value = Maybe.Return<IMaybe<int>>(Maybe.Exception<int>(new InvalidOperationException()));
+            IMaybe<IMaybe<int>> value = Maybe.Value<IMaybe<int>>(Maybe.Exception<int>(new InvalidOperationException()));
 
             var result = value.Unwrap();
 
@@ -1587,7 +1589,7 @@ namespace iSynaptic.Commons
         [Test]
         public void Unwrap_WithValue_ReturnsValue()
         {
-            IMaybe<IMaybe<int>> value = Maybe.Return<IMaybe<int>>(42.ToMaybe());
+            IMaybe<IMaybe<int>> value = Maybe.Value<IMaybe<int>>(42.ToMaybe());
 
             var result = value.Unwrap();
 

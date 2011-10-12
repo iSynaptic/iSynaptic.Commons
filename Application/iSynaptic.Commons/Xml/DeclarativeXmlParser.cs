@@ -132,7 +132,7 @@ namespace iSynaptic.Commons.Xml
 
             public IElementMultiplicity Element(string name, Action action)
             {
-                var matcher = new Matcher<object>(_Parent, name, XmlNodeType.Element, pc => Maybe.Return<object>(null), x => action());
+                var matcher = new Matcher<object>(_Parent, name, XmlNodeType.Element, pc => Maybe.Value<object>(null), x => action());
                 Matchers.Add(matcher);
 
                 return matcher;

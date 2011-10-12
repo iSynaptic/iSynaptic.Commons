@@ -30,6 +30,14 @@ namespace iSynaptic.Commons.Linq
 {
     public static class EnumerableExtensions
     {
+        public static IEnumerable<T> Unless<T>(this IEnumerable<T> @this, Func<T, bool> predicate)
+        {
+            Guard.NotNull(@this, "@this");
+            Guard.NotNull(predicate, "predicate");
+
+            return @this.Where(x => !predicate(x));
+        }
+
         public static IEnumerable<TSource> OrderBy<TSource, TKey>(this IEnumerable<TSource> @this, Func<TSource, TKey> keySelector, Func<TKey, TKey, int> comparer)
         {
             Guard.NotNull(@this, "@this");

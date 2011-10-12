@@ -125,7 +125,7 @@ namespace iSynaptic.Commons
             return new Outcome<T>(false, observation);
         }
 
-        public static Outcome<U> Bind<T, U>(this Outcome<T> @this, Func<T, Outcome<U>> selector)
+        public static Outcome<U> InformMany<T, U>(this Outcome<T> @this, Func<T, Outcome<U>> selector)
         {
             Guard.NotNull(selector, "selector");
 
@@ -135,7 +135,7 @@ namespace iSynaptic.Commons
                 var outcome = self.Observations
                     .Select(selector)
                     .Aggregate(
-                    new {Success = true, Observations = Enumerable.Empty<U>()}, (ag, obs) => new 
+                    new { Success = true, Observations = Enumerable.Empty<U>() }, (ag, obs) => new
                     {
                         Success = ag.Success && obs.WasSuccessful,
                         Observations = ag.Observations.Concat(obs.Observations)
@@ -145,22 +145,33 @@ namespace iSynaptic.Commons
             });
         }
 
-        public static Outcome<U> SelectMany<T, U>(this Outcome<T> @this, Func<T, Outcome<U>> selector)
+        public static Outcome<U> Inform<T, U>(this Outcome<T> @this, Func<T, U> selector)
         {
             Guard.NotNull(selector, "selector");
-            return Bind(@this, selector);
+            return @this.InformMany(t => new Outcome<U>(@this.WasSuccessful, selector(t)));
         }
 
-        public static Outcome<U> Select<T, U>(this Outcome<T> @this, Func<T, U> selector)
-        {
-            Guard.NotNull(selector, "selector");
-            return @this.SelectMany(t => new Outcome<U>(@this.WasSuccessful, selector(t)));
-        }
-
-        public static Outcome<T> Where<T>(this Outcome<T> @this, Func<T, bool> predicate)
+        public static Outcome<T> Notice<T>(this Outcome<T> @this, Func<T, bool> predicate)
         {
             Guard.NotNull(predicate, "predicate");
-            return @this.SelectMany(t => predicate(t) ? new Outcome<T>(@this.WasSuccessful, t) : new Outcome<T>(@this.WasSuccessful));
+            return @this.InformMany(t => predicate(t) ? new Outcome<T>(@this.WasSuccessful, t) : new Outcome<T>(@this.WasSuccessful));
+        }
+
+        public static Outcome<T> Ignore<T>(this Outcome<T> @this, Func<T, bool> predicate)
+        {
+            Guard.NotNull(predicate, "predicate");
+            return @this.InformMany(t => predicate(t) ? new Outcome<T>(@this.WasSuccessful) : new Outcome<T>(@this.WasSuccessful, t));
+        }
+
+        public static Outcome<T> Combine<T>(this Outcome<T> @this, Outcome<T> other)
+        {
+            return Combine(new[] {@this, other});
+        }
+
+        public static Outcome<T> Combine<T>(params Outcome<T>[] outcomes)
+        {
+            Guard.NotNull(outcomes, "outcomes");
+            return Combine((IEnumerable<Outcome<T>>)outcomes);
         }
 
         public static Outcome<T> Combine<T>(IEnumerable<Outcome<T>> outcomes)
@@ -178,12 +189,6 @@ namespace iSynaptic.Commons
 
                 return new Outcome<T>(outcome.Success, outcome.Observations.ToArray());
             });
-        }
-
-        public static Outcome<T> Combine<T>(params Outcome<T>[] outcomes)
-        {
-            Guard.NotNull(outcomes, "outcomes");
-            return Combine((IEnumerable<Outcome<T>>)outcomes);
         }
     }
 }

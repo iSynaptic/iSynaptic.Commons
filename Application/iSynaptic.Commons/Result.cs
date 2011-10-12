@@ -222,17 +222,17 @@ namespace iSynaptic.Commons
 
     public static class Result
     {
-        public static Result<T, Unit> Return<T>(T value)
+        public static Result<T, Unit> Value<T>(T value)
         {
             return new Result<T, Unit>(value);
         }
 
-        public static Result<T, TObservation> Return<T, TObservation>(T value)
+        public static Result<T, TObservation> Value<T, TObservation>(T value)
         {
             return new Result<T, TObservation>(value);
         }
 
-        public static Result<TResult, TObservation> Bind<T, TResult, TObservation>(this Result<T, TObservation> @this, Func<T, Result<TResult, TObservation>> selector)
+        public static Result<TResult, TObservation> SelectResult<T, TResult, TObservation>(this Result<T, TObservation> @this, Func<T, Result<TResult, TObservation>> selector)
         {
             Guard.NotNull(selector, "selector");
 
@@ -255,7 +255,7 @@ namespace iSynaptic.Commons
             });
         }
 
-        public static Result<TResult, Unit> Bind<T, TResult>(this Result<T, Unit> @this, Func<T, Result<TResult, Unit>> selector)
+        public static Result<TResult, Unit> SelectResult<T, TResult>(this Result<T, Unit> @this, Func<T, Result<TResult, Unit>> selector)
         {
             Guard.NotNull(selector, "selector");
 
@@ -263,45 +263,12 @@ namespace iSynaptic.Commons
             return new Result<TResult, Unit>(() => self.HasValue ? selector(self.Value) : Result<TResult, Unit>.NoValue);
         }
 
-        #region SelectMany Operator
-
-        // This is an alias of Bind, and exists only to satisfy C#'s LINQ comprehension syntax.
-        // The name "SelectMany" is confusing as there is only one value to "select".
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static Result<TResult, TObservation> SelectMany<T, TResult, TObservation>(this Result<T, TObservation> @this, Func<T, Result<TResult, TObservation>> selector)
-        {
-            return Bind(@this, selector);
-        }
-
-        // This operator is implemented only to satisfy C#'s LINQ comprehension syntax. 
-        // The name "SelectMany" is confusing as there is only one value to "select".
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static Result<TResult, TObservation> SelectMany<T, TIntermediate, TResult, TObservation>(this Result<T, TObservation> @this, Func<T, Result<TIntermediate, TObservation>> selector, Func<T, TIntermediate, TResult> combiner)
-        {
-            Guard.NotNull(selector, "selector");
-            Guard.NotNull(combiner, "combiner");
-
-            return @this.SelectMany(x => selector(x).Select(y => combiner(x, y)));
-        }
-
-        #endregion
-
-        public static Result<TResult, TObservation> SelectResult<T, TResult, TObservation>(this Result<T, TObservation> @this, Func<T, Result<TResult, TObservation>> selector)
-        {
-            return Bind(@this, selector);
-        }
-
-        public static Result<TResult, Unit> SelectResult<T, TResult>(this Result<T, Unit> @this, Func<T, Result<TResult, Unit>> selector)
-        {
-            return Bind(@this, selector);
-        }
-
         public static Result<TResult, TObservation> Select<T, TResult, TObservation>(this Result<T, TObservation> @this, Func<T, TResult> selector)
         {
             Guard.NotNull(selector, "selector");
 
             var self = @this;
-            return self.Bind(x => new Result<TResult, TObservation>(selector(x), self.Observations));
+            return self.SelectResult(x => new Result<TResult, TObservation>(selector(x), self.Observations));
         }
 
         public static Result<T, TObservation> Where<T, TObservation>(this Result<T, TObservation> @this, Func<T, bool> predicate)
@@ -323,9 +290,92 @@ namespace iSynaptic.Commons
             });
         }
 
+        public static Result<T, TObservation> Observe<T, TObservation>(this Result<T, TObservation> @this, TObservation observation)
+        {
+            var self = @this;
+            return new Result<T, TObservation>(() => self.HasValue
+                ? new Result<T, TObservation>(self.Value, self.Observations.Concat(new []{observation}))
+                : new Result<T, TObservation>(self.Observations.Concat(new[] { observation })));
+        }
+
+        public static Result<T, TObservation> Observe<T, TObservation>(this Result<T, TObservation> @this, Func<Maybe<T>, TObservation> selector)
+        {
+            Guard.NotNull(selector, "selector");
+
+            var self = @this;
+            return new Result<T, TObservation>(() => self.HasValue
+                ? new Result<T, TObservation>(self.Value, self.Observations.Concat(new []{selector(new Maybe<T>(self.Value))}))
+                : new Result<T, TObservation>(self.Observations.Concat(new[] { selector(Maybe<T>.NoValue) })));
+        }
+
+        public static Result<T, TObservation> ObserveMany<T, TObservation>(this Result<T, TObservation> @this, IEnumerable<TObservation> observations)
+        {
+            Guard.NotNull(observations, "observations");
+
+            var self = @this;
+            return new Result<T, TObservation>(() => self.HasValue
+                ? new Result<T, TObservation>(self.Value, self.Observations.Concat(observations))
+                : new Result<T, TObservation>(self.Observations.Concat(observations)));
+        }
+
+        public static Result<T, TObservation> ObserveMany<T, TObservation>(this Result<T, TObservation> @this, Func<Maybe<T>, IEnumerable<TObservation>> selector)
+        {
+            Guard.NotNull(selector, "selector");
+
+            var self = @this;
+            return new Result<T, TObservation>(() => self.HasValue
+                ? new Result<T, TObservation>(self.Value, self.Observations.Concat(selector(new Maybe<T>(self.Value))))
+                : new Result<T, TObservation>(self.Observations.Concat(selector(Maybe<T>.NoValue))));
+        }
+
+        public static Result<T, TResult> Inform<T, TObservation, TResult>(this Result<T, TObservation> @this, Func<TObservation, TResult> selector)
+        {
+            Guard.NotNull(selector, "selector");
+
+            var self = @this;
+            return new Result<T, TResult>(() => self.HasValue
+                ? new Result<T, TResult>(self.Value, self.Observations.Select(selector))
+                : new Result<T, TResult>(self.Observations.Select(selector)));
+        }
+
+        public static Result<T, TResult> InformMany<T, TObservation, TResult>(this Result<T, TObservation> @this, Func<TObservation, IEnumerable<TResult>> selector)
+        {
+            Guard.NotNull(selector, "selector");
+
+            var self = @this;
+            return new Result<T, TResult>(() => self.HasValue
+                ? new Result<T, TResult>(self.Value, self.Observations.SelectMany(selector))
+                : new Result<T, TResult>(self.Observations.SelectMany(selector)));
+        }
+
+        public static Result<T, TObservation> Notice<T, TObservation>(this Result<T, TObservation> @this, Func<TObservation, bool> predicate)
+        {
+            Guard.NotNull(predicate, "selector");
+
+            var self = @this;
+            return new Result<T, TObservation>(() => self.HasValue
+                ? new Result<T, TObservation>(self.Value, self.Observations.Where(predicate))
+                : new Result<T, TObservation>(self.Observations.Where(predicate)));
+        }
+
+        public static Result<T, TObservation> Ignore<T, TObservation>(this Result<T, TObservation> @this, Func<TObservation, bool> predicate)
+        {
+            Guard.NotNull(predicate, "selector");
+
+            var self = @this;
+            return new Result<T, TObservation>(() => self.HasValue
+                ? new Result<T, TObservation>(self.Value, self.Observations.Where(x => !predicate(x)))
+                : new Result<T, TObservation>(self.Observations.Where(x => !predicate(x))));
+        }
+
         public static Result<T, Unit> ToResult<T>(this T value)
         {
             return new Result<T, Unit>(value);
+        }
+
+        public static Result<T, TObservation> ToResult<T, TObservation>(this T value)
+        {
+            return new Result<T, TObservation>(value);
         }
     }
 }

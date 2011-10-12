@@ -153,6 +153,9 @@
     <Compile Include="Runtime\Serialization\CloneContext.cs" />
     <Compile Include="Runtime\Serialization\CloneReferenceOnlyAttribute.cs" />
     <Compile Include="Symbol.cs" />
+    <Compile Include="Syntax\MaybeComprehension.cs" />
+    <Compile Include="Syntax\OutcomeComprehension.cs" />
+    <Compile Include="Syntax\ResultComprehension.cs" />
     <Compile Include="SystemClock.cs" />
     <Compile Include="Text\Parsing\ScanningTextReader.cs" />
     <Compile Include="Transactions\ITransactional.cs" />

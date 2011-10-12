@@ -60,10 +60,10 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void Bind_ViaSelect_PropigatesFailureObservations()
+        public void InformMany_ViaInform_PropigatesFailureObservations()
         {
             Outcome<Observation> outcome = Outcome.Failure(new Observation { Code = 42, Message = "Bad stuff happened.", Type = ObservationType.Error });
-            Outcome<string> stringOutcome = outcome.Select(x => x.Message);
+            Outcome<string> stringOutcome = outcome.Inform(x => x.Message);
 
             Assert.IsFalse(stringOutcome.WasSuccessful);
 
@@ -73,10 +73,10 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void Bind_ViaSelect_PropigatesSuccessObservations()
+        public void InformMany_ViaInform_PropigatesSuccessObservations()
         {
             Outcome<Observation> outcome = Outcome.Success(new Observation { Code = 0, Message = "Greetings from Outcome!", Type = ObservationType.Info });
-            Outcome<string> stringOutcome = outcome.Select(x => x.Message);
+            Outcome<string> stringOutcome = outcome.Inform(x => x.Message);
 
             Assert.IsTrue(stringOutcome.WasSuccessful);
 
@@ -86,7 +86,7 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void Where_FiltersOutUndesireableOutcomes()
+        public void Notice_FiltersKeepsDesireableOutcomes()
         {
             var outcome1 = Outcome.Failure(new Observation { Code = 42, Message = "Really bad stuff happened.", Type = ObservationType.Fatal });
             var outcome2 = Outcome.Failure(new Observation { Code = 7, Message = "Bad stuff happened.", Type = ObservationType.Error });
@@ -95,8 +95,8 @@ namespace iSynaptic.Commons
             var outcome5 = Outcome.Success(new Observation { Code = 1, Message = "Hello, World!", Type = ObservationType.Info });
 
             Outcome<string> totalOutcome = Outcome.Combine(outcome1, outcome2, outcome3, outcome4, outcome5)
-                .Where(x => x.Type >= ObservationType.Error)
-                .Select(x => x.Message);
+                .Notice(x => x.Type >= ObservationType.Error)
+                .Inform(x => x.Message);
 
             Assert.IsFalse(totalOutcome.WasSuccessful);
             var failures = totalOutcome.Observations.ToList();
