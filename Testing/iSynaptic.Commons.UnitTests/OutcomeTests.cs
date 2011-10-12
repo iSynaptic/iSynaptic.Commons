@@ -32,6 +32,15 @@ namespace iSynaptic.Commons
     public class OutcomeTests
     {
         [Test]
+        public void Success_ReturnsSuccessWithObservation()
+        {
+            var outcome = Outcome.Success("Hello, World!");
+
+            Assert.IsTrue(outcome.WasSuccessful);
+            Assert.IsTrue(outcome.Observations.SequenceEqual(new[]{"Hello, World!"}));
+        }
+
+        [Test]
         public void WasSuccessful_WithDefaultValue_IsTrue()
         {
             var outcome = default(Outcome<string>);

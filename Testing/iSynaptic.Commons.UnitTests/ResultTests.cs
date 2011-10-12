@@ -24,13 +24,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using iSynaptic.Commons.Syntax;
 using NUnit.Framework;
 
 namespace iSynaptic.Commons
 {
     [TestFixture]
-    public class ResultTests
+    public partial class ResultTests
     {
         [Test]
         public void AccessingValueProperty_OnNoValue_ThrowsInvalidOperationException()
@@ -177,7 +176,15 @@ namespace iSynaptic.Commons
             for (int i = 0; i < 10; i++)
                 Assert.AreEqual(1, maybe.Value);
         }
+    }
+}
 
+namespace iSynaptic.Commons
+{
+    using Syntax;
+
+    public partial class ResultTests
+    {
         [Test]
         public void ComprehensionSyntaxIsWorking()
         {

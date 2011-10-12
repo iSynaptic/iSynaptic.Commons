@@ -31,12 +31,10 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using Rhino.Mocks;
 
-using iSynaptic.Commons.Syntax;
-
 namespace iSynaptic.Commons
 {
     [TestFixture]
-    public class MaybeTests
+    public partial class MaybeTests
     {
         #region Maybe<T> Members
 
@@ -247,7 +245,7 @@ namespace iSynaptic.Commons
         public void ValueProperty_ThatImplicitlyThrowsException_BubblesUpException()
         {
             var results = 0.ToMaybe()
-                .Bind(x => (7 / x).ToMaybe());
+                .SelectMaybe(x => (7 / x).ToMaybe());
 
             Assert.Throws<DivideByZeroException>(() => { var x = results.Value; });
         }
@@ -256,7 +254,7 @@ namespace iSynaptic.Commons
         public void HasValueProperty_ThatImplicitlyThrowsException_BubblesUpException()
         {
             var results = 0.ToMaybe()
-                .Bind(x => (7 / x).ToMaybe());
+                .SelectMaybe(x => (7 / x).ToMaybe());
 
             Assert.Throws<DivideByZeroException>(() => { var x = results.HasValue; });
         }
@@ -265,50 +263,36 @@ namespace iSynaptic.Commons
         public void ExceptionProperty_ThatImplicitlyThrowsException_BubblesUpException()
         {
             var results = 0.ToMaybe()
-                .Bind(x => (7 / x).ToMaybe());
+                .SelectMaybe(x => (7 / x).ToMaybe());
 
             Assert.Throws<DivideByZeroException>(() => { var x = results.Exception; });
         }
 
         [Test]
-        public void Bind_WhenExceptionOccurs_RemainingOperationsDoNotExecute()
+        public void SelectMaybe_WhenExceptionOccurs_RemainingOperationsDoNotExecute()
         {
             bool executed = false;
 
             var results = 0.ToMaybe()
-                .Bind(x => (7 / x).ToMaybe())
-                .Bind(x => (executed = true).ToMaybe());
+                .SelectMaybe(x => (7 / x).ToMaybe())
+                .SelectMaybe(x => (executed = true).ToMaybe());
 
             Assert.Throws<DivideByZeroException>(() => { var x = results.Value; });
             Assert.IsFalse(executed);
         }
 
         [Test]
-        public void Bind_OnNoValue_RemaningOperationsDoNotExecute()
+        public void SelectMaybe_OnNoValue_RemaningOperationsDoNotExecute()
         {
             bool executed = false;
 
             var results = 0.ToMaybe()
-                 .Bind(x => (x + 7).ToMaybe())
-                 .Bind(x => Maybe<int>.NoValue)
-                 .Bind(x => (executed = true).ToMaybe());
+                 .SelectMaybe(x => (x + 7).ToMaybe())
+                 .SelectMaybe(x => Maybe<int>.NoValue)
+                 .SelectMaybe(x => (executed = true).ToMaybe());
 
             Assert.IsFalse(results.HasValue);
             Assert.IsFalse(executed);
-        }
-
-        [Test]
-        public void ComprehensionSyntaxIsWorking()
-        {
-            var value = from x in 6.ToMaybe()
-                        from y in 7.ToMaybe()
-                        let ultimateAnswer = x * y
-                        where ultimateAnswer == 42
-                        select ultimateAnswer;
-
-            Assert.IsTrue(value.HasValue);
-            Assert.IsNull(value.Exception);
-            Assert.AreEqual(42, value.Value);
         }
 
         [Test]
@@ -448,23 +432,6 @@ namespace iSynaptic.Commons
 
             Assert.AreEqual("{default}", value);
         }
-
-        [Test]
-        public void Extract_ThrowsContainedException()
-        {
-            Assert.Throws<InvalidOperationException>(() =>
-                new Maybe<int>(new InvalidOperationException())
-                    .Extract());
-        }
-
-        [Test]
-        public void Extract_DoesntSuppressException()
-        {
-            Assert.Throws<InvalidOperationException>(() =>
-                Maybe.Throw<int>(new InvalidOperationException())
-                    .Extract());
-        }
-
 
         [Test]
         public void OnValue_CallsActionIfHasValueIsTrue()
@@ -1696,5 +1663,44 @@ namespace iSynaptic.Commons
         Exception,
         ThrowException,
         ThrowExceptionImmediately
+    }
+}
+
+namespace iSynaptic.Commons
+{
+    using Syntax;
+
+    public partial class MaybeTests
+    {
+        [Test]
+        public void ComprehensionSyntaxIsWorking()
+        {
+            var value = from x in 6.ToMaybe()
+                        from y in 7.ToMaybe()
+                        let ultimateAnswer = x * y
+                        where ultimateAnswer == 42
+                        select ultimateAnswer;
+
+            Assert.IsTrue(value.HasValue);
+            Assert.IsNull(value.Exception);
+            Assert.AreEqual(42, value.Value);
+        }
+
+        [Test]
+        public void Extract_ThrowsContainedException()
+        {
+            Assert.Throws<InvalidOperationException>(() =>
+                new Maybe<int>(new InvalidOperationException())
+                    .Extract());
+        }
+
+        [Test]
+        public void Extract_DoesntSuppressException()
+        {
+            Assert.Throws<InvalidOperationException>(() =>
+                Maybe.Throw<int>(new InvalidOperationException())
+                    .Extract());
+        }
+
     }
 }
