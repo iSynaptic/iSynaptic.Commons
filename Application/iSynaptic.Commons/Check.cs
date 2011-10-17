@@ -14,28 +14,28 @@ namespace iSynaptic.Commons
                 : Outcome<CheckFailure>.Success;
         }
 
-        public static Outcome<CheckFailure> NotEmpty(string value, string name, string message = "Must not be empty.")
+        public static Outcome<CheckFailure> NotEmpty(string value, string name, string message = null)
         {
             return string.Empty.Equals(value)
                 ? Outcome.Failure(new CheckFailure(CheckType.NotEmpty, name, message ?? string.Format("The argument {0} must not be empty.", name)))
                 : Outcome<CheckFailure>.Success;
         }
 
-        public static Outcome<CheckFailure> NotEmpty(Guid value, string name, string message = "Must not be empty.")
+        public static Outcome<CheckFailure> NotEmpty(Guid value, string name, string message = null)
         {
             return value.Equals(Guid.Empty)
                 ? Outcome.Failure(new CheckFailure(CheckType.NotEmpty, name, message ?? string.Format("The argument {0} must not be empty.", name)))
                 : Outcome<CheckFailure>.Success;
         }
 
-        public static Outcome<CheckFailure> NotEmpty<T>(IEnumerable<T> value, string name, string message = "Must not be empty.")
+        public static Outcome<CheckFailure> NotEmpty<T>(IEnumerable<T> value, string name, string message = null)
         {
             return null != value && value.Any() != true
                 ? Outcome.Failure(new CheckFailure(CheckType.NotEmpty, name, message ?? string.Format("The argument {0} must not be empty.", name)))
                 : Outcome<CheckFailure>.Success;
         }
 
-        public static Outcome<CheckFailure> NotNullOrEmpty(string value, string name, string message = "Must not be empty.")
+        public static Outcome<CheckFailure> NotNullOrEmpty(string value, string name, string message = null)
         {
             return string.IsNullOrEmpty(value)
                 ? Outcome.Failure(new CheckFailure(CheckType.NotNullOrEmpty, name, message ?? string.Format("The argument {0} must not be null or empty.", name)))
