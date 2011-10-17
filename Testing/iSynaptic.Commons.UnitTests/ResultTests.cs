@@ -176,6 +176,21 @@ namespace iSynaptic.Commons
             for (int i = 0; i < 10; i++)
                 Assert.AreEqual(1, maybe.Value);
         }
+
+        [Test]
+        public void ComputedObservations_AreYielded()
+        {
+            var result = new Result<int, string>(() => new Result<int, string>(new []{"Hello", "World"}));
+
+            Assert.IsTrue(result.Observations.SequenceEqual(new[] {"Hello", "World"}));
+        }
+
+        [Test]
+        public void StaticObservations_AreYielded()
+        {
+            var result = new Result<int, string>(new[] { "Hello", "World" });
+            Assert.IsTrue(result.Observations.SequenceEqual(new[] { "Hello", "World" }));
+        }
     }
 }
 

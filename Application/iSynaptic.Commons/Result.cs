@@ -222,14 +222,24 @@ namespace iSynaptic.Commons
 
     public static class Result
     {
-        public static Result<T, Unit> Value<T>(T value)
+        public static Result<T, Unit> Return<T>(T value)
         {
             return new Result<T, Unit>(value);
         }
 
-        public static Result<T, TObservation> Value<T, TObservation>(T value)
+        public static Result<T, TObservation> Return<T, TObservation>(T value)
         {
             return new Result<T, TObservation>(value);
+        }
+
+        public static Result<TResult, TObservation> Bind<T, TResult, TObservation>(this Result<T, TObservation> @this, Func<T, Result<TResult, TObservation>> selector)
+        {
+            return SelectResult(@this, selector);
+        }
+
+        public static Result<TResult, Unit> Bind<T, TResult>(this Result<T, Unit> @this, Func<T, Result<TResult, Unit>> selector)
+        {
+            return SelectResult(@this, selector);
         }
 
         public static Result<TResult, TObservation> SelectResult<T, TResult, TObservation>(this Result<T, TObservation> @this, Func<T, Result<TResult, TObservation>> selector)

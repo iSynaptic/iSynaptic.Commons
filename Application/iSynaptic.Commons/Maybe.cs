@@ -863,26 +863,22 @@ namespace iSynaptic.Commons
 
         #endregion
 
-        public static Maybe<TResult> TrySelect<T, TResult>(this Maybe<T> @this, TrySelector<T, TResult> selector)
+        public static Maybe<T> Return<T>(T value)
         {
-            Guard.NotNull(selector, "selector");
+            return new Maybe<T>(value);
+        }
+
+        public static Maybe<TResult> Bind<T, TResult>(this Maybe<T> @this, Func<T, Maybe<TResult>> selector)
+        {
+            return SelectMaybe(@this, selector);
+        }
+
+        public static Maybe<TResult> Let<T, TResult>(this Maybe<T> @this, Func<Maybe<T>, Maybe<TResult>> func)
+        {
+            Guard.NotNull(func, "func");
 
             var self = @this;
-
-            return new Maybe<TResult>(() =>
-            {
-                if (self.Exception != null)
-                    return new Maybe<TResult>(self.Exception);
-
-                if(!self.HasValue)
-                    return Maybe<TResult>.NoValue;
-
-                TResult result = default(TResult);
-
-                return selector(self.Value, out result) 
-                    ? new Maybe<TResult>(result) 
-                    : Maybe<TResult>.NoValue;
-            });
+            return new Maybe<TResult>(() => func(self));
         }
 
         public static Maybe<TResult> Select<T, TResult>(this Maybe<T> @this, Func<T, TResult> selector)
@@ -900,29 +896,26 @@ namespace iSynaptic.Commons
             });
         }
 
-        public static Maybe<TResult> Let<T, TResult>(this Maybe<T> @this, Func<Maybe<T>, Maybe<TResult>> func)
+        public static Maybe<TResult> TrySelect<T, TResult>(this Maybe<T> @this, TrySelector<T, TResult> selector)
         {
-            Guard.NotNull(func, "func");
+            Guard.NotNull(selector, "selector");
 
             var self = @this;
-            return new Maybe<TResult>(() => func(self));
-        }
 
-        public static Maybe<T> Value<T>(T value)
-        {
-            return new Maybe<T>(value);
-        }
+            return new Maybe<TResult>(() =>
+            {
+                if (self.Exception != null)
+                    return new Maybe<TResult>(self.Exception);
 
-        public static Maybe<T> Exception<T>(Exception exception)
-        {
-            Guard.NotNull(exception, "exception");
-            return new Maybe<T>(exception);
-        }
+                if (!self.HasValue)
+                    return Maybe<TResult>.NoValue;
 
-        public static Maybe<T> Throw<T>(Exception exception)
-        {
-            Guard.NotNull(exception, "exception");
-            return new Maybe<T>((Func<Maybe<T>>)(() => { throw exception; }));
+                TResult result = default(TResult);
+
+                return selector(self.Value, out result)
+                    ? new Maybe<TResult>(result)
+                    : Maybe<TResult>.NoValue;
+            });
         }
 
         // This functionally is the same as Bind and SelectMany.  Since SelectMany doesn't make sense (because there is at most one value),
@@ -940,6 +933,18 @@ namespace iSynaptic.Commons
 
                 return self.HasValue ? selector(self.Value) : Maybe<TResult>.NoValue;
             });
+        }
+
+        public static Maybe<T> Exception<T>(Exception exception)
+        {
+            Guard.NotNull(exception, "exception");
+            return new Maybe<T>(exception);
+        }
+
+        public static Maybe<T> Throw<T>(Exception exception)
+        {
+            Guard.NotNull(exception, "exception");
+            return new Maybe<T>((Func<Maybe<T>>)(() => { throw exception; }));
         }
 
         public static Maybe<T> Finally<T>(this Maybe<T> @this, Action finallyAction)

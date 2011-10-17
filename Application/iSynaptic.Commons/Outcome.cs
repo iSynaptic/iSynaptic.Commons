@@ -46,11 +46,11 @@ namespace iSynaptic.Commons
             _Observations = new[] { observation };
         }
 
-        public Outcome(bool isSuccess, T[] observations)
+        public Outcome(bool isSuccess, IEnumerable<T> observations)
             : this()
         {
             _IsFailure = !isSuccess;
-            _Observations = Guard.NotNull(observations, "observations");
+            _Observations = Guard.NotNull(observations, "observations").ToArray();
         }
 
         public Outcome(Func<Outcome<T>> computation)
@@ -82,8 +82,7 @@ namespace iSynaptic.Commons
                     foreach (var observation in _Computation().Observations)
                         yield return observation;
                 }
-
-                if (_Observations != null)
+                else if (_Observations != null)
                 {
                     foreach (var observation in _Observations)
                         yield return observation;
@@ -104,7 +103,7 @@ namespace iSynaptic.Commons
 
         public static Outcome<T> operator&(Outcome<T> left, Outcome<T> right)
         {
-            return new Outcome<T>(left.WasSuccessful & right.WasSuccessful, left.Observations.Concat(right.Observations).ToArray());
+            return new Outcome<T>(() => new Outcome<T>(left.WasSuccessful & right.WasSuccessful, left.Observations.Concat(right.Observations)));
         }
 
         public static implicit operator bool(Outcome<T> outcome)
@@ -115,14 +114,28 @@ namespace iSynaptic.Commons
 
     public static class Outcome
     {
-        public static Outcome<T> Success<T>(T observation)
+        public static Outcome<T> Return<T>(T value)
         {
-            return new Outcome<T>(true, observation);
+            return Success(value);
         }
 
-        public static Outcome<T> Failure<T>(T observation)
+        public static Outcome<U> Bind<T, U>(this Outcome<T> @this, Func<T, Outcome<U>> selector)
         {
-            return new Outcome<T>(false, observation);
+            return InformMany(@this, selector);
+        }
+
+        public static Outcome<U> Let<T, U>(this Outcome<T> @this, Func<Outcome<T>, Outcome<U>> selector)
+        {
+            Guard.NotNull(selector, "selector");
+            var self = @this;
+
+            return new Outcome<U>(() => selector(self));
+        }
+
+        public static Outcome<U> Inform<T, U>(this Outcome<T> @this, Func<T, U> selector)
+        {
+            Guard.NotNull(selector, "selector");
+            return @this.InformMany(t => new Outcome<U>(@this.WasSuccessful, selector(t)));
         }
 
         public static Outcome<U> InformMany<T, U>(this Outcome<T> @this, Func<T, Outcome<U>> selector)
@@ -141,14 +154,18 @@ namespace iSynaptic.Commons
                         Observations = ag.Observations.Concat(obs.Observations)
                     });
 
-                return new Outcome<U>(outcome.Success, outcome.Observations.ToArray());
+                return new Outcome<U>(outcome.Success, outcome.Observations);
             });
         }
 
-        public static Outcome<U> Inform<T, U>(this Outcome<T> @this, Func<T, U> selector)
+        public static Outcome<T> Success<T>(T observation)
         {
-            Guard.NotNull(selector, "selector");
-            return @this.InformMany(t => new Outcome<U>(@this.WasSuccessful, selector(t)));
+            return new Outcome<T>(true, observation);
+        }
+
+        public static Outcome<T> Failure<T>(T observation)
+        {
+            return new Outcome<T>(false, observation);
         }
 
         public static Outcome<T> Notice<T>(this Outcome<T> @this, Func<T, bool> predicate)
@@ -183,11 +200,11 @@ namespace iSynaptic.Commons
                     .Aggregate(
                     new { Success = true, Observations = Enumerable.Empty<T>() }, (ag, obs) => new
                     {
-                        Success = ag.Success && obs.WasSuccessful,
+                        Success = ag.Success & obs.WasSuccessful,
                         Observations = ag.Observations.Concat(obs.Observations)
                     });
 
-                return new Outcome<T>(outcome.Success, outcome.Observations.ToArray());
+                return new Outcome<T>(outcome.Success, outcome.Observations);
             });
         }
     }

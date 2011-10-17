@@ -8,31 +8,6 @@ namespace iSynaptic.Commons.Syntax
 {
     public static class MaybeComprehension
     {
-        public static Maybe<T> Return<T>(T value)
-        {
-            return new Maybe<T>(value);
-        }
-
-        public static Maybe<TResult> Bind<T, TResult>(this Maybe<T> @this, Func<T, Maybe<TResult>> selector)
-        {
-            return Maybe.SelectMaybe(@this, selector);
-        }
-
-        public static Maybe<TResult> Extend<T, TResult>(this Maybe<T> @this, Func<Maybe<T>, TResult> selector)
-        {
-            Guard.NotNull(selector, "selector");
-            var self = @this;
-
-            return new Maybe<TResult>(() => selector(self));
-        }
-
-        public static T Extract<T>(this Maybe<T> @this)
-        {
-            return @this.Value;
-        }
-
-        #region SelectMany Operator
-
         public static Maybe<TResult> SelectMany<T, TResult>(this Maybe<T> @this, Func<T, Maybe<TResult>> selector)
         {
             return @this.Bind(selector);
@@ -61,7 +36,5 @@ namespace iSynaptic.Commons.Syntax
                 return intermediate.HasValue ? new Maybe<TResult>(combiner(value, intermediate.Value)) : Maybe<TResult>.NoValue;
             });
         }
-
-        #endregion
     }
 }

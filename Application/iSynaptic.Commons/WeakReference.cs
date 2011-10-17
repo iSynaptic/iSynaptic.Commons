@@ -74,7 +74,7 @@ namespace iSynaptic.Commons
         public bool Equals(WeakReference<T> other)
         {
             return Maybe
-                .Value(true)
+                .Return(true)
                 .Unless(x => ReferenceEquals(this, Null))
                 .Where(x => HashCode == other.HashCode)
                 .Where(x => TryGetTarget().Equals(other.TryGetTarget()))

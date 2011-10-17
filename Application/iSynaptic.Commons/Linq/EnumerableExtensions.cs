@@ -38,6 +38,20 @@ namespace iSynaptic.Commons.Linq
             return @this.Where(x => !predicate(x));
         }
 
+        public static IEnumerable<T> NotNull<T>(this IEnumerable<T> @this)
+            where T : class
+        {
+            Guard.NotNull(@this, "@this");
+            return @this.Where(x => x != null);
+        }
+
+        public static IEnumerable<T> NotNull<T>(this IEnumerable<T?> @this)
+            where T : struct
+        {
+            Guard.NotNull(@this, "@this");
+            return @this.Where(x => x.HasValue).Select(x => x.Value);
+        }
+
         public static IEnumerable<TSource> OrderBy<TSource, TKey>(this IEnumerable<TSource> @this, Func<TSource, TKey> keySelector, Func<TKey, TKey, int> comparer)
         {
             Guard.NotNull(@this, "@this");
