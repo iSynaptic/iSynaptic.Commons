@@ -18,7 +18,7 @@ namespace iSynaptic.Commons.Syntax
             Guard.NotNull(selector, "selector");
             Guard.NotNull(combiner, "combiner");
 
-            return SelectMany(@this, x => selector(x).Select(y => combiner(x, y)));
+            return Outcome.InformMany(@this, x => selector(x).Select(y => combiner(x, y)));
         }
 
 
