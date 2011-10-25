@@ -26,38 +26,38 @@ using System.Linq;
 
 namespace iSynaptic.Commons
 {
-    public struct Outcome<T>
+    public struct Outcome<TObservation>
     {
-        public static readonly Outcome<T> Success = new Outcome<T>(true);
-        public static readonly Outcome<T> Failure = new Outcome<T>(false);
+        public static readonly Outcome<TObservation> Success = new Outcome<TObservation>(true);
+        public static readonly Outcome<TObservation> Failure = new Outcome<TObservation>(false);
 
         private readonly bool _IsFailure;
-        private readonly T[] _Observations;
-        private readonly Func<Outcome<T>> _Computation;
+        private readonly TObservation[] _Observations;
+        private readonly Func<Outcome<TObservation>> _Computation;
 
         public Outcome(bool isSuccess) : this()
         {
             _IsFailure = !isSuccess;
         }
 
-        public Outcome(bool isSuccess, T observation) : this()
+        public Outcome(bool isSuccess, TObservation observation) : this()
         {
             _IsFailure = !isSuccess;
             _Observations = new[] { observation };
         }
 
-        public Outcome(bool isSuccess, IEnumerable<T> observations)
+        public Outcome(bool isSuccess, IEnumerable<TObservation> observations)
             : this()
         {
             _IsFailure = !isSuccess;
             _Observations = Guard.NotNull(observations, "observations").ToArray();
         }
 
-        public Outcome(Func<Outcome<T>> computation)
+        public Outcome(Func<Outcome<TObservation>> computation)
             : this()
         {
             var cachedComputation = Guard.NotNull(computation, "computation");
-            var memoizedResult = default(Outcome<T>);
+            var memoizedResult = default(Outcome<TObservation>);
             var resultComputed = false;
 
             _Computation = () =>
@@ -73,7 +73,7 @@ namespace iSynaptic.Commons
             };
         }
 
-        public IEnumerable<T> Observations
+        public IEnumerable<TObservation> Observations
         {
             get
             {
@@ -101,12 +101,12 @@ namespace iSynaptic.Commons
             }
         }
 
-        public static Outcome<T> operator&(Outcome<T> left, Outcome<T> right)
+        public static Outcome<TObservation> operator&(Outcome<TObservation> left, Outcome<TObservation> right)
         {
-            return new Outcome<T>(() => new Outcome<T>(left.WasSuccessful & right.WasSuccessful, left.Observations.Concat(right.Observations)));
+            return new Outcome<TObservation>(() => new Outcome<TObservation>(left.WasSuccessful & right.WasSuccessful, left.Observations.Concat(right.Observations)));
         }
 
-        public static implicit operator bool(Outcome<T> outcome)
+        public static implicit operator bool(Outcome<TObservation> outcome)
         {
             return outcome.WasSuccessful;
         }
@@ -114,92 +114,85 @@ namespace iSynaptic.Commons
 
     public static class Outcome
     {
-        public static Outcome<T> Return<T>(T value)
+        public static Outcome<TObservation> Return<TObservation>(TObservation value)
         {
             return Success(value);
         }
 
-        public static Outcome<U> Bind<T, U>(this Outcome<T> @this, Func<T, Outcome<U>> selector)
+        public static Outcome<TResult> Bind<TObservation, TResult>(this Outcome<TObservation> @this, Func<TObservation, Outcome<TResult>> selector)
         {
             return InformMany(@this, selector);
         }
 
-        public static Outcome<U> Let<T, U>(this Outcome<T> @this, Func<Outcome<T>, Outcome<U>> selector)
+        public static Outcome<TResult> Let<TObservation, TResult>(this Outcome<TObservation> @this, Func<Outcome<TObservation>, Outcome<TResult>> selector)
         {
             Guard.NotNull(selector, "selector");
             var self = @this;
 
-            return new Outcome<U>(() => selector(self));
+            return new Outcome<TResult>(() => selector(self));
         }
 
-        public static Outcome<U> Inform<T, U>(this Outcome<T> @this, Func<T, U> selector)
+        public static Outcome<TResult> Inform<TObservation, TResult>(this Outcome<TObservation> @this, Func<TObservation, TResult> selector)
         {
             Guard.NotNull(selector, "selector");
-            return @this.InformMany(t => new Outcome<U>(@this.WasSuccessful, selector(t)));
+            return @this.InformMany(t => new Outcome<TResult>(@this.WasSuccessful, selector(t)));
         }
 
-        public static Outcome<U> InformMany<T, U>(this Outcome<T> @this, Func<T, Outcome<U>> selector)
+        public static Outcome<TResult> InformMany<TObservation, TResult>(this Outcome<TObservation> @this, Func<TObservation, Outcome<TResult>> selector)
         {
             Guard.NotNull(selector, "selector");
 
             var self = @this;
-            return new Outcome<U>(() =>
+            return new Outcome<TResult>(() =>
             {
                 var outcomes = self.Observations
                     .Select(selector)
                     .ToArray();
 
-                return new Outcome<U>(outcomes.All(x => x.WasSuccessful), outcomes.SelectMany(x => x.Observations));
+                return new Outcome<TResult>(outcomes.All(x => x.WasSuccessful), outcomes.SelectMany(x => x.Observations));
             });
         }
 
-        public static Outcome<T> Success<T>(T observation)
+        public static Outcome<TObservation> Success<TObservation>(TObservation observation)
         {
-            return new Outcome<T>(true, observation);
+            return new Outcome<TObservation>(true, observation);
         }
 
-        public static Outcome<T> Failure<T>(T observation)
+        public static Outcome<TObservation> Failure<TObservation>(TObservation observation)
         {
-            return new Outcome<T>(false, observation);
+            return new Outcome<TObservation>(false, observation);
         }
 
-        public static Outcome<T> Notice<T>(this Outcome<T> @this, Func<T, bool> predicate)
-        {
-            Guard.NotNull(predicate, "predicate");
-            return @this.InformMany(t => predicate(t) ? new Outcome<T>(@this.WasSuccessful, t) : new Outcome<T>(@this.WasSuccessful));
-        }
-
-        public static Outcome<T> Ignore<T>(this Outcome<T> @this, Func<T, bool> predicate)
+        public static Outcome<TObservation> Notice<TObservation>(this Outcome<TObservation> @this, Func<TObservation, bool> predicate)
         {
             Guard.NotNull(predicate, "predicate");
-            return @this.InformMany(t => predicate(t) ? new Outcome<T>(@this.WasSuccessful) : new Outcome<T>(@this.WasSuccessful, t));
+            return @this.InformMany(t => predicate(t) ? new Outcome<TObservation>(@this.WasSuccessful, t) : new Outcome<TObservation>(@this.WasSuccessful));
         }
 
-        public static Outcome<T> Combine<T>(this Outcome<T> @this, Outcome<T> other)
+        public static Outcome<TObservation> Ignore<TObservation>(this Outcome<TObservation> @this, Func<TObservation, bool> predicate)
+        {
+            Guard.NotNull(predicate, "predicate");
+            return @this.InformMany(t => predicate(t) ? new Outcome<TObservation>(@this.WasSuccessful) : new Outcome<TObservation>(@this.WasSuccessful, t));
+        }
+
+        public static Outcome<TObservation> Combine<TObservation>(this Outcome<TObservation> @this, Outcome<TObservation> other)
         {
             return Combine(new[] {@this, other});
         }
 
-        public static Outcome<T> Combine<T>(params Outcome<T>[] outcomes)
+        public static Outcome<TObservation> Combine<TObservation>(params Outcome<TObservation>[] outcomes)
         {
             Guard.NotNull(outcomes, "outcomes");
-            return Combine((IEnumerable<Outcome<T>>)outcomes);
+            return Combine((IEnumerable<Outcome<TObservation>>)outcomes);
         }
 
-        public static Outcome<T> Combine<T>(IEnumerable<Outcome<T>> outcomes)
+        public static Outcome<TObservation> Combine<TObservation>(IEnumerable<Outcome<TObservation>> outcomes)
         {
             Guard.NotNull(outcomes, "outcomes");
-            return new Outcome<T>(() =>
+            return new Outcome<TObservation>(() =>
             {
-                var outcome = outcomes
-                    .Aggregate(
-                    new { Success = true, Observations = Enumerable.Empty<T>() }, (ag, obs) => new
-                    {
-                        Success = ag.Success & obs.WasSuccessful,
-                        Observations = ag.Observations.Concat(obs.Observations)
-                    });
-
-                return new Outcome<T>(outcome.Success, outcome.Observations);
+                var cachedOutcomes = outcomes.ToArray();
+                return new Outcome<TObservation>(cachedOutcomes.All(x => x.WasSuccessful), cachedOutcomes.SelectMany(x => x.Observations));
             });
         }
     }
