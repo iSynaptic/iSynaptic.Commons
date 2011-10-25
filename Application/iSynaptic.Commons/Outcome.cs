@@ -145,16 +145,11 @@ namespace iSynaptic.Commons
             var self = @this;
             return new Outcome<U>(() =>
             {
-                var outcome = self.Observations
+                var outcomes = self.Observations
                     .Select(selector)
-                    .Aggregate(
-                    new { Success = true, Observations = Enumerable.Empty<U>() }, (ag, obs) => new
-                    {
-                        Success = ag.Success && obs.WasSuccessful,
-                        Observations = ag.Observations.Concat(obs.Observations)
-                    });
+                    .ToArray();
 
-                return new Outcome<U>(outcome.Success, outcome.Observations);
+                return new Outcome<U>(outcomes.All(x => x.WasSuccessful), outcomes.SelectMany(x => x.Observations));
             });
         }
 
