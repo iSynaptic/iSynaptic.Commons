@@ -175,6 +175,36 @@ namespace iSynaptic.Commons
             return @this.InformMany(t => predicate(t) ? new Outcome<TObservation>(@this.WasSuccessful) : new Outcome<TObservation>(@this.WasSuccessful, t));
         }
 
+        public static Outcome<TObservation> Observe<TObservation>(this Outcome<TObservation> @this, TObservation observation)
+        {
+            var self = @this;
+            return new Outcome<TObservation>(() => new Outcome<TObservation>(self.WasSuccessful, self.Observations.Concat(new[]{observation})));
+        }
+
+        public static Outcome<TObservation> Observe<TObservation>(this Outcome<TObservation> @this, Func<bool, TObservation> selector)
+        {
+            Guard.NotNull(selector, "selector");
+            var self = @this;
+
+            return new Outcome<TObservation>(() => new Outcome<TObservation>(self.WasSuccessful, self.Observations.Concat(new[] { selector(self.WasSuccessful) })));
+        }
+
+        public static Outcome<TObservation> ObserveMany<TObservation>(this Outcome<TObservation> @this, IEnumerable<TObservation> observations)
+        {
+            Guard.NotNull(observations, "observations");
+
+            var self = @this;
+            return new Outcome<TObservation>(() => new Outcome<TObservation>(self.WasSuccessful, self.Observations.Concat(observations)));
+        }
+
+        public static Outcome<TObservation> ObserveMany<TObservation>(this Outcome<TObservation> @this, Func<bool, IEnumerable<TObservation>> selector)
+        {
+            Guard.NotNull(selector, "selector");
+            var self = @this;
+
+            return new Outcome<TObservation>(() => new Outcome<TObservation>(self.WasSuccessful, self.Observations.Concat(selector(self.WasSuccessful))));
+        }
+
         public static Outcome<TObservation> Combine<TObservation>(this Outcome<TObservation> @this, Outcome<TObservation> other)
         {
             return Combine(new[] {@this, other});

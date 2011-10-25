@@ -31,6 +31,12 @@ namespace iSynaptic.Commons
     [TestFixture]
     public class OutcomeTests
     {
+        Outcome<Observation> _Outcome1 = Outcome.Failure(new Observation { Code = 42, Message = "Really bad stuff happened.", Type = ObservationType.Fatal });
+        Outcome<Observation> _Outcome2 = Outcome.Failure(new Observation { Code = 7, Message = "Bad stuff happened.", Type = ObservationType.Error });
+        Outcome<Observation> _Outcome3 = Outcome.Failure(new Observation { Code = 6, Message = "Things could be better", Type = ObservationType.Warning });
+        Outcome<Observation> _Outcome4 = Outcome.Success(new Observation { Code = 1, Message = "Meh!", Type = ObservationType.Warning });
+        Outcome<Observation> _Outcome5 = Outcome.Success(new Observation { Code = 1, Message = "Hello, World!", Type = ObservationType.Info });
+
         [Test]
         public void Success_ReturnsSuccessWithObservation()
         {
@@ -95,22 +101,24 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void Notice_FiltersKeepsDesireableOutcomes()
+        public void Notice_KeepsDesireableOutcomes()
         {
-            var outcome1 = Outcome.Failure(new Observation { Code = 42, Message = "Really bad stuff happened.", Type = ObservationType.Fatal });
-            var outcome2 = Outcome.Failure(new Observation { Code = 7, Message = "Bad stuff happened.", Type = ObservationType.Error });
-            var outcome3 = Outcome.Failure(new Observation { Code = 6, Message = "Things could be better", Type = ObservationType.Warning });
-            var outcome4 = Outcome.Success(new Observation { Code = 1, Message = "Meh!", Type = ObservationType.Warning });
-            var outcome5 = Outcome.Success(new Observation { Code = 1, Message = "Hello, World!", Type = ObservationType.Info });
+            var totalOutcome = Outcome.Combine(_Outcome1, _Outcome2, _Outcome3, _Outcome4, _Outcome5)
+                .Notice(x => x.Type >= ObservationType.Error);
 
-            Outcome<string> totalOutcome = Outcome.Combine(outcome1, outcome2, outcome3, outcome4, outcome5)
-                .Notice(x => x.Type >= ObservationType.Error)
-                .Inform(x => x.Message);
-
-            Assert.IsFalse(totalOutcome.WasSuccessful);
             var failures = totalOutcome.Observations.ToList();
 
             Assert.AreEqual(2, failures.Count);
+        }
+
+        [Test]
+        public void Ignore_FiltersOutDesireableOutcomes()
+        {
+            var totalOutcome = Outcome.Combine(_Outcome1, _Outcome2, _Outcome3, _Outcome4, _Outcome5)
+                .Ignore(x => x.Type >= ObservationType.Error);
+
+            var failures = totalOutcome.Observations.ToList();
+            Assert.AreEqual(3, failures.Count);
         }
 
         [Test]
@@ -140,6 +148,27 @@ namespace iSynaptic.Commons
             var failures = totalOutcome.Observations.ToList();
             Assert.AreEqual(1, failures.Count);
             Assert.AreEqual("Bad stuff happened.", failures[0]);
+        }
+
+        [Test]
+        public void Combine_CanBeUsedWithAggregate()
+        {
+            var outcome = new[] {_Outcome1, _Outcome2, _Outcome3, _Outcome4, _Outcome5}
+                .Aggregate(Outcome.Combine);
+
+            Assert.IsFalse(outcome.WasSuccessful);
+            Assert.AreEqual(5, outcome.Observations.Count());
+        }
+
+        [Test]
+        public void Let_DefinesNewVariableInExpression()
+        {
+            var outcome = new[] {_Outcome1, _Outcome2, _Outcome3, _Outcome4, _Outcome5}
+                .Aggregate(Outcome.Combine)
+                .Inform(x => x.Message)
+                .Let(x => !x.WasSuccessful ? x.Observe("Major Fail") : x);
+
+            Assert.AreEqual(6, outcome.Observations.Count());
         }
     }
 
