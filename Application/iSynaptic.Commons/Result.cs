@@ -52,6 +52,7 @@ namespace iSynaptic.Commons
         {
             _Value = value;
             _HasValue = true;
+
             _Observations = observations;
         }
 
@@ -222,22 +223,12 @@ namespace iSynaptic.Commons
 
     public static class Result
     {
-        public static Result<T, Unit> Return<T>(T value)
-        {
-            return new Result<T, Unit>(value);
-        }
-
         public static Result<T, TObservation> Return<T, TObservation>(T value)
         {
             return new Result<T, TObservation>(value);
         }
 
         public static Result<TResult, TObservation> Bind<T, TResult, TObservation>(this Result<T, TObservation> @this, Func<T, Result<TResult, TObservation>> selector)
-        {
-            return SelectResult(@this, selector);
-        }
-
-        public static Result<TResult, Unit> Bind<T, TResult>(this Result<T, Unit> @this, Func<T, Result<TResult, Unit>> selector)
         {
             return SelectResult(@this, selector);
         }
@@ -263,14 +254,6 @@ namespace iSynaptic.Commons
 
                 return new Result<TResult, TObservation>(self.Observations);
             });
-        }
-
-        public static Result<TResult, Unit> SelectResult<T, TResult>(this Result<T, Unit> @this, Func<T, Result<TResult, Unit>> selector)
-        {
-            Guard.NotNull(selector, "selector");
-
-            var self = @this;
-            return new Result<TResult, Unit>(() => self.HasValue ? selector(self.Value) : Result<TResult, Unit>.NoValue);
         }
 
         public static Result<TResult, TObservation> Select<T, TResult, TObservation>(this Result<T, TObservation> @this, Func<T, TResult> selector)
@@ -376,11 +359,6 @@ namespace iSynaptic.Commons
             return new Result<T, TObservation>(() => self.HasValue
                 ? new Result<T, TObservation>(self.Value, self.Observations.Where(x => !predicate(x)))
                 : new Result<T, TObservation>(self.Observations.Where(x => !predicate(x))));
-        }
-
-        public static Result<T, Unit> ToResult<T>(this T value)
-        {
-            return new Result<T, Unit>(value);
         }
 
         public static Result<T, TObservation> ToResult<T, TObservation>(this T value)

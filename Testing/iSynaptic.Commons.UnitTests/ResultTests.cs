@@ -203,8 +203,8 @@ namespace iSynaptic.Commons
         [Test]
         public void ComprehensionSyntaxIsWorking()
         {
-            var value = from x in 6.ToResult()
-                        from y in 7.ToResult()
+            var value = from x in 6.ToResult<int, Unit>()
+                        from y in 7.ToResult<int, Unit>()
                         let ultimateAnswer = x * y
                         where ultimateAnswer == 42
                         select ultimateAnswer;
