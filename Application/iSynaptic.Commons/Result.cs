@@ -361,6 +361,15 @@ namespace iSynaptic.Commons
                 : new Result<T, TObservation>(self.Observations.Where(x => !predicate(x))));
         }
 
+        public static Result<T, TObservation> Run<T, TObservation>(this Result<T, TObservation> @this, Action<T> action = null)
+        {
+            // Getting HasValue forces evaluation
+            if (@this.HasValue && action != null)
+                action(@this.Value);
+
+            return @this;
+        }
+
         public static Result<T, TObservation> ToResult<T, TObservation>(this T value)
         {
             return new Result<T, TObservation>(value);

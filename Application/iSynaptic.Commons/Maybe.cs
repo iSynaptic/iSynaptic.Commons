@@ -1073,7 +1073,7 @@ namespace iSynaptic.Commons
 
         public static Maybe<T> Run<T>(this Maybe<T> @this, Action<T> action = null)
         {
-            // Calling HasValue forces evaluation
+            // Getting HasValue forces evaluation
             if (@this.HasValue && action != null)
                 action(@this.Value);
 

@@ -170,6 +170,56 @@ namespace iSynaptic.Commons
 
             Assert.AreEqual(6, outcome.Observations.Count());
         }
+
+        [Test]
+        public void FailIf_WhenPredicateReturnsFalse_IsSuccessfulOutcome()
+        {
+            var outcome = Outcome<string>.Success
+                .FailIf(false);
+
+            Assert.IsTrue(outcome.WasSuccessful);
+        }
+
+        [Test]
+        public void FailIf_WhenPredicateReturnsTrue_IsFailedOutcome()
+        {
+            var outcome = Outcome<string>.Success
+                .FailIf(true);
+
+            Assert.IsFalse(outcome.WasSuccessful);
+        }
+
+        [Test]
+        public void FailIf_WhenPredicateReturnsFalse_YieldsNoFailureObservation()
+        {
+            var outcome = Outcome<string>.Success
+                .FailIf(false, "No success for you!");
+
+            Assert.IsTrue(outcome.WasSuccessful);
+            Assert.AreEqual(0, outcome.Observations.Count());
+        }
+
+        [Test]
+        public void FailIf_WhenPredicateReturnsTrue_YieldsSingleFailureObservation()
+        {
+            var outcome = Outcome<string>.Success
+                .FailIf(true, "No success for you!");
+
+            Assert.IsFalse(outcome.WasSuccessful);
+            Assert.IsTrue(outcome.Observations.SequenceEqual(new[] {"No success for you!"}));
+        }
+
+        [Test]
+        public void Run_ForcesEvaluation()
+        {
+            bool executed = false;
+            var outcome = new Outcome<string>(() => { executed = true; return Outcome<string>.Success; });
+
+            Assert.IsFalse(executed);
+
+            outcome.Run();
+            Assert.IsTrue(executed);
+        }
     }
 
     public class Observation

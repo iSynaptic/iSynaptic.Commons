@@ -205,6 +205,55 @@ namespace iSynaptic.Commons
             return new Outcome<TObservation>(() => new Outcome<TObservation>(self.WasSuccessful, self.Observations.Concat(selector(self.WasSuccessful))));
         }
 
+        public static Outcome<TObservation> FailIf<TObservation>(this Outcome<TObservation> @this, bool predicate)
+        {
+            return @this.FailIf(() => predicate);
+        }
+
+        public static Outcome<TObservation> FailIf<TObservation>(this Outcome<TObservation> @this, Func<bool> predicate)
+        {
+            Guard.NotNull(predicate, "predicate");
+            var self = @this;
+
+            return new Outcome<TObservation>(() => new Outcome<TObservation>(self.WasSuccessful && !predicate(), self.Observations));
+        }
+
+        public static Outcome<TObservation> FailIf<TObservation>(this Outcome<TObservation> @this, bool predicate, TObservation failureObservation)
+        {
+            return @this.FailIf(predicate, () => failureObservation);
+        }
+
+        public static Outcome<TObservation> FailIf<TObservation>(this Outcome<TObservation> @this, bool predicate, Func<TObservation> failureObservation)
+        {
+            return @this.FailIf(() => predicate, failureObservation);
+        }
+
+        public static Outcome<TObservation> FailIf<TObservation>(this Outcome<TObservation> @this, Func<bool> predicate, Func<TObservation> failureObservation)
+        {
+            Guard.NotNull(predicate, "predicate");
+            Guard.NotNull(failureObservation, "failureObservation");
+
+            var self = @this;
+
+            return new Outcome<TObservation>(() =>
+            {
+                var failed = predicate();
+                var observations = failed
+                    ? self.Observations.Concat(new[] { failureObservation() })
+                    : self.Observations;
+
+                return new Outcome<TObservation>(self.WasSuccessful && !failed, observations);
+            });
+        }
+
+        public static Outcome<TObservation> Run<TObservation>(this Outcome<TObservation> @this)
+        {
+            // Getting WasSuccessful forces evaluation
+            return @this.WasSuccessful
+                ? @this
+                : @this;
+        }
+
         public static Outcome<TObservation> Combine<TObservation>(this Outcome<TObservation> @this, Outcome<TObservation> other)
         {
             return Combine(new[] {@this, other});

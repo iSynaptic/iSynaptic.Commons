@@ -2,6 +2,30 @@
 RELEASE NOTES: iSynaptic.Commons
 ======================================
 
+==== v0.3.7 (October 27, 2011) ====
+
+ ---- Features ----
+
+* Initial implementation of the Result<T, TObservation> monad
+
+* Outcome<TObservation> implementation has more operators.
+
+* Added implementation of Unit.
+
+---- Breaking Changes ----
+
+* Renamed Maybe<T> Express operator to Let.
+
+* Maybe<T> extension methods to support comprehension syntax have
+  been moved to the iSynaptic.Commons.Syntax namespace.
+
+* Outcome<TObservation> extensions methods to support comprehension
+  syntax have been moved to the iSynaptic.Commons.Syntax namespace.
+
+* Outcome<TObservation> SelectMany was renamed to InformMany to stay
+  consistent with operator names for Result<T, TObservation>
+
+
 ==== v0.3.3 (October 7, 2011) ====
 
  ---- Features ----
