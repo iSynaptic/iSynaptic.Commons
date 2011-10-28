@@ -2,6 +2,19 @@
 RELEASE NOTES: iSynaptic.Commons
 ======================================
 
+==== v0.3.8 (October 28, 2011) ====
+
+ ---- Features ----
+
+* Added overload of Recurse extension method that takes Func<T, T>.
+
+---- Breaking Changes ----
+
+* Maybe<T> and Result<T, TObservation> now treat nulls as NoValue.
+
+* NotNull and Coalesce operators for Maybe<T> are now gone.
+
+
 ==== v0.3.7 (October 27, 2011) ====
 
  ---- Features ----

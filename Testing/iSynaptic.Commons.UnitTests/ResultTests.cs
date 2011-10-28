@@ -52,7 +52,6 @@ namespace iSynaptic.Commons
         [Test]
         public void AccessingValueProperty_OnValue_ReturnsExpectedValue()
         {
-            Assert.IsNull(new Result<string, int>((string)null).Value);
             Assert.AreEqual("Hello, World!", new Result<string, int>("Hello, World!").Value);
         }
 
@@ -60,12 +59,6 @@ namespace iSynaptic.Commons
         public void Observations_WithNoValue_IsEmpty()
         {
             Assert.IsTrue(Result<int, string>.NoValue.Observations.Count() == 0);
-        }
-
-        [Test]
-        public void Observations_WithDefaultValue_IsEmpty()
-        {
-            Assert.IsTrue(Result<int, string>.Default.Observations.Count() == 0);
         }
 
         [Test]
@@ -97,9 +90,9 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void Equals_WithNullValueAndNoValue_ReturnsFalse()
+        public void Equals_WithNullValueAndNoValue_ReturnsTrue()
         {
-            Assert.IsTrue(new Result<string, int>((string)null) != Result<string, int>.NoValue);
+            Assert.IsTrue(new Result<string, int>((string)null) == Result<string, int>.NoValue);
         }
 
         [Test]
@@ -139,9 +132,9 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void GetHashCode_OnNoValue_ReturnsNegativeOne()
+        public void GetHashCode_OnNoValue_ReturnsZero()
         {
-            Assert.AreEqual(-1, Result<int, string>.NoValue.GetHashCode());
+            Assert.AreEqual(0, Result<int, string>.NoValue.GetHashCode());
         }
 
         [Test]

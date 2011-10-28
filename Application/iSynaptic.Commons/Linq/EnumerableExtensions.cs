@@ -305,6 +305,14 @@ namespace iSynaptic.Commons.Linq
             return @this.SelectMany(x => new[] { x }.Concat((selector(x) ?? Enumerable.Empty<T>()).Recurse(selector)));
         }
 
+        public static IEnumerable<T> Recurse<T>(this T @this, Func<T, T> selector)
+        {
+            Guard.NotNull(@this, "@this");
+            Guard.NotNull(selector, "selector");
+
+            return @this.Recurse(x => selector(x).ToMaybe());
+        }
+
         public static IEnumerable<T> Recurse<T>(this T @this, Func<T, Maybe<T>> selector)
         {
             Guard.NotNull(@this, "@this");

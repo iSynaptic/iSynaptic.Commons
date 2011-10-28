@@ -30,7 +30,6 @@ namespace iSynaptic.Commons
     public struct Result<T, TObservation> : IEquatable<Result<T, TObservation>>, IEquatable<T>
     {
         public static readonly Result<T, TObservation> NoValue = new Result<T, TObservation>();
-        public static readonly Result<T, TObservation> Default = new Result<T, TObservation>(default(T));
 
         private readonly T _Value;
         private readonly bool _HasValue;
@@ -51,7 +50,7 @@ namespace iSynaptic.Commons
             : this()
         {
             _Value = value;
-            _HasValue = true;
+            _HasValue = value != null;
 
             _Observations = observations;
         }
@@ -60,7 +59,7 @@ namespace iSynaptic.Commons
             : this()
         {
             _Value = value;
-            _HasValue = true;
+            _HasValue = value != null;
 
             _Observations = observations != null
                                 ? observations.ToArray()
@@ -180,7 +179,7 @@ namespace iSynaptic.Commons
             Guard.NotNull(comparer, "comparer");
 
             if (HasValue != true)
-                return -1;
+                return 0;
 
             return comparer.GetHashCode(Value);
         }

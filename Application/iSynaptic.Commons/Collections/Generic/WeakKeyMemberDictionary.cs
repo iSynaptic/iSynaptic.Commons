@@ -44,8 +44,8 @@ namespace iSynaptic.Commons.Collections.Generic
 
         protected override Maybe<TKey> UnwrapKey(TKey key)
         {
-            return Maybe
-                .NotNull(_MemberSelector(key))
+            return _MemberSelector(key)
+                .ToMaybe()
                 .SelectMaybe(x => x.TryGetTarget())
                 .Select(x => key);
         }

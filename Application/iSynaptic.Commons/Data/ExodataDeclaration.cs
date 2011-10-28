@@ -118,8 +118,8 @@ namespace iSynaptic.Commons.Data
 
         public virtual Maybe<TExodata> TryResolve<TContext, TSubject>(Maybe<TContext> context, Maybe<TSubject> subject, MemberInfo member)
         {
-            return Maybe
-                .NotNull(ExodataResolver)
+            return ExodataResolver
+                .ToMaybe()
                 .Or(Ioc.TryResolve<IExodataResolver>)
                 .SelectMaybe(x => x.TryResolve(ExodataRequest.Create<TExodata, TContext, TSubject>(this, context, subject, member)))
                 .SelectMaybe(x => EnsureValid(x, "bound"));

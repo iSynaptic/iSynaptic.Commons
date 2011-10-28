@@ -59,7 +59,6 @@ namespace iSynaptic.Commons
         [Test]
         public void AccessingValueProperty_OnValue_ReturnsExpectedValue()
         {
-            Assert.IsNull(new Maybe<string>((string)null).Value);
             Assert.AreEqual("Hello, World!", new Maybe<string>("Hello, World!").Value);
         }
 
@@ -107,9 +106,9 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void Equals_WithNullValueAndNoValue_ReturnsFalse()
+        public void Equals_WithNullValueAndNoValue_ReturnsTrue()
         {
-            Assert.IsTrue(new Maybe<string>((string)null) != Maybe<string>.NoValue);
+            Assert.IsTrue(new Maybe<string>((string)null) == Maybe<string>.NoValue);
         }
 
         [Test]
@@ -151,7 +150,7 @@ namespace iSynaptic.Commons
         [Test]
         public void GetHashCode_OnNoValue_ReturnsNegativeOne()
         {
-            Assert.AreEqual(-1, Maybe<int>.NoValue.GetHashCode());
+            Assert.AreEqual(0, Maybe<int>.NoValue.GetHashCode());
         }
 
         [Test]
@@ -296,87 +295,47 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void NotNull_WithReferenceTypes_BehavesCorrectly()
-        {
-            AssertMaybe.Behavior<string>(null, x => x.NotNull(), AssertMaybeResult.NoValue);
-            AssertMaybe.Behavior("", x => x.NotNull(), AssertMaybeResult.SameValue);
-            AssertMaybe.Behavior("   ", x => x.NotNull(), AssertMaybeResult.SameValue);
-            AssertMaybe.Behavior("42", x => x.NotNull(), AssertMaybeResult.SameValue);
-
-            AssertMaybe.Behavior("", x => x.NotNull((Func<string, string>)null), AssertMaybeResult.ThrowExceptionImmediately, AssertMaybeResult.ThrowExceptionImmediately, AssertMaybeResult.ThrowExceptionImmediately);
-
-            AssertMaybe.Behavior<string>(null, x => x.NotNull(y => ""), AssertMaybeResult.SameValue);
-            AssertMaybe.Behavior("", x => x.NotNull(y => ""), AssertMaybeResult.SameValue);
-            AssertMaybe.Behavior("   ", x => x.NotNull(y => ""), AssertMaybeResult.SameValue);
-            AssertMaybe.Behavior("42", x => x.NotNull(y => ""), AssertMaybeResult.SameValue);
-
-            AssertMaybe.Behavior<string>(null, x => x.NotNull(y => (string)null), AssertMaybeResult.NoValue);
-            AssertMaybe.Behavior("", x => x.NotNull(y => (string)null), AssertMaybeResult.NoValue);
-            AssertMaybe.Behavior("   ", x => x.NotNull(y => (string)null), AssertMaybeResult.NoValue);
-            AssertMaybe.Behavior("42", x => x.NotNull(y => (string)null), AssertMaybeResult.NoValue);
-        }
-
-        [Test]
-        public void NotNull_WithValueTypes_BehavesCorrectly()
-        {
-            AssertMaybe.Behavior<int?>(null, x => x.NotNull(), AssertMaybeResult.NoValue);
-            AssertMaybe.Behavior<int?>(42, x => x.NotNull(), AssertMaybeResult.SameValue);
-
-            AssertMaybe.Behavior(42, x => x.NotNull((Func<int, int?>)null), AssertMaybeResult.ThrowExceptionImmediately, AssertMaybeResult.ThrowExceptionImmediately, AssertMaybeResult.ThrowExceptionImmediately);
-
-            AssertMaybe.Behavior<int?>(null, x => x.NotNull(y => y), AssertMaybeResult.NoValue);
-            AssertMaybe.Behavior(42, x => x.NotNull(y => (int?)y), AssertMaybeResult.SameValue);
-
-            AssertMaybe.Behavior<int?>(null, x => x.NotNull(y => (int?)null), AssertMaybeResult.NoValue);
-            AssertMaybe.Behavior(42, x => x.NotNull(y => (int?)null), AssertMaybeResult.NoValue);
-        }
-
-        [Test]
-        public void NotNull_EntryPoint_BehavesCorrectly()
-        {
-            AssertMaybe.Behavior("Hello World!", x => Maybe.NotNull(x), AssertMaybeResult.SameValue);
-            AssertMaybe.Behavior("", x => Maybe.NotNull(x), AssertMaybeResult.SameValue);
-            AssertMaybe.Behavior<string>(null, x => Maybe.NotNull(x), AssertMaybeResult.NoValue);
-
-            AssertMaybe.Behavior<int?>(42, x => Maybe.NotNull(x), AssertMaybeResult.SameValue);
-            AssertMaybe.Behavior<int?>(null, x => Maybe.NotNull(x), AssertMaybeResult.NoValue);
-        }
-
-        [Test]
-        public void Coalesce_SelectingReferenceType_BehavesCorrectly()
-        {
-            AssertMaybe.Behavior("", x => x.Coalesce(y => y), AssertMaybeResult.SameValue);
-            AssertMaybe.Behavior("", x => x.Coalesce(y => (string)null), AssertMaybeResult.NoValue);
-            AssertMaybe.Behavior<string>(null, x => x.Coalesce(y => "Foo"), AssertMaybeResult.Value);
-            AssertMaybe.Behavior("", x => x.Coalesce(y => "SomeOtherValue"), AssertMaybeResult.Value);
-
-            AssertMaybe.Behavior("", x => x.Coalesce((Func<string, string>)null), AssertMaybeResult.ThrowExceptionImmediately, AssertMaybeResult.ThrowExceptionImmediately, AssertMaybeResult.ThrowExceptionImmediately);
-        }
-
-        [Test]
-        public void Coalesce_SelectingNullableValueType_BehavesCorrectly()
-        {
-            AssertMaybe.Behavior(42, x => x.Coalesce(y => (int?)y), AssertMaybeResult.SameValue);
-            AssertMaybe.Behavior(42, x => x.Coalesce(y => (int?)null), AssertMaybeResult.NoValue);
-            AssertMaybe.Behavior<int?>(null, x => x.Coalesce(y => (int?)42), AssertMaybeResult.Value);
-            AssertMaybe.Behavior(42, x => x.Coalesce(y => (int?)1337), AssertMaybeResult.Value);
-
-            AssertMaybe.Behavior(42, x => x.Coalesce((Func<int, int?>)null), AssertMaybeResult.ThrowExceptionImmediately, AssertMaybeResult.ThrowExceptionImmediately, AssertMaybeResult.ThrowExceptionImmediately);
-        }
-
-        [Test]
         public void Return_ReturnsValueWrapedInMaybe()
         {
             AssertMaybe.Behavior(42, x => Maybe.Return(x), AssertMaybeResult.SameValue);
-            AssertMaybe.Behavior<string>(null, x => Maybe.Return(x), AssertMaybeResult.SameValue);
-            AssertMaybe.Behavior<int?>(null, x => Maybe.Return(x), AssertMaybeResult.SameValue);
+        }
+
+        [Test]
+        public void Return_StripsOffNullabilityFromNullableStrucs()
+        {
+            int? input = null;
+            Maybe<int> value = Maybe.Return(input);
+
+            Assert.IsFalse(value.HasValue);
+        }
+
+        [Test]
+        public void ToMaybe_StripsOffNullabilityFromNullableStrucs()
+        {
+            int? input = null;
+            Maybe<int> value = input.ToMaybe();
+
+            Assert.IsFalse(value.HasValue);
+        }
+
+        [Test]
+        public void Null_IsTreatedAsNoValue()
+        {
+            string input = null;
+            var value = new Maybe<string>(input);
+
+            Assert.IsFalse(value.HasValue);
+
+            int? input2 = null;
+            var value2 = new Maybe<int?>(input2);
+
+            Assert.IsFalse(value2.HasValue);
         }
 
         [Test]
         public void Select_ReturnsSelectedValueInMaybe()
         {
             AssertMaybe.Behavior("Hello, World!", x => x.Select(y => y), AssertMaybeResult.SameValue);
-            AssertMaybe.Behavior<string>(null, x => x.Select(y => y), AssertMaybeResult.SameValue);
             AssertMaybe.Behavior(7, x => x.Select(y => y * 6), AssertMaybeResult.Value);
         }
 
@@ -422,7 +381,7 @@ namespace iSynaptic.Commons
         public void ValueOrDefault_UnwrapsValueIfItHasAvalue()
         {
             var rawValue = "Hello World!";
-            var value = Maybe.NotNull(rawValue)
+            var value = Maybe.Return(rawValue)
                 .ValueOrDefault("{default}");
 
             Assert.AreEqual(rawValue, value);
@@ -570,7 +529,8 @@ namespace iSynaptic.Commons
         [Test]
         public void Suppress_ContinuesWithNoValue()
         {
-            var value = Maybe<string>.Default
+            var value = "Hello, World!"
+                .ToMaybe()
                 .SelectMaybe(x => new Maybe<string>(new InvalidOperationException()))
                 .Select(x => x.Length)
                 .Where(x => x > 10)
@@ -582,7 +542,8 @@ namespace iSynaptic.Commons
         [Test]
         public void Suppress_ContinuesWithNewValue()
         {
-            var value = Maybe<string>.Default
+            var value = "Hello, World!"
+                .ToMaybe()
                 .SelectMaybe(x => new Maybe<string>(new InvalidOperationException()))
                 .Select(x => x.Length)
                 .Where(x => x > 10)
@@ -655,30 +616,6 @@ namespace iSynaptic.Commons
         {
             bool executed = false;
             var value = Maybe.Defer(() => { executed = true; return 42; });
-
-            Assert.IsFalse(executed);
-
-            Assert.AreEqual(42, value.Value);
-            Assert.IsTrue(executed);
-        }
-
-        [Test]
-        public void NotNull_WithReferenceType_DefersExecutionUntilEvaluated()
-        {
-            bool executed = false;
-            var value = Maybe.NotNull(() => { executed = true; return "42"; });
-
-            Assert.IsFalse(executed);
-
-            Assert.AreEqual("42", value.Value);
-            Assert.IsTrue(executed);
-        }
-
-        [Test]
-        public void NotNull_WithValueType_DefersExecutionUntilEvaluated()
-        {
-            bool executed = false;
-            var value = Maybe.NotNull(() => { executed = true; return (int?)42; });
 
             Assert.IsFalse(executed);
 
@@ -848,7 +785,8 @@ namespace iSynaptic.Commons
         [Test]
         public void Catch_ContainsThrownExceptions()
         {
-            var value = Maybe<int>.Default
+            var value = 0
+                .ToMaybe()
                 .Select(x => 7 / x)
                 .Catch()
                 .Run();
@@ -861,7 +799,8 @@ namespace iSynaptic.Commons
         [Test]
         public void Catch_DoesntCatchIfPredicateReturnsFalse()
         {
-            var value = Maybe<int>.Default
+            var value = 0
+                .ToMaybe()
                 .Select(x => 7 / x)
                 .Catch(x => false);
 
@@ -1255,13 +1194,12 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void ToMaybe_WhenValueIsNullAndTIsReferenceType_ReturnsMaybeWrappedNull()
+        public void ToMaybe_WhenValueIsNullAndTIsReferenceType_ReturnsNoValue()
         {
             object value = null;
             var result = value.ToMaybe<string>();
 
-            Assert.IsTrue(result.HasValue);
-            Assert.IsNull(result.Value);
+            Assert.IsFalse(result.HasValue);
         }
 
         [Test]

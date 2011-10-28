@@ -45,16 +45,15 @@ namespace iSynaptic.Commons
 
             Type targetType = target.GetType();
 
-            var info = Maybe.NotNull(targetType.GetMethod(methodName,
-               BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.FlattenHierarchy,
-               null,
-               parameterTypes,
-               null));
-
-            return info
-                .Where(x => x.IsStatic)
-                .Select(x => Delegate.CreateDelegate(typeof (T), x))
-                .Or(info.Select(x => Delegate.CreateDelegate(typeof (T), target, x)))
+            return targetType.GetMethod(methodName,
+                BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.FlattenHierarchy,
+                null,
+                parameterTypes,
+                null).ToMaybe()
+                .Let(info => info
+                    .Where(x => x.IsStatic)
+                    .Select(x => Delegate.CreateDelegate(typeof (T), x))
+                    .Or(info.Select(x => Delegate.CreateDelegate(typeof (T), target, x))))
                 .Cast<T>()
                 .ValueOrDefault();
         }
