@@ -254,18 +254,24 @@ namespace iSynaptic.Commons
                 : @this;
         }
 
-        public static Outcome<TObservation> Combine<TObservation>(this Outcome<TObservation> @this, Outcome<TObservation> other)
-        {
-            return Combine(new[] {@this, other});
-        }
-
         public static Outcome<TObservation> Combine<TObservation>(params Outcome<TObservation>[] outcomes)
         {
             Guard.NotNull(outcomes, "outcomes");
             return Combine((IEnumerable<Outcome<TObservation>>)outcomes);
         }
 
-        public static Outcome<TObservation> Combine<TObservation>(IEnumerable<Outcome<TObservation>> outcomes)
+        public static Outcome<TObservation> Combine<TObservation>(this Outcome<TObservation> @this, Outcome<TObservation> other)
+        {
+            return Combine(new[] {@this, other});
+        }
+
+        public static Outcome<TObservation> Combine<TObservation>(this Outcome<TObservation> @this, params Outcome<TObservation>[] outcomes)
+        {
+            Guard.NotNull(outcomes, "outcomes");
+            return Combine(new[]{@this}.Concat(outcomes));
+        }
+
+        public static Outcome<TObservation> Combine<TObservation>(this IEnumerable<Outcome<TObservation>> outcomes)
         {
             Guard.NotNull(outcomes, "outcomes");
             return new Outcome<TObservation>(() =>
