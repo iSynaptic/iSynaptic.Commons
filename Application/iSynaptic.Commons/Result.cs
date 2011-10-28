@@ -110,10 +110,9 @@ namespace iSynaptic.Commons
         {
             get
             {
-                if (_Computation == null)
-                    return _HasValue;
-
-                return _Computation().HasValue;
+                return _Computation != null 
+                    ? _Computation().HasValue 
+                    : _HasValue;
             }
         }
 

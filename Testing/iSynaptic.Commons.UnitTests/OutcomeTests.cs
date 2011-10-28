@@ -210,6 +210,20 @@ namespace iSynaptic.Commons
         }
 
         [Test]
+        public void Observations_VisibleViaNonGenericInterface()
+        {
+            IOutcome outcome = Outcome.Success("Hello, World!");
+            Assert.IsTrue(outcome.Observations.SequenceEqual(new[]{"Hello, World!"}));
+        }
+
+        [Test]
+        public void Observations_VisibleViaGenericInterface()
+        {
+            IOutcome<object> outcome = Outcome.Success("Hello, World!");
+            Assert.IsTrue(outcome.Observations.SequenceEqual(new[] { "Hello, World!" }));
+        }
+
+        [Test]
         public void Run_ForcesEvaluation()
         {
             bool executed = false;

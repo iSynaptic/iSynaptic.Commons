@@ -26,7 +26,7 @@ using System.Linq;
 
 namespace iSynaptic.Commons
 {
-    public struct Outcome<TObservation>
+    public struct Outcome<TObservation> : IOutcome<TObservation>
     {
         public static readonly Outcome<TObservation> Success = new Outcome<TObservation>(true);
         public static readonly Outcome<TObservation> Failure = new Outcome<TObservation>(false);
@@ -88,6 +88,11 @@ namespace iSynaptic.Commons
                         yield return observation;
                 }
             }
+        }
+
+        IEnumerable<object> IOutcome.Observations
+        {
+            get { return (IEnumerable<object>)Observations; }
         }
 
         public bool WasSuccessful

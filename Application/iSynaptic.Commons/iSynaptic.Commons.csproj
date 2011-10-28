@@ -117,6 +117,7 @@
     <Compile Include="IDependencySymbol.cs" />
     <Compile Include="IKeyedReaderWriter.cs" />
     <Compile Include="Indexer.cs" />
+    <Compile Include="IOutcome.cs" />
     <Compile Include="ISymbol.cs" />
     <Compile Include="KeyedReaderWriter.cs" />
     <Compile Include="Linq\Expressions\ExpressionExtensions.cs" />

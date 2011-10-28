@@ -106,10 +106,9 @@ namespace iSynaptic.Commons
         {
             get
             {
-                if(_Computation == null)
-                    return _HasValue;
-
-                return _Computation().HasValue;
+                return _Computation != null 
+                    ? _Computation().HasValue
+                    : _HasValue;
             }
         }
 
@@ -117,10 +116,9 @@ namespace iSynaptic.Commons
         {
             get
             {
-                if(_Computation == null)
-                    return _Exception;
-
-                return _Computation().Exception;
+                return _Computation != null 
+                    ? _Computation().Exception 
+                    : _Exception;
             }
         }
 
@@ -176,10 +174,9 @@ namespace iSynaptic.Commons
             if (Exception != null)
                 return Exception.GetHashCode();
 
-            if (HasValue != true)
-                return 0;
-
-            return comparer.GetHashCode(Value);
+            return HasValue
+                ? comparer.GetHashCode(Value)
+                : 0;
         }
 
         public static bool operator ==(Maybe<T> left, Maybe<T> right)
