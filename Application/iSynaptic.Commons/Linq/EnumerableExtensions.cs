@@ -325,14 +325,8 @@ namespace iSynaptic.Commons.Linq
         {
             Guard.NotNull(@this, "@this");
 
-            foreach(var maybe in @this)
-            {
-                if(maybe.Exception != null)
-                    maybe.Exception.ThrowAsInnerExceptionIfNeeded();
-
-                if(maybe.HasValue)
-                    yield return maybe.Value;
-            }
+            return @this.Where(x => x.HasValue)
+                .Select(x => x.Value);
         }
     }
 }

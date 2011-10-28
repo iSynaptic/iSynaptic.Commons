@@ -47,7 +47,7 @@ namespace iSynaptic.Commons.Data
         protected override Maybe<Guid> EnsureValid(Guid value, string valueName)
         {
             if (value == Guid.Empty && IsEmptyValid != true)
-                return Maybe.Exception<Guid>(new ExodataValidationException<Guid>(this, value, string.Format("The {0} value must not equal to Guid.Empty.", valueName)));
+                return Maybe.Throw<Guid>(new ExodataValidationException<Guid>(this, value, string.Format("The {0} value must not equal to Guid.Empty.", valueName)));
 
             return base.EnsureValid(value, valueName);
         }

@@ -33,6 +33,5 @@ namespace iSynaptic.Commons
     {
         object Value { get; }
         bool HasValue { get; }
-        Exception Exception { get; }
     }
 }

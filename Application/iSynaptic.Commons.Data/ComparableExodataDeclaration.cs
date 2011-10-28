@@ -42,10 +42,10 @@ namespace iSynaptic.Commons.Data
         protected override Maybe<T> EnsureValid(T value, string valueName)
         {
             if(value.CompareTo(MinValue) < 0)
-                return Maybe.Exception<T>(new ExodataValidationException<T>(this, value, string.Format("The {0} value must be greater than or equal to {1}.", valueName, MinValue)));
+                return Maybe.Throw<T>(new ExodataValidationException<T>(this, value, string.Format("The {0} value must be greater than or equal to {1}.", valueName, MinValue)));
 
             if(value.CompareTo(MaxValue) > 0)
-                return Maybe.Exception<T>(new ExodataValidationException<T>(this, value, string.Format("The {0} value must be less than or equal to {1}.", valueName, MaxValue)));
+                return Maybe.Throw<T>(new ExodataValidationException<T>(this, value, string.Format("The {0} value must be less than or equal to {1}.", valueName, MaxValue)));
 
             return base.EnsureValid(value, valueName);
         }

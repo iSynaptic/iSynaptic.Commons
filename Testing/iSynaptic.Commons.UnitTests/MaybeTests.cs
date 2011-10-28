@@ -63,15 +63,6 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void AccessingValueProperty_OnException_ThrowsException()
-        {
-            var value = new Maybe<string>(new InvalidOperationException("42"));
-
-            var exception = Assert.Throws<InvalidOperationException>(() => { var x = value.Value; });
-            Assert.AreEqual("42", exception.Message);
-        }
-
-        [Test]
         public void ExplicitCast_OnValue_ReturnsValue()
         {
             int value = (int) new Maybe<int>(42);
@@ -83,12 +74,6 @@ namespace iSynaptic.Commons
         public void ExplicitCast_OnNoValue_ThrowsException()
         {
             Assert.Throws<InvalidOperationException>(() => { var x = (int) Maybe<int>.NoValue; });
-        }
-
-        [Test]
-        public void ExplicitCast_OnException_ThrowsWrappedException()
-        {
-            Assert.Throws<NullReferenceException>(() => { var x = (int) new Maybe<int>(new NullReferenceException()); });
         }
 
         [Test]
@@ -186,42 +171,6 @@ namespace iSynaptic.Commons
                 Assert.AreEqual(1, maybe.Value);
         }
 
-        [Test]
-        public void Equals_WithSameExceptionReference_ReturnsTrue()
-        {
-            var exception = new DivideByZeroException();
-
-            var first = new Maybe<int>(exception);
-            var second = new Maybe<int>(exception);
-
-            Assert.IsTrue(first.Equals(second));
-        }
-
-        [Test]
-        public void Equals_WithDifferentExceptionReference_ReturnsFalse()
-        {
-            var first = new Maybe<int>(new DivideByZeroException());
-            var second = new Maybe<int>(new DivideByZeroException());
-
-            Assert.IsFalse(first.Equals(second));
-        }
-
-        [Test]
-        public void Equals_WithOneValueAndOneException_ReturnsFalse()
-        {
-            var result = new Maybe<int>(new DivideByZeroException());
-            Assert.IsFalse(new Maybe<int>(0).Equals(result));
-        }
-
-        [Test]
-        public void GetHashCode_WithException_ReturnsExceptionsHashCode()
-        {
-            var exception = new DivideByZeroException();
-            var result = new Maybe<int>(exception);
-
-            Assert.AreEqual(exception.GetHashCode(), result.GetHashCode());
-        }
-
         #endregion
 
         [Test]
@@ -229,7 +178,6 @@ namespace iSynaptic.Commons
         {
             AssertMaybe.Behavior(42, x => x.Select(y => y), AssertMaybeResult.SameValue);
             AssertMaybe.Behavior(42, x => x.Select(y => 5), AssertMaybeResult.Value);
-            AssertMaybe.Behavior(42, x => x.Select<int, int>(null), AssertMaybeResult.ThrowExceptionImmediately, AssertMaybeResult.ThrowExceptionImmediately, AssertMaybeResult.ThrowExceptionImmediately);
         }
 
         [Test]
@@ -237,7 +185,6 @@ namespace iSynaptic.Commons
         {
             AssertMaybe.Behavior(42, x => x.SelectMaybe(y => new Maybe<int>(y)), AssertMaybeResult.SameValue);
             AssertMaybe.Behavior(42, x => x.SelectMaybe(y => new Maybe<int>(5)), AssertMaybeResult.Value);
-            AssertMaybe.Behavior(42, x => x.SelectMaybe<int, int>(null), AssertMaybeResult.ThrowExceptionImmediately, AssertMaybeResult.ThrowExceptionImmediately, AssertMaybeResult.ThrowExceptionImmediately);
         }
 
         [Test]
@@ -256,15 +203,6 @@ namespace iSynaptic.Commons
                 .SelectMaybe(x => (7 / x).ToMaybe());
 
             Assert.Throws<DivideByZeroException>(() => { var x = results.HasValue; });
-        }
-
-        [Test]
-        public void ExceptionProperty_ThatImplicitlyThrowsException_BubblesUpException()
-        {
-            var results = 0.ToMaybe()
-                .SelectMaybe(x => (7 / x).ToMaybe());
-
-            Assert.Throws<DivideByZeroException>(() => { var x = results.Exception; });
         }
 
         [Test]
@@ -444,18 +382,6 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void OnException_ExecutesActionOnContainedException()
-        {
-            bool executed = false;
-
-            var value = new Maybe<int>(new InvalidOperationException())
-            .OnException(x => executed = true)
-                .Run();
-
-            Assert.IsTrue(executed);
-        }
-
-        [Test]
         public void OnException_OnThrownException_DoesNotExecuteHandlerAgainForExceptionCausedByHandler()
         {
             int count = 0;
@@ -469,11 +395,11 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void OnException_OnContainedException_DoesNotExecuteHandlerAgainForExceptionCausedByHandler()
+        public void OnException_DoesNotExecuteHandlerAgainForExceptionCausedByHandler()
         {
             int count = 0;
 
-            var value = new Maybe<int>(new InvalidOperationException())
+            var value = Maybe.Throw<string>(new InvalidOperationException())
                 .OnException(x => { count++; throw new NullReferenceException(); });
 
             var exception = Assert.Throws<NullReferenceException>(() => value.ValueOrDefault());
@@ -520,7 +446,7 @@ namespace iSynaptic.Commons
         {
             Assert.Throws<InvalidOperationException>(() =>
             {
-                var x = new Maybe<int>(new InvalidOperationException())
+                var x = Maybe.Throw<int>(new InvalidOperationException())
                     .Or(42)
                     .Value;
             });
@@ -531,7 +457,7 @@ namespace iSynaptic.Commons
         {
             var value = "Hello, World!"
                 .ToMaybe()
-                .SelectMaybe(x => new Maybe<string>(new InvalidOperationException()))
+                .SelectMaybe(x => Maybe.Throw<string>(new InvalidOperationException()))
                 .Select(x => x.Length)
                 .Where(x => x > 10)
                 .Suppress();
@@ -544,7 +470,7 @@ namespace iSynaptic.Commons
         {
             var value = "Hello, World!"
                 .ToMaybe()
-                .SelectMaybe(x => new Maybe<string>(new InvalidOperationException()))
+                .SelectMaybe(x => Maybe.Throw<string>(new InvalidOperationException()))
                 .Select(x => x.Length)
                 .Where(x => x > 10)
                 .Suppress(42);
@@ -731,19 +657,6 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void ThrowOnException_DefersExecutionUntilEvaluated()
-        {
-            bool executed = false;
-            var value = Maybe.Defer(() => { executed = true; return new Maybe<int>(new InvalidOperationException()); })
-                .ThrowOnException();
-
-            Assert.IsFalse(executed);
-
-            Assert.Throws<InvalidOperationException>(() => { var notAssigned = value.HasValue; });
-            Assert.IsTrue(executed);
-        }
-
-        [Test]
         public void ThrowOnNoValue_DefersExecutionUntilEvaluated()
         {
             bool executed = false;
@@ -783,26 +696,24 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void Catch_ContainsThrownExceptions()
+        public void Suppress_OnException_ReturnsNoValue()
         {
             var value = 0
                 .ToMaybe()
                 .Select(x => 7 / x)
-                .Catch()
+                .Suppress()
                 .Run();
 
-            Assert.IsNotNull(value.Exception);
-            Assert.IsInstanceOf<DivideByZeroException>(value.Exception);
             Assert.IsFalse(value.HasValue);
         }
 
         [Test]
-        public void Catch_DoesntCatchIfPredicateReturnsFalse()
+        public void Suppress_DoesntSuppressIfPredicateReturnsFalse()
         {
             var value = 0
                 .ToMaybe()
                 .Select(x => 7 / x)
-                .Catch(x => false);
+                .Suppress(x => false);
 
             Assert.Throws<DivideByZeroException>(() => value.Run());
         }
@@ -840,27 +751,14 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void Cast_YieldsException_WhenCastIsNotPossible()
+        public void Cast_ThrowsException_WhenCastIsNotPossible()
         {
             object foo = new List<string>();
 
             var value = Maybe.Return(foo)
                 .Cast<DateTime>();
 
-            Assert.IsFalse(value.HasValue);
-            Assert.IsNotNull(value.Exception);
-            Assert.IsInstanceOf<InvalidCastException>(value.Exception);
-        }
-
-        [Test]
-        public void Cast_ThrowsException_PropigatesExistingException()
-        {
-            object foo = new List<string>();
-
-            var value = new Maybe<List<string>>(new InvalidOperationException())
-                .Cast<DateTime>();
-
-            Assert.Throws<InvalidOperationException>(() => value.ValueOrDefault());
+            Assert.Throws<InvalidCastException>(() => { var x = value.HasValue; });
         }
 
         [Test]
@@ -917,15 +815,6 @@ namespace iSynaptic.Commons
                 .Value;
 
             Assert.IsTrue(ReferenceEquals(foo, value));
-        }
-
-        [Test]
-        public void OfType_PropigatesExistingException()
-        {
-            var value = new Maybe<ICollection<string>>(new InvalidOperationException())
-                .OfType<DateTime>();
-
-            Assert.Throws<InvalidOperationException>(() => value.ValueOrDefault());
         }
 
         [Test]
@@ -990,46 +879,6 @@ namespace iSynaptic.Commons
                 .Or(Maybe<int>.NoValue);
 
             Assert.IsFalse(value.HasValue);
-            Assert.IsNull(value.Exception);
-        }
-
-        [Test]
-        public void Or_YieldsExceptionIfFirstValueHasException()
-        {
-            var value = new Maybe<int>(new InvalidOperationException())
-                .Or(Maybe.Return(42));
-
-            Assert.Throws<InvalidOperationException>(() => value.ValueOrDefault());
-        }
-
-        [Test]
-        public void Or_YieldsExceptionIfSecondValueHasExceptionAndFirstHasNoValue()
-        {
-            var value = Maybe<int>.NoValue
-                .Or(new Maybe<int>(new InvalidOperationException()));
-
-            Assert.Throws<InvalidOperationException>(() => value.ValueOrDefault());
-        }
-
-        [Test]
-        public void Or_YieldsExceptionFromFirstValueIgnoringExceptionFromSecondValue()
-        {
-            var value = new Maybe<int>(new InvalidOperationException())
-                .Or(new Maybe<int>(new NotSupportedException()));
-
-            Assert.Throws<InvalidOperationException>(() => value.ValueOrDefault());
-        }
-
-        [Test]
-        public void Or_YieldsExceptionFromFirstValueAndDoesNotEvaluateSecondValue()
-        {
-            bool executed = false;
-
-            var value = new Maybe<int>(new InvalidOperationException())
-                .Or(() => { executed = true; return 42; });
-
-            Assert.Throws<InvalidOperationException>(() => value.ValueOrDefault());
-            Assert.IsFalse(executed);
         }
 
         [Test]
@@ -1063,45 +912,6 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void Join_YieldsExceptionIfFirstValueHasException()
-        {
-            var value = new Maybe<int>(new InvalidOperationException())
-                .Join(Maybe.Return(42));
-
-            Assert.Throws<InvalidOperationException>(() => value.ValueOrDefault());
-        }
-
-        [Test]
-        public void Join_YieldsExceptionIfSecondValueHasExceptionAndFirstHasValue()
-        {
-            var value = Maybe.Return(1)
-                .Join(new Maybe<int>(new InvalidOperationException()));
-
-            Assert.Throws<InvalidOperationException>(() => value.ValueOrDefault());
-        }
-
-        [Test]
-        public void Join_YieldsExceptionFromFirstValueIgnoringExceptionFromSecondValue()
-        {
-            var value = new Maybe<int>(new InvalidOperationException())
-                .Join(new Maybe<int>(new NotSupportedException()));
-
-            Assert.Throws<InvalidOperationException>(() => value.ValueOrDefault());
-        }
-
-        [Test]
-        public void Join_YieldsExceptionFromFirstValueAndDoesNotEvaluateSecondValue()
-        {
-            bool executed = false;
-
-            var value = new Maybe<int>(new InvalidOperationException())
-                .Join(Maybe.Defer(() => { executed = true; return 42; }));
-
-            Assert.Throws<InvalidOperationException>(() => value.ValueOrDefault());
-            Assert.IsFalse(executed);
-        }
-
-        [Test]
         public void TrySelect_ReturnsValueIfSelectorReturnsTrue()
         {
             var value = Maybe.Return("42")
@@ -1118,18 +928,6 @@ namespace iSynaptic.Commons
                 .TrySelect<string, int>(int.TryParse);
 
             Assert.IsFalse(value.HasValue);
-        }
-
-        [Test]
-        public void TrySelect_PassesExceptionThru()
-        {
-            var exception = new Exception();
-
-            var value = new Maybe<string>(exception)
-                .TrySelect<string, int>(int.TryParse);
-
-            Assert.IsFalse(value.HasValue);
-            Assert.IsTrue(ReferenceEquals(value.Exception, exception));
         }
 
         [Test]
@@ -1157,14 +955,6 @@ namespace iSynaptic.Commons
                 .ToNullable();
 
             Assert.AreEqual(42, value.Value);
-        }
-
-        [Test]
-        public void ToNullable_WithException_ThrowsException()
-        {
-            var value = new Maybe<int>(new InvalidOperationException());
-
-            Assert.Throws<InvalidOperationException>(() => value.ToNullable());
         }
 
         [Test]
@@ -1375,15 +1165,6 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void ToEnumerable_WithException_ThrowsException()
-        {
-            var enumerable = new Maybe<int>(new InvalidOperationException())
-                .ToEnumerable();
-
-            Assert.Throws<InvalidOperationException>(() => enumerable.ToArray());
-        }
-
-        [Test]
         public void ToEnumerable_WithMultipleValues_YieldsValueStream()
         {
             var enumerable = Maybe.ToEnumerable(1.ToMaybe(), 7.ToMaybe(), 42.ToMaybe());
@@ -1416,7 +1197,6 @@ namespace iSynaptic.Commons
 
             var value = iMaybe.AsMaybe();
 
-            Assert.IsNull(value.Exception);
             Assert.IsTrue(value.HasValue);
             Assert.AreEqual("42", value.Value);
         }
@@ -1430,7 +1210,6 @@ namespace iSynaptic.Commons
 
             var value = iMaybe.AsMaybe();
 
-            Assert.IsNull(value.Exception);
             Assert.IsTrue(value.HasValue);
             Assert.AreEqual("42", value.Value);
         }
@@ -1468,30 +1247,6 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void Unwrap_WithExceptionOuterIMaybe_ReturnsException()
-        {
-            IMaybe<IMaybe<int>> value = Maybe.Exception<IMaybe<int>>(new InvalidOperationException());
-
-            var result = value.Unwrap();
-
-            Assert.IsFalse(result.HasValue);
-            Assert.IsNotNull(result.Exception);
-            Assert.IsInstanceOf<InvalidOperationException>(result.Exception);
-        }
-
-        [Test]
-        public void Unwrap_WithExceptionInnerIMaybe_ReturnsException()
-        {
-            IMaybe<IMaybe<int>> value = Maybe.Return<IMaybe<int>>(Maybe.Exception<int>(new InvalidOperationException()));
-
-            var result = value.Unwrap();
-
-            Assert.IsFalse(result.HasValue);
-            Assert.IsNotNull(result.Exception);
-            Assert.IsInstanceOf<InvalidOperationException>(result.Exception);
-        }
-
-        [Test]
         public void Unwrap_WithValue_ReturnsValue()
         {
             IMaybe<IMaybe<int>> value = Maybe.Return<IMaybe<int>>(42.ToMaybe());
@@ -1499,7 +1254,6 @@ namespace iSynaptic.Commons
             var result = value.Unwrap();
 
             Assert.IsTrue(result.HasValue);
-            Assert.IsNull(result.Exception);
             Assert.AreEqual(42, result.Value);
         }
 
@@ -1509,7 +1263,7 @@ namespace iSynaptic.Commons
 
     internal static class AssertMaybe
     {
-        public static void Behavior<T>(T value, Expression<Func<Maybe<T>, IMaybe>> opExpression, AssertMaybeResult withValue, AssertMaybeResult withNoValue = AssertMaybeResult.NoValue, AssertMaybeResult withException = AssertMaybeResult.SameException)
+        public static void Behavior<T>(T value, Expression<Func<Maybe<T>, IMaybe>> opExpression, AssertMaybeResult withValue, AssertMaybeResult withNoValue = AssertMaybeResult.NoValue)
         {
             Guard.NotNull(opExpression, "opExpression");
             var op = opExpression.Compile();
@@ -1522,11 +1276,9 @@ namespace iSynaptic.Commons
             string expression = body.ToString();
 
             var maybeWithValue = new Maybe<T>(value);
-            var maybeWithException = new Maybe<T>(new InvalidOperationException());
 
             EnsureBehavior(string.Format("{0} with a value", expression), maybeWithValue, () => op(maybeWithValue), withValue);
             EnsureBehavior(string.Format("{0} with no value", expression), Maybe<T>.NoValue, () => op(Maybe<T>.NoValue), withNoValue);
-            EnsureBehavior(string.Format("{0} with an exception", expression), maybeWithException, () => op(maybeWithException), withException);
         }
 
         public static void Behavior<T>(T value, Expression<Func<T, IMaybe>> opExpression, AssertMaybeResult result)
@@ -1566,7 +1318,7 @@ namespace iSynaptic.Commons
             {
                 try
                 {
-                    var discard = result.Exception;
+                    var discard = result.HasValue;
                     Assert.Fail(string.Format("{0} did not throw an exception upon evaluation.", name));
                 }
                 catch (Exception)
@@ -1575,19 +1327,14 @@ namespace iSynaptic.Commons
                 }
             }
 
-            if (expectedResult == AssertMaybeResult.SameException && result.Exception != value.Exception)
-                Assert.Fail(string.Format("{0} did not contain the same exception.", name));
 
-            if(expectedResult == AssertMaybeResult.Exception && result.Exception == null)
-                Assert.Fail(string.Format("{0} did not contain an exception.", name));
-
-            if (expectedResult == AssertMaybeResult.NoValue && (result.Exception != null || result.HasValue))
+            if (expectedResult == AssertMaybeResult.NoValue && result.HasValue)
                 Assert.Fail(string.Format("{0} did not result in the absence of a value.", name));
 
-            if (expectedResult == AssertMaybeResult.Value && (result.Exception != null || !result.HasValue))
+            if (expectedResult == AssertMaybeResult.Value && !result.HasValue)
                 Assert.Fail(string.Format("{0} did not result in a value.", name));
 
-            if (expectedResult == AssertMaybeResult.SameValue && (result.Exception != null || !result.HasValue || !EqualityComparer<T>.Default.Equals((T)result.Value, value.Value)))
+            if (expectedResult == AssertMaybeResult.SameValue && (!result.HasValue || !EqualityComparer<T>.Default.Equals((T)result.Value, value.Value)))
                 Assert.Fail(string.Format("{0} did not result in the same value.", name));
         }
     }
@@ -1597,8 +1344,6 @@ namespace iSynaptic.Commons
         SameValue,
         Value,
         NoValue,
-        SameException,
-        Exception,
         ThrowException,
         ThrowExceptionImmediately
     }
@@ -1620,7 +1365,6 @@ namespace iSynaptic.Commons
                         select ultimateAnswer;
 
             Assert.IsTrue(value.HasValue);
-            Assert.IsNull(value.Exception);
             Assert.AreEqual(42, value.Value);
         }
     }

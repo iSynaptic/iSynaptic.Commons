@@ -22,7 +22,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -37,7 +37,6 @@ namespace iSynaptic.Commons
 
         private readonly T _Value;
         private readonly bool _HasValue;
-        private readonly Exception _Exception;
 
         private readonly Func<Maybe<T>> _Computation;
 
@@ -74,12 +73,6 @@ namespace iSynaptic.Commons
             };
         }
 
-        public Maybe(Exception exception)
-            : this()
-        {
-            _Exception = Guard.NotNull(exception, "exception");
-        }
-
         public T Value
         {
             get
@@ -89,9 +82,6 @@ namespace iSynaptic.Commons
 
                 if(_HasValue)
                     return _Value;
-
-                if (_Exception != null)
-                    _Exception.ThrowAsInnerExceptionIfNeeded();
 
                 throw new InvalidOperationException("No value can be computed.");
             }
@@ -112,16 +102,6 @@ namespace iSynaptic.Commons
             }
         }
 
-        public Exception Exception
-        {
-            get
-            {
-                return _Computation != null 
-                    ? _Computation().Exception 
-                    : _Exception;
-            }
-        }
-
         public bool Equals(T other)
         {
             return Equals(new Maybe<T>(other));
@@ -135,12 +115,6 @@ namespace iSynaptic.Commons
         public bool Equals(Maybe<T> other, IEqualityComparer<T> comparer)
         {
             Guard.NotNull(comparer, "comparer");
-
-            if (Exception != null)
-                return other.Exception != null && other.Exception == Exception;
-
-            if (other.Exception != null)
-                return false;
 
             if (!HasValue)
                 return !other.HasValue;
@@ -170,9 +144,6 @@ namespace iSynaptic.Commons
         public int GetHashCode(IEqualityComparer<T> comparer)
         {
             Guard.NotNull(comparer, "comparer");
-
-            if (Exception != null)
-                return Exception.GetHashCode();
 
             return HasValue
                 ? comparer.GetHashCode(Value)
@@ -289,18 +260,16 @@ namespace iSynaptic.Commons
 
         public static T ValueOrDefault<T>(this Maybe<T> @this, Func<T> @default)
         {
-            if (@this.Exception == null && @this.HasValue != true)
-                return @default();
-
-            return @this.Value;
+            return @this.HasValue 
+                ? @this.Value 
+                : @default();
         }
 
         public static T ValueOrDefault<T>(this Maybe<T> @this, T @default)
         {
-            if (@this.Exception == null && @this.HasValue != true)
-                return @default;
-
-            return @this.Value;
+            return @this.HasValue
+                ? @this.Value 
+                : @default;
         }
 
         public static T ValueOrDefault<T>(this Maybe<T> @this)
@@ -315,7 +284,7 @@ namespace iSynaptic.Commons
         public static Maybe<T> Or<T>(this Maybe<T> @this, T value)
         {
             var self = @this;
-            return new Maybe<T>(() => self.Exception == null && self.HasValue != true ? new Maybe<T>(value) : self);
+            return new Maybe<T>(() => self.HasValue ? self : new Maybe<T>(value));
         }
 
         public static Maybe<T> Or<T>(this Maybe<T> @this, Func<T> valueFactory)
@@ -323,7 +292,7 @@ namespace iSynaptic.Commons
             Guard.NotNull(valueFactory, "valueFactory");
 
             var self = @this;
-            return new Maybe<T>(() => self.Exception == null && self.HasValue != true ? new Maybe<T>(valueFactory()) : self);
+            return new Maybe<T>(() => self.HasValue ? self : new Maybe<T>(valueFactory()));
         }
 
         public static Maybe<T> Or<T>(this Maybe<T> @this, Func<Maybe<T>> valueFactory)
@@ -331,13 +300,13 @@ namespace iSynaptic.Commons
             Guard.NotNull(valueFactory, "valueFactory");
 
             var self = @this;
-            return new Maybe<T>(() => self.Exception == null && self.HasValue != true ? valueFactory() : self);
+            return new Maybe<T>(() => self.HasValue ? self : valueFactory());
         }
 
         public static Maybe<T> Or<T>(this Maybe<T> @this, Maybe<T> other)
         {
             var self = @this;
-            return new Maybe<T>(() => self.Exception == null && self.HasValue != true ? other : self);
+            return new Maybe<T>(() => self.HasValue ? self : other);
         }
 
         #endregion
@@ -441,68 +410,116 @@ namespace iSynaptic.Commons
 
         #endregion
 
-        #region Catch Operator
+        #region Suppress Operator
 
-        public static Maybe<T> Catch<T>(this Maybe<T> @this)
+        public static Maybe<T> Suppress<T>(this Maybe<T> @this, Action<Exception> action = null)
         {
             var self = @this;
             return new Maybe<T>(() =>
             {
                 try
                 {
-                    return self.HasValue ? self : self;
+                    return self.HasValue
+                        ? self
+                        : self;
                 }
-                catch (Exception ex)
+                catch(Exception ex)
                 {
-                    return new Maybe<T>(ex);
+                    if (action != null)
+                        action(ex);
+
+                    return Maybe<T>.NoValue;
                 }
             });
         }
 
-        public static Maybe<T> Catch<T>(this Maybe<T> @this, Func<Exception, bool> exceptionPredicate)
+        public static Maybe<T> Suppress<T>(this Maybe<T> @this, Func<Exception, bool> predicate)
         {
-            Guard.NotNull(exceptionPredicate, "exceptionPredicate");
+            Guard.NotNull(predicate, "predicate");
 
             var self = @this;
             return new Maybe<T>(() =>
             {
                 try
                 {
-                    return self.HasValue ? self : self;
+                    return self.HasValue
+                        ? self
+                        : self;
                 }
-                catch (Exception ex)
+                catch(Exception ex)
                 {
-                    if(exceptionPredicate(ex))
-                        return new Maybe<T>(ex);
+                    if(predicate(ex))
+                        return Maybe<T>.NoValue;
 
                     throw;
                 }
             });
         }
 
-        #endregion
-
-        #region Suppress Operator
-
-        public static Maybe<T> Suppress<T>(this Maybe<T> @this)
-        {
-            var self = @this;
-            return new Maybe<T>(() => self.Exception != null ? Maybe<T>.NoValue : self);
-        }
-
         public static Maybe<T> Suppress<T>(this Maybe<T> @this, T value)
         {
             var self = @this;
-            return new Maybe<T>(() => self.Exception != null ? new Maybe<T>(value) : self);
+            return new Maybe<T>(() =>
+            {
+                try
+                {
+                    return self.HasValue
+                        ? self
+                        : self;
+                }
+                catch
+                {
+                    return new Maybe<T>(value);
+                }
+            });
         }
 
-        public static Maybe<T> Suppress<T>(this Maybe<T> @this, Func<Exception, T> valueFactory)
+        public static Maybe<T> Suppress<T>(this Maybe<T> @this, Func<Exception, bool> predicate, T value)
         {
-            Guard.NotNull(valueFactory, "valueFactory");
+            Guard.NotNull(predicate, "predicate");
 
             var self = @this;
-            return new Maybe<T>(() => self.Exception != null ? new Maybe<T>(valueFactory(self.Exception)) : self);
+            return new Maybe<T>(() =>
+            {
+                try
+                {
+                    return self.HasValue
+                        ? self
+                        : self;
+                }
+                catch (Exception ex)
+                {
+                    if (predicate(ex))
+                        return new Maybe<T>(value);
+
+                    throw;
+                }
+            });
         }
+
+        public static Maybe<T> Suppress<T>(this Maybe<T> @this, Func<Exception, bool> predicate, Maybe<T> value)
+        {
+            Guard.NotNull(predicate, "predicate");
+            
+            var self = @this;
+            return new Maybe<T>(() =>
+            {
+                try
+                {
+                    return self.HasValue
+                        ? self
+                        : self;
+                }
+                catch(Exception ex)
+                {
+                    if (predicate(ex))
+                        return value;
+
+                    throw;
+                }
+            });
+        }
+
 
         #endregion
 
@@ -511,22 +528,9 @@ namespace iSynaptic.Commons
         public static Maybe<Tuple<T, U>> Join<T, U>(this Maybe<T> @this, Maybe<U> other)
         {
             var self = @this;
-            return new Maybe<Tuple<T, U>>(() =>
-            {
-                if (self.HasValue && other.HasValue)
-                    return new Maybe<Tuple<T, U>>(Tuple.Create(self.Value, other.Value));
-
-                if (!self.HasValue)
-                {
-                    return self.Exception != null 
-                        ? new Maybe<Tuple<T, U>>(self.Exception) 
-                        : Maybe<Tuple<T, U>>.NoValue;
-                }
-
-                return other.Exception != null
-                    ? new Maybe<Tuple<T, U>>(other.Exception)
-                    : Maybe<Tuple<T, U>>.NoValue;
-            });
+            return new Maybe<Tuple<T, U>>(() => self.HasValue && other.HasValue
+                ? new Maybe<Tuple<T, U>>(Tuple.Create(self.Value, other.Value))
+                : Maybe<Tuple<T, U>>.NoValue);
         }
 
         public static Maybe<TResult> Join<T, U, TResult>(this Maybe<T> @this, Maybe<U> other, Func<T, U, TResult> selector)
@@ -534,22 +538,9 @@ namespace iSynaptic.Commons
             Guard.NotNull(selector, "selector");
 
             var self = @this;
-            return new Maybe<TResult>(() =>
-            {
-                if (self.HasValue && other.HasValue)
-                    return new Maybe<TResult>(selector(self.Value, other.Value));
-
-                if (!self.HasValue)
-                {
-                    return self.Exception != null
-                        ? new Maybe<TResult>(self.Exception)
-                        : Maybe<TResult>.NoValue;
-                }
-
-                return other.Exception != null
-                    ? new Maybe<TResult>(other.Exception)
-                    : Maybe<TResult>.NoValue;
-            });
+            return new Maybe<TResult>(() => self.HasValue && other.HasValue
+                ? new Maybe<TResult>(selector(self.Value, other.Value))
+                : Maybe<TResult>.NoValue);
         }
 
         public static Maybe<TResult> Join<T, U, TResult>(this Maybe<T> @this, Maybe<U> other, Func<T, U, Maybe<TResult>> selector)
@@ -557,22 +548,9 @@ namespace iSynaptic.Commons
             Guard.NotNull(selector, "selector");
 
             var self = @this;
-            return new Maybe<TResult>(() =>
-            {
-                if (self.HasValue && other.HasValue)
-                    return selector(self.Value, other.Value);
-
-                if(!self.HasValue)
-                {
-                    return self.Exception != null
-                        ? new Maybe<TResult>(self.Exception)
-                        : Maybe<TResult>.NoValue;
-                }
-
-                return other.Exception != null
-                    ? new Maybe<TResult>(other.Exception)
-                    : Maybe<TResult>.NoValue;
-            });
+            return new Maybe<TResult>(() => self.HasValue && other.HasValue 
+                ? selector(self.Value, other.Value) 
+                : Maybe<TResult>.NoValue);
         }
 
         #endregion
@@ -586,8 +564,8 @@ namespace iSynaptic.Commons
             var self = @this;
             return new Maybe<T>(() =>
             {
-                if (self.Exception == null && self.HasValue != true)
-                    exception.ThrowAsInnerExceptionIfNeeded();
+                if (self.HasValue != true)
+                    throw exception;
 
                 return self;
             });
@@ -600,56 +578,8 @@ namespace iSynaptic.Commons
             var self = @this;
             return new Maybe<T>(() =>
             {
-                if (self.Exception == null && self.HasValue != true)
-                    exceptionFactory().ThrowAsInnerExceptionIfNeeded();
-
-                return self;
-            });
-        }
-
-        #endregion
-
-        #region ThrowOnException Operator
-
-        public static Maybe<T> ThrowOnException<T>(this Maybe<T> @this)
-        {
-            var self = @this;
-            return new Maybe<T>(() => 
-            {
-                if(self.Exception != null)
-                    self.Exception.ThrowAsInnerExceptionIfNeeded();
-
-                return self;
-            });
-        }
-
-        public static Maybe<T> ThrowOnException<T>(this Maybe<T> @this, Type exceptionType)
-        {
-            Guard.NotNull(exceptionType, "exceptionType");
-
-            var self = @this;
-            return new Maybe<T>(() =>
-            {
-                if (self.Exception != null && exceptionType.IsAssignableFrom(self.Exception.GetType()))
-                    self.Exception.ThrowAsInnerExceptionIfNeeded();
-
-                return self;
-            });
-        }
-
-        public static Maybe<T> ThrowOnException<T>(this Maybe<T> @this, Func<Exception, Exception> exceptionSelector)
-        {
-            Guard.NotNull(exceptionSelector, "exceptionSelector");
-
-            var self = @this;
-            return new Maybe<T>(() =>
-            {
-                if (self.Exception != null)
-                {
-                    var ex = exceptionSelector(self.Exception);
-                    if(ex != null)
-                        ex.ThrowAsInnerExceptionIfNeeded();
-                }
+                if (self.HasValue != true)
+                    throw exceptionFactory();
 
                 return self;
             });
@@ -694,9 +624,6 @@ namespace iSynaptic.Commons
 
         public static IEnumerable<T> ToEnumerable<T>(this Maybe<T> @this)
         {
-            if(@this.Exception != null)
-                @this.Exception.ThrowAsInnerExceptionIfNeeded();
-
             if(@this.HasValue)
                 yield return @this.Value;
         }
@@ -704,34 +631,18 @@ namespace iSynaptic.Commons
         public static IEnumerable<T> ToEnumerable<T>(params Maybe<T>[] values)
         {
             Guard.NotNull(values, "values");
-            foreach (var maybe in values)
-            {
-                if (maybe.Exception != null)
-                    maybe.Exception.ThrowAsInnerExceptionIfNeeded();
-
-                if (maybe.HasValue)
-                    yield return maybe.Value;
-            }
+            return values
+                .Where(x => x.HasValue)
+                .Select(x => x.Value);
         }
 
         public static IEnumerable<T> ToEnumerable<T>(this Maybe<T> @this, IEnumerable<Maybe<T>> others)
         {
             Guard.NotNull(others, "others");
 
-            if(@this.Exception != null)
-                @this.Exception.ThrowAsInnerExceptionIfNeeded();
-
-            if(@this.HasValue)
-                yield return @this.Value;
-
-            foreach (var maybe in others)
-            {
-                if (maybe.Exception != null)
-                    maybe.Exception.ThrowAsInnerExceptionIfNeeded();
-
-                if (maybe.HasValue)
-                    yield return maybe.Value;
-            }
+            return new[] {@this}.Concat(others)
+                .Where(x => x.HasValue)
+                .Select(x => x.Value);
         }
 
         #endregion
@@ -746,23 +657,19 @@ namespace iSynaptic.Commons
                 if (self == null)
                     return Maybe<T>.NoValue;
 
-                if (self.Exception != null)
-                    return new Maybe<T>(self.Exception);
-
-                return self.HasValue ? self.Value.Cast<T>() : Maybe<T>.NoValue;
+                return self.HasValue 
+                    ? self.Value.Cast<T>() 
+                    : Maybe<T>.NoValue;
             });
         }
 
         public static Maybe<T> Unwrap<T>(this Maybe<Maybe<T>> @this)
         {
             var self = @this;
-            return new Maybe<T>(() =>
-            {
-                if (self.Exception != null)
-                    return new Maybe<T>(self.Exception);
 
-                return self.HasValue ? self.Value : Maybe<T>.NoValue;
-            });
+            return new Maybe<T>(() => self.HasValue 
+                ? self.Value 
+                : Maybe<T>.NoValue);
         }
 
         #endregion
@@ -798,13 +705,7 @@ namespace iSynaptic.Commons
 
             var self = @this;
 
-            return new Maybe<TResult>(() =>
-            {
-                if (self.Exception != null)
-                    return new Maybe<TResult>(self.Exception);
-
-                return self.HasValue ? new Maybe<TResult>(selector(self.Value)) : Maybe<TResult>.NoValue;
-            });
+            return new Maybe<TResult>(() => self.HasValue ? new Maybe<TResult>(selector(self.Value)) : Maybe<TResult>.NoValue);
         }
 
         public static Maybe<TResult> TrySelect<T, TResult>(this Maybe<T> @this, TrySelector<T, TResult> selector)
@@ -815,9 +716,6 @@ namespace iSynaptic.Commons
 
             return new Maybe<TResult>(() =>
             {
-                if (self.Exception != null)
-                    return new Maybe<TResult>(self.Exception);
-
                 if (!self.HasValue)
                     return Maybe<TResult>.NoValue;
 
@@ -837,19 +735,7 @@ namespace iSynaptic.Commons
 
             var self = @this;
 
-            return new Maybe<TResult>(() =>
-            {
-                if (self.Exception != null)
-                    return new Maybe<TResult>(self.Exception);
-
-                return self.HasValue ? selector(self.Value) : Maybe<TResult>.NoValue;
-            });
-        }
-
-        public static Maybe<T> Exception<T>(Exception exception)
-        {
-            Guard.NotNull(exception, "exception");
-            return new Maybe<T>(exception);
+            return new Maybe<TResult>(() => self.HasValue ? selector(self.Value) : Maybe<TResult>.NoValue);
         }
 
         public static Maybe<T> Throw<T>(Exception exception)
@@ -897,7 +783,7 @@ namespace iSynaptic.Commons
             var self = @this;
             return new Maybe<T>(() =>
             {
-                if (self.Exception == null && self.HasValue != true)
+                if (self.HasValue != true)
                     action();
 
                 return self;
@@ -911,22 +797,17 @@ namespace iSynaptic.Commons
 
             return new Maybe<T>(() =>
             {
-                Exception exception = null;
-
                 try
                 {
-                    exception = self.Exception;
+                    return self.HasValue
+                        ? self
+                        : self;
                 }
                 catch(Exception ex)
                 {
                     handler(ex);
                     throw;
                 }
-
-                if (exception != null)
-                    handler(exception);
-
-                return self;
             });
         }
 
@@ -937,9 +818,6 @@ namespace iSynaptic.Commons
 
             return new Maybe<T>(() =>
             {
-                if (self.Exception != null)
-                    return new Maybe<T>(self.Exception);
-
                 if(self.HasValue)
                 {
                     var value = self.Value;
@@ -959,9 +837,6 @@ namespace iSynaptic.Commons
 
             return new Maybe<T>(() =>
             {
-                if (self.Exception != null)
-                    return new Maybe<T>(self.Exception);
-
                 if (self.HasValue)
                 {
                     var value = self.Value;
@@ -1030,21 +905,9 @@ namespace iSynaptic.Commons
             if(@this is Maybe<TResult>)
                 return (Maybe<TResult>) @this;
 
-            return new Maybe<TResult>(() =>
-            {
-                if (@this.Exception != null)
-                    return new Maybe<TResult>(@this.Exception);
-
-                if (@this.HasValue != true)
-                    return Maybe<TResult>.NoValue;
-
-                object value = @this.Value;
-
-                if (!(value is TResult))
-                    return new Maybe<TResult>(new InvalidCastException());
-
-                return new Maybe<TResult>((TResult)value);
-            });
+            return new Maybe<TResult>(() => @this.HasValue
+                ? new Maybe<TResult>((TResult)@this.Value)
+                : Maybe<TResult>.NoValue);
         }
 
         public static Maybe<TResult> OfType<TResult>(this IMaybe @this)
@@ -1057,26 +920,17 @@ namespace iSynaptic.Commons
 
             return new Maybe<TResult>(() =>
             {
-                if (@this.Exception != null)
-                    return new Maybe<TResult>(@this.Exception);
-
                 if (@this.HasValue != true)
                     return Maybe<TResult>.NoValue;
 
-                object value = @this.Value;
-
-                if (value is TResult)
-                    return new Maybe<TResult>((TResult)value);
-
-                return Maybe<TResult>.NoValue;
+                return @this.Value is TResult
+                    ? new Maybe<TResult>((TResult)@this.Value) 
+                    : Maybe<TResult>.NoValue;
             });
         }
 
         public static T? ToNullable<T>(this Maybe<T> @this) where T : struct
         {
-            if(@this.Exception != null)
-                @this.Exception.ThrowAsInnerExceptionIfNeeded();
-
             if(@this.HasValue)
                 return @this.Value;
 

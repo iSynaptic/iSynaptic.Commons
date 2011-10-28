@@ -46,7 +46,7 @@ namespace iSynaptic.Commons.Data
         }
 
         [Test]
-        public void TryResolve_WithAmbiguousBindingSelection_YieldsAmbiguousExodataBindingsException()
+        public void TryResolve_WithAmbiguousBindingSelection_ThrowsAmbiguousExodataBindingsException()
         {
             var symbol = new Symbol();
             var source = new ExodataBindingModule();
@@ -57,14 +57,14 @@ namespace iSynaptic.Commons.Data
 
             Maybe<int> result = resolver.TryResolve(ExodataRequest.Create<int, object, object>(symbol, Maybe<object>.NoValue, Maybe<object>.NoValue, null));
 
-            var exception = result.Exception as AmbiguousExodataBindingsException;
+            var exception = Assert.Throws<AmbiguousExodataBindingsException>(() => { var x = result.HasValue; });
 
             Assert.IsNotNull(exception);
             Assert.AreEqual(2, exception.Bindings.Count());
         }
 
         [Test]
-        public void TryResolve_WithNonAmbiguousBindingSelection_YieldsAmbiguousExodataBindingsException()
+        public void TryResolve_WithNonAmbiguousBindingSelection_YieldsValue()
         {
             var symbol = new Symbol();
             var source = new ExodataBindingModule();
