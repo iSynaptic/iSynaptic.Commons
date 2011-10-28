@@ -2,7 +2,7 @@
 RELEASE NOTES: iSynaptic.Commons
 ======================================
 
-==== v0.3.8 (October 28, 2011) ====
+==== v0.3.5 (October 28, 2011) ====
 
  ---- Features ----
 
@@ -15,7 +15,7 @@ RELEASE NOTES: iSynaptic.Commons
 * NotNull and Coalesce operators for Maybe<T> are now gone.
 
 
-==== v0.3.7 (October 27, 2011) ====
+==== v0.3.4 (October 27, 2011) ====
 
  ---- Features ----
 
