@@ -132,39 +132,31 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void GetHashCode_OnNoValue_ReturnsZero()
+        public void GetHashCode_OnNoValue_IncludesValuesHashCode()
         {
-            Assert.AreEqual(0, Result<int, string>.NoValue.GetHashCode());
+            Assert.AreEqual(0 ^ true.GetHashCode(), Result<int, string>.NoValue.GetHashCode());
         }
 
         [Test]
-        public void GetHashCode_OnValue_ReturnsUnderlyingHashCode()
+        public void GetHashCode_OnValue_IncludesValuesHashCode()
         {
             int val = 42;
-            Assert.AreEqual(val.GetHashCode(), new Result<int, string>(val).GetHashCode());
+            Assert.AreEqual(val.GetHashCode() ^ true.GetHashCode(), new Result<int, string>(val).GetHashCode());
         }
 
         [Test]
-        public void GetHashCode_OnNullValue_ReturnsZero()
+        public void GetHashCode_OnNullValue_IncludesValuesHashCode()
         {
-            Assert.AreEqual(0, new Result<string, int>((string)null).GetHashCode());
+            Assert.AreEqual(0 ^ true.GetHashCode(), new Result<string, int>((string)null).GetHashCode());
         }
 
         [Test]
         public void EvaluationOfResult_OnlyOccursOnce()
         {
             int count = 0;
-            Func<int> funcOfInt = () => ++count;
-
-            var maybe = new Result<int,string>(funcOfInt);
-
-            for (int i = 0; i < 10; i++)
-                Assert.AreEqual(1, maybe.Value);
-
             Func<Result<int, string>> funcOfMaybeOfInt = () => new Result<int, string>(++count);
 
-            count = 0;
-            maybe = new Result<int, string>(funcOfMaybeOfInt);
+            var maybe = new Result<int, string>(funcOfMaybeOfInt);
 
             for (int i = 0; i < 10; i++)
                 Assert.AreEqual(1, maybe.Value);

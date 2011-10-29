@@ -33,24 +33,21 @@ namespace iSynaptic.Commons
 
         private readonly bool _IsFailure;
         private readonly TObservation[] _Observations;
+
         private readonly Func<Outcome<TObservation>> _Computation;
 
-        public Outcome(bool isSuccess) : this()
+        public Outcome(bool isSuccess) 
+            : this(isSuccess, null)
         {
-            _IsFailure = !isSuccess;
-        }
-
-        public Outcome(bool isSuccess, TObservation observation) : this()
-        {
-            _IsFailure = !isSuccess;
-            _Observations = new[] { observation };
         }
 
         public Outcome(bool isSuccess, IEnumerable<TObservation> observations)
             : this()
         {
             _IsFailure = !isSuccess;
-            _Observations = Guard.NotNull(observations, "observations").ToArray();
+            _Observations = observations != null
+                ? observations.ToArray()
+                : null;
         }
 
         public Outcome(Func<Outcome<TObservation>> computation)
@@ -140,7 +137,7 @@ namespace iSynaptic.Commons
         public static Outcome<TResult> Inform<TObservation, TResult>(this Outcome<TObservation> @this, Func<TObservation, TResult> selector)
         {
             Guard.NotNull(selector, "selector");
-            return @this.InformMany(t => new Outcome<TResult>(@this.WasSuccessful, selector(t)));
+            return @this.InformMany(t => new Outcome<TResult>(@this.WasSuccessful, new[]{selector(t)}));
         }
 
         public static Outcome<TResult> InformMany<TObservation, TResult>(this Outcome<TObservation> @this, Func<TObservation, Outcome<TResult>> selector)
@@ -160,24 +157,24 @@ namespace iSynaptic.Commons
 
         public static Outcome<TObservation> Success<TObservation>(TObservation observation)
         {
-            return new Outcome<TObservation>(true, observation);
+            return new Outcome<TObservation>(true, new[] { observation });
         }
 
         public static Outcome<TObservation> Failure<TObservation>(TObservation observation)
         {
-            return new Outcome<TObservation>(false, observation);
+            return new Outcome<TObservation>(false, new[] { observation });
         }
 
         public static Outcome<TObservation> Notice<TObservation>(this Outcome<TObservation> @this, Func<TObservation, bool> predicate)
         {
             Guard.NotNull(predicate, "predicate");
-            return @this.InformMany(t => predicate(t) ? new Outcome<TObservation>(@this.WasSuccessful, t) : new Outcome<TObservation>(@this.WasSuccessful));
+            return @this.InformMany(t => predicate(t) ? new Outcome<TObservation>(@this.WasSuccessful, new[]{t}) : new Outcome<TObservation>(@this.WasSuccessful));
         }
 
         public static Outcome<TObservation> Ignore<TObservation>(this Outcome<TObservation> @this, Func<TObservation, bool> predicate)
         {
             Guard.NotNull(predicate, "predicate");
-            return @this.InformMany(t => predicate(t) ? new Outcome<TObservation>(@this.WasSuccessful) : new Outcome<TObservation>(@this.WasSuccessful, t));
+            return @this.InformMany(t => predicate(t) ? new Outcome<TObservation>(@this.WasSuccessful) : new Outcome<TObservation>(@this.WasSuccessful, new[]{t}));
         }
 
         public static Outcome<TObservation> Observe<TObservation>(this Outcome<TObservation> @this, TObservation observation)

@@ -33,7 +33,7 @@ namespace iSynaptic.Commons
     // Don't Fear the Monad! http://channel9.msdn.com/shows/Going+Deep/Brian-Beckman-Dont-fear-the-Monads/
     public struct Maybe<T> : IMaybe<T>, IEquatable<Maybe<T>>, IEquatable<T>
     {
-        public static readonly Maybe<T> NoValue = new Maybe<T>();
+        public static readonly Maybe<T> NoValue;
 
         private readonly T _Value;
         private readonly bool _HasValue;
@@ -45,12 +45,6 @@ namespace iSynaptic.Commons
         {
             _Value = value;
             _HasValue = value != null;
-        }
-
-        public Maybe(Func<T> computation)
-            : this(() => new Maybe<T>(computation()))
-        {
-            Guard.NotNull(computation, "computation");
         }
 
         public Maybe(Func<Maybe<T>> computation)
@@ -104,7 +98,12 @@ namespace iSynaptic.Commons
 
         public bool Equals(T other)
         {
-            return Equals(new Maybe<T>(other));
+            return Equals(other, EqualityComparer<T>.Default);
+        }
+
+        public bool Equals(T other, IEqualityComparer<T> comparer)
+        {
+            return Equals(new Maybe<T>(other), comparer);
         }
 
         public bool Equals(Maybe<T> other)
@@ -124,9 +123,6 @@ namespace iSynaptic.Commons
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(obj, null))
-                return false;
-
             if (obj is Maybe<T>)
                 return Equals((Maybe<T>)obj);
 
@@ -192,7 +188,9 @@ namespace iSynaptic.Commons
 
         public static Maybe<T> Defer<T>(Func<T> computation)
         {
-            return new Maybe<T>(computation);
+            Guard.NotNull(computation, "computation");
+
+            return new Maybe<T>(() => new Maybe<T>(computation()));
         }
 
         public static Maybe<T> Defer<T>(Func<Maybe<T>> computation)
@@ -741,7 +739,7 @@ namespace iSynaptic.Commons
         public static Maybe<T> Throw<T>(Exception exception)
         {
             Guard.NotNull(exception, "exception");
-            return new Maybe<T>((Func<Maybe<T>>)(() => { throw exception; }));
+            return new Maybe<T>(() => { throw exception; });
         }
 
         public static Maybe<T> Finally<T>(this Maybe<T> @this, Action finallyAction)

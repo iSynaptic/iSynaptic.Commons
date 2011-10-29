@@ -27,49 +27,40 @@ using System.Linq;
 
 namespace iSynaptic.Commons
 {
-    public struct Result<T, TObservation> : IEquatable<Result<T, TObservation>>, IEquatable<T>
+    public struct Result<T, TObservation> : IResult<T, TObservation>, IEquatable<Result<T, TObservation>>, IEquatable<Maybe<T>>, IEquatable<T>
     {
-        public static readonly Result<T, TObservation> NoValue = new Result<T, TObservation>();
+        public static readonly Result<T, TObservation> NoValue;
 
-        private readonly T _Value;
-        private readonly bool _HasValue;
-        private readonly TObservation[] _Observations;
+        private readonly Maybe<T> _Maybe;
+        private readonly Outcome<TObservation> _Outcome;
 
         private readonly Func<Result<T, TObservation>> _Computation;
 
+        public Result(T value)
+            : this(new Maybe<T>(value), Outcome<TObservation>.Success)
+        {
+        }
+
+        public Result(T value, bool isSuccess)
+            : this(new Maybe<T>(value), new Outcome<TObservation>(isSuccess))
+        {
+        }
+
         public Result(IEnumerable<TObservation> observations)
-            : this()
+            : this(true, observations)
         {
-            _HasValue = false;
-            _Observations = observations != null
-                                ? observations.ToArray()
-                                : null;
         }
 
-        public Result(T value, params TObservation[] observations)
-            : this()
+        public Result(bool isSuccess, IEnumerable<TObservation> observations)
+            : this(Maybe<T>.NoValue, new Outcome<TObservation>(isSuccess, observations))
         {
-            _Value = value;
-            _HasValue = value != null;
-
-            _Observations = observations;
         }
 
-        public Result(T value, IEnumerable<TObservation> observations)
+        public Result(Maybe<T> maybe, Outcome<TObservation> outcome)
             : this()
         {
-            _Value = value;
-            _HasValue = value != null;
-
-            _Observations = observations != null
-                                ? observations.ToArray()
-                                : null;
-        }
-
-        public Result(Func<T> computation)
-            : this(() => new Result<T, TObservation>(computation()))
-        {
-            Guard.NotNull(computation, "computation");
+            _Maybe = maybe.Run();
+            _Outcome = outcome.Run();
         }
 
         public Result(Func<Result<T, TObservation>> computation)
@@ -92,51 +83,55 @@ namespace iSynaptic.Commons
             };
         }
 
-        public T Value
+        private Maybe<T> Maybe
         {
             get
             {
-                if (_Computation != null)
-                    return _Computation().Value;
-
-                if (_HasValue)
-                    return _Value;
-
-                throw new InvalidOperationException("No value can be computed.");
+                return _Computation != null
+                    ? _Computation().Maybe
+                    : _Maybe;
             }
         }
 
-        public bool HasValue
+        private Outcome<TObservation> Outcome
         {
             get
             {
-                return _Computation != null 
-                    ? _Computation().HasValue 
-                    : _HasValue;
+                return _Computation != null
+                    ? _Computation().Outcome
+                    : _Outcome;
             }
         }
 
-        public IEnumerable<TObservation> Observations
-        {
-            get
-            {
-                if (_Computation != null)
-                {
-                    foreach (var observation in _Computation().Observations)
-                        yield return observation;
-                }
+        public T Value { get { return Maybe.Value; } }
+        public bool HasValue { get { return Maybe.HasValue; } }
 
-                if (_Observations != null)
-                {
-                    foreach (var observation in _Observations)
-                        yield return observation;
-                }
-            }
-        }
+        public bool WasSuccessful { get { return Outcome.WasSuccessful; } }
+        public IEnumerable<TObservation> Observations { get { return Outcome.Observations; } }
+
+        object IMaybe.Value { get { return ((IMaybe)Maybe).Value; } }
+        IEnumerable<object> IOutcome.Observations { get { return ((IOutcome)Outcome).Observations; }}
+
+        #region Equality Implementation
 
         public bool Equals(T other)
         {
-            return Equals(new Result<T, TObservation>(other));
+            return Equals(other, EqualityComparer<T>.Default);
+        }
+
+        public bool Equals(T other, IEqualityComparer<T> comparer)
+        {
+            return Maybe.Equals(other, comparer);
+        }
+
+        public bool Equals(Maybe<T> other)
+        {
+            return Equals(other, EqualityComparer<T>.Default);
+        }
+
+        public bool Equals(Maybe<T> other, IEqualityComparer<T> comparer)
+        {
+            return Maybe.Equals(other, comparer);
         }
 
         public bool Equals(Result<T, TObservation> other)
@@ -148,22 +143,20 @@ namespace iSynaptic.Commons
         {
             Guard.NotNull(comparer, "comparer");
 
-            if (!HasValue)
-                return !other.HasValue;
-
-            return other.HasValue && comparer.Equals(Value, other.Value);
+            return Maybe.Equals(other.Maybe, comparer) &&
+                   Outcome.Equals(other.Outcome);
         }
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(obj, null))
-                return false;
-
             if (obj is Result<T, TObservation>)
                 return Equals((Result<T, TObservation>)obj);
 
+            if (obj is Maybe<T>)
+                return Equals((Maybe<T>) obj);
+
             if (obj is T)
-                return Equals(new Result<T, TObservation>((T)obj));
+                return Equals((T) obj);
 
             return false;
         }
@@ -177,11 +170,13 @@ namespace iSynaptic.Commons
         {
             Guard.NotNull(comparer, "comparer");
 
-            if (HasValue != true)
-                return 0;
-
-            return comparer.GetHashCode(Value);
+            return Maybe.GetHashCode(comparer) ^
+                   Outcome.WasSuccessful.GetHashCode();
         }
+
+        #endregion
+
+        #region Equality Operators
 
         public static bool operator ==(Result<T, TObservation> left, Result<T, TObservation> right)
         {
@@ -189,6 +184,16 @@ namespace iSynaptic.Commons
         }
 
         public static bool operator !=(Result<T, TObservation> left, Result<T, TObservation> right)
+        {
+            return !(left == right);
+        }
+
+        public static bool operator ==(Result<T, TObservation> left, Maybe<T> right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(Result<T, TObservation> left, Maybe<T> right)
         {
             return !(left == right);
         }
@@ -213,9 +218,36 @@ namespace iSynaptic.Commons
             return !(left == right);
         }
 
+        public static bool operator ==(Maybe<T> left, Result<T, TObservation> right)
+        {
+            return right.Equals(left);
+        }
+
+        public static bool operator !=(Maybe<T> left, Result<T, TObservation> right)
+        {
+            return !(left == right);
+        }
+
+        #endregion
+
+        public Maybe<T> ToMaybe()
+        {
+            return Maybe;
+        }
+
+        public Outcome<TObservation> ToOutcome()
+        {
+            return Outcome;
+        }
+
         public static explicit operator T(Result<T, TObservation> value)
         {
             return value.Value;
+        }
+
+        public static implicit operator bool(Result<T, TObservation> result)
+        {
+            return result.WasSuccessful;
         }
     }
 
@@ -239,18 +271,8 @@ namespace iSynaptic.Commons
 
             return new Result<TResult, TObservation>(() =>
             {
-                if (self.HasValue)
-                {
-                    var selectedResult = selector(self.Value);
-                    var combinedObservations = self.Observations.Concat(selectedResult.Observations);
-
-                    if(selectedResult.HasValue)
-                        return new Result<TResult, TObservation>(selectedResult.Value, combinedObservations);
-                    
-                    return new Result<TResult, TObservation>(combinedObservations);
-                }
-
-                return new Result<TResult, TObservation>(self.Observations);
+                var selectedResult = self.ToMaybe().Select(selector).Value;
+                return new Result<TResult, TObservation>(selectedResult.ToMaybe(), self.ToOutcome().Combine(selectedResult.ToOutcome()));
             });
         }
 
@@ -259,7 +281,11 @@ namespace iSynaptic.Commons
             Guard.NotNull(selector, "selector");
 
             var self = @this;
-            return self.SelectResult(x => new Result<TResult, TObservation>(selector(x), self.Observations));
+            return new Result<TResult, TObservation>(() =>
+            {
+                var selectedResult = self.ToMaybe().Select(selector);
+                return new Result<TResult, TObservation>(selectedResult, self.ToOutcome());
+            });
         }
 
         public static Result<T, TObservation> Where<T, TObservation>(this Result<T, TObservation> @this, Func<T, bool> predicate)
@@ -277,16 +303,14 @@ namespace iSynaptic.Commons
                         return self;
                 }
 
-                return new Result<T, TObservation>(self.Observations);
+                return new Result<T, TObservation>(Maybe<T>.NoValue, self.ToOutcome());
             });
         }
 
         public static Result<T, TObservation> Observe<T, TObservation>(this Result<T, TObservation> @this, TObservation observation)
         {
             var self = @this;
-            return new Result<T, TObservation>(() => self.HasValue
-                ? new Result<T, TObservation>(self.Value, self.Observations.Concat(new []{observation}))
-                : new Result<T, TObservation>(self.Observations.Concat(new[] { observation })));
+            return new Result<T, TObservation>(() => new Result<T, TObservation>(self.ToMaybe(), self.ToOutcome().Observe(observation)));
         }
 
         public static Result<T, TObservation> Observe<T, TObservation>(this Result<T, TObservation> @this, Func<Maybe<T>, TObservation> selector)
@@ -294,19 +318,13 @@ namespace iSynaptic.Commons
             Guard.NotNull(selector, "selector");
 
             var self = @this;
-            return new Result<T, TObservation>(() => self.HasValue
-                ? new Result<T, TObservation>(self.Value, self.Observations.Concat(new []{selector(new Maybe<T>(self.Value))}))
-                : new Result<T, TObservation>(self.Observations.Concat(new[] { selector(Maybe<T>.NoValue) })));
+            return new Result<T, TObservation>(() => new Result<T, TObservation>(self.ToMaybe(), self.ToOutcome().Observe(selector(self.ToMaybe()))));
         }
 
         public static Result<T, TObservation> ObserveMany<T, TObservation>(this Result<T, TObservation> @this, IEnumerable<TObservation> observations)
         {
-            Guard.NotNull(observations, "observations");
-
             var self = @this;
-            return new Result<T, TObservation>(() => self.HasValue
-                ? new Result<T, TObservation>(self.Value, self.Observations.Concat(observations))
-                : new Result<T, TObservation>(self.Observations.Concat(observations)));
+            return new Result<T, TObservation>(() => new Result<T, TObservation>(self.ToMaybe(), self.ToOutcome().ObserveMany(observations)));
         }
 
         public static Result<T, TObservation> ObserveMany<T, TObservation>(this Result<T, TObservation> @this, Func<Maybe<T>, IEnumerable<TObservation>> selector)
@@ -314,9 +332,7 @@ namespace iSynaptic.Commons
             Guard.NotNull(selector, "selector");
 
             var self = @this;
-            return new Result<T, TObservation>(() => self.HasValue
-                ? new Result<T, TObservation>(self.Value, self.Observations.Concat(selector(new Maybe<T>(self.Value))))
-                : new Result<T, TObservation>(self.Observations.Concat(selector(Maybe<T>.NoValue))));
+            return new Result<T, TObservation>(() => new Result<T, TObservation>(self.ToMaybe(), self.ToOutcome().ObserveMany(selector(self.ToMaybe()))));
         }
 
         public static Result<T, TResult> Inform<T, TObservation, TResult>(this Result<T, TObservation> @this, Func<TObservation, TResult> selector)
@@ -324,39 +340,31 @@ namespace iSynaptic.Commons
             Guard.NotNull(selector, "selector");
 
             var self = @this;
-            return new Result<T, TResult>(() => self.HasValue
-                ? new Result<T, TResult>(self.Value, self.Observations.Select(selector))
-                : new Result<T, TResult>(self.Observations.Select(selector)));
+            return new Result<T, TResult>(() => new Result<T, TResult>(self.ToMaybe(), self.ToOutcome().Inform(selector)));
         }
 
-        public static Result<T, TResult> InformMany<T, TObservation, TResult>(this Result<T, TObservation> @this, Func<TObservation, IEnumerable<TResult>> selector)
+        public static Result<T, TResult> InformMany<T, TObservation, TResult>(this Result<T, TObservation> @this, Func<TObservation, Outcome<TResult>> selector)
         {
             Guard.NotNull(selector, "selector");
 
             var self = @this;
-            return new Result<T, TResult>(() => self.HasValue
-                ? new Result<T, TResult>(self.Value, self.Observations.SelectMany(selector))
-                : new Result<T, TResult>(self.Observations.SelectMany(selector)));
+            return new Result<T, TResult>(() => new Result<T, TResult>(self.ToMaybe(), self.ToOutcome().InformMany(selector)));
         }
 
         public static Result<T, TObservation> Notice<T, TObservation>(this Result<T, TObservation> @this, Func<TObservation, bool> predicate)
         {
-            Guard.NotNull(predicate, "selector");
+            Guard.NotNull(predicate, "predicate");
 
             var self = @this;
-            return new Result<T, TObservation>(() => self.HasValue
-                ? new Result<T, TObservation>(self.Value, self.Observations.Where(predicate))
-                : new Result<T, TObservation>(self.Observations.Where(predicate)));
+            return new Result<T, TObservation>(() => new Result<T, TObservation>(self.ToMaybe(), self.ToOutcome().Notice(predicate)));
         }
 
         public static Result<T, TObservation> Ignore<T, TObservation>(this Result<T, TObservation> @this, Func<TObservation, bool> predicate)
         {
-            Guard.NotNull(predicate, "selector");
+            Guard.NotNull(predicate, "predicate");
 
             var self = @this;
-            return new Result<T, TObservation>(() => self.HasValue
-                ? new Result<T, TObservation>(self.Value, self.Observations.Where(x => !predicate(x)))
-                : new Result<T, TObservation>(self.Observations.Where(x => !predicate(x))));
+            return new Result<T, TObservation>(() => new Result<T, TObservation>(self.ToMaybe(), self.ToOutcome().Ignore(predicate)));
         }
 
         public static Result<T, TObservation> Run<T, TObservation>(this Result<T, TObservation> @this, Action<T> action = null)

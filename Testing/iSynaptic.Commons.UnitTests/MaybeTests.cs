@@ -155,17 +155,9 @@ namespace iSynaptic.Commons
         public void EvaluationOfMaybe_OnlyOccursOnce()
         {
             int count = 0;
-            Func<int> funcOfInt = () =>  ++count;
-
-            var maybe = new Maybe<int>(funcOfInt);
-
-            for(int i = 0; i < 10; i++)
-                Assert.AreEqual(1, maybe.Value);
 
             Func<Maybe<int>> funcOfMaybeOfInt = () => new Maybe<int>(++count);
-
-            count = 0;
-            maybe = new Maybe<int>(funcOfMaybeOfInt);
+            var maybe = new Maybe<int>(funcOfMaybeOfInt);
 
             for (int i = 0; i < 10; i++)
                 Assert.AreEqual(1, maybe.Value);

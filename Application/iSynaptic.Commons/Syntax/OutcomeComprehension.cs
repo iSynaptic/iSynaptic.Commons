@@ -29,7 +29,7 @@ namespace iSynaptic.Commons.Syntax
 
         public static Outcome<U> Select<T, U>(this Outcome<T> @this, Func<T, U> selector)
         {
-            return Outcome.InformMany(@this, t => new Outcome<U>(@this.WasSuccessful, selector(t)));
+            return Outcome.InformMany(@this, t => new Outcome<U>(@this.WasSuccessful, new[] { selector(t) }));
         }
     }
 }
