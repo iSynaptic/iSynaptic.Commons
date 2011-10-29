@@ -144,7 +144,7 @@ namespace iSynaptic.Commons
             Guard.NotNull(comparer, "comparer");
 
             return Maybe.Equals(other.Maybe, comparer) &&
-                   Outcome.Equals(other.Outcome);
+                   Outcome.WasSuccessful == other.Outcome.WasSuccessful;
         }
 
         public override bool Equals(object obj)
