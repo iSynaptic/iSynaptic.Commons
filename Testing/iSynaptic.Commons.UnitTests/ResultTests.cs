@@ -76,10 +76,13 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void HasValue_ForDefaultValue_ReturnsFalse()
+        public void Behavior_ForDefaultValue()
         {
             var val = default(Result<int, string>);
+
             Assert.IsFalse(val.HasValue);
+            Assert.IsTrue(val.WasSuccessful);
+            Assert.AreEqual(0, val.Observations.Count());
         }
 
         [Test]

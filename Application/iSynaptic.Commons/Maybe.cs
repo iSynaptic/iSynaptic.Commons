@@ -495,9 +495,10 @@ namespace iSynaptic.Commons
             });
         }
 
-        public static Maybe<T> Suppress<T>(this Maybe<T> @this, Func<Exception, bool> predicate, Maybe<T> value)
+        public static Maybe<T> Suppress<T>(this Maybe<T> @this, Func<Exception, bool> predicate, Func<Exception, Maybe<T>> selector)
         {
             Guard.NotNull(predicate, "predicate");
+            Guard.NotNull(selector, "selector");
             
             var self = @this;
             return new Maybe<T>(() =>
@@ -511,7 +512,7 @@ namespace iSynaptic.Commons
                 catch(Exception ex)
                 {
                     if (predicate(ex))
-                        return value;
+                        return selector(ex);
 
                     throw;
                 }

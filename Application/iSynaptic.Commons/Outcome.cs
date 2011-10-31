@@ -116,6 +116,12 @@ namespace iSynaptic.Commons
 
     public static class Outcome
     {
+        public static Outcome<TObservation> Defer<TObservation>(Func<Outcome<TObservation>> selector)
+        {
+            Guard.NotNull(selector, "selector");
+            return new Outcome<TObservation>(selector);
+        }
+
         public static Outcome<TObservation> Return<TObservation>(TObservation value)
         {
             return Success(value);

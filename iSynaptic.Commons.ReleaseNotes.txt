@@ -2,6 +2,18 @@
 RELEASE NOTES: iSynaptic.Commons
 ======================================
 
+==== v0.4.0 (October 31, 2011) ====
+
+* Result<T> is now the union of Maybe<T> and Outcome<T>
+
+---- Breaking Changes ----
+
+* Maybe<T> no longer carries an exception.
+
+* Maybe<T> operators Catch, ThrowOnException, and OnException no
+  longer exist.
+
+
 ==== v0.3.5 (October 28, 2011) ====
 
  ---- Features ----
