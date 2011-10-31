@@ -30,3 +30,4 @@
 - Scan types for Command-Query Separation opportunities
 - Make unit tests run against ILMerged output assembly
 - Investigate alternative "merging" strategy for projects
+- Add class to check method input validation (e.g. Check.On( () => new Foo(CannotBe.Null<string>(), CanBe.Null<string>()) )

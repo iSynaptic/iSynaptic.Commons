@@ -179,6 +179,22 @@ namespace iSynaptic.Commons
             var result = new Result<int, string>(new[] { "Hello", "World" });
             Assert.IsTrue(result.Observations.SequenceEqual(new[] { "Hello", "World" }));
         }
+
+
+        [Test]
+        public void OfType_CanConvertObservations()
+        {
+            IResult<object, object> result = Result.Return<string, string>("Hello, World!")
+                .Observe("Goodbye, World!");
+
+            var converted = result.OfType<string, string>();
+
+            Assert.IsTrue(converted.HasValue);
+            Assert.AreEqual(converted.Value, "Hello, World!");
+
+            Assert.IsTrue(converted.WasSuccessful);
+            Assert.IsTrue(converted.Observations.SequenceEqual(new[] { "Goodbye, World!" }));
+        }
     }
 }
 

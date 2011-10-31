@@ -2,7 +2,20 @@
 RELEASE NOTES: iSynaptic.Commons
 ======================================
 
+==== v0.4.1 (October 31, 2011) ====
+
+---- Features ----
+
+* Added OfType and AsOutcome/AsResult operators for IOutcome and
+  IResult interfaces...
+
+* Added Combine operator to Result<T, TObservation> to combine
+  the outcome of other Outcome<TObservation> objects.
+
+
 ==== v0.4.0 (October 31, 2011) ====
+
+---- Features ----
 
 * Result<T> is now the union of Maybe<T> and Outcome<T>
 
@@ -16,7 +29,7 @@ RELEASE NOTES: iSynaptic.Commons
 
 ==== v0.3.5 (October 28, 2011) ====
 
- ---- Features ----
+---- Features ----
 
 * Added overload of Recurse extension method that takes Func<T, T>.
 
@@ -29,7 +42,7 @@ RELEASE NOTES: iSynaptic.Commons
 
 ==== v0.3.4 (October 27, 2011) ====
 
- ---- Features ----
+---- Features ----
 
 * Initial implementation of the Result<T, TObservation> monad
 
@@ -53,7 +66,7 @@ RELEASE NOTES: iSynaptic.Commons
 
 ==== v0.3.3 (October 7, 2011) ====
 
- ---- Features ----
+---- Features ----
 
 * Maybe<T> Join operator no-longer evaluates the second maybe if the
   first maybe does not have a value.

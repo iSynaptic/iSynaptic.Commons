@@ -224,6 +224,16 @@ namespace iSynaptic.Commons
         }
 
         [Test]
+        public void OfType_CanConvertObservations()
+        {
+            IOutcome<object> outcome = Outcome.Success("Hello, World!");
+
+            var converted = outcome.OfType<string>();
+            Assert.IsTrue(converted.WasSuccessful);
+            Assert.IsTrue(converted.Observations.SequenceEqual(new[]{"Hello, World!"}));
+        }
+
+        [Test]
         public void Run_ForcesEvaluation()
         {
             bool executed = false;

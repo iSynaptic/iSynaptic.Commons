@@ -367,6 +367,28 @@ namespace iSynaptic.Commons
             return new Result<T, TObservation>(() => new Result<T, TObservation>(self.ToMaybe(), self.ToOutcome().Ignore(predicate)));
         }
 
+        public static Result<T, TObservation> Combine<T, TObservation>(this Result<T, TObservation> @this, Outcome<TObservation> other)
+        {
+            return Combine(@this, new[] { other });
+        }
+
+        public static Result<T, TObservation> Combine<T, TObservation>(this Result<T, TObservation> @this, params Outcome<TObservation>[] outcomes)
+        {
+            return Combine(@this, (IEnumerable<Outcome<TObservation>>)outcomes);
+        }
+
+        public static Result<T, TObservation> Combine<T, TObservation>(this Result<T, TObservation> @this, IEnumerable<Outcome<TObservation>> outcomes)
+        {
+            Guard.NotNull(outcomes, "outcomes");
+            var self = @this;
+
+            return new Result<T, TObservation>(() =>
+            {
+                var cachedOutcomes = outcomes.ToArray();
+                return new Result<T, TObservation>(@this.WasSuccessful & cachedOutcomes.All(x => x.WasSuccessful), self.Observations.Concat(cachedOutcomes.SelectMany(x => x.Observations)));
+            });
+        }
+
         public static Result<T, TObservation> Run<T, TObservation>(this Result<T, TObservation> @this, Action<T> action = null)
         {
             // Getting HasValue forces evaluation
@@ -379,6 +401,28 @@ namespace iSynaptic.Commons
         public static Result<T, TObservation> ToResult<T, TObservation>(this T value)
         {
             return new Result<T, TObservation>(value);
+        }
+
+        public static Result<T, TObservation> OfType<T, TObservation>(this IResult @this)
+        {
+            if (@this == null)
+                return Result<T, TObservation>.NoValue;
+
+            if (@this is Result<T, TObservation>)
+                return (Result<T, TObservation>)@this;
+
+            var self = @this;
+            return new Result<T, TObservation>(() => new Result<T, TObservation>(self.AsMaybe().OfType<T>(), self.AsOutcome().OfType<TObservation>()));
+        }
+
+        public static Result<T, TObservation> AsResult<T, TObservation>(this IResult<T, TObservation> value)
+        {
+            return value.OfType<T, TObservation>();
+        }
+
+        public static Result<object, object> AsResult(this IResult value)
+        {
+            return value.OfType<object, object>();
         }
     }
 }

@@ -288,5 +288,27 @@ namespace iSynaptic.Commons
                 return new Outcome<TObservation>(cachedOutcomes.All(x => x.WasSuccessful), cachedOutcomes.SelectMany(x => x.Observations));
             });
         }
+
+        public static Outcome<TObservation> OfType<TObservation>(this IOutcome @this)
+        {
+            if (@this == null)
+                return Outcome<TObservation>.Success;
+
+            if (@this is Outcome<TObservation>)
+                return (Outcome<TObservation>)@this;
+
+            var self = @this;
+            return new Outcome<TObservation>(() => new Outcome<TObservation>(self.WasSuccessful, self.Observations.OfType<TObservation>()));
+        }
+
+        public static Outcome<TObservation> AsOutcome<TObservation>(this IOutcome<TObservation> value)
+        {
+            return value.OfType<TObservation>();
+        }
+
+        public static Outcome<object> AsOutcome(this IOutcome value)
+        {
+            return value.OfType<object>();
+        }
     }
 }
