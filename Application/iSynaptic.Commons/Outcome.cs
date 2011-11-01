@@ -45,9 +45,13 @@ namespace iSynaptic.Commons
             : this()
         {
             _IsFailure = !isSuccess;
-            _Observations = observations != null
-                ? observations.ToArray()
-                : null;
+
+            if (typeof(TObservation) != typeof(Unit))
+            {
+                _Observations = observations != null
+                                    ? observations.ToArray()
+                                    : null;
+            }
         }
 
         public Outcome(Func<Outcome<TObservation>> computation)
@@ -103,14 +107,33 @@ namespace iSynaptic.Commons
             }
         }
 
+        public Result<Unit, TObservation> ToResult()
+        {
+            return new Result<Unit, TObservation>(new Maybe<Unit>(), this);
+        }
+
+        public Result<T, TObservation> ToResult<T>()
+        {
+            return new Result<T, TObservation>(new Maybe<T>(), this);
+        }
+
         public static Outcome<TObservation> operator&(Outcome<TObservation> left, Outcome<TObservation> right)
         {
-            return new Outcome<TObservation>(() => new Outcome<TObservation>(left.WasSuccessful & right.WasSuccessful, left.Observations.Concat(right.Observations)));
+            var l = left;
+            var r = right;
+
+            return new Outcome<TObservation>(() => new Outcome<TObservation>(l.WasSuccessful & r.WasSuccessful, l.Observations.Concat(r.Observations)));
         }
 
         public static implicit operator bool(Outcome<TObservation> outcome)
         {
             return outcome.WasSuccessful;
+        }
+
+        public static implicit operator Outcome<TObservation>(Outcome<Unit> outcome)
+        {
+            var self = outcome;
+            return new Outcome<TObservation>(() => new Outcome<TObservation>(self.WasSuccessful));
         }
     }
 
@@ -161,14 +184,48 @@ namespace iSynaptic.Commons
             });
         }
 
+        public static Outcome<Unit> Success()
+        {
+            return new Outcome<Unit>(true);
+        }
+
         public static Outcome<TObservation> Success<TObservation>(TObservation observation)
         {
             return new Outcome<TObservation>(true, new[] { observation });
         }
 
+        public static Outcome<TObservation> Success<TObservation>(params TObservation[] observations)
+        {
+            Guard.NotNull(observations, "observations");
+            return new Outcome<TObservation>(true, observations);
+        }
+
+        public static Outcome<TObservation> Success<TObservation>(IEnumerable<TObservation> observations)
+        {
+            Guard.NotNull(observations, "observations");
+            return new Outcome<TObservation>(true, observations);
+        }
+
+        public static Outcome<Unit> Failure()
+        {
+            return new Outcome<Unit>(false);
+        }
+
         public static Outcome<TObservation> Failure<TObservation>(TObservation observation)
         {
             return new Outcome<TObservation>(false, new[] { observation });
+        }
+
+        public static Outcome<TObservation> Failure<TObservation>(params TObservation[] observations)
+        {
+            Guard.NotNull(observations, "observations");
+            return new Outcome<TObservation>(false, observations);
+        }
+
+        public static Outcome<TObservation> Failure<TObservation>(IEnumerable<TObservation> observations)
+        {
+            Guard.NotNull(observations, "observations");
+            return new Outcome<TObservation>(false, observations);
         }
 
         public static Outcome<TObservation> Notice<TObservation>(this Outcome<TObservation> @this, Func<TObservation, bool> predicate)
@@ -183,10 +240,24 @@ namespace iSynaptic.Commons
             return @this.InformMany(t => predicate(t) ? new Outcome<TObservation>(@this.WasSuccessful) : new Outcome<TObservation>(@this.WasSuccessful, new[]{t}));
         }
 
+        public static Outcome<TObservation> Observe<TObservation>(this Outcome<Unit> @this, TObservation observation)
+        {
+            var self = @this;
+            return new Outcome<TObservation>(() => new Outcome<TObservation>(self.WasSuccessful, new[] { observation }));
+        }
+
         public static Outcome<TObservation> Observe<TObservation>(this Outcome<TObservation> @this, TObservation observation)
         {
             var self = @this;
             return new Outcome<TObservation>(() => new Outcome<TObservation>(self.WasSuccessful, self.Observations.Concat(new[]{observation})));
+        }
+
+        public static Outcome<TObservation> Observe<TObservation>(this Outcome<Unit> @this, Func<bool, TObservation> selector)
+        {
+            Guard.NotNull(selector, "selector");
+            var self = @this;
+
+            return new Outcome<TObservation>(() => new Outcome<TObservation>(self.WasSuccessful, new[] { selector(self.WasSuccessful) }));
         }
 
         public static Outcome<TObservation> Observe<TObservation>(this Outcome<TObservation> @this, Func<bool, TObservation> selector)
@@ -197,12 +268,38 @@ namespace iSynaptic.Commons
             return new Outcome<TObservation>(() => new Outcome<TObservation>(self.WasSuccessful, self.Observations.Concat(new[] { selector(self.WasSuccessful) })));
         }
 
+        public static Outcome<TObservation> ObserveMany<TObservation>(this Outcome<Unit> @this, params TObservation[] observations)
+        {
+            return ObserveMany(@this, (IEnumerable<TObservation>) observations);
+        }
+
+        public static Outcome<TObservation> ObserveMany<TObservation>(this Outcome<Unit> @this, IEnumerable<TObservation> observations)
+        {
+            Guard.NotNull(observations, "observations");
+
+            var self = @this;
+            return new Outcome<TObservation>(() => new Outcome<TObservation>(self.WasSuccessful, observations));
+        }
+
+        public static Outcome<TObservation> ObserveMany<TObservation>(this Outcome<TObservation> @this, params TObservation[] observations)
+        {
+            return ObserveMany(@this, (IEnumerable<TObservation>)observations);
+        }
+        
         public static Outcome<TObservation> ObserveMany<TObservation>(this Outcome<TObservation> @this, IEnumerable<TObservation> observations)
         {
             Guard.NotNull(observations, "observations");
 
             var self = @this;
             return new Outcome<TObservation>(() => new Outcome<TObservation>(self.WasSuccessful, self.Observations.Concat(observations)));
+        }
+
+        public static Outcome<TObservation> ObserveMany<TObservation>(this Outcome<Unit> @this, Func<bool, IEnumerable<TObservation>> selector)
+        {
+            Guard.NotNull(selector, "selector");
+            var self = @this;
+
+            return new Outcome<TObservation>(() => new Outcome<TObservation>(self.WasSuccessful, selector(self.WasSuccessful)));
         }
 
         public static Outcome<TObservation> ObserveMany<TObservation>(this Outcome<TObservation> @this, Func<bool, IEnumerable<TObservation>> selector)
@@ -226,14 +323,42 @@ namespace iSynaptic.Commons
             return new Outcome<TObservation>(() => new Outcome<TObservation>(self.WasSuccessful && !predicate(), self.Observations));
         }
 
+        public static Outcome<TObservation> FailIf<TObservation>(this Outcome<Unit> @this, bool predicate, TObservation failureObservation)
+        {
+            return @this.FailIf(predicate, () => failureObservation);
+        }
+
         public static Outcome<TObservation> FailIf<TObservation>(this Outcome<TObservation> @this, bool predicate, TObservation failureObservation)
         {
             return @this.FailIf(predicate, () => failureObservation);
         }
 
+        public static Outcome<TObservation> FailIf<TObservation>(this Outcome<Unit> @this, bool predicate, Func<TObservation> failureObservation)
+        {
+            return @this.FailIf(() => predicate, failureObservation);
+        }
+
         public static Outcome<TObservation> FailIf<TObservation>(this Outcome<TObservation> @this, bool predicate, Func<TObservation> failureObservation)
         {
             return @this.FailIf(() => predicate, failureObservation);
+        }
+
+        public static Outcome<TObservation> FailIf<TObservation>(this Outcome<Unit> @this, Func<bool> predicate, Func<TObservation> failureObservation)
+        {
+            Guard.NotNull(predicate, "predicate");
+            Guard.NotNull(failureObservation, "failureObservation");
+
+            var self = @this;
+
+            return new Outcome<TObservation>(() =>
+            {
+                var failed = predicate();
+                var observations = failed
+                    ? new[] { failureObservation() }
+                    : Enumerable.Empty<TObservation>();
+
+                return new Outcome<TObservation>(self.WasSuccessful && !failed, observations);
+            });
         }
 
         public static Outcome<TObservation> FailIf<TObservation>(this Outcome<TObservation> @this, Func<bool> predicate, Func<TObservation> failureObservation)
@@ -277,6 +402,12 @@ namespace iSynaptic.Commons
         {
             Guard.NotNull(outcomes, "outcomes");
             return Combine(new[]{@this}.Concat(outcomes));
+        }
+
+        public static Outcome<TObservation> Combine<TObservation>(this Outcome<TObservation> @this, IEnumerable<Outcome<TObservation>> outcomes)
+        {
+            Guard.NotNull(outcomes, "outcomes");
+            return Combine(new[] { @this }.Concat(outcomes));
         }
 
         public static Outcome<TObservation> Combine<TObservation>(this IEnumerable<Outcome<TObservation>> outcomes)

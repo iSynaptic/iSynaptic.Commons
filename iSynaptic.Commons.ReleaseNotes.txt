@@ -2,6 +2,16 @@
 RELEASE NOTES: iSynaptic.Commons
 ======================================
 
+==== v0.4.2 (November 1, 2011) ====
+
+---- Features ----
+
+* Added special treatment of Unit for Maybe<T>, Outcome<TObservation>
+  and Result<T, TObservation>
+
+* Many addtional operators added for Maybe<T>, Outcome<TObservation>,
+  and Result<T, TObservation>
+
 ==== v0.4.1 (October 31, 2011) ====
 
 ---- Features ----

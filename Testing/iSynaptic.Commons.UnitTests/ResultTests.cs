@@ -21,9 +21,7 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using NUnit.Framework;
 
 namespace iSynaptic.Commons
@@ -76,11 +74,22 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void Behavior_ForDefaultValue()
+        public void Behavior_ForNonUnitDefaultValue()
         {
             var val = default(Result<int, string>);
 
             Assert.IsFalse(val.HasValue);
+            Assert.IsTrue(val.WasSuccessful);
+            Assert.AreEqual(0, val.Observations.Count());
+        }
+
+        [Test]
+        public void Behavior_ForUnitDefaultValue()
+        {
+            var val = default(Result<Unit, Unit>);
+
+            Assert.IsTrue(val.HasValue);
+            Assert.AreEqual(new Unit(), val.Value);
             Assert.IsTrue(val.WasSuccessful);
             Assert.AreEqual(0, val.Observations.Count());
         }
@@ -168,7 +177,7 @@ namespace iSynaptic.Commons
         [Test]
         public void ComputedObservations_AreYielded()
         {
-            var result = new Result<int, string>(() => new Result<int, string>(new []{"Hello", "World"}));
+            var result = new Result<int, string>(() => Result.Success("Hello", "World"));
 
             Assert.IsTrue(result.Observations.SequenceEqual(new[] {"Hello", "World"}));
         }
@@ -176,7 +185,7 @@ namespace iSynaptic.Commons
         [Test]
         public void StaticObservations_AreYielded()
         {
-            var result = new Result<int, string>(new[] { "Hello", "World" });
+            var result = Result.Success("Hello", "World");
             Assert.IsTrue(result.Observations.SequenceEqual(new[] { "Hello", "World" }));
         }
 
@@ -184,7 +193,7 @@ namespace iSynaptic.Commons
         [Test]
         public void OfType_CanConvertObservations()
         {
-            IResult<object, object> result = Result.Return<string, string>("Hello, World!")
+            IResult<object, object> result = Result.Return("Hello, World!")
                 .Observe("Goodbye, World!");
 
             var converted = result.OfType<string, string>();
@@ -194,6 +203,274 @@ namespace iSynaptic.Commons
 
             Assert.IsTrue(converted.WasSuccessful);
             Assert.IsTrue(converted.Observations.SequenceEqual(new[] { "Goodbye, World!" }));
+        }
+
+        [Test]
+        public void ImplicitConversionOf_NoValue_ToAnyOtherResultType()
+        {
+            Result<int, string> intStringResult = Result.NoValue;
+
+            Assert.IsFalse(intStringResult.HasValue);
+            Assert.IsTrue(intStringResult.WasSuccessful);
+            Assert.AreEqual(0, intStringResult.Observations.Count());
+
+            Result<string, int> stringIntResult = Result.NoValue;
+
+            Assert.IsFalse(stringIntResult.HasValue);
+            Assert.IsTrue(stringIntResult.WasSuccessful);
+            Assert.AreEqual(0, stringIntResult.Observations.Count());
+        }
+
+        [Test]
+        public void ImplicitConversionOf_ResultTAndUnit_ToAnyOtherResultType()
+        {
+            Result<int, string> intStringResult = Result.Return(42);
+
+            Assert.IsTrue(intStringResult.HasValue);
+            Assert.AreEqual(42, intStringResult.Value);
+            Assert.IsTrue(intStringResult.WasSuccessful);
+            Assert.AreEqual(0, intStringResult.Observations.Count());
+        }
+
+        [Test]
+        public void ImplicitConversionOf_ResultUnitAndT_ToAnyOtherResultType()
+        {
+            Result<int, string> intStringResult = Result.Success("Hello, World!");
+
+            Assert.IsFalse(intStringResult.HasValue);
+            Assert.IsTrue(intStringResult.WasSuccessful);
+            Assert.IsTrue(intStringResult.Observations.SequenceEqual(new[]{"Hello, World!"}));
+        }
+
+        [Test]
+        public void Success_Default()
+        {
+            var result = Result.Success();
+
+            Assert.IsTrue(result.HasValue);
+            Assert.AreEqual(new Unit(), result.Value);
+            Assert.IsTrue(result.WasSuccessful);
+            Assert.AreEqual(0, result.Observations.Count());
+        }
+
+        [Test]
+        public void Success_WithOneObservation()
+        {
+            var result = Result.Success("Hello");
+
+            Assert.IsTrue(result.HasValue);
+            Assert.AreEqual(new Unit(), result.Value);
+            Assert.IsTrue(result.WasSuccessful);
+            Assert.IsTrue(result.Observations.SequenceEqual(new[]{"Hello"}));
+        }
+
+        [Test]
+        public void Success_WithMultipleObservation()
+        {
+            var result = Result.Success("Hello", "World");
+
+            Assert.IsTrue(result.HasValue);
+            Assert.AreEqual(new Unit(), result.Value);
+            Assert.IsTrue(result.WasSuccessful);
+            Assert.IsTrue(result.Observations.SequenceEqual(new[] { "Hello", "World" }));
+        }
+
+        [Test]
+        public void Failure_Default()
+        {
+            var result = Result.Failure();
+
+            Assert.IsTrue(result.HasValue);
+            Assert.AreEqual(new Unit(), result.Value);
+            Assert.IsFalse(result.WasSuccessful);
+            Assert.AreEqual(0, result.Observations.Count());
+        }
+
+        [Test]
+        public void Failure_WithOneObservation()
+        {
+            var result = Result.Failure("Hello");
+
+            Assert.IsTrue(result.HasValue);
+            Assert.AreEqual(new Unit(), result.Value);
+            Assert.IsFalse(result.WasSuccessful);
+            Assert.IsTrue(result.Observations.SequenceEqual(new[] { "Hello" }));
+        }
+
+        [Test]
+        public void Failure_WithMultipleObservation()
+        {
+            var result = Result.Failure("Hello", "World");
+
+            Assert.IsTrue(result.HasValue);
+            Assert.AreEqual(new Unit(), result.Value);
+            Assert.IsFalse(result.WasSuccessful);
+            Assert.IsTrue(result.Observations.SequenceEqual(new[] { "Hello", "World" }));
+        }
+
+        [Test]
+        public void Observe_AgainstUnitObservation()
+        {
+            var result = Result.Success()
+                .Observe("Hello");
+
+            Assert.IsTrue(result.Observations.SequenceEqual(new[]{"Hello"}));
+        }
+
+        [Test]
+        public void Observe_AgainstNonUnitObservation()
+        {
+            var result = new Result<string, string>()
+                .Observe("Hello");
+
+            Assert.IsTrue(result.Observations.SequenceEqual(new[] { "Hello" }));
+        }
+
+        [Test]
+        public void Observe_ViaSelectorAgainstUnitObservation()
+        {
+            var result = Result.Success()
+                .Observe(x => "Hello");
+
+            Assert.IsTrue(result.Observations.SequenceEqual(new[] { "Hello" }));
+        }
+
+        [Test]
+        public void Observe_ViaSelectorAgainstNonUnitObservation()
+        {
+            var result = new Result<string, string>()
+                .Observe(x => "Hello");
+
+            Assert.IsTrue(result.Observations.SequenceEqual(new[] { "Hello" }));
+        }
+
+        [Test]
+        public void ObserveMany_AgainstUnitObservation()
+        {
+            var result = Result.Success()
+                .ObserveMany("Hello", "World");
+
+            Assert.IsTrue(result.Observations.SequenceEqual(new[] { "Hello", "World" }));
+        }
+
+        [Test]
+        public void ObserveMany_AgainstNonUnitObservation()
+        {
+            var result = new Result<string, string>()
+                .ObserveMany("Hello", "World");
+
+            Assert.IsTrue(result.Observations.SequenceEqual(new[] { "Hello", "World" }));
+        }
+
+        [Test]
+        public void ObserveMany_ViaSelectorAgainstUnitObservation()
+        {
+            var result = Result.Success()
+                .ObserveMany(x => new[]{"Hello", "World"});
+
+            Assert.IsTrue(result.Observations.SequenceEqual(new[] { "Hello", "World" }));
+        }
+
+        [Test]
+        public void ObserveMany_ViaSelectorAgainstNonUnitObservation()
+        {
+            var result = new Result<string, string>()
+                .ObserveMany(x => new[]{"Hello", "World"});
+
+            Assert.IsTrue(result.Observations.SequenceEqual(new[] { "Hello", "World" }));
+        }
+
+        [Test]
+        public void Inform()
+        {
+            var result = Result.Success(1, 2)
+                .Inform(x => x.ToString());
+
+            Assert.IsTrue(result.Observations.SequenceEqual(new[]{"1", "2"}));
+        }
+
+        [Test]
+        public void InformMany()
+        {
+            var result = Result.Success(1, 2)
+                .InformMany(x => Outcome.Success(x.ToString(), (x * 2).ToString()));
+
+            Assert.IsTrue(result.Observations.SequenceEqual(new[] { "1", "2", "2", "4" }));
+        }
+
+        [Test]
+        public void Ignore()
+        {
+            var result = Result.Success(1, 2)
+                .Ignore(x => x%2 == 0);
+
+            Assert.IsTrue(result.Observations.SequenceEqual(new[]{1}));
+        }
+
+        [Test]
+        public void Notice()
+        {
+            var result = Result.Success(1, 2)
+                .Notice(x => x % 2 == 0);
+
+            Assert.IsTrue(result.Observations.SequenceEqual(new[] { 2 }));
+        }
+
+        [Test]
+        public void Combine()
+        {
+            var result = Result.Success(1, 2)
+                .Combine(Outcome.Success(3, 4));
+
+            Assert.IsTrue(result.Observations.SequenceEqual(new[]{1,2,3,4}));
+        }
+
+        [Test]
+        public void FailIf_AgaistUnitObservationWithSimpleBool()
+        {
+            var result = Result.Success()
+                .FailIf(false);
+
+            Assert.IsTrue(result.WasSuccessful);
+
+            result = result.FailIf(true);
+            Assert.IsFalse(result.WasSuccessful);
+        }
+
+        [Test]
+        public void FailIf_AgaistNonUnitObservationWithSimpleBool()
+        {
+            var result = Result.Success(1)
+                .FailIf(false);
+
+            Assert.IsTrue(result.WasSuccessful);
+
+            result = result.FailIf(true);
+            Assert.IsFalse(result.WasSuccessful);
+        }
+
+        [Test]
+        public void FailIf_AgaistUnitObservationWithBoolPredicate()
+        {
+            var result = Result.Success()
+                .FailIf(() => false);
+
+            Assert.IsTrue(result.WasSuccessful);
+
+            result = result.FailIf(() => true);
+            Assert.IsFalse(result.WasSuccessful);
+        }
+
+        [Test]
+        public void FailIf_AgaistNonUnitObservationWithBoolPredicate()
+        {
+            var result = Result.Success(1)
+                .FailIf(() => false);
+
+            Assert.IsTrue(result.WasSuccessful);
+
+            result = result.FailIf(() => true);
+            Assert.IsFalse(result.WasSuccessful);
         }
     }
 }

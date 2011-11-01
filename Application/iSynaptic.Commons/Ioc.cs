@@ -31,7 +31,7 @@ namespace iSynaptic.Commons
         {
             public Maybe<object> TryResolve(ISymbol symbol)
             {
-                return Maybe<object>.NoValue;
+                return Maybe.NoValue;
             }
         }
 

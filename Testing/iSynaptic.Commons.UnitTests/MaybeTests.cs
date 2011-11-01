@@ -21,11 +21,9 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -77,16 +75,31 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void HasValue_ForDefaultValue_ReturnsFalse()
+        public void HasValue_ForNonUnitDefaultValue_ReturnsFalse()
         {
             var val = default(Maybe<int>);
             Assert.IsFalse(val.HasValue);
         }
 
         [Test]
-        public void Equals_WithDefaultValueAndNoValue_ReturnsTrue()
+        public void HasValue_ForUnitDefaultValue_ReturnsTrue()
+        {
+            var val = default(Maybe<Unit>);
+            Assert.IsTrue(val.HasValue);
+        }
+
+
+        [Test]
+        public void Equals_WithNonUnitDefaultValueAndNoValue_ReturnsTrue()
         {
             Maybe<int> val = default(Maybe<int>);
+            Assert.IsTrue(val == Maybe<int>.NoValue);
+        }
+
+        [Test]
+        public void Equals_WithUnitDefaultValueAndNoValue_ReturnsTrue()
+        {
+            Maybe<int> val = default(Maybe<Unit>);
             Assert.IsTrue(val == Maybe<int>.NoValue);
         }
 
@@ -1055,7 +1068,9 @@ namespace iSynaptic.Commons
         public void If_ReturnsNoValue_IfBoolIsFalseAndNoElseValueProvided()
         {
             var value = Maybe.If(false, 42.ToMaybe());
+            Assert.IsFalse(value.HasValue);
 
+            value = Maybe.If(() => false, 42.ToMaybe());
             Assert.IsFalse(value.HasValue);
         }
 
@@ -1063,16 +1078,20 @@ namespace iSynaptic.Commons
         public void If_ReturnsThenValue_IfBoolIsTrue()
         {
             var value = Maybe.If(true, 42.ToMaybe());
-
             Assert.That(value == 42);
+
+            value = Maybe.If(() => true, 84.ToMaybe());
+            Assert.That(value == 84);
         }
 
         [Test]
         public void If_ReturnsElseValue_IfBoolIsFalse()
         {
             var value = Maybe.If(false, 42.ToMaybe(), 7.ToMaybe());
-
             Assert.That(value == 7);
+
+            value = Maybe.If(() => false, 7.ToMaybe(), 42.ToMaybe());
+            Assert.That(value == 42);
         }
 
         [Test]
@@ -1082,6 +1101,7 @@ namespace iSynaptic.Commons
             var defered = Maybe.Defer(() => { executed = true; return "42"; });
 
             var value = Maybe.If(true, defered, defered);
+            value = Maybe.If(() => true, defered, defered);
 
             Assert.IsFalse(executed);
 
@@ -1096,6 +1116,7 @@ namespace iSynaptic.Commons
             var defered = Maybe.Defer(() => { executed = true; return "42"; });
 
             var value = Maybe.If(false, defered, defered);
+            value = Maybe.If(() => false, defered, defered);
 
             Assert.IsFalse(executed);
 

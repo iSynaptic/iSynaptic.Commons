@@ -71,10 +71,10 @@ namespace iSynaptic.Commons
         {
             get
             {
-                if(_Computation != null)
+                if (_Computation != null)
                     return _Computation().Value;
 
-                if(_HasValue)
+                if (typeof(T) == typeof(Unit) || _HasValue)
                     return _Value;
 
                 throw new InvalidOperationException("No value can be computed.");
@@ -90,10 +90,22 @@ namespace iSynaptic.Commons
         {
             get
             {
-                return _Computation != null 
-                    ? _Computation().HasValue
-                    : _HasValue;
+                if(_Computation != null)
+                    return _Computation().HasValue;
+
+                return typeof(T) == typeof(Unit) ||
+                       _HasValue;
             }
+        }
+
+        public Result<T, Unit> ToResult()
+        {
+            return new Result<T, Unit>(this, new Outcome<Unit>());
+        }
+
+        public Result<T, TObservation> ToResult<TObservation>()
+        {
+            return new Result<T, TObservation>(this, new Outcome<TObservation>());
         }
 
         public bool Equals(T other)
@@ -127,7 +139,7 @@ namespace iSynaptic.Commons
                 return Equals((Maybe<T>)obj);
 
             if (obj is T)
-                return Equals(new Maybe<T>((T) obj));
+                return Equals(new Maybe<T>((T)obj));
 
             return false;
         }
@@ -180,6 +192,11 @@ namespace iSynaptic.Commons
         {
             return value.Value;
         }
+
+        public static implicit operator Maybe<T>(Maybe<Unit> value)
+        {
+            return new Maybe<T>();
+        }
     }
 
     public static class Maybe
@@ -204,7 +221,7 @@ namespace iSynaptic.Commons
 
         public static Maybe<T> If<T>(bool predicate, Maybe<T> thenValue)
         {
-            return predicate ? thenValue : Maybe<T>.NoValue;
+            return predicate ? thenValue : NoValue;
         }
 
         public static Maybe<T> If<T>(bool predicate, Maybe<T> thenValue, Maybe<T> elseValue)
@@ -215,7 +232,7 @@ namespace iSynaptic.Commons
         public static Maybe<T> If<T>(Func<bool> predicate, Maybe<T> thenValue)
         {
             Guard.NotNull(predicate, "predicate");
-            return new Maybe<T>(() => predicate() ? thenValue : Maybe<T>.NoValue);
+            return new Maybe<T>(() => predicate() ? thenValue : NoValue);
         }
 
         public static Maybe<T> If<T>(Func<bool> predicate, Maybe<T> thenValue, Maybe<T> elseValue)
@@ -426,7 +443,7 @@ namespace iSynaptic.Commons
                     if (action != null)
                         action(ex);
 
-                    return Maybe<T>.NoValue;
+                    return NoValue;
                 }
             });
         }
@@ -447,7 +464,7 @@ namespace iSynaptic.Commons
                 catch(Exception ex)
                 {
                     if(predicate(ex))
-                        return Maybe<T>.NoValue;
+                        return NoValue;
 
                     throw;
                 }
@@ -529,7 +546,7 @@ namespace iSynaptic.Commons
             var self = @this;
             return new Maybe<Tuple<T, U>>(() => self.HasValue && other.HasValue
                 ? new Maybe<Tuple<T, U>>(Tuple.Create(self.Value, other.Value))
-                : Maybe<Tuple<T, U>>.NoValue);
+                : NoValue);
         }
 
         public static Maybe<TResult> Join<T, U, TResult>(this Maybe<T> @this, Maybe<U> other, Func<T, U, TResult> selector)
@@ -539,7 +556,7 @@ namespace iSynaptic.Commons
             var self = @this;
             return new Maybe<TResult>(() => self.HasValue && other.HasValue
                 ? new Maybe<TResult>(selector(self.Value, other.Value))
-                : Maybe<TResult>.NoValue);
+                : NoValue);
         }
 
         public static Maybe<TResult> Join<T, U, TResult>(this Maybe<T> @this, Maybe<U> other, Func<T, U, Maybe<TResult>> selector)
@@ -549,7 +566,7 @@ namespace iSynaptic.Commons
             var self = @this;
             return new Maybe<TResult>(() => self.HasValue && other.HasValue 
                 ? selector(self.Value, other.Value) 
-                : Maybe<TResult>.NoValue);
+                : NoValue);
         }
 
         #endregion
@@ -654,11 +671,11 @@ namespace iSynaptic.Commons
             return new Maybe<T>(() =>
             {
                 if (self == null)
-                    return Maybe<T>.NoValue;
+                    return NoValue;
 
                 return self.HasValue 
                     ? self.Value.Cast<T>() 
-                    : Maybe<T>.NoValue;
+                    : NoValue;
             });
         }
 
@@ -668,10 +685,15 @@ namespace iSynaptic.Commons
 
             return new Maybe<T>(() => self.HasValue 
                 ? self.Value 
-                : Maybe<T>.NoValue);
+                : NoValue);
         }
 
         #endregion
+
+        public static Maybe<Unit> NoValue
+        {
+            get { return new Maybe<Unit>(); }
+        }
 
         public static Maybe<T> Return<T>(T value)
         {
@@ -682,7 +704,7 @@ namespace iSynaptic.Commons
         {
             return value.HasValue
                 ? new Maybe<T>(value.Value)
-                : Maybe<T>.NoValue;
+                : NoValue;
         }
 
         public static Maybe<TResult> Bind<T, TResult>(this Maybe<T> @this, Func<T, Maybe<TResult>> selector)
@@ -704,7 +726,7 @@ namespace iSynaptic.Commons
 
             var self = @this;
 
-            return new Maybe<TResult>(() => self.HasValue ? new Maybe<TResult>(selector(self.Value)) : Maybe<TResult>.NoValue);
+            return new Maybe<TResult>(() => self.HasValue ? new Maybe<TResult>(selector(self.Value)) : NoValue);
         }
 
         public static Maybe<TResult> TrySelect<T, TResult>(this Maybe<T> @this, TrySelector<T, TResult> selector)
@@ -716,13 +738,13 @@ namespace iSynaptic.Commons
             return new Maybe<TResult>(() =>
             {
                 if (!self.HasValue)
-                    return Maybe<TResult>.NoValue;
+                    return NoValue;
 
                 TResult result = default(TResult);
 
                 return selector(self.Value, out result)
                     ? new Maybe<TResult>(result)
-                    : Maybe<TResult>.NoValue;
+                    : NoValue;
             });
         }
 
@@ -734,7 +756,7 @@ namespace iSynaptic.Commons
 
             var self = @this;
 
-            return new Maybe<TResult>(() => self.HasValue ? selector(self.Value) : Maybe<TResult>.NoValue);
+            return new Maybe<TResult>(() => self.HasValue ? selector(self.Value) : NoValue);
         }
 
         public static Maybe<T> Throw<T>(Exception exception)
@@ -825,7 +847,7 @@ namespace iSynaptic.Commons
                         return self;
                 }
 
-                return Maybe<T>.NoValue;
+                return NoValue;
             });
         }
 
@@ -844,7 +866,7 @@ namespace iSynaptic.Commons
                         return self;
                 }
 
-                return Maybe<T>.NoValue;
+                return NoValue;
             });
         }
 
@@ -873,7 +895,7 @@ namespace iSynaptic.Commons
             return new Maybe<T>(() =>
             {
                 task.Wait(cancellationToken);
-                return task.IsCanceled ? Maybe<T>.NoValue : self;
+                return task.IsCanceled ? NoValue : self;
             });
         }
 
@@ -899,20 +921,20 @@ namespace iSynaptic.Commons
         public static Maybe<TResult> Cast<TResult>(this IMaybe @this)
         {
             if(@this == null)
-                return Maybe<TResult>.NoValue;
+                return NoValue;
 
             if(@this is Maybe<TResult>)
                 return (Maybe<TResult>) @this;
 
             return new Maybe<TResult>(() => @this.HasValue
                 ? new Maybe<TResult>((TResult)@this.Value)
-                : Maybe<TResult>.NoValue);
+                : NoValue);
         }
 
         public static Maybe<TResult> OfType<TResult>(this IMaybe @this)
         {
             if (@this == null)
-                return Maybe<TResult>.NoValue;
+                return NoValue;
 
             if (@this is Maybe<TResult>)
                 return (Maybe<TResult>) @this;
@@ -920,11 +942,11 @@ namespace iSynaptic.Commons
             return new Maybe<TResult>(() =>
             {
                 if (@this.HasValue != true)
-                    return Maybe<TResult>.NoValue;
+                    return NoValue;
 
                 return @this.Value is TResult
                     ? new Maybe<TResult>((TResult)@this.Value) 
-                    : Maybe<TResult>.NoValue;
+                    : NoValue;
             });
         }
 
@@ -947,7 +969,7 @@ namespace iSynaptic.Commons
         {
             return @this.HasValue
                 ? new Maybe<T>(@this.Value)
-                : Maybe<T>.NoValue;
+                : NoValue;
         }
 
         public static Maybe<T> ToMaybe<T>(this object @this)
@@ -958,7 +980,7 @@ namespace iSynaptic.Commons
             if (@this == null && typeof(T).IsValueType != true)
                 return new Maybe<T>(default(T));
 
-            return Maybe<T>.NoValue;
+            return NoValue;
         }
 
         public static Maybe<T> AsMaybe<T>(this IMaybe<T> value)
