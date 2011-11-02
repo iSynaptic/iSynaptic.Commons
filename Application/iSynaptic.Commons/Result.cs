@@ -466,6 +466,41 @@ namespace iSynaptic.Commons
             return new Result<T, TObservation>(() => new Result<T, TObservation>(self.ToMaybe(), self.ToOutcome().Combine(outcomes)));
         }
 
+        public static Result<Unit, Unit> FailIf(bool predicate)
+        {
+            return new Result<Unit, Unit>(Maybe.NoValue, Outcome.FailIf(predicate));
+        }
+
+        public static Result<Unit, Unit> FailIf(Func<bool> predicate)
+        {
+            Guard.NotNull(predicate, "predicate");
+            return new Result<Unit, Unit>(() => new Result<Unit, Unit>(Maybe.NoValue, Outcome.FailIf(predicate)));
+        }
+
+        public static Result<Unit, TObservation> FailIf<TObservation>(bool predicate, TObservation failureObservation)
+        {
+            return new Result<Unit, TObservation>(Maybe.NoValue, Outcome.FailIf(predicate, failureObservation));
+        }
+
+        public static Result<Unit, TObservation> FailIf<TObservation>(Func<bool> predicate, TObservation failureObservation)
+        {
+            Guard.NotNull(predicate, "predicate");
+            return new Result<Unit, TObservation>(() => new Result<Unit, TObservation>(Maybe.NoValue, Outcome.FailIf(predicate, failureObservation)));
+        }
+
+        public static Result<Unit, TObservation> FailIf<TObservation>(bool predicate, Func<TObservation> failureObservation)
+        {
+            Guard.NotNull(failureObservation, "failureObservation");
+            return new Result<Unit, TObservation>(() => new Result<Unit, TObservation>(Maybe.NoValue, Outcome.FailIf(predicate, failureObservation)));
+        }
+
+        public static Result<Unit, TObservation> FailIf<TObservation>(Func<bool> predicate, Func<TObservation> failureObservation)
+        {
+            Guard.NotNull(predicate, "predicate");
+            Guard.NotNull(failureObservation, "failureObservation");
+            return new Result<Unit, TObservation>(() => new Result<Unit, TObservation>(Maybe.NoValue, Outcome.FailIf(predicate, failureObservation)));
+        }
+
         public static Result<T, TObservation> FailIf<T, TObservation>(this Result<T, TObservation> @this, bool predicate)
         {
             return @this.FailIf(() => predicate);
@@ -517,6 +552,14 @@ namespace iSynaptic.Commons
             var self = @this;
 
             return new Result<T, TObservation>(() => new Result<T, TObservation>(self.ToMaybe(), self.ToOutcome().FailIf(predicate, failureObservation)));
+        }
+
+        public static Result<T, TObservation> FailOn<T, TObservation>(this Result<T, TObservation> @this, Func<TObservation, bool> predicate)
+        {
+            Guard.NotNull(predicate, "predicate");
+
+            var self = @this;
+            return new Result<T, TObservation>(() => new Result<T, TObservation>(self.ToMaybe(), self.ToOutcome().FailOn(predicate)));
         }
 
         public static Result<T, TObservation> Run<T, TObservation>(this Result<T, TObservation> @this, Action<T> action = null)
