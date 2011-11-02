@@ -2,6 +2,13 @@
 RELEASE NOTES: iSynaptic.Commons
 ======================================
 
+==== v0.4.4 (November 2, 2011) ====
+
+---- Features ----
+
+* Fixed bug in FailIf operators on Outcome<TObservation>.
+
+
 ==== v0.4.3 (November 2, 2011) ====
 
 ---- Features ----

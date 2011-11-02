@@ -323,26 +323,35 @@ namespace iSynaptic.Commons
 
         public static Outcome<TObservation> FailIf<TObservation>(bool predicate, TObservation failureObservation)
         {
-            return new Outcome<TObservation>(!predicate, new[] { failureObservation });
+            return new Outcome<TObservation>(!predicate, predicate ? new[] { failureObservation } : new TObservation[]{});
         }
 
         public static Outcome<TObservation> FailIf<TObservation>(Func<bool> predicate, TObservation failureObservation)
         {
             Guard.NotNull(predicate, "predicate");
-            return new Outcome<TObservation>(() => new Outcome<TObservation>(!predicate(), new[] { failureObservation }));
+            return new Outcome<TObservation>(() =>
+            {
+                var failure = predicate();
+                return new Outcome<TObservation>(!failure, failure ? new[] { failureObservation } : new TObservation[]{});
+            });
         }
 
         public static Outcome<TObservation> FailIf<TObservation>(bool predicate, Func<TObservation> failureObservation)
         {
             Guard.NotNull(failureObservation, "failureObservation");
-            return new Outcome<TObservation>(() => new Outcome<TObservation>(!predicate, new[] { failureObservation() }));
+            return new Outcome<TObservation>(() => new Outcome<TObservation>(!predicate, predicate ? new[] { failureObservation() } : new TObservation[]{}));
         }
 
         public static Outcome<TObservation> FailIf<TObservation>(Func<bool> predicate, Func<TObservation> failureObservation)
         {
             Guard.NotNull(predicate, "predicate");
             Guard.NotNull(failureObservation, "failureObservation");
-            return new Outcome<TObservation>(() => new Outcome<TObservation>(!predicate(), new[] { failureObservation() }));
+
+            return new Outcome<TObservation>(() =>
+            {
+                var failure = predicate();
+                return new Outcome<TObservation>(!failure, failure ? new[] {failureObservation()} : new TObservation[]{});
+            });
         }
 
         public static Outcome<TObservation> FailIf<TObservation>(this Outcome<TObservation> @this, bool predicate)
