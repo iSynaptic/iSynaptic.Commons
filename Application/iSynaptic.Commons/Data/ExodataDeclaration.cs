@@ -111,9 +111,8 @@ namespace iSynaptic.Commons.Data
         public virtual TExodata Resolve<TContext, TSubject>(Maybe<TContext> context, Maybe<TSubject> subject, MemberInfo member)
         {
             return TryResolve(context, subject, member)
-                    .Or(TryGetDefault(context, subject, member))
-
-                .ValueOrDefault();
+                .Or(TryGetDefault(context, subject, member))
+                .Value;
         }
 
         public virtual Maybe<TExodata> TryResolve<TContext, TSubject>(Maybe<TContext> context, Maybe<TSubject> subject, MemberInfo member)

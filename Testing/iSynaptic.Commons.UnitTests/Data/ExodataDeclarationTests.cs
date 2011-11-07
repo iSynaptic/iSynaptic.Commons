@@ -54,6 +54,13 @@ namespace iSynaptic.Commons.Data
         }
 
         [Test]
+        public void Get_WhenWithNoDefault_ThrowsException()
+        {
+            var maxLength = new ExodataDeclaration<int>();
+            Assert.Throws<InvalidOperationException>(() => maxLength.Get());
+        }
+
+        [Test]
         public void Get_ByTypeOnly_UsesTypeDeclaration()
         {
             var resolver = new StandardExodataResolver();

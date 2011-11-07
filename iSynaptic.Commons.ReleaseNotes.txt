@@ -2,6 +2,15 @@
 RELEASE NOTES: iSynaptic.Commons
 ======================================
 
+==== v0.4.5 (November 7, 2011) ====
+
+---- Features ----
+
+* When an ExodataDeclaration does not have a default specified, calling
+  Resolve will now throw an exception, instead of defaulting to the 
+  TExodata type's default value (e.g. null or zero).
+
+
 ==== v0.4.4 (November 2, 2011) ====
 
 ---- Features ----
