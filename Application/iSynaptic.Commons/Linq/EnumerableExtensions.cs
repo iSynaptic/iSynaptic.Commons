@@ -321,6 +321,14 @@ namespace iSynaptic.Commons.Linq
             return new[] { @this }.Concat(selector(@this).Select(x => Recurse(x, selector)).ValueOrDefault(Enumerable.Empty<T>()));
         }
 
+        public static IEnumerable<T> Recurse<T>(this Maybe<T> @this, Func<T, Maybe<T>> selector)
+        {
+            Guard.NotNull(selector, "selector");
+
+            return @this.Select(x => x.Recurse(selector))
+                .ValueOrDefault(Enumerable.Empty<T>());
+        }
+
         public static IEnumerable<T> Squash<T>(this IEnumerable<Maybe<T>> @this)
         {
             Guard.NotNull(@this, "@this");
