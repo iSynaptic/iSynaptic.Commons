@@ -24,21 +24,31 @@ namespace iSynaptic.Commons.Data
 {
     public class StringExodataDeclaration : ExodataDeclaration<string>
     {
-        public StringExodataDeclaration() : this(0, int.MaxValue, null)
+        public StringExodataDeclaration() : this(0, int.MaxValue, true, true)
         {
         }
 
-        public StringExodataDeclaration(int minLength, int maxLength, string @default) : this(minLength, maxLength, @default, true, true, true)
+        public StringExodataDeclaration(int minLength, int maxLength)
+            : this(minLength, maxLength, true, true)
         {
         }
 
-        public StringExodataDeclaration(int minLength, int maxLength, string @default, bool isNullPermitted, bool isEmptyPermitted, bool isWhiteSpacePermitted)
+        public StringExodataDeclaration(int minLength, int maxLength, bool isEmptyPermitted, bool isWhiteSpacePermitted)
+        {
+            Initialize(minLength, maxLength, isEmptyPermitted, isWhiteSpacePermitted);
+        }
+
+        public StringExodataDeclaration(int minLength, int maxLength, bool isEmptyPermitted, bool isWhiteSpacePermitted, string @default)
             : base(@default)
+        {
+            Initialize(minLength, maxLength, isEmptyPermitted, isWhiteSpacePermitted);
+        }
+
+        private void Initialize(int minLength, int maxLength, bool isEmptyPermitted, bool isWhiteSpacePermitted)
         {
             MinLength = minLength;
             MaxLength = maxLength;
 
-            IsNullPermitted = isNullPermitted;
             IsEmptyPermitted = isEmptyPermitted;
             IsWhiteSpaceOnlyPermitted = isWhiteSpacePermitted;
         }
@@ -46,12 +56,7 @@ namespace iSynaptic.Commons.Data
         protected override Maybe<string> EnsureValid(string value, string valueName)
         {
             if(value == null)
-            {
-                if(IsNullPermitted != true)
-                    return Maybe.Throw<string>(new ExodataValidationException<string>(this, value, string.Format("The {0} value must not be null.", valueName)));
-
-                return base.EnsureValid(value, valueName);
-            }
+                return Maybe.Throw<string>(new ExodataValidationException<string>(this, value, string.Format("The {0} value must not be null.", valueName)));
 
             if (value == string.Empty && IsEmptyPermitted != true)
                 return Maybe.Throw<string>(new ExodataValidationException<string>(this, value, string.Format("The {0} value must not be empty.", valueName)));
@@ -71,7 +76,6 @@ namespace iSynaptic.Commons.Data
         public int MinLength { get; private set; }
         public int MaxLength { get; private set; }
 
-        public bool IsNullPermitted { get; private set; }
         public bool IsEmptyPermitted { get; private set; }
         public bool IsWhiteSpaceOnlyPermitted { get; private set; }
     }

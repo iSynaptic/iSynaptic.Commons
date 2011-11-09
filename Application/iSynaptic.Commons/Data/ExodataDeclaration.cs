@@ -39,6 +39,7 @@ namespace iSynaptic.Commons.Data
 
         public ExodataDeclaration(TExodata @default) : this()
         {
+            Guard.NotNull(@default, "@default");
             _Default = @default.ToMaybe();
         }
 
