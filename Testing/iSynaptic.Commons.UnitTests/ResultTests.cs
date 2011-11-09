@@ -44,13 +44,13 @@ namespace iSynaptic.Commons
         [Test]
         public void HasValueProperty_OnValue_ReturnsTrue()
         {
-            Assert.IsTrue(new Result<string, string>("").HasValue);
+            Assert.IsTrue(Result.Return("").HasValue);
         }
 
         [Test]
         public void AccessingValueProperty_OnValue_ReturnsExpectedValue()
         {
-            Assert.AreEqual("Hello, World!", new Result<string, int>("Hello, World!").Value);
+            Assert.AreEqual("Hello, World!", Result.Return("Hello, World!").Value);
         }
 
         [Test]
@@ -62,7 +62,7 @@ namespace iSynaptic.Commons
         [Test]
         public void ExplicitCast_OnValue_ReturnsValue()
         {
-            int value = (int)new Result<int, string>(42);
+            int value = (int)Result.Return(42);
 
             Assert.AreEqual(42, value);
         }
@@ -104,14 +104,14 @@ namespace iSynaptic.Commons
         [Test]
         public void Equals_WithNullValueAndNoValue_ReturnsTrue()
         {
-            Assert.IsTrue(new Result<string, int>((string)null) == Result<string, int>.NoValue);
+            Assert.IsTrue(Result.Return<string>(null) == Result<string, int>.NoValue);
         }
 
         [Test]
         public void Equals_WithTwoResultsWithSameValue_ReturnsTrue()
         {
-            var left = new Result<int, string>(7);
-            var right = new Result<int, string>(7);
+            var left = Result.Return(7);
+            var right = Result.Return(7);
 
             Assert.That(left == right);
         }
@@ -119,8 +119,8 @@ namespace iSynaptic.Commons
         [Test]
         public void Equals_UsesNonGenericEqualsOfUnderlyingValue_IfGenericIsNotAvailable()
         {
-            var left = new Result<DayOfWeek, string>(DayOfWeek.Friday);
-            var right = new Result<DayOfWeek, string>(DayOfWeek.Friday);
+            var left = Result.Return(DayOfWeek.Friday);
+            var right = Result.Return(DayOfWeek.Friday);
 
             Assert.That(left == right);
 
@@ -133,8 +133,8 @@ namespace iSynaptic.Commons
         [Test]
         public void Equals_OnBoxedResult_BehavesCorrectly()
         {
-            object left = new Result<int, string>(7);
-            object right = new Result<int, string>(7);
+            object left = Result.Return(7);
+            object right = Result.Return(7);
 
             Assert.IsTrue(left.Equals(right));
             Assert.IsFalse(left.Equals(null));
@@ -153,22 +153,22 @@ namespace iSynaptic.Commons
         public void GetHashCode_OnValue_IncludesValuesHashCode()
         {
             int val = 42;
-            Assert.AreEqual(val.GetHashCode() ^ true.GetHashCode(), new Result<int, string>(val).GetHashCode());
+            Assert.AreEqual(val.GetHashCode() ^ true.GetHashCode(), Result.Return(val).GetHashCode());
         }
 
         [Test]
         public void GetHashCode_OnNullValue_IncludesValuesHashCode()
         {
-            Assert.AreEqual(0 ^ true.GetHashCode(), new Result<string, int>((string)null).GetHashCode());
+            Assert.AreEqual(0 ^ true.GetHashCode(), Result.Return<string>(null).GetHashCode());
         }
 
         [Test]
         public void EvaluationOfResult_OnlyOccursOnce()
         {
             int count = 0;
-            Func<Result<int, string>> funcOfMaybeOfInt = () => new Result<int, string>(++count);
+            Func<Result<int, string>> funcOfMaybeOfInt = () => Result.Return(++count);
 
-            var maybe = new Result<int, string>(funcOfMaybeOfInt);
+            var maybe = Result.Defer(funcOfMaybeOfInt);
 
             for (int i = 0; i < 10; i++)
                 Assert.AreEqual(1, maybe.Value);
@@ -177,7 +177,7 @@ namespace iSynaptic.Commons
         [Test]
         public void ComputedObservations_AreYielded()
         {
-            var result = new Result<int, string>(() => Result.Success("Hello", "World"));
+            var result = Result.Defer(() => Result.Success("Hello", "World"));
 
             Assert.IsTrue(result.Observations.SequenceEqual(new[] {"Hello", "World"}));
         }

@@ -40,14 +40,14 @@ namespace iSynaptic.Commons
 
         private readonly Func<Maybe<T>> _Computation;
 
-        public Maybe(T value)
+        internal Maybe(T value)
             : this()
         {
             _Value = value;
             _HasValue = value != null;
         }
 
-        public Maybe(Func<Maybe<T>> computation)
+        internal Maybe(Func<Maybe<T>> computation)
             : this()
         {
             var cachedComputation = Guard.NotNull(computation, "computation");
@@ -727,6 +727,15 @@ namespace iSynaptic.Commons
             var self = @this;
 
             return new Maybe<TResult>(() => self.HasValue ? new Maybe<TResult>(selector(self.Value)) : NoValue);
+        }
+
+        public static Maybe<TResult> Select<T, TResult>(this Maybe<T> @this, Func<T, TResult?> selector) where TResult : struct 
+        {
+            Guard.NotNull(selector, "selector");
+
+            var self = @this;
+
+            return new Maybe<TResult>(() => self.HasValue ? Return(selector(self.Value)) : NoValue);
         }
 
         public static Maybe<TResult> TrySelect<T, TResult>(this Maybe<T> @this, TrySelector<T, TResult> selector)

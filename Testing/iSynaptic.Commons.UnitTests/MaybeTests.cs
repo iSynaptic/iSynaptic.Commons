@@ -51,19 +51,19 @@ namespace iSynaptic.Commons
         [Test]
         public void HasValueProperty_OnValue_ReturnsTrue()
         {
-            Assert.IsTrue(new Maybe<string>("").HasValue);
+            Assert.IsTrue(Maybe.Return("").HasValue);
         }
 
         [Test]
         public void AccessingValueProperty_OnValue_ReturnsExpectedValue()
         {
-            Assert.AreEqual("Hello, World!", new Maybe<string>("Hello, World!").Value);
+            Assert.AreEqual("Hello, World!", Maybe.Return("Hello, World!").Value);
         }
 
         [Test]
         public void ExplicitCast_OnValue_ReturnsValue()
         {
-            int value = (int) new Maybe<int>(42);
+            int value = (int) Maybe.Return(42);
 
             Assert.AreEqual(42, value);
         }
@@ -106,14 +106,14 @@ namespace iSynaptic.Commons
         [Test]
         public void Equals_WithNullValueAndNoValue_ReturnsTrue()
         {
-            Assert.IsTrue(new Maybe<string>((string)null) == Maybe<string>.NoValue);
+            Assert.IsTrue(Maybe.Return<string>(null) == Maybe<string>.NoValue);
         }
 
         [Test]
         public void Equals_WithTwoMaybesWithSameValue_ReturnsTrue()
         {
-            var left = new Maybe<int>(7);
-            var right = new Maybe<int>(7);
+            var left = Maybe.Return(7);
+            var right = Maybe.Return(7);
 
             Assert.That(left == right);
         }
@@ -121,8 +121,8 @@ namespace iSynaptic.Commons
         [Test]
         public void Equals_UsesNonGenericEqualsOfUnderlyingValue_IfGenericIsNotAvailable()
         {
-            var left = new Maybe<DayOfWeek>(DayOfWeek.Friday);
-            var right = new Maybe<DayOfWeek>(DayOfWeek.Friday);
+            var left = Maybe.Return(DayOfWeek.Friday);
+            var right = Maybe.Return(DayOfWeek.Friday);
 
             Assert.That(left == right);
 
@@ -135,8 +135,8 @@ namespace iSynaptic.Commons
         [Test]
         public void Equals_OnBoxedMaybe_BehavesCorrectly()
         {
-            object left = new Maybe<int>(7);
-            object right = new Maybe<int>(7);
+            object left = Maybe.Return(7);
+            object right = Maybe.Return(7);
 
             Assert.IsTrue(left.Equals(right));
             Assert.IsFalse(left.Equals(null));
@@ -155,13 +155,13 @@ namespace iSynaptic.Commons
         public void GetHashCode_OnValue_ReturnsUnderlyingHashCode()
         {
             int val = 42;
-            Assert.AreEqual(val.GetHashCode(), new Maybe<int>(val).GetHashCode());
+            Assert.AreEqual(val.GetHashCode(), Maybe.Return(val).GetHashCode());
         }
 
         [Test]
         public void GetHashCode_OnNullValue_ReturnsZero()
         {
-            Assert.AreEqual(0, new Maybe<string>((string)null).GetHashCode());
+            Assert.AreEqual(0, Maybe.Return<string>(null).GetHashCode());
         }
 
         [Test]
@@ -169,8 +169,8 @@ namespace iSynaptic.Commons
         {
             int count = 0;
 
-            Func<Maybe<int>> funcOfMaybeOfInt = () => new Maybe<int>(++count);
-            var maybe = new Maybe<int>(funcOfMaybeOfInt);
+            Func<Maybe<int>> funcOfMaybeOfInt = () => Maybe.Return(++count);
+            var maybe = Maybe.Defer(funcOfMaybeOfInt);
 
             for (int i = 0; i < 10; i++)
                 Assert.AreEqual(1, maybe.Value);
@@ -188,8 +188,8 @@ namespace iSynaptic.Commons
         [Test]
         public void SelectMaybe_BehavesCorrectly()
         {
-            AssertMaybe.Behavior(42, x => x.SelectMaybe(y => new Maybe<int>(y)), AssertMaybeResult.SameValue);
-            AssertMaybe.Behavior(42, x => x.SelectMaybe(y => new Maybe<int>(5)), AssertMaybeResult.Value);
+            AssertMaybe.Behavior(42, x => x.SelectMaybe(Maybe.Return), AssertMaybeResult.SameValue);
+            AssertMaybe.Behavior(42, x => x.SelectMaybe(y => Maybe.Return(5)), AssertMaybeResult.Value);
         }
 
         [Test]
@@ -265,12 +265,12 @@ namespace iSynaptic.Commons
         public void Null_IsTreatedAsNoValue()
         {
             string input = null;
-            var value = new Maybe<string>(input);
+            var value = Maybe.Return(input);
 
             Assert.IsFalse(value.HasValue);
 
             int? input2 = null;
-            var value2 = new Maybe<int?>(input2);
+            var value2 = Maybe.Return(input2);
 
             Assert.IsFalse(value2.HasValue);
         }
@@ -1288,7 +1288,7 @@ namespace iSynaptic.Commons
 
             string expression = body.ToString();
 
-            var maybeWithValue = new Maybe<T>(value);
+            var maybeWithValue = Maybe.Return(value);
 
             EnsureBehavior(string.Format("{0} with a value", expression), maybeWithValue, () => op(maybeWithValue), withValue);
             EnsureBehavior(string.Format("{0} with no value", expression), Maybe<T>.NoValue, () => op(Maybe<T>.NoValue), withNoValue);
@@ -1306,7 +1306,7 @@ namespace iSynaptic.Commons
 
             string expression = body.ToString();
 
-            EnsureBehavior(string.Format("{0} with {1}", expression, value != null ? value.ToString() : "{null}"), new Maybe<T>(value), () => op(value), result);
+            EnsureBehavior(string.Format("{0} with {1}", expression, value != null ? value.ToString() : "{null}"), Maybe.Return(value), () => op(value), result);
         }
 
         private static void EnsureBehavior<T>(string name, Maybe<T> value, Func<IMaybe> op, AssertMaybeResult expectedResult)

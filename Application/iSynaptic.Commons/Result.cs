@@ -36,19 +36,19 @@ namespace iSynaptic.Commons
 
         private readonly Func<Result<T, TObservation>> _Computation;
 
-        public Result(T value)
+        internal Result(T value)
             : this(new Maybe<T>(value), Outcome<TObservation>.Success)
         {
         }
 
-        public Result(Maybe<T> maybe, Outcome<TObservation> outcome)
+        internal Result(Maybe<T> maybe, Outcome<TObservation> outcome)
             : this()
         {
             _Maybe = maybe.Run();
             _Outcome = outcome.Run();
         }
 
-        public Result(Func<Result<T, TObservation>> computation)
+        internal Result(Func<Result<T, TObservation>> computation)
             : this()
         {
             var cachedComputation = Guard.NotNull(computation, "computation");
@@ -265,6 +265,18 @@ namespace iSynaptic.Commons
         public static Result<Unit, Unit> NoValue
         {
             get { return new Result<Unit, Unit>(); }
+        }
+
+        public static Result<T, Unit> Defer<T>(Func<T> computation)
+        {
+            Guard.NotNull(computation, "computation");
+
+            return new Result<T, Unit>(() => new Result<T, Unit>(computation()));
+        }
+
+        public static Result<T, TObservation> Defer<T, TObservation>(Func<Result<T, TObservation>> computation)
+        {
+            return new Result<T, TObservation>(computation);
         }
 
         public static Result<T, Unit> Return<T>(T value)
