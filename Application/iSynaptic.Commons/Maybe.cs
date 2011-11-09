@@ -40,14 +40,14 @@ namespace iSynaptic.Commons
 
         private readonly Func<Maybe<T>> _Computation;
 
-        internal Maybe(T value)
+        public Maybe(T value)
             : this()
         {
             _Value = value;
             _HasValue = value != null;
         }
 
-        internal Maybe(Func<Maybe<T>> computation)
+        public Maybe(Func<Maybe<T>> computation)
             : this()
         {
             var cachedComputation = Guard.NotNull(computation, "computation");
@@ -208,6 +208,13 @@ namespace iSynaptic.Commons
             Guard.NotNull(computation, "computation");
 
             return new Maybe<T>(() => new Maybe<T>(computation()));
+        }
+
+        public static Maybe<T> Defer<T>(Func<T?> computation) where T : struct
+        {
+            Guard.NotNull(computation, "computation");
+
+            return new Maybe<T>(() => Return(computation()));
         }
 
         public static Maybe<T> Defer<T>(Func<Maybe<T>> computation)
@@ -559,6 +566,16 @@ namespace iSynaptic.Commons
                 : NoValue);
         }
 
+        public static Maybe<TResult> Join<T, U, TResult>(this Maybe<T> @this, Maybe<U> other, Func<T, U, TResult?> selector) where TResult : struct
+        {
+            Guard.NotNull(selector, "selector");
+
+            var self = @this;
+            return new Maybe<TResult>(() => self.HasValue && other.HasValue
+                ? Return(selector(self.Value, other.Value))
+                : NoValue);
+        }
+
         public static Maybe<TResult> Join<T, U, TResult>(this Maybe<T> @this, Maybe<U> other, Func<T, U, Maybe<TResult>> selector)
         {
             Guard.NotNull(selector, "selector");
@@ -768,6 +785,12 @@ namespace iSynaptic.Commons
             return new Maybe<TResult>(() => self.HasValue ? selector(self.Value) : NoValue);
         }
 
+        public static Maybe<Unit> Throw(Exception exception)
+        {
+            Guard.NotNull(exception, "exception");
+            return new Maybe<Unit>(() => { throw exception; });
+        }
+
         public static Maybe<T> Throw<T>(Exception exception)
         {
             Guard.NotNull(exception, "exception");
@@ -961,10 +984,12 @@ namespace iSynaptic.Commons
 
         public static T? ToNullable<T>(this Maybe<T> @this) where T : struct
         {
-            if(@this.HasValue)
-                return @this.Value;
+            return @this.HasValue ? (T?)@this.Value : null;
+        }
 
-            return null;
+        public static T? ToNullable<T>(this Maybe<T?> @this) where T : struct
+        {
+            return @this.HasValue ? @this.Value : null;
         }
 
         // Conventionally, in LINQ, the monadic "return" operator is written "To...,"

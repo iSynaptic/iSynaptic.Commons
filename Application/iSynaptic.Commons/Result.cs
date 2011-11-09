@@ -36,19 +36,19 @@ namespace iSynaptic.Commons
 
         private readonly Func<Result<T, TObservation>> _Computation;
 
-        internal Result(T value)
+        public Result(T value)
             : this(new Maybe<T>(value), Outcome<TObservation>.Success)
         {
         }
 
-        internal Result(Maybe<T> maybe, Outcome<TObservation> outcome)
+        public Result(Maybe<T> maybe, Outcome<TObservation> outcome)
             : this()
         {
             _Maybe = maybe.Run();
             _Outcome = outcome.Run();
         }
 
-        internal Result(Func<Result<T, TObservation>> computation)
+        public Result(Func<Result<T, TObservation>> computation)
             : this()
         {
             var cachedComputation = Guard.NotNull(computation, "computation");
@@ -257,7 +257,6 @@ namespace iSynaptic.Commons
         {
             return new Result<T, TObservation>();
         }
-
     }
 
     public static class Result
@@ -270,8 +269,13 @@ namespace iSynaptic.Commons
         public static Result<T, Unit> Defer<T>(Func<T> computation)
         {
             Guard.NotNull(computation, "computation");
-
             return new Result<T, Unit>(() => new Result<T, Unit>(computation()));
+        }
+
+        public static Result<T, Unit> Defer<T>(Func<T?> computation) where T : struct
+        {
+            Guard.NotNull(computation, "computation");
+            return new Result<T, Unit>(() => Return(computation()));
         }
 
         public static Result<T, TObservation> Defer<T, TObservation>(Func<Result<T, TObservation>> computation)
@@ -282,6 +286,13 @@ namespace iSynaptic.Commons
         public static Result<T, Unit> Return<T>(T value)
         {
             return new Result<T, Unit>(value);
+        }
+
+        public static Result<T, Unit> Return<T>(T? value) where T : struct
+        {
+            return value.HasValue
+                ? new Result<T, Unit>(value.Value)
+                : Result<T, Unit>.NoValue;
         }
 
         public static Result<Unit, Unit> Success()
@@ -347,11 +358,15 @@ namespace iSynaptic.Commons
             Guard.NotNull(selector, "selector");
 
             var self = @this;
-            return new Result<TResult, TObservation>(() =>
-            {
-                var selectedResult = self.ToMaybe().Select(selector);
-                return new Result<TResult, TObservation>(selectedResult, self.ToOutcome());
-            });
+            return new Result<TResult, TObservation>(() => new Result<TResult, TObservation>(self.ToMaybe().Select(selector), self.ToOutcome()));
+        }
+
+        public static Result<TResult, TObservation> Select<T, TResult, TObservation>(this Result<T, TObservation> @this, Func<T, TResult?> selector) where TResult : struct
+        {
+            Guard.NotNull(selector, "selector");
+
+            var self = @this;
+            return new Result<TResult, TObservation>(() => new Result<TResult, TObservation>(self.ToMaybe().Select(selector), self.ToOutcome()));
         }
 
         public static Result<T, TObservation> Where<T, TObservation>(this Result<T, TObservation> @this, Func<T, bool> predicate)
@@ -585,7 +600,12 @@ namespace iSynaptic.Commons
 
         public static Result<T, TObservation> ToResult<T, TObservation>(this T value)
         {
-            return new Result<T, TObservation>(value);
+            return Return(value);
+        }
+
+        public static Result<T, TObservation> ToResult<T, TObservation>(this T? value) where T : struct
+        {
+            return Return(value);
         }
 
         public static Result<T, TObservation> OfType<T, TObservation>(this IResult @this)
