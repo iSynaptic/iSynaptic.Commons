@@ -430,6 +430,21 @@ namespace iSynaptic.Commons
             });
         }
 
+        public static Maybe<T> When<T>(this Maybe<T> @this, Func<T, bool> predicate, Func<T, Maybe<T>> selector)
+        {
+            Guard.NotNull(predicate, "predicate");
+            Guard.NotNull(selector, "selector");
+
+            var self = @this;
+            return new Maybe<T>(() =>
+            {
+                if (self.HasValue && predicate(self.Value))
+                    return selector(self.Value);
+
+                return self;
+            });
+        }
+
         #endregion
 
         #region Suppress Operator

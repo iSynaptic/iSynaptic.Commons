@@ -443,6 +443,18 @@ namespace iSynaptic.Commons
             return new Result<T, TObservation>(() => new Result<T, TObservation>(value, self));
         }
 
+        public static Result<T, TObservation> WithValueOnSuccess<T, TObservation>(this Outcome<TObservation> @this, T value)
+        {
+            var self = @this;
+            return new Result<T, TObservation>(() => new Result<T, TObservation>(Maybe.If(self.WasSuccessful, Maybe.Return(value)), self));
+        }
+
+        public static Result<T, TObservation> WithValueOnSuccess<T, TObservation>(this Outcome<TObservation> @this, Maybe<T> value)
+        {
+            var self = @this;
+            return new Result<T, TObservation>(() => new Result<T, TObservation>(Maybe.If(self.WasSuccessful, value), self));
+        }
+
         public static Outcome<TObservation> Run<TObservation>(this Outcome<TObservation> @this)
         {
             // Getting WasSuccessful forces evaluation

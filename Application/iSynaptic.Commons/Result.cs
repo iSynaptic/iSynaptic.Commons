@@ -589,6 +589,20 @@ namespace iSynaptic.Commons
             return new Result<T, TObservation>(() => new Result<T, TObservation>(self.ToMaybe(), self.ToOutcome().FailOn(predicate)));
         }
 
+        public static Result<T, TObservation> NoValueOn<T, TObservation>(this Result<T, TObservation> @this, Func<TObservation, bool> predicate)
+        {
+            Guard.NotNull(predicate, "predicate");
+
+            var self = @this;
+            return new Result<T, TObservation>(() => new Result<T, TObservation>(self.Observations.Any(predicate) ? Maybe.NoValue : self.ToMaybe(), self.ToOutcome()));
+        }
+
+        public static Result<T, TObservation> NoValueOnFailure<T, TObservation>(this Result<T, TObservation> @this)
+        {
+            var self = @this;
+            return new Result<T, TObservation>(() => new Result<T, TObservation>(self.WasSuccessful ? self.ToMaybe() : Maybe.NoValue, self.ToOutcome()));
+        }
+
         public static Result<T, TObservation> Run<T, TObservation>(this Result<T, TObservation> @this, Action<T> action = null)
         {
             // Getting HasValue forces evaluation
