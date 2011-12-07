@@ -47,6 +47,11 @@ namespace iSynaptic.Commons
             return DependencyResolver.Resolve<T>(name);
         }
 
+        public static T Resolve<T>(ISymbol<T> symbol)
+        {
+            return DependencyResolver.Resolve(symbol);
+        }
+
         public static object Resolve(Type dependencyType)
         {
             return DependencyResolver.Resolve(dependencyType);
@@ -55,6 +60,11 @@ namespace iSynaptic.Commons
         public static object Resolve(Type dependencyType, string name)
         {
             return DependencyResolver.Resolve(dependencyType, name);
+        }
+
+        public static object Resolve(ISymbol symbol)
+        {
+            return DependencyResolver.Resolve(symbol);
         }
 
         public static Maybe<T> TryResolve<T>()
@@ -67,6 +77,11 @@ namespace iSynaptic.Commons
             return DependencyResolver.TryResolve<T>(name);
         }
 
+        public static Maybe<T> TryResolve<T>(ISymbol<T> symbol)
+        {
+            return DependencyResolver.TryResolve<T>(symbol);
+        }
+
         public static Maybe<object> TryResolve(Type dependencyType)
         {
             return DependencyResolver.TryResolve(dependencyType);
@@ -75,6 +90,11 @@ namespace iSynaptic.Commons
         public static Maybe<object> TryResolve(Type dependencyType, string name)
         {
             return DependencyResolver.TryResolve(dependencyType, name);
+        }
+
+        public static Maybe<object> TryResolve(ISymbol symbol)
+        {
+            return DependencyResolver.TryResolve(symbol);
         }
 
         public static void SetDependencyResolver(IDependencyResolver resolver)

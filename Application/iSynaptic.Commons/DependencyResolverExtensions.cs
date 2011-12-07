@@ -30,7 +30,7 @@ namespace iSynaptic.Commons
 {
     public static class DependencyResolverExtensions
     {
-        private static Func<IDependencyResolver, Type, string, Maybe<object>> _ResolveStrategy = null;
+        private static Func<IDependencyResolver, ISymbol, Maybe<object>> _ResolveStrategy = null;
 
         public static T Resolve<T>(this IDependencyResolver resolver)
         {
@@ -42,6 +42,11 @@ namespace iSynaptic.Commons
             return (T)Resolve(resolver, typeof(T), name);
         }
 
+        public static T Resolve<T>(this IDependencyResolver resolver, ISymbol<T> symbol)
+        {
+            return (T) Resolve(resolver, (ISymbol) symbol);
+        }
+
         public static object Resolve(this IDependencyResolver resolver, Type dependencyType)
         {
             return Resolve(resolver, dependencyType, null);
@@ -49,7 +54,12 @@ namespace iSynaptic.Commons
 
         public static object Resolve(this IDependencyResolver resolver, Type dependencyType, string name)
         {
-            return ResolveStrategy(resolver, dependencyType, name).ValueOrDefault();
+            return Resolve(resolver, new DependencySymbol(dependencyType, name));
+        }
+
+        public static object Resolve(this IDependencyResolver resolver, ISymbol symbol)
+        {
+            return TryResolve(resolver, symbol).ValueOrDefault();
         }
 
         public static Maybe<T> TryResolve<T>(this IDependencyResolver resolver)
@@ -62,6 +72,11 @@ namespace iSynaptic.Commons
             return TryResolve(resolver, typeof(T), name).Cast<T>();
         }
 
+        public static Maybe<T> TryResolve<T>(this IDependencyResolver resolver, ISymbol<T> symbol)
+        {
+            return TryResolve(resolver, (ISymbol) symbol).Cast<T>();
+        }
+
         public static Maybe<object> TryResolve(this IDependencyResolver resolver, Type dependencyType)
         {
             return TryResolve(resolver, dependencyType, null);
@@ -69,25 +84,30 @@ namespace iSynaptic.Commons
 
         public static Maybe<object> TryResolve(this IDependencyResolver resolver, Type dependencyType, string name)
         {
-            return ResolveStrategy(resolver, dependencyType, name);
+            return TryResolve(resolver, new DependencySymbol(dependencyType, name));
         }
 
-        public static void SetResolveStrategy(Func<IDependencyResolver, Type, string, Maybe<object>> strategy)
+        private static Maybe<object> TryResolve(IDependencyResolver resolver, ISymbol symbol)
+        {
+            return ResolveStrategy(resolver, symbol);
+        }
+
+        public static void SetResolveStrategy(Func<IDependencyResolver, ISymbol, Maybe<object>> strategy)
         {
             _ResolveStrategy = strategy;
         }
 
-        private static Func<IDependencyResolver, Type, string, Maybe<object>> ResolveStrategy
+        private static Func<IDependencyResolver, ISymbol, Maybe<object>> ResolveStrategy
         {
             get { return _ResolveStrategy ?? DefaultResolveStrategy; }
         }
 
-        private static Maybe<object> DefaultResolveStrategy(IDependencyResolver resolver, Type dependencyType, string name)
+        private static Maybe<object> DefaultResolveStrategy(IDependencyResolver resolver, ISymbol symbol)
         {
             Guard.NotNull(resolver, "resolver");
-            Guard.NotNull(dependencyType, "dependencyType");
+            Guard.NotNull(symbol, "symbol");
 
-            return resolver.TryResolve(new DependencySymbol(dependencyType, name));
+            return resolver.TryResolve(symbol);
         }
 
         private class DependencySymbol : NamedSymbol, IDependencySymbol
