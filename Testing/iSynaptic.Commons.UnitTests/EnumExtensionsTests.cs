@@ -92,8 +92,8 @@ namespace iSynaptic.Commons
             FlagsEnum f = FlagsEnum.Flag3 | FlagsEnum.Flag5;
             Assert.IsTrue(f.GetFlags<FlagsEnum>().SequenceEqual(new FlagsEnum[] { FlagsEnum.Flag3, FlagsEnum.Flag5 }));
 
-            Assert.Throws<ArgumentException>(() => f.GetFlags<int>().ForceEnumeration());
-            Assert.Throws<ArgumentException>(() => f.GetFlags<SpecialValue>().ForceEnumeration());
+            Assert.Throws<ArgumentException>(() => f.GetFlags<int>().Run());
+            Assert.Throws<ArgumentException>(() => f.GetFlags<SpecialValue>().Run());
         }
     }
 

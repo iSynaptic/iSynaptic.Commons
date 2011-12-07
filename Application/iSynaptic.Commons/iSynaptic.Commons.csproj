@@ -75,6 +75,7 @@
     <Compile Include="ArrayIndex.cs" />
     <Compile Include="Cast.cs" />
     <Compile Include="Check.cs" />
+    <Compile Include="Collections\Concurrent\ProducerConsumerCollectionExtensions.cs" />
     <Compile Include="Collections\Generic\BaseDictionary.cs" />
     <Compile Include="Collections\Generic\BaseReadOnlyDictionary.cs" />
     <Compile Include="Collections\Generic\BaseWeakDictionary.cs" />
@@ -130,6 +131,7 @@
     <Compile Include="Guard.cs" />
     <Compile Include="IFluentInterface.cs" />
     <Compile Include="IMaybe.cs" />
+    <Compile Include="Linq\Neighbors.cs" />
     <Compile Include="Maybe.cs" />
     <Compile Include="Outcome.cs" />
     <Compile Include="Reflection\Emit\DynamicMethodExtensions.cs" />

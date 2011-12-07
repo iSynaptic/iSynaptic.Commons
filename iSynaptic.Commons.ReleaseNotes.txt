@@ -2,6 +2,43 @@
 RELEASE NOTES: iSynaptic.Commons
 ======================================
 
+==== v0.4.6 (December 7, 2011) ====
+
+---- Features ----
+
+* Added Maybe.TrySelect that uses a selector that doesn't require input.
+
+* Added Squash operators on Maybe<T> instances that wrap IEnumerable<T>.
+
+* Added When and Recurse operator to Maybe<T>.
+
+* Added WithValueOnSuccess operator to Outcome<TObservation>.
+
+* Added NoValueOn and NoValueOnFailure to Result<T, TObservation>.
+
+* Added Let, Recurse, Squash, OnFirst, OnLast, OnValue, OnNoValue, OnException,
+  Leading, and WithNeighbors operators to IEnumerable<T>.
+
+* Added TryTake extension to IProducerConsumerCollection interface that 
+  returns a Maybe<T>.
+
+* Added methods to Ioc and DependencyResolverExtension classes to support
+  using symbols to resolve dependencies.
+
+---- Breaking Changes ----
+
+* Unwrap operator for Maybe<T> has been renamed to Squash.
+
+* ForceEnumeration operator for IEnumerable<T> has been renamed to Run.
+
+* ExodataDeclaration no longer allows null to be used as a default value.
+
+* Passing a Nullable<T> that contains no value into a Maybe or Result
+  is treated as no value.
+
+* Ioc static class strategy function is now based on ISymbol.
+
+
 ==== v0.4.5 (November 7, 2011) ====
 
 ---- Features ----

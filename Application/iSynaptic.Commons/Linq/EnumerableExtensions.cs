@@ -30,6 +30,20 @@ namespace iSynaptic.Commons.Linq
 {
     public static class EnumerableExtensions
     {
+        public static IEnumerable<TResult> Let<T, TResult>(this IEnumerable<T> @this, Func<IEnumerable<T>, IEnumerable<TResult>> selector)
+        {
+            Guard.NotNull(@this, "@this");
+            Guard.NotNull(selector, "selector");
+
+            return LetCore(@this, selector);
+        }
+
+        private static IEnumerable<TResult> LetCore<T, TResult>(IEnumerable<T> @this, Func<IEnumerable<T>, IEnumerable<TResult>> selector)
+        {
+            foreach (var item in selector(@this))
+                yield return item;
+        }
+
         public static IEnumerable<T> Unless<T>(this IEnumerable<T> @this, Func<T, bool> predicate)
         {
             Guard.NotNull(@this, "@this");
@@ -277,10 +291,14 @@ namespace iSynaptic.Commons.Linq
                 yield return Maybe<T>.NoValue;
         }
 
-        public static void ForceEnumeration<T>(this IEnumerable<T> @this)
+        public static IEnumerable<T> Run<T>(this IEnumerable<T> @this, Action<T> action = null)
         {
-            Guard.NotNull(@this, "@this");
-            @this.All(x => true);
+            var source = Guard.NotNull(@this, "@this");
+
+            if (action != null)
+                source = source.OnValue(action);
+
+            return source.ToArray();
         }
 
         public static SmartLoop<T> SmartLoop<T>(this IEnumerable<T> @this)
@@ -335,6 +353,210 @@ namespace iSynaptic.Commons.Linq
 
             return @this.Where(x => x.HasValue)
                 .Select(x => x.Value);
+        }
+
+        public static IEnumerable<T> Squash<T>(this IEnumerable<IMaybe<T>> @this)
+        {
+            Guard.NotNull(@this, "@this");
+
+            return @this
+                .Where(x => x != null && x.HasValue && x.Value != null)
+                .Select(x => x.Value);
+        }
+
+        public static IEnumerable<T> OnFirst<T>(this IEnumerable<T> @this, Action<T> action)
+        {
+            Guard.NotNull(@this, "@this");
+            Guard.NotNull(action, "action");
+
+            return OnFirstCore(@this, action);
+        }
+
+        private static IEnumerable<T> OnFirstCore<T>(IEnumerable<T> @this, Action<T> action)
+        {
+            bool isFirst = true;
+            foreach (var item in @this)
+            {
+                if(isFirst)
+                {
+                    isFirst = false;
+                    action(item);
+                }
+
+                yield return item;
+            }
+        }
+
+        public static IEnumerable<T> OnLast<T>(this IEnumerable<T> @this, Action<T> action)
+        {
+            Guard.NotNull(@this, "@this");
+            Guard.NotNull(action, "action");
+
+            return OnLastCore(@this, action);
+        }
+
+        private static IEnumerable<T> OnLastCore<T>(IEnumerable<T> @this, Action<T> action)
+        {
+            bool itemRetreived = false;
+            var lastItem = default(T);
+
+            try
+            {
+                foreach (var item in @this)
+                {
+                    itemRetreived = true;
+                    lastItem = item;
+                    yield return item;
+                }
+            }
+            finally
+            {
+                if(itemRetreived)
+                    action(lastItem);    
+            }
+        }
+
+        public static IEnumerable<T> OnValue<T>(this IEnumerable<T> @this, Action<T> action)
+        {
+            Guard.NotNull(@this, "@this");
+            Guard.NotNull(action, "action");
+
+            return OnValueCore(@this, action);
+        }
+
+        private static IEnumerable<T> OnValueCore<T>(IEnumerable<T> @this, Action<T> action)
+        {
+            foreach(var item in @this)
+            {
+                action(item);
+                yield return item;
+            }
+        }
+
+        public static IEnumerable<T> OnNoValue<T>(this IEnumerable<T> @this, Action action)
+        {
+            Guard.NotNull(@this, "@this");
+            Guard.NotNull(action, "action");
+
+            return OnNoValueCore(@this, action);
+        }
+
+        private static IEnumerable<T> OnNoValueCore<T>(IEnumerable<T> @this, Action action)
+        {
+            bool itemRetreived = false;
+
+            foreach(var item in @this)
+            {
+                itemRetreived = true;
+                yield return item;
+            }
+
+            if (!itemRetreived)
+                action();
+        }
+
+        public static IEnumerable<T> OnException<T>(this IEnumerable<T> @this, Action<Exception> action)
+        {
+            Guard.NotNull(@this, "@this");
+            Guard.NotNull(action, "action");
+
+            return OnExceptionCore(@this, action);
+        }
+
+        private static IEnumerable<T> OnExceptionCore<T>(IEnumerable<T> @this, Action<Exception> action)
+        {
+            using (var enumerator = @this.GetEnumerator())
+            {
+                while (true)
+                {
+                    bool didMove;
+                    try
+                    {
+                        didMove = enumerator.MoveNext();
+                    }
+                    catch (Exception ex)
+                    {
+                        action(ex);
+                        throw;
+                    }
+
+                    if (!didMove)
+                        yield break;
+
+                    yield return enumerator.Current;
+                }
+            }
+        }
+
+        public static IEnumerable<T> Leading<T>(this IEnumerable<T> @this, Action action)
+        {
+            Guard.NotNull(@this, "@this");
+            Guard.NotNull(action, "action");
+
+            return LeadingCore(@this, action);
+        }
+
+        private static IEnumerable<T> LeadingCore<T>(IEnumerable<T> @this, Action action)
+        {
+            action();
+
+            foreach (var item in @this)
+                yield return item;
+        }
+
+        public static IEnumerable<T> Finally<T>(this IEnumerable<T> @this, Action action)
+        {
+            Guard.NotNull(@this, "@this");
+            Guard.NotNull(action, "action");
+
+            return FinallyCore(@this, action);
+        }
+
+        private static IEnumerable<T> FinallyCore<T>(IEnumerable<T> @this, Action action)
+        {
+            try
+            {
+                using (var enumerator = @this.GetEnumerator())
+                {
+                    while (true)
+                    {
+                        if (enumerator.MoveNext() != true)
+                            yield break;
+
+                        yield return enumerator.Current;
+                    }
+                }
+            }
+            finally
+            {
+                action();
+            }
+        }
+
+        public static IEnumerable<Neighbors<T>> WithNeighbors<T>(this IEnumerable<T> @this)
+        {
+            Guard.NotNull(@this, "@this");
+            return WithNeighborsCore(@this);
+        }
+
+        private static IEnumerable<Neighbors<T>> WithNeighborsCore<T>(this IEnumerable<T> @this)
+        {
+            var previous = Maybe<T>.NoValue;
+            var current = Maybe<T>.NoValue;
+            var next = Maybe<T>.NoValue;
+
+            foreach (var item in @this)
+            {
+                previous = current;
+                current = next;
+                next = item.ToMaybe();
+
+                if (current.HasValue)
+                    yield return new Neighbors<T>(current.Value, previous, next);
+            }
+
+            if (next.HasValue)
+                yield return new Neighbors<T>(next.Value, current, Maybe<T>.NoValue);
         }
     }
 }

@@ -37,10 +37,14 @@ namespace iSynaptic.Commons.Data
         {
         }
 
-        public ExodataDeclaration(TExodata @default) : this()
+        public ExodataDeclaration(TExodata @default) : this(@default.ToMaybe())
         {
             Guard.NotNull(@default, "@default");
-            _Default = @default.ToMaybe();
+        }
+
+        public ExodataDeclaration(Maybe<TExodata> @default)
+        {
+            _Default = @default;
         }
 
         #region Fluent Resolution

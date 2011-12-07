@@ -229,18 +229,18 @@ namespace iSynaptic.Commons.Linq
         }
 
         [Test]
-        public void ForceEnumeration()
+        public void Run()
         {
             bool enumerationComplete = false;
             IEnumerable<int> numbers = GetRange(1, 10, () => { enumerationComplete = true; });
 
             Assert.IsFalse(enumerationComplete);
 
-            numbers.ForceEnumeration();
+            numbers.Run();
             Assert.IsTrue(enumerationComplete);
 
             IEnumerable<int> nullEnumerable = null;
-            Assert.Throws<ArgumentNullException>(() => nullEnumerable.ForceEnumeration());
+            Assert.Throws<ArgumentNullException>(() => nullEnumerable.Run());
         }
 
         [Test]

@@ -1228,43 +1228,43 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void Unwrap_WithNullOuterIMaybe_ReturnsNoValue()
+        public void Squash_WithNullOuterIMaybe_ReturnsNoValue()
         {
             IMaybe<IMaybe<int>> value = null;
 
-            Assert.IsTrue(Maybe<int>.NoValue == value.Unwrap());
+            Assert.IsTrue(Maybe<int>.NoValue == value.Squash());
         }
 
         [Test]
-        public void Unwrap_WithNullInnerIMaybe_ReturnsNoValue()
+        public void Squash_WithNullInnerIMaybe_ReturnsNoValue()
         {
             IMaybe<IMaybe<int>> value = Maybe.Return<IMaybe<int>>(null);
 
-            Assert.IsTrue(Maybe<int>.NoValue == value.Unwrap());
+            Assert.IsTrue(Maybe<int>.NoValue == value.Squash());
         }
 
         [Test]
-        public void Unwrap_WithNoValueOuterIMaybe_ReturnsNoValue()
+        public void Squash_WithNoValueOuterIMaybe_ReturnsNoValue()
         {
             IMaybe<IMaybe<int>> value = Maybe<IMaybe<int>>.NoValue;
 
-            Assert.IsTrue(Maybe<int>.NoValue == value.Unwrap());
+            Assert.IsTrue(Maybe<int>.NoValue == value.Squash());
         }
 
         [Test]
-        public void Unwrap_WithNoValueInnerIMaybe_ReturnsNoValue()
+        public void Squash_WithNoValueInnerIMaybe_ReturnsNoValue()
         {
             IMaybe<IMaybe<int>> value = Maybe.Return<IMaybe<int>>(Maybe<int>.NoValue);
 
-            Assert.IsTrue(Maybe<int>.NoValue == value.Unwrap());
+            Assert.IsTrue(Maybe<int>.NoValue == value.Squash());
         }
 
         [Test]
-        public void Unwrap_WithValue_ReturnsValue()
+        public void Squash_WithValue_ReturnsValue()
         {
             IMaybe<IMaybe<int>> value = Maybe.Return<IMaybe<int>>(42.ToMaybe());
 
-            var result = value.Unwrap();
+            var result = value.Squash();
 
             Assert.IsTrue(result.HasValue);
             Assert.AreEqual(42, result.Value);

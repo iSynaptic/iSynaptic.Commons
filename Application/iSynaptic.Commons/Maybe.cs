@@ -695,9 +695,9 @@ namespace iSynaptic.Commons
 
         #endregion
 
-        #region Unwrap Operator
+        #region Squash Operator
 
-        public static Maybe<T> Unwrap<T>(this IMaybe<IMaybe<T>> @this)
+        public static Maybe<T> Squash<T>(this IMaybe<IMaybe<T>> @this)
         {
             var self = @this;
             return new Maybe<T>(() =>
@@ -705,19 +705,34 @@ namespace iSynaptic.Commons
                 if (self == null)
                     return NoValue;
 
-                return self.HasValue 
+                return self.HasValue
                     ? self.Value.Cast<T>() 
                     : NoValue;
             });
         }
 
-        public static Maybe<T> Unwrap<T>(this Maybe<Maybe<T>> @this)
+        public static IEnumerable<T> Squash<T>(this IMaybe<IEnumerable<T>> @this)
+        {
+            if (@this == null || @this.HasValue != true || @this.Value == null)
+                yield break;
+
+            foreach (var item in @this.Value)
+                yield return item;
+        }
+
+        public static Maybe<T> Squash<T>(this Maybe<Maybe<T>> @this)
         {
             var self = @this;
 
             return new Maybe<T>(() => self.HasValue 
                 ? self.Value 
                 : NoValue);
+        }
+
+        public static IEnumerable<T> Squash<T>(this Maybe<IEnumerable<T>> @this)
+        {
+            foreach (var item in @this.ValueOrDefault(Enumerable.Empty<T>()))
+                yield return item;
         }
 
         #endregion
@@ -768,6 +783,20 @@ namespace iSynaptic.Commons
             var self = @this;
 
             return new Maybe<TResult>(() => self.HasValue ? Return(selector(self.Value)) : NoValue);
+        }
+
+        public static Maybe<TResult> TrySelect<TResult>(TrySelector<TResult> selector)
+        {
+            Guard.NotNull(selector, "selector");
+
+            return new Maybe<TResult>(() =>
+            {
+                TResult result = default(TResult);
+
+                return selector(out result)
+                    ? new Maybe<TResult>(result)
+                    : NoValue;
+            });
         }
 
         public static Maybe<TResult> TrySelect<T, TResult>(this Maybe<T> @this, TrySelector<T, TResult> selector)
