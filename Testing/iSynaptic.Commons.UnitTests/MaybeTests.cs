@@ -1289,10 +1289,26 @@ namespace iSynaptic.Commons
 		}
 
 		[Test]
+		public void BoolOperators_InitializationFromDefaultTo7Is7()
+		{
+			var item = default(Maybe<int>);
+			item |= 7.ToMaybe();
+			Assert.That(item.Value, Is.EqualTo(7));
+		}
+
+		[Test]
 		public void BoolOperators_InitializationFromNoneTo7Is7()
 		{
 			Maybe<int> item = Maybe.NoValue;
 			item |= 7.ToMaybe();
+			Assert.That(item.Value, Is.EqualTo(7));
+		}
+
+		[Test]
+		public void BoolOperators_InitializationFrom7ToNoneIs7()
+		{
+			var item = 7.ToMaybe();
+			item |= Maybe<int>.NoValue;
 			Assert.That(item.Value, Is.EqualTo(7));
 		}
 
