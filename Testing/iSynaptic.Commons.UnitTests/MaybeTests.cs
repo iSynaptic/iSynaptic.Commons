@@ -1312,6 +1312,20 @@ namespace iSynaptic.Commons
 			Assert.That(item.Value, Is.EqualTo(7));
 		}
 
+		[Test]
+		public void BoolOperators_7OrNone_7()
+		{
+			Assert.That(7.ToMaybe() | Maybe.NoValue, Is.EqualTo(7.ToMaybe()));
+			Assert.That(7.ToMaybe() || Maybe.NoValue, Is.EqualTo(7.ToMaybe()));
+		}
+
+		[Test]
+		public void BoolOperators_NoneOr7_7()
+		{
+			Assert.That(Maybe.NoValue | 7.ToMaybe(), Is.EqualTo(7.ToMaybe()));
+			Assert.That(Maybe.NoValue || 7.ToMaybe(), Is.EqualTo(7.ToMaybe()));
+		}
+
         public class Base{}
         public class Derived : Base{}
     }
