@@ -1284,10 +1284,16 @@ namespace iSynaptic.Commons
 		public void BoolOperators_NullMabesAreFalse()
 		{
 			var item = Maybe<int>.NoValue;
-			if(!item)
-				Assert.Pass();
-			else
+			if(item)
 				Assert.Fail();
+		}
+
+		[Test]
+		public void BoolOperators_InitializationFromNoneTo7Is7()
+		{
+			Maybe<int> item = Maybe.NoValue;
+			item |= 7.ToMaybe();
+			Assert.That(item.Value, Is.EqualTo(7));
 		}
 
         public class Base{}

@@ -208,11 +208,14 @@ namespace iSynaptic.Commons
 			throw new NotImplementedException();
     	}
 
-		public static implicit operator bool(Maybe<T> value)
+		public static Maybe<T> operator |(Maybe<T> self, Maybe<T> other)
 		{
-			return value.HasValue;
+			return self.HasValue ? self : other;
 		}
     }
+
+	public static class MaybeOperators
+	{}
 
     public static class Maybe
     {
