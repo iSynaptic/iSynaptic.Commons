@@ -205,7 +205,7 @@ namespace iSynaptic.Commons
 
     	public static bool operator false(Maybe<T> self)
     	{
-			throw new NotImplementedException();
+			throw new NotImplementedException("Only used for & operator, which isn't implemented");
     	}
 
 		public static Maybe<T> operator |(Maybe<T> self, Maybe<T> other)
