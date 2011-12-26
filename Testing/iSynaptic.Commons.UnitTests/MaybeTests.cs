@@ -1280,6 +1280,16 @@ namespace iSynaptic.Commons
 				Assert.Fail();
 		}
 
+		[Test]
+		public void BoolOperators_NullMabesAreFalse()
+		{
+			var item = Maybe<int>.NoValue;
+			if(!item)
+				Assert.Pass();
+			else
+				Assert.Fail();
+		}
+
         public class Base{}
         public class Derived : Base{}
     }

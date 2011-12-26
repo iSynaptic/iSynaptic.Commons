@@ -207,6 +207,11 @@ namespace iSynaptic.Commons
     	{
 			throw new NotImplementedException();
     	}
+
+		public static implicit operator bool(Maybe<T> value)
+		{
+			return value.HasValue;
+		}
     }
 
     public static class Maybe
