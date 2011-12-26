@@ -1270,6 +1270,16 @@ namespace iSynaptic.Commons
             Assert.AreEqual(42, result.Value);
         }
 
+		[Test]
+		public void BoolOperators_NonNullMabesAreTrue()
+		{
+			Maybe<int> item = 7.ToMaybe();
+			if(item)
+				Assert.Pass();
+			else
+				Assert.Fail();
+		}
+
         public class Base{}
         public class Derived : Base{}
     }
