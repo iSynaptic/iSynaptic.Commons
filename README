@@ -1,4 +1,8 @@
-Compiled versions are available via NuGet:
+Release Notes:
+https://github.com/iSynaptic/iSynaptic.Commons/blob/master/iSynaptic.Commons.ReleaseNotes.txt
 
+Compiled versions are available via NuGet:
 http://nuget.org/List/Packages/iSynaptic.Commons
-http://nuget.org/List/Packages/iSynaptic.Commons.Data
+
+License: MIT
+https://github.com/iSynaptic/iSynaptic.Commons/blob/master/LICENSE
