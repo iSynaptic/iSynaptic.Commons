@@ -558,5 +558,31 @@ namespace iSynaptic.Commons.Linq
             if (next.HasValue)
                 yield return new Neighbors<T>(next.Value, current, Maybe<T>.NoValue);
         }
+
+        public static IEnumerable<T> Or<T>(this IEnumerable<T> @this, IEnumerable<T> other)
+        {
+            Guard.NotNull(@this, "@this");
+            Guard.NotNull(other, "other");
+
+            bool yielded = false;
+            using(var thisEnumerator = @this.GetEnumerator())
+            {
+                var hasItem = thisEnumerator.MoveNext();
+                if(hasItem)
+                {
+                    yielded = true;
+                    do
+                    {
+                        yield return thisEnumerator.Current;
+                    } while (thisEnumerator.MoveNext());
+                }
+            }
+
+            if(yielded)
+                yield break;
+
+            foreach(var item in other)
+                yield return item;
+        }
     }
 }

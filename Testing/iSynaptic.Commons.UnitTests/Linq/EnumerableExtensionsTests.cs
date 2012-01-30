@@ -310,7 +310,7 @@ namespace iSynaptic.Commons.Linq
 
             var zipped = left.ZipAll(right).SelectMany(x => x);
 
-            Assert.IsTrue(zipped.SequenceEqual(new[] { 1, 1, 2, 2, 3, 3, 4}.Select(x => x.ToMaybe()).Concat(new[]{Maybe<int>.NoValue})));
+            Assert.IsTrue(zipped.SequenceEqual(new[] { 1, 1, 2, 2, 3, 3, 4 }.Select(x => x.ToMaybe()).Concat(new[] { Maybe<int>.NoValue })));
         }
 
         [Test]
@@ -400,8 +400,30 @@ namespace iSynaptic.Commons.Linq
                                 new TestSubject { Number =3, Text = "Baz"}
                             };
 
-            Assert.IsTrue(items.Distinct(x => x.Number).Select(x => x.Text).SequenceEqual(new[] {"Foo", "Foo", "Baz"}));
+            Assert.IsTrue(items.Distinct(x => x.Number).Select(x => x.Text).SequenceEqual(new[] { "Foo", "Foo", "Baz" }));
             Assert.IsTrue(items.Distinct(x => x.Text).Select(x => x.Text).SequenceEqual(new[] { "Foo", "Bar", "Baz" }));
+        }
+
+        [Test]
+        public void Or_PicksFirstStream_IfItHasItems()
+        {
+            var first = new List<int> { 1, 2, 3, 4, 5 };
+            var second = new List<int> { 6, 7, 8, 9, 10 };
+
+            var results = first.Or(second);
+
+            Assert.IsTrue(results.SequenceEqual(new[] { 1, 2, 3, 4, 5 }));
+        }
+
+        [Test]
+        public void Or_PicksSecondStream_IfFirstHasNoItems()
+        {
+            var first = new List<int>();
+            var second = new List<int> { 6, 7, 8, 9, 10 };
+
+            var results = first.Or(second);
+
+            Assert.IsTrue(results.SequenceEqual(new[] { 6,7,8,9,10 }));
         }
 
         private static IEnumerable<int> GetRange(int start, int end, Action after)
