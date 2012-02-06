@@ -110,29 +110,17 @@ namespace iSynaptic.Commons.Linq
             return @this.Distinct(selector.ToEqualityComparer());
         }
 
-        public static void CopyTo<T>(this IEnumerable<T> @this, T[] destination, int index)
+        public static void CopyTo<T>(this IEnumerable<T> @this, T[] array, int index)
         {
             Guard.NotNull(@this, "@this");
-            Guard.NotNull(destination, "destination");
-
-            if(index < 0 || index >= destination.Length)
-                throw new ArgumentOutOfRangeException("index", "Index must be between zero and one less than the destinations length.");
+            Guard.NotNull(array, "array");
 
             var buffer = new List<T>();
             
-            int count = 0;
-            int maxCount = destination.Length - index;
-
             foreach (var item in @this)
-            {
                 buffer.Add(item);
-                count++;
 
-                if (maxCount < count)
-                    throw new ArgumentException("Destination array is not large enough to copy all the items in the collection at the given index. Check array index and length.", "index");
-            }
-
-            buffer.CopyTo(destination, index);
+            buffer.CopyTo(array, index);
         }
 
         public static IEnumerable<IndexedValue<T>> WithIndex<T>(this IEnumerable<T> @this)
@@ -564,10 +552,15 @@ namespace iSynaptic.Commons.Linq
             Guard.NotNull(@this, "@this");
             Guard.NotNull(other, "other");
 
+            return OrCore(@this, other);
+        }
+
+        private static IEnumerable<T> OrCore<T>(this IEnumerable<T> @this, IEnumerable<T> other)
+        {
             bool yielded = false;
             using(var thisEnumerator = @this.GetEnumerator())
             {
-                var hasItem = thisEnumerator.MoveNext();
+                bool hasItem = thisEnumerator.MoveNext();
                 if(hasItem)
                 {
                     yielded = true;
@@ -583,6 +576,119 @@ namespace iSynaptic.Commons.Linq
 
             foreach(var item in other)
                 yield return item;
+        }
+
+        public static Maybe<T> TryFirst<T>(this IEnumerable<T> @this)
+        {
+            Guard.NotNull(@this, "this");
+
+            return TryFirstCore(@this, null);
+        }
+
+        public static Maybe<T> TryFirst<T>(this IEnumerable<T> @this, Func<T, bool> predicate)
+        {
+            Guard.NotNull(@this, "this");
+            Guard.NotNull(predicate, "predicate");
+
+            return TryFirstCore(@this, predicate);
+        }
+
+        private static Maybe<T> TryFirstCore<T>(this IEnumerable<T> @this, Func<T, bool> predicate)
+        {
+            return Maybe.Defer(() =>
+            {
+                using (var thisEnumerator = @this.GetEnumerator())
+                {
+                    while (thisEnumerator.MoveNext())
+                    {
+                        if (predicate == null || predicate(thisEnumerator.Current))
+                            return new Maybe<T>(thisEnumerator.Current);
+                    }
+                }
+
+                return Maybe<T>.NoValue;
+            });
+        }
+
+        public static Maybe<T> TryLast<T>(this IEnumerable<T> @this)
+        {
+            Guard.NotNull(@this, "this");
+            return TryLastCore(@this, null);
+        }
+
+        public static Maybe<T> TryLast<T>(this IEnumerable<T> @this, Func<T, bool> predicate)
+        {
+            Guard.NotNull(@this, "this");
+            Guard.NotNull(predicate, "predicate");
+
+            return TryLastCore(@this, predicate);
+        }
+
+        private static Maybe<T> TryLastCore<T>(this IEnumerable<T> @this, Func<T, bool> predicate)
+        {
+            return Maybe.Defer(() =>
+            {
+                var lastItem = default(T);
+                bool itemFound = false;
+
+                using (var thisEnumerator = @this.GetEnumerator())
+                {
+                    while (thisEnumerator.MoveNext())
+                    {
+                        if (predicate == null || predicate(thisEnumerator.Current))
+                        {
+                            itemFound = true;
+                            lastItem = thisEnumerator.Current;
+                        }
+                    }
+                }
+
+                return itemFound
+                           ? new Maybe<T>(lastItem)
+                           : Maybe<T>.NoValue;
+            });
+        }
+
+        public static Maybe<T> TrySingle<T>(this IEnumerable<T> @this)
+        {
+            Guard.NotNull(@this, "this");
+            return TrySingleCore(@this, null);
+        }
+
+        public static Maybe<T> TrySingle<T>(this IEnumerable<T> @this, Func<T, bool> predicate)
+        {
+            Guard.NotNull(@this, "this");
+            Guard.NotNull(predicate, "predicate");
+
+            return TrySingleCore(@this, predicate);
+        }
+
+        private static Maybe<T> TrySingleCore<T>(this IEnumerable<T> @this, Func<T, bool> predicate)
+        {
+            return Maybe.Defer(() =>
+            {
+                var lastItem = default(T);
+                bool itemFound = false;
+
+                using (var thisEnumerator = @this.GetEnumerator())
+                {
+                    while (thisEnumerator.MoveNext())
+                    {
+                        if (predicate == null || predicate(thisEnumerator.Current))
+                        {
+                            if (itemFound)
+                                throw new InvalidOperationException("Sequence contains more than one element");
+
+                            itemFound = true;
+                            lastItem = thisEnumerator.Current;
+                        }
+                    }
+                }
+
+                return itemFound
+                           ? new Maybe<T>(lastItem)
+                           : Maybe<T>.NoValue;
+            });
         }
     }
 }

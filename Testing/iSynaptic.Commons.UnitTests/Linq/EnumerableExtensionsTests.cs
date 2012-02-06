@@ -66,7 +66,7 @@ namespace iSynaptic.Commons.Linq
             IEnumerable<int> source = Enumerable.Range(1, 1);
             int[] destination = new int[1];
 
-            Assert.Throws<ArgumentOutOfRangeException>(() => source.CopyTo(destination, 42));
+            Assert.Throws<ArgumentException>(() => source.CopyTo(destination, 42));
         }
 
         [Test]
@@ -424,6 +424,274 @@ namespace iSynaptic.Commons.Linq
             var results = first.Or(second);
 
             Assert.IsTrue(results.SequenceEqual(new[] { 6,7,8,9,10 }));
+        }
+
+        [Test]
+        public void TryFirst_WithNullSource_ThrowsException()
+        {
+            IEnumerable<int> source = null;
+
+            Assert.Throws<ArgumentNullException>(() => source.TryFirst());
+            Assert.Throws<ArgumentNullException>(() => source.TryFirst(x => true));
+        }
+
+        [Test]
+        public void TryFirst_WithNullPredicate_ThrowsException()
+        {
+            IEnumerable<int> source = new int[0];
+            Assert.Throws<ArgumentNullException>(() => source.TryFirst(null));
+        }
+
+        [Test]
+        public void TryFirst_WithEmptySource_ReturnsNoValue()
+        {
+            IEnumerable<int> source = new int[0];
+
+            var result = source.TryFirst();
+            Assert.IsFalse(result.HasValue);
+
+            result = source.TryFirst(x => true);
+            Assert.IsFalse(result.HasValue);
+        }
+
+        [Test]
+        public void TryFirst_WithOneItem_ReturnsItem()
+        {
+            IEnumerable<int> source = new []{42};
+
+            var result = source.TryFirst();
+            Assert.IsTrue(result.HasValue);
+            Assert.AreEqual(42, result.Value);
+
+            result = source.TryFirst(x => true);
+            Assert.IsTrue(result.HasValue);
+            Assert.AreEqual(42, result.Value);
+        }
+
+        [Test]
+        public void TryFirst_WithManyItems_ReturnsFirstItem()
+        {
+            IEnumerable<int> source = new[] { 42, 84, 168 };
+
+            var result = source.TryFirst();
+            Assert.IsTrue(result.HasValue);
+            Assert.AreEqual(42, result.Value);
+
+            result = source.TryFirst(x => true);
+            Assert.IsTrue(result.HasValue);
+            Assert.AreEqual(42, result.Value);
+        }
+
+        [Test]
+        public void TryFirst_WithFirstItemNull_ReturnsNoValue()
+        {
+            IEnumerable<string> source = new[] { null, "Foo", "Baz" };
+
+            var result = source.TryFirst();
+            Assert.IsFalse(result.HasValue);
+
+            result = source.TryFirst(x => true);
+            Assert.IsFalse(result.HasValue);
+        }
+
+        [Test]
+        public void TryFirst_WherePredicateMatchesItem_ReturnsFirstMatchingItem()
+        {
+            IEnumerable<string> source = new[] { "Foo", "Baz", "Boo", "Quix" };
+
+            var result = source.TryFirst(x => x.StartsWith("B"));
+            Assert.IsTrue(result.HasValue);
+            Assert.AreEqual("Baz", result.Value);
+        }
+
+        [Test]
+        public void TryFirst_WherePredicateMatchesNoItems_ReturnsNoValue()
+        {
+            IEnumerable<string> source = new[] { "Foo", "Baz", "Boo", "Quix" };
+
+            var result = source.TryFirst(x => false);
+            Assert.IsFalse(result.HasValue);
+        }
+
+        [Test]
+        public void TryLast_WithNullSource_ThrowsException()
+        {
+            IEnumerable<int> source = null;
+
+            Assert.Throws<ArgumentNullException>(() => source.TryLast());
+            Assert.Throws<ArgumentNullException>(() => source.TryLast(x => true));
+        }
+
+        [Test]
+        public void TryLast_WithNullPredicate_ThrowsException()
+        {
+            IEnumerable<int> source = new int[0];
+            Assert.Throws<ArgumentNullException>(() => source.TryLast(null));
+        }
+
+        [Test]
+        public void TryLast_WithEmptySource_ReturnsNoValue()
+        {
+            IEnumerable<int> source = new int[0];
+
+            var result = source.TryLast();
+            Assert.IsFalse(result.HasValue);
+
+            result = source.TryLast(x => true);
+            Assert.IsFalse(result.HasValue);
+        }
+
+        [Test]
+        public void TryLast_WithOneItem_ReturnsItem()
+        {
+            IEnumerable<int> source = new[] { 42 };
+
+            var result = source.TryLast();
+            Assert.IsTrue(result.HasValue);
+            Assert.AreEqual(42, result.Value);
+
+            result = source.TryLast(x => true);
+            Assert.IsTrue(result.HasValue);
+            Assert.AreEqual(42, result.Value);
+        }
+
+        [Test]
+        public void TryLast_WithManyItems_ReturnsLastItem()
+        {
+            IEnumerable<int> source = new[] { 42, 84, 168 };
+
+            var result = source.TryLast();
+            Assert.IsTrue(result.HasValue);
+            Assert.AreEqual(168, result.Value);
+
+            result = source.TryLast(x => true);
+            Assert.IsTrue(result.HasValue);
+            Assert.AreEqual(168, result.Value);
+        }
+
+        [Test]
+        public void TryLast_WithLastItemNull_ReturnsNoValue()
+        {
+            IEnumerable<string> source = new[] { "Foo", "Baz", null };
+
+            var result = source.TryLast();
+            Assert.IsFalse(result.HasValue);
+
+            result = source.TryLast(x => true);
+            Assert.IsFalse(result.HasValue);
+        }
+
+        [Test]
+        public void TryLast_WherePredicateMatchesItem_ReturnsLastMatchingItem()
+        {
+            IEnumerable<string> source = new[] { "Foo", "Baz", "Boo", "Quix" };
+
+            var result = source.TryLast(x => x.StartsWith("B"));
+            Assert.IsTrue(result.HasValue);
+            Assert.AreEqual("Boo", result.Value);
+        }
+
+        [Test]
+        public void TryLast_WherePredicateMatchesNoItems_ReturnsNoValue()
+        {
+            IEnumerable<string> source = new[] { "Foo", "Baz", "Boo", "Quix" };
+
+            var result = source.TryLast(x => false);
+            Assert.IsFalse(result.HasValue);
+        }
+
+        [Test]
+        public void TrySingle_WithNullSource_ThrowsException()
+        {
+            IEnumerable<int> source = null;
+
+            Assert.Throws<ArgumentNullException>(() => source.TrySingle());
+            Assert.Throws<ArgumentNullException>(() => source.TrySingle(x => true));
+        }
+
+        [Test]
+        public void TrySingle_WithNullPredicate_ThrowsException()
+        {
+            IEnumerable<int> source = new int[0];
+            Assert.Throws<ArgumentNullException>(() => source.TrySingle(null));
+        }
+
+        [Test]
+        public void TrySingle_WithEmptySource_ReturnsNoValue()
+        {
+            IEnumerable<int> source = new int[0];
+
+            var result = source.TrySingle();
+            Assert.IsFalse(result.HasValue);
+
+            result = source.TrySingle(x => true);
+            Assert.IsFalse(result.HasValue);
+        }
+
+        [Test]
+        public void TrySingle_WithOneItem_ReturnsItem()
+        {
+            IEnumerable<int> source = new[] { 42 };
+
+            var result = source.TrySingle();
+            Assert.IsTrue(result.HasValue);
+            Assert.AreEqual(42, result.Value);
+
+            result = source.TrySingle(x => true);
+            Assert.IsTrue(result.HasValue);
+            Assert.AreEqual(42, result.Value);
+        }
+
+        [Test]
+        public void TrySingle_WithManyItems_ThrowsExceptionImmediately()
+        {
+            IEnumerable<int> source = new[] { 42, 84, 168 };
+
+            var results = source.TrySingle();
+            Assert.Throws<InvalidOperationException>(() => results.Run());
+
+            results = source.TrySingle(x => true);
+            Assert.Throws<InvalidOperationException>(() => results.Run());
+        }
+
+        [Test]
+        public void TrySingle_WithOnlyItemNull_ReturnsNoValue()
+        {
+            IEnumerable<string> source = new[] { (string)null };
+
+            var result = source.TrySingle();
+            Assert.IsFalse(result.HasValue);
+
+            result = source.TrySingle(x => true);
+            Assert.IsFalse(result.HasValue);
+        }
+
+        [Test]
+        public void TrySingle_WherePredicateMatchesOneItem_ReturnsMatchingItem()
+        {
+            IEnumerable<string> source = new[] { "Foo", "Baz", "Boo", "Quix" };
+
+            var result = source.TrySingle(x => x.StartsWith("Bo"));
+            Assert.IsTrue(result.HasValue);
+            Assert.AreEqual("Boo", result.Value);
+        }
+
+        [Test]
+        public void TrySingle_WherePredicateMatchesMultipleItems_ThrowsException()
+        {
+            IEnumerable<string> source = new[] { "Foo", "Baz", "Boo", "Quix" };
+            var results = source.TrySingle(x => x.StartsWith("B"));
+
+            Assert.Throws<InvalidOperationException>(() => results.Run());
+        }
+
+        [Test]
+        public void TrySingle_WherePredicateMatchesNoItems_ReturnsNoValue()
+        {
+            IEnumerable<string> source = new[] { "Foo", "Baz", "Boo", "Quix" };
+
+            var result = source.TrySingle(x => false);
+            Assert.IsFalse(result.HasValue);
         }
 
         private static IEnumerable<int> GetRange(int start, int end, Action after)

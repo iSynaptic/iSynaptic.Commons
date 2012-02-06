@@ -40,7 +40,6 @@ namespace iSynaptic.Commons.Data
 
             ICustomAttributeProvider provider = request.Member ?? 
                 request.Subject
-                .Where(x => x != null)
                 .Select(x => x.GetType())
                 .ValueOrDefault(typeof(TSubject));
 
@@ -50,6 +49,8 @@ namespace iSynaptic.Commons.Data
 
         private static IEnumerable<IExodataBinding> GetBindings(ICustomAttributeProvider provider)
         {
+            Guard.NotNull(provider, "provider");
+
             return provider.GetCustomAttributes(true)
                 .Select(x => new
                 {
