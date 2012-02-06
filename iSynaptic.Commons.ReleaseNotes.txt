@@ -2,6 +2,16 @@
 RELEASE NOTES: iSynaptic.Commons
 ======================================
 
+==== v0.4.7 (February 6, 2011) ====
+
+---- Features ----
+
+* Added TryFirst, TryLast, TrySelect, and Or operators to IEnumerable<T>
+  that return a Maybe<T>.
+
+* Fixed bugs in CopyTo IEnumerable<T> extension methods.
+
+
 ==== v0.4.6 (December 7, 2011) ====
 
 ---- Features ----
