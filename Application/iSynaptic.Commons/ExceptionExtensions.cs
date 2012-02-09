@@ -21,18 +21,15 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
-using System.Text;
+
 using iSynaptic.Commons.Runtime.Serialization;
 
 namespace iSynaptic.Commons
 {
     public static class ExceptionExtensions
     {
-        private static readonly Action<Exception, Exception> _SetInnerException = null;
+        private static readonly Action<Exception, Exception> SetInnerException = null;
 
         static ExceptionExtensions()
         {
@@ -42,7 +39,7 @@ namespace iSynaptic.Commons
             var assignment = Expression.Assign(Expression.Field(target, "_innerException"), source);
 
             var lambda = Expression.Lambda<Action<Exception, Exception>>(assignment, target, source);
-            _SetInnerException = lambda.Compile();
+            SetInnerException = lambda.Compile();
         }
 
         public static void ThrowAsInnerExceptionIfNeeded(this Exception @this)
@@ -52,7 +49,7 @@ namespace iSynaptic.Commons
             var newException = Cloneable<Exception>.ShallowClone(@this);
 
             if (string.IsNullOrWhiteSpace(newException.StackTrace) != true)
-                _SetInnerException(newException, @this);
+                SetInnerException(newException, @this);
 
             throw newException;
         }

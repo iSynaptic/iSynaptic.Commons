@@ -51,7 +51,7 @@ namespace iSynaptic.Commons.Data
         {
             return type.Recurse(x => x.BaseType)
                 .Where(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof (ExodataSurrogate<>))
-                .FirstOrDefault().ToMaybe();
+                .TryFirst();
         }
 
         private static IExodataBindingSource InstantiateSurrogate(Type type)

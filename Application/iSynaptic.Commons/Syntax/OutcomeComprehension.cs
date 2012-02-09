@@ -21,15 +21,14 @@ namespace iSynaptic.Commons.Syntax
             return Outcome.InformMany(@this, x => selector(x).Select(y => combiner(x, y)));
         }
 
-
-        public static Outcome<U> SelectMany<T, U>(this Outcome<T> @this, Func<T, Outcome<U>> selector)
+        public static Outcome<TResult> SelectMany<T, TResult>(this Outcome<T> @this, Func<T, Outcome<TResult>> selector)
         {
             return Outcome.InformMany(@this, selector);
         }
 
-        public static Outcome<U> Select<T, U>(this Outcome<T> @this, Func<T, U> selector)
+        public static Outcome<TResult> Select<T, TResult>(this Outcome<T> @this, Func<T, TResult> selector)
         {
-            return Outcome.InformMany(@this, t => new Outcome<U>(@this.WasSuccessful, new[] { selector(t) }));
+            return Outcome.InformMany(@this, t => new Outcome<TResult>(@this.WasSuccessful, new[] { selector(t) }));
         }
     }
 }

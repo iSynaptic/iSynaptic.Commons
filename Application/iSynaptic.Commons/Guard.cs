@@ -94,7 +94,7 @@ namespace iSynaptic.Commons
 
         public static T IsOfType<T>(object value, string name, string message = null)
         {
-            if (!typeof (T).IsAssignableFrom(value.GetType()))
+            if (!(value is T))
                 throw new ArgumentException(name, message ?? string.Format("{0} must be of type '{1}'", name, typeof (T).FullName));
 
             return (T) value;

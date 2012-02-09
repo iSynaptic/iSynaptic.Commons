@@ -55,7 +55,7 @@ namespace iSynaptic.Commons.Collections.Generic
             if(dictionary.IsReadOnly)
                 throw new ArgumentException("Dictionary provided must not be read-only.", "dictionary");
 
-            return new KeyedReaderWriter<ISymbol, Maybe<object>>(s => dictionary.TryGetValue(s), (s, v) =>
+            return new KeyedReaderWriter<ISymbol, Maybe<object>>(dictionary.TryGetValue, (s, v) =>
             {
                 if (v.HasValue != true)
                     return dictionary.Remove(s);

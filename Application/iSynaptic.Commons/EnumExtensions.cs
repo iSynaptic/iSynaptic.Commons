@@ -69,14 +69,12 @@ namespace iSynaptic.Commons
 
             ulong thisValue = Convert.ToUInt64(@this);
 
-            var values = flags
+            return flags
                 .OfType<Enum>()
                 .SelectMany(GetFlagsCore<T>)
-                .Distinct();
-
-            return values
-                .Select(flag => Convert.ToUInt64(flag))
-                .Any(flagValue => (thisValue & flagValue) == flagValue && thisValue != 0);
+                .Distinct()
+                .Select(f => Convert.ToUInt64(f))
+                .Any(f => (thisValue & f) == f && thisValue != 0);
         }
 
         public static bool ContainsAll<T>(this Enum @this, params T[] flags)
@@ -92,20 +90,12 @@ namespace iSynaptic.Commons
 
             ulong thisValue = Convert.ToUInt64(@this);
 
-            var values = flags
+            return flags
                 .OfType<Enum>()
                 .SelectMany(GetFlagsCore<T>)
-                .Distinct();
-
-            foreach (T flag in values)
-            {
-                ulong flagValue = Convert.ToUInt64(flag);
-
-                if (((thisValue & flagValue) == flagValue && thisValue != 0) != true)
-                    return false;
-            }
-
-            return true;
+                .Distinct()
+                .Select(f => Convert.ToUInt64(f))
+                .All(f => ((thisValue & f) == f && thisValue != 0));
         }
 
         public static IEnumerable<T> GetFlags<T>(this Enum @this)
@@ -119,7 +109,7 @@ namespace iSynaptic.Commons
             if (expectedType != thisType)
                 throw new ArgumentException(string.Format("Type parameter must be of type '{0}'.", expectedType.Name), "T");
 
-            return GetFlagsCore<T>(@this).OfType<T>();
+            return GetFlagsCore<T>(@this);
         }
 
         private static IEnumerable<T> GetFlagsCore<T>(Enum @this)

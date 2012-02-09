@@ -65,7 +65,7 @@ namespace iSynaptic.Commons
 
         public static Outcome<CheckFailure> IsOfType<T>(object value, string name, string message = null)
         {
-            return !typeof(T).IsAssignableFrom(value.GetType())
+            return !(value is T)
                 ? Outcome.Failure(new CheckFailure(CheckType.IsOfType, name, message ?? string.Format("The argument {0} must be an instance of the type {1}.", name, typeof(T).FullName)))
                 : Outcome<CheckFailure>.Success;
         }

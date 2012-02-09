@@ -31,7 +31,7 @@ namespace iSynaptic.Commons.Collections.Generic
 {
     public class ProjectionCollection<TSourceItem, TProjectedItem> : ICollection<TProjectedItem>
     {
-        private static readonly NotSupportedException _ReadOnlyException = new NotSupportedException("Mutating a readonly collection is not allowed.");
+        private static readonly NotSupportedException ReadOnlyException = new NotSupportedException("Mutating a readonly collection is not allowed.");
 
         private readonly ICollection<TSourceItem> _Underlying = null;
         private readonly Func<TSourceItem, TProjectedItem> _Selector = null;
@@ -54,12 +54,12 @@ namespace iSynaptic.Commons.Collections.Generic
 
         void ICollection<TProjectedItem>.Add(TProjectedItem item)
         {
-            throw _ReadOnlyException;
+            throw ReadOnlyException;
         }
 
         void ICollection<TProjectedItem>.Clear()
         {
-            throw _ReadOnlyException;
+            throw ReadOnlyException;
         }
 
         public bool Contains(TProjectedItem item)
@@ -77,7 +77,7 @@ namespace iSynaptic.Commons.Collections.Generic
 
         bool ICollection<TProjectedItem>.Remove(TProjectedItem item)
         {
-            throw _ReadOnlyException;
+            throw ReadOnlyException;
         }
 
         public int Count

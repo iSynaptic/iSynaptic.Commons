@@ -42,8 +42,7 @@ namespace iSynaptic.Commons.Collections.Generic
 
         public SmartLoop(IEnumerable<T> items)
         {
-            Guard.NotNull(items, "items");
-            _Items = items.ToList();
+            _Items = Guard.NotNull(items, "items").ToList();
         }
 
         public SmartLoop<T> Each(Action<T> action)

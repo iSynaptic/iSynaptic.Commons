@@ -563,15 +563,15 @@ namespace iSynaptic.Commons
 
         #region Join Operator
 
-        public static Maybe<Tuple<T, U>> Join<T, U>(this Maybe<T> @this, Maybe<U> other)
+        public static Maybe<Tuple<T, TOther>> Join<T, TOther>(this Maybe<T> @this, Maybe<TOther> other)
         {
             var self = @this;
-            return new Maybe<Tuple<T, U>>(() => self.HasValue && other.HasValue
-                ? new Maybe<Tuple<T, U>>(Tuple.Create(self.Value, other.Value))
+            return new Maybe<Tuple<T, TOther>>(() => self.HasValue && other.HasValue
+                ? new Maybe<Tuple<T, TOther>>(Tuple.Create(self.Value, other.Value))
                 : NoValue);
         }
 
-        public static Maybe<TResult> Join<T, U, TResult>(this Maybe<T> @this, Maybe<U> other, Func<T, U, TResult> selector)
+        public static Maybe<TResult> Join<T, TOther, TResult>(this Maybe<T> @this, Maybe<TOther> other, Func<T, TOther, TResult> selector)
         {
             Guard.NotNull(selector, "selector");
 
@@ -581,7 +581,7 @@ namespace iSynaptic.Commons
                 : NoValue);
         }
 
-        public static Maybe<TResult> Join<T, U, TResult>(this Maybe<T> @this, Maybe<U> other, Func<T, U, TResult?> selector) where TResult : struct
+        public static Maybe<TResult> Join<T, TOther, TResult>(this Maybe<T> @this, Maybe<TOther> other, Func<T, TOther, TResult?> selector) where TResult : struct
         {
             Guard.NotNull(selector, "selector");
 
@@ -591,7 +591,7 @@ namespace iSynaptic.Commons
                 : NoValue);
         }
 
-        public static Maybe<TResult> Join<T, U, TResult>(this Maybe<T> @this, Maybe<U> other, Func<T, U, Maybe<TResult>> selector)
+        public static Maybe<TResult> Join<T, TOther, TResult>(this Maybe<T> @this, Maybe<TOther> other, Func<T, TOther, Maybe<TResult>> selector)
         {
             Guard.NotNull(selector, "selector");
 

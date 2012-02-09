@@ -28,7 +28,7 @@ namespace iSynaptic.Commons.Text.Parsing
 {
     public class ScanningTextReader : TextReader
     {
-        private TextReader _InnerReader = null;
+        private readonly TextReader _InnerReader = null;
         private List<char> _LookAheadList = null;
         private int _LastCharacterRead = -1;
 

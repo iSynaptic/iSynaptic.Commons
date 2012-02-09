@@ -31,17 +31,17 @@ namespace iSynaptic.Commons
 {
     public static class Convert<TSource, TDest>
     {
-        private static readonly Lazy<Func<TSource, TDest>> _Default;
+        private static readonly Lazy<Func<TSource, TDest>> Default;
         private static Func<TSource, TDest> _Strategy = null;
 
         static Convert()
         {
-            _Default = new Lazy<Func<TSource, TDest>>(GetDefault);
+            Default = new Lazy<Func<TSource, TDest>>(GetDefault);
         }
 
         public static TDest From(TSource source)
         {
-            var strategy = _Strategy ?? _Default.Value;
+            var strategy = _Strategy ?? Default.Value;
             return strategy(source);
         }
 

@@ -36,7 +36,7 @@ namespace iSynaptic.Commons.Data
             Guard.NotNull(source, "source");
             Guard.NotNull(valueFactory, "valueFactory");
 
-            return new TypedBinding<TExodata, TContext, TSubject>()
+            return new TypedBinding<TExodata, TContext, TSubject>
             {
                 Name = name,
                 Source = source,

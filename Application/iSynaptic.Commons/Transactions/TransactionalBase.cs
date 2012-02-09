@@ -100,7 +100,7 @@ namespace iSynaptic.Commons.Transactions
         private KeyValuePair<Guid, T> _CurrentValue = default(KeyValuePair<Guid, T>);
         private Dictionary<string, KeyValuePair<Guid, T>> _Values = null;
 
-        public TransactionalBase(T current)
+        protected TransactionalBase(T current)
         {
             if (Cloneable<T>.CanClone() != true)
                 throw new InvalidOperationException("Underlying type cannot be cloned.");

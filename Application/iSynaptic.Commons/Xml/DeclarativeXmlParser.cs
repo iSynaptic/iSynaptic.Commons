@@ -329,7 +329,8 @@ namespace iSynaptic.Commons.Xml
                 do
                 {
                     results = reader.Read();
-                } while (reader.NodeType == XmlNodeType.Whitespace || reader.NodeType == XmlNodeType.SignificantWhitespace);
+                } while (reader.NodeType == XmlNodeType.Whitespace || 
+                         reader.NodeType == XmlNodeType.SignificantWhitespace);
 
                 return results;
             }

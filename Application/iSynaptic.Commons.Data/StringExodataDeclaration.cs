@@ -56,7 +56,7 @@ namespace iSynaptic.Commons.Data
         protected override Maybe<string> EnsureValid(string value, string valueName)
         {
             if(value == null)
-                return Maybe.Throw<string>(new ExodataValidationException<string>(this, value, string.Format("The {0} value must not be null.", valueName)));
+                return Maybe.Throw<string>(new ExodataValidationException<string>(this, null, string.Format("The {0} value must not be null.", valueName)));
 
             if (value == string.Empty && IsEmptyPermitted != true)
                 return Maybe.Throw<string>(new ExodataValidationException<string>(this, value, string.Format("The {0} value must not be empty.", valueName)));
