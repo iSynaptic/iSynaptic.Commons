@@ -11,7 +11,7 @@
   <Import Project="External\Tools\SolutionBuild.targets" />
 
   <PropertyGroup>
-    <CommonsNuspecFile>$(MSBuildProjectDirectory)\Application\$(SolutionName)\$(SolutionName).nuspec</CommonsNuspecFile>
+    <CommonsNuspecFile>$(MSBuildProjectDirectory)\$(SolutionName).nuspec</CommonsNuspecFile>
     
     <PackagesPath Condition="$(PackagesPath) == ''">$(RootBuildPath)\$(Configuration)\Packages</PackagesPath>
   </PropertyGroup>
