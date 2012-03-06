@@ -1,6 +1,6 @@
 ﻿// The MIT License
 // 
-// Copyright (c) 2011 Jordan E. Terrell
+// Copyright (c) 2012 Jordan E. Terrell
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -36,15 +36,15 @@ namespace iSynaptic.Commons
 
         private readonly Func<Outcome<TObservation>> _Computation;
 
-        public Outcome(bool isSuccess) 
-            : this(isSuccess, null)
+        public Outcome(bool wasSuccessfule)
+            : this(wasSuccessfule, null)
         {
         }
 
-        public Outcome(bool isSuccess, IEnumerable<TObservation> observations)
+        public Outcome(bool wasSuccessfule, IEnumerable<TObservation> observations)
             : this()
         {
-            _IsFailure = !isSuccess;
+            _IsFailure = !wasSuccessfule;
 
             if (typeof(TObservation) != typeof(Unit))
             {
@@ -180,7 +180,7 @@ namespace iSynaptic.Commons
                     .Select(selector)
                     .ToArray();
 
-                return new Outcome<TResult>(outcomes.All(x => x.WasSuccessful), outcomes.SelectMany(x => x.Observations));
+                return new Outcome<TResult>(self.WasSuccessful & outcomes.All(x => x.WasSuccessful), outcomes.SelectMany(x => x.Observations));
             });
         }
 

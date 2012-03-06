@@ -2,6 +2,18 @@
 RELEASE NOTES: iSynaptic.Commons
 ======================================
 
+==== v0.4.8 (March 6, 2011) ====
+
+---- Features ----
+
+* Fixed bug in Outcome.Inform that did not propigate failure when
+  there are no observations
+
+* Removed usage of LazySelectionDictionary from
+  AttributeExodataBindingSource - could cause race condition if
+  Exodata is resolved in an non-thread safe way.
+
+
 ==== v0.4.7 (February 6, 2011) ====
 
 ---- Features ----

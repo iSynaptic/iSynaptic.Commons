@@ -1,6 +1,6 @@
 // The MIT License
 // 
-// Copyright (c) 2011 Jordan E. Terrell
+// Copyright (c) 2012 Jordan E. Terrell
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -31,9 +31,6 @@ namespace iSynaptic.Commons.Data
 {
     public class AttributeExodataBindingSource : IExodataBindingSource
     {
-        private readonly LazySelectionDictionary<ICustomAttributeProvider, IEnumerable<IExodataBinding>> _Bindings =
-            new LazySelectionDictionary<ICustomAttributeProvider, IEnumerable<IExodataBinding>>(x => GetBindings(x).ToMaybe());
-
         public IEnumerable<IExodataBinding> GetBindingsFor<TExodata, TContext, TSubject>(IExodataRequest<TExodata, TContext, TSubject> request)
         {
             Guard.NotNull(request, "request");
@@ -43,7 +40,7 @@ namespace iSynaptic.Commons.Data
                 .Select(x => x.GetType())
                 .ValueOrDefault(typeof(TSubject));
 
-            return _Bindings[provider]
+            return GetBindings(provider)
                 .Select(x => ExodataBinding.Create<TExodata, object, TSubject>(null, this, Maybe<ISymbol>.NoValue, Maybe<object>.NoValue, request.Subject, request.Member != null ? new[]{request.Member} : null, null, r => x.TryResolve(r).AsMaybe()));
         }
 

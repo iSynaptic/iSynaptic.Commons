@@ -1,6 +1,6 @@
 ﻿// The MIT License
 // 
-// Copyright (c) 2011 Jordan E. Terrell
+// Copyright (c) 2012 Jordan E. Terrell
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -74,8 +74,9 @@ namespace iSynaptic.Commons
             Assert.IsFalse(Outcome<string>.Failure);
         }
 
+
         [Test]
-        public void InformMany_ViaInform_PropigatesFailureObservations()
+        public void Inform_PropigatesFailureObservations()
         {
             Outcome<Observation> outcome = Outcome.Failure(new Observation { Code = 42, Message = "Bad stuff happened.", Type = ObservationType.Error });
             Outcome<string> stringOutcome = outcome.Inform(x => x.Message);
@@ -88,7 +89,17 @@ namespace iSynaptic.Commons
         }
 
         [Test]
-        public void InformMany_ViaInform_PropigatesSuccessObservations()
+        public void Inform_WithNoObservations_PropigatesFailure()
+        {
+            var outcome = Outcome<string>.Failure;
+            Assert.False(outcome.WasSuccessful);
+
+            var newOutcome = outcome.Inform(x => x.ToUpper());
+            Assert.False(newOutcome.WasSuccessful);
+        }
+
+        [Test]
+        public void Inform_PropigatesSuccessObservations()
         {
             Outcome<Observation> outcome = Outcome.Success(new Observation { Code = 0, Message = "Greetings from Outcome!", Type = ObservationType.Info });
             Outcome<string> stringOutcome = outcome.Inform(x => x.Message);

@@ -1,6 +1,6 @@
 ﻿// The MIT License
 // 
-// Copyright (c) 2011 Jordan E. Terrell
+// Copyright (c) 2012 Jordan E. Terrell
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,14 +22,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 
 namespace iSynaptic.Commons
 {
     public struct Result<T, TObservation> : IResult<T, TObservation>, IEquatable<Result<T, TObservation>>, IEquatable<Maybe<T>>, IEquatable<T>
     {
-        public static readonly Result<T, TObservation> NoValue;
+        public static readonly Result<T, TObservation> NoValue = default(Result<T, TObservation>);
 
         private readonly Maybe<T> _Maybe;
         private readonly Outcome<TObservation> _Outcome;
@@ -38,6 +37,16 @@ namespace iSynaptic.Commons
 
         public Result(T value)
             : this(new Maybe<T>(value), Outcome<TObservation>.Success)
+        {
+        }
+
+        public Result(bool wasSuccessful, IEnumerable<TObservation> observations)
+            : this(Maybe<T>.NoValue, new Outcome<TObservation>(wasSuccessful, observations))
+        {
+        }
+
+        public Result(T value, bool wasSuccessful, IEnumerable<TObservation> observations)
+            :this(new Maybe<T>(value), new Outcome<TObservation>(wasSuccessful, observations))
         {
         }
 
