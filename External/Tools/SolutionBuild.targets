@@ -61,7 +61,7 @@
         <Error Text="Unrecognized Testing Framework." Condition="$(TestingFramework) != 'NUnit' And $(TestingFramework) != 'MbUnit'" />
 
         <Exec WorkingDirectory="$(BinariesPath)"
-              Command="&quot;$(NUnitPath)\nunit-console.exe&quot; /process=Single /framework=v4.0.30319 @(TestingAssembly -> '&quot;$(BinariesPath)\%(Filename)%(Extension)&quot;') /xml=&quot;$(BaseBuildPath)\$(TestingOutputFileName).xml&quot;" />
+              Command="&quot;$(NUnitPath)\nunit-console.exe&quot; /framework=v4.0.30319 @(TestingAssembly -> '&quot;$(BinariesPath)\%(Filename)%(Extension)&quot;') /xml=&quot;$(BaseBuildPath)\$(TestingOutputFileName).xml&quot;" />
         
         <!--NCover
           Condition="$(TestingFramework) == 'NUnit'"
