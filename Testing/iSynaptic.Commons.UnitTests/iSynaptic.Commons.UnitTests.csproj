@@ -51,6 +51,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <NoWarn>3016</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
@@ -126,6 +127,7 @@
     <Compile Include="ActionExtensionsTests.cs" />
     <Compile Include="Collections\Generic\CollectionExtensionsTests.cs" />
     <Compile Include="Collections\Generic\DictionaryExtensionsTests.cs" />
+    <Compile Include="MaybeMonadContractTests.cs" />
     <Compile Include="MaybeTests.cs" />
     <Compile Include="OutcomeTests.cs" />
     <Compile Include="Reflection\Emit\DynamicMethodExtensionsTests.cs" />
