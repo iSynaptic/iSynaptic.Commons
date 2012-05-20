@@ -145,6 +145,7 @@
     <Compile Include="Transactions\SimpleObject.cs" />
     <Compile Include="Transactions\TransactionalGatewayTests.cs" />
     <Compile Include="Transactions\TransactionalTests.cs" />
+    <Compile Include="TypeExtensions.cs" />
     <Compile Include="UnsafeCastTests.cs" />
     <Compile Include="WeakReferenceTests.cs" />
     <Compile Include="Xml\DeclarativeXmlParserTests.cs" />
