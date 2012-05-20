@@ -7,3 +7,5 @@ obj/
 Build/
 _ReSharper.*/
 *.dotCover
+TestResult.xml
+TestResults.xml
