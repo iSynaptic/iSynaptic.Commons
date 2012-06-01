@@ -472,6 +472,26 @@ namespace iSynaptic.Commons
             result = result.FailIf(() => true);
             Assert.IsFalse(result.WasSuccessful);
         }
+
+        [Test]
+        public void If_ReturnsThenValue_IfBoolIsTrue()
+        {
+            var value = Result.If(true, 42.ToResult());
+            Assert.That(value == 42);
+
+            //value = Result.If(() => true, 84.ToResult());
+            //Assert.That(value == 84);
+        }
+
+        [Test]
+        public void If_ReturnsElseValue_IfBoolIsFalse()
+        {
+            var value = Result.If(false, 42.ToResult(), 7.ToResult());
+            Assert.That(value == 7);
+
+            //value = Result.If(() => false, 7.ToResult(), 42.ToResult());
+            //Assert.That(value == 42);
+        }
     }
 }
 

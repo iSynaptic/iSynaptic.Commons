@@ -578,6 +578,27 @@ namespace iSynaptic.Commons.Linq
                 yield return item;
         }
 
+        public static Maybe<T> TryElementAt<T>(this IEnumerable<T> @this, int index)
+        {
+            Guard.NotNull(@this, "this");
+            
+            if(index < 0)
+                throw new ArgumentOutOfRangeException("index");
+
+            using(var thisEnumerator = @this.GetEnumerator())
+            {
+                while(thisEnumerator.MoveNext())
+                {
+                    if(index == 0)
+                        return new Maybe<T>(thisEnumerator.Current);
+
+                    --index;
+                }
+            }
+
+            return Maybe.NoValue;
+        }
+
         public static Maybe<T> TryFirst<T>(this IEnumerable<T> @this)
         {
             Guard.NotNull(@this, "this");

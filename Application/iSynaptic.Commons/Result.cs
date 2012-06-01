@@ -270,6 +270,8 @@ namespace iSynaptic.Commons
 
     public static class Result
     {
+        #region Maybe Operators
+
         public static Result<Unit, Unit> NoValue
         {
             get { return new Result<Unit, Unit>(); }
@@ -291,6 +293,30 @@ namespace iSynaptic.Commons
         {
             return new Result<T, TObservation>(computation);
         }
+
+        public static Result<T, TObservation> If<T, TObservation>(bool predicate, Result<T, TObservation> then)
+        {
+            return predicate ? then : NoValue;
+        }
+
+        public static Result<T, TObservation> If<T, TObservation>(bool predicate, Result<T, TObservation> then, Result<T, TObservation> @else)
+        {
+            return predicate ? then : @else;
+        }
+
+        public static Result<T, TObservation> If<T, TObservation>(Func<bool> predicate, Result<T, TObservation> then)
+        {
+            Guard.NotNull(predicate, "predicate");
+            return new Result<T, TObservation>(() => predicate() ? then : NoValue);
+        }
+
+        public static Result<T, TObservation> If<T, TObservation>(Func<bool> predicate, Result<T, TObservation> then, Result<T, TObservation> @else)
+        {
+            Guard.NotNull(predicate, "predicate");
+            return new Result<T, TObservation>(() => predicate() ? then : @else);
+        }
+
+        #endregion
 
         public static Result<T, Unit> Return<T>(T value)
         {
@@ -619,6 +645,16 @@ namespace iSynaptic.Commons
                 action(@this.Value);
 
             return @this;
+        }
+
+        public static Result<T, Unit> ToResult<T>(this T value)
+        {
+            return Return(value);
+        }
+
+        public static Result<T, Unit> ToResult<T>(this T? value) where T : struct
+        {
+            return Return(value);
         }
 
         public static Result<T, TObservation> ToResult<T, TObservation>(this T value)

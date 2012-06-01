@@ -129,7 +129,9 @@
     <Compile Include="Collections\Generic\DictionaryExtensionsTests.cs" />
     <Compile Include="MaybeMonadContractTests.cs" />
     <Compile Include="MaybeTests.cs" />
+    <Compile Include="MethodSpecificationBuilder.cs" />
     <Compile Include="OutcomeTests.cs" />
+    <Compile Include="ParameterSpecificationBuilder.cs" />
     <Compile Include="Reflection\Emit\DynamicMethodExtensionsTests.cs" />
     <Compile Include="Linq\EnumerableExtensionsTests.cs" />
     <Compile Include="EnumExtensionsTests.cs" />
@@ -145,7 +147,9 @@
     <Compile Include="Transactions\SimpleObject.cs" />
     <Compile Include="Transactions\TransactionalGatewayTests.cs" />
     <Compile Include="Transactions\TransactionalTests.cs" />
+    <Compile Include="TypeArgumentSpecification.cs" />
     <Compile Include="TypeExtensions.cs" />
+    <Compile Include="TypeSpecificationBuilder.cs" />
     <Compile Include="UnsafeCastTests.cs" />
     <Compile Include="WeakReferenceTests.cs" />
     <Compile Include="Xml\DeclarativeXmlParserTests.cs" />

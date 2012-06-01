@@ -226,26 +226,26 @@ namespace iSynaptic.Commons
 
         #region If Operator
 
-        public static Maybe<T> If<T>(bool predicate, Maybe<T> thenValue)
+        public static Maybe<T> If<T>(bool predicate, Maybe<T> then)
         {
-            return predicate ? thenValue : NoValue;
+            return predicate ? then : NoValue;
         }
 
-        public static Maybe<T> If<T>(bool predicate, Maybe<T> thenValue, Maybe<T> elseValue)
+        public static Maybe<T> If<T>(bool predicate, Maybe<T> then, Maybe<T> @else)
         {
-            return predicate ? thenValue : elseValue;
+            return predicate ? then : @else;
         }
 
-        public static Maybe<T> If<T>(Func<bool> predicate, Maybe<T> thenValue)
+        public static Maybe<T> If<T>(Func<bool> predicate, Maybe<T> then)
         {
             Guard.NotNull(predicate, "predicate");
-            return new Maybe<T>(() => predicate() ? thenValue : NoValue);
+            return new Maybe<T>(() => predicate() ? then : NoValue);
         }
 
-        public static Maybe<T> If<T>(Func<bool> predicate, Maybe<T> thenValue, Maybe<T> elseValue)
+        public static Maybe<T> If<T>(Func<bool> predicate, Maybe<T> then, Maybe<T> @else)
         {
             Guard.NotNull(predicate, "predicate");
-            return new Maybe<T>(() => predicate() ? thenValue : elseValue);
+            return new Maybe<T>(() => predicate() ? then : @else);
         }
 
         #endregion

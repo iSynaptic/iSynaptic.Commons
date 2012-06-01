@@ -31,81 +31,24 @@ using iSynaptic.Commons.Linq;
 
 namespace iSynaptic.Commons
 {
-    [MaybeMonadContractTestFixtureAttribute(typeof(Result<,>), typeof(Result))]
-    [MaybeMonadContractTestFixtureAttribute(typeof(Maybe<>), typeof(Maybe))]
-    public class MaybeMonadContractTests
+    [MaybeMonadContractTestFixture(typeof(Result<,>), typeof(Result))]
+    [MaybeMonadContractTestFixture(typeof(Maybe<>), typeof(Maybe))]
+    public class MaybeMonadContractTests : MonadicLawsTestFixture
     {
         public MaybeMonadContractTests(Type monadType, Type extensionType)
+            : base(monadType, extensionType)
         {
-            MonadType = Guard.NotNull(monadType, "monadType");
             ValueType = typeof (string);
 
             ClosedMonadType = MonadType.MakeGenericType(GetTypeArguments(ValueType));
-            OpenValueType = MonadType.GetGenericArguments()[0];
-            
-            ExtensionType = Guard.NotNull(extensionType, "extensionType");
-       }
+        }
 
-        public Type MonadType { get; private set; }
         public Type ClosedMonadType { get; private set; }
 
         public Type ValueType { get; private set; }
-        public Type OpenValueType { get; private set; }
 
-        public Type ExtensionType { get; private set; }
 
         #region Core Type Contract
-
-        [Test]
-        public void MonadType_IsNotNull()
-        {
-            Assert.IsNotNull(MonadType);
-        }
-
-        [Test]
-        public void ExtensionType_IsNotNull()
-        {
-            Assert.IsNotNull(ExtensionType);
-        }
-
-        [Test]
-        public void MonadType_IsGenericTypeDefinition()
-        {
-            Assert.IsTrue(MonadType.IsGenericTypeDefinition);
-        }
-
-        [Test]
-        public void MonadType_IsAStruct()
-        {
-            Assert.IsTrue(MonadType.IsValueType);
-        }
-
-        [Test]
-        public void MonadType_FirstTypeArgument_IsTypeOfUnderlyingValue()
-        {
-            // First argument of the type of the underlying Value
-            var method = MonadType.GetMethodsWithParameters()
-                .Where(x => x.Method.IsSpecialName && x.Method.Name == "get_Value")
-                .Single(x => x.Parameters.Count == 0)
-                .Method;
-
-            Assert.IsTrue(method.ReturnType == OpenValueType);
-        }
-
-        [Test]
-        public void ExtensionType_IsStaticClass()
-        {
-            Assert.IsTrue(ExtensionType.IsSealed);
-            Assert.IsTrue(ExtensionType.IsAbstract);
-            Assert.IsTrue(ExtensionType.IsClass);
-        }
-
-        [Test]
-        public void ExtensionType_IsNotGenericType()
-        {
-            Assert.IsFalse(ExtensionType.IsGenericType);
-            Assert.IsFalse(ExtensionType.IsGenericTypeDefinition);
-        }
 
         [Test]
         public void HasPublicConstructor_ThatTakesValue()
@@ -118,9 +61,9 @@ namespace iSynaptic.Commons
         [Test]
         public void HasPublicConstructor_ThatTakesAFunctionThatYieldsTheClosedMonadType()
         {
-            ClosedMonadType.GetConstructorsWithParameters()
+            MonadType.GetConstructorsWithParameters()
                 .Single(x => x.Parameters.Count == 1 &&
-                             x.Parameters[0].ParameterType == typeof (Func<>).MakeGenericType(ClosedMonadType));
+                             x.Parameters[0].ParameterType == typeof (Func<>).MakeGenericType(MonadType));
         }
 
         [Test]
@@ -420,50 +363,349 @@ namespace iSynaptic.Commons
 
         #endregion
 
+        #region Defer
+
         [Test]
-        public void Defer_WithFunctionThatReturnsValue() // M<T> Defer(Func<T>)
+        public void Defer_WithFunctionThatReturnsValue() 
         {
-            Assert.IsNotNull(ExtensionType.GetMethodsWithParameters()
-                .Where(x => x.Method.Name == "Defer")
-                .Where(x => x.Method.IsStatic)
-                .Where(x => x.Method.IsGenericMethodDefinition)
-                .Where(x => !x.GenericArguments[0].GenericParameterAttributes.Contains(GenericParameterAttributes.NotNullableValueTypeConstraint))
-                .Where(x => x.Parameters.Count == 1)
-                .Where(x => x.Parameters[0].ParameterType == typeof (Func<>).MakeGenericType(x.GenericArguments[0]))
-                .SingleOrDefault(x => x.Method.ReturnType == MonadType.MakeGenericType(GetTypeArguments(x.GenericArguments[0]))));
+            // public static M<T> Defer<T>(Func<T> computation)
+            var spec = MethodSpecificationBuilder
+                .Named("Defer")
+                .IsPublic()
+                .IsStatic()
+                .IsNotExtensionMethod()
+                .HasGenericArguments(1)
+                .HasParameters(1)
+
+
+                .GenericArgument(ga => ga
+                    .Named("T")
+                    .AtIndex(0)
+                    .CanBeReferenceType()
+                    .CanBeValueType())
+
+                .Parameter((m, p) => p
+                    .Named("computation")
+                    .AtIndex(0)
+                    .Type(t => t
+                        .IsEqualTo(typeof(Func<>).MakeGenericType(m.GetGenericArguments()[0]))))
+                
+                .Returns((m, t) => t
+                    .IsEqualTo(MonadType.MakeGenericType(m.ReturnType.GetGenericArguments())));
+
+            Assert.IsNotNull(ExtensionType.GetMethods().Single(spec.ToFunc()));
         }
 
         [Test]
         public void Defer_WithFunctionThatReturnsNullableStructValue() // M<T> Defer(Func<T?>)
         {
-            Assert.IsNotNull(ExtensionType.GetMethodsWithParameters()
-                .Where(x => x.Method.Name == "Defer")
-                .Where(x => x.Method.IsStatic)
-                .Where(x => x.Method.IsGenericMethodDefinition)
-                .Where(x => x.GenericArguments[0].GenericParameterAttributes.Contains(GenericParameterAttributes.NotNullableValueTypeConstraint))
-                .Where(x => x.Parameters.Count == 1)
-                .Where(x => x.Parameters[0].ParameterType == typeof(Func<>).MakeGenericType(typeof(Nullable<>).MakeGenericType(x.GenericArguments[0])))
-                .SingleOrDefault(x => x.Method.ReturnType == MonadType.MakeGenericType(GetTypeArguments(x.GenericArguments[0]))));
+            var spec = MethodSpecificationBuilder
+                .Named("Defer")
+                .IsPublic()
+                .IsStatic()
+                .IsNotExtensionMethod()
+                .IsOpenGeneric()
+                
+                .HasGenericArguments(1)
+                .GenericArgument(ga => ga
+                    .Named("T")
+                    .AtIndex(0)
+                    .MustBeValueType())
+
+                .HasParameters(1)
+                .Parameter((m, p) => p
+                    .Named("computation")
+                    .AtIndex(0)
+                    .Type(t => t
+                        .IsEqualTo(typeof(Func<>).MakeGenericType(typeof(Nullable<>).MakeGenericType(m.GetGenericArguments()[0])))))
+
+                .Returns((m, t) => t
+                    .IsEqualTo(MonadType.MakeGenericType(m.ReturnType.GetGenericArguments())));
+
+            Assert.IsNotNull(ExtensionType.GetMethods().Single(spec.ToFunc()));
         }
 
         [Test]
-        public void Defer_WithFunctionThatReturnsMonadType() // M<T> Defer(Func<M<T>>)
+        public void Defer_WithFunctionThatReturnsMonadType() // M<T> Defer<T>(Func<M<T>>)
         {
-            Assert.IsNotNull(ExtensionType.GetMethodsWithParameters()
-                .Where(x => x.Method.Name == "Defer")
-                .Where(x => x.Method.IsStatic)
-                .Where(x => x.Method.IsGenericMethodDefinition)
-                .Where(x => x.Parameters.Count == 1)
-                .Where(x => x.Parameters[0].ParameterType == typeof(Func<>).MakeGenericType(x.Method.ReturnType))
-                .SingleOrDefault(x => x.Method.ReturnType == MonadType.MakeGenericType(x.Method.ReturnType.GetGenericArguments())));
+            var spec = MethodSpecificationBuilder
+                .Named("Defer")
+                .IsStatic()
+                .IsNotExtensionMethod()
+                .IsPublic()
+                .IsOpenGeneric()
+
+                .GenericArgument(ga => ga
+                    .Named("T")
+                    .AtIndex(0)
+                    .CanBeReferenceType()
+                    .CanBeValueType())
+
+                .HasParameters(1)
+                .Parameter((m, p) => p
+                    .Named("computation")
+                    .AtIndex(0)
+                    .Type(t => t.IsEqualTo(typeof(Func<>).MakeGenericType(m.ReturnType))))
+
+                .Returns((m, t) => t
+                    .IsEqualTo(MonadType.MakeGenericType(m.ReturnType.GetGenericArguments())));
+
+            Assert.IsNotNull(ExtensionType.GetMethods().Single(spec.ToFunc()));
         }
 
-        private Type[] GetTypeArguments(Type firstTypeArgument)
+        #endregion
+
+        [Test]
+        public void If_WithBooleanAndThenMonadType() // M<T> If<T>(Boolean, M<T>)
+        {
+            var spec = MethodSpecificationBuilder
+                .Named("If")
+                .IsStatic()
+                .IsPublic()
+                .IsNotExtensionMethod()
+                .IsOpenGeneric()
+
+                .GenericArgument(ga => ga
+                    .Named("T")
+                    .AtIndex(0)
+                    .CanBeReferenceType()
+                    .CanBeValueType())
+
+                .HasParameters(2)
+                .Parameter((m, p) => p
+                    .Named("predicate")
+                    .AtIndex(0)
+                    .Type(t => t.IsEqualTo(typeof(bool))))
+
+                .Parameter((m, p) => p
+                    .Named("then")
+                    .AtIndex(1)
+                    .Type(t => t.IsEqualTo(m.ReturnType)))
+
+                    .Returns((m, t) => t
+                    .IsEqualTo(MonadType.MakeGenericType(m.ReturnType.GetGenericArguments())));
+
+            Assert.IsNotNull(ExtensionType.GetMethods().Single(spec.ToFunc()));
+        }
+
+        [Test]
+        public void If_WithFuncOfBooleanAndThenMonadType() // M<T> If<T>(Func<Boolean>, M<T>)
+        {
+            var spec = MethodSpecificationBuilder
+                .Named("If")
+                .IsStatic()
+                .IsPublic()
+                .IsNotExtensionMethod()
+                .IsOpenGeneric()
+
+                .GenericArgument(ga => ga
+                    .Named("T")
+                    .AtIndex(0)
+                    .CanBeReferenceType()
+                    .CanBeValueType())
+
+                .HasParameters(2)
+                .Parameter((m, p) => p
+                    .Named("predicate")
+                    .AtIndex(0)
+                    .Type(t => t.IsEqualTo(typeof(Func<bool>))))
+
+                .Parameter((m, p) => p
+                    .Named("then")
+                    .AtIndex(1)
+                    .Type(t => t.IsEqualTo(m.ReturnType)))
+
+                    .Returns((m, t) => t
+                    .IsEqualTo(MonadType.MakeGenericType(m.ReturnType.GetGenericArguments())));
+
+            Assert.IsNotNull(ExtensionType.GetMethods().Single(spec.ToFunc()));
+        }
+
+        [Test]
+        public void If_WithBooleanAndThenAndElseMonadType() // M<T> If<T>(Boolean, M<T>, M<T>)
+        {
+            var spec = MethodSpecificationBuilder
+                .Named("If")
+                .IsStatic()
+                .IsPublic()
+                .IsNotExtensionMethod()
+                .IsOpenGeneric()
+
+                .GenericArgument(ga => ga
+                    .Named("T")
+                    .AtIndex(0)
+                    .CanBeReferenceType()
+                    .CanBeValueType())
+
+                .HasParameters(3)
+                .Parameter((m, p) => p
+                    .Named("predicate")
+                    .AtIndex(0)
+                    .Type(t => t.IsEqualTo(typeof(bool))))
+
+                .Parameter((m, p) => p
+                    .Named("then")
+                    .AtIndex(1)
+                    .Type(t => t.IsEqualTo(m.ReturnType)))
+
+                .Parameter((m, p) => p
+                    .Named("else")
+                    .AtIndex(2)
+                    .Type(t => t.IsEqualTo(m.ReturnType)))
+
+                .Returns((m, t) => t
+                    .IsEqualTo(MonadType.MakeGenericType(m.ReturnType.GetGenericArguments())));
+
+            Assert.IsNotNull(ExtensionType.GetMethods().Single(spec.ToFunc()));
+        }
+
+        [Test]
+        public void If_WithFuncOfBooleanAndThenAndElseMondadType() // M<T> If<T>(Func<Boolean>, M<T>, M<T>)
+        {
+            var spec = MethodSpecificationBuilder
+                .Named("If")
+                .IsStatic()
+                .IsPublic()
+                .IsNotExtensionMethod()
+                .IsOpenGeneric()
+
+                .GenericArgument(ga => ga
+                    .Named("T")
+                    .AtIndex(0)
+                    .CanBeReferenceType()
+                    .CanBeValueType())
+
+                .HasParameters(3)
+                .Parameter((m, p) => p
+                    .Named("predicate")
+                    .AtIndex(0)
+                    .Type(t => t.IsEqualTo(typeof(Func<bool>))))
+
+                .Parameter((m, p) => p
+                    .Named("then")
+                    .AtIndex(1)
+                    .Type(t => t.IsEqualTo(m.ReturnType)))
+
+                .Parameter((m, p) => p
+                    .Named("else")
+                    .AtIndex(2)
+                    .Type(t => t.IsEqualTo(m.ReturnType)))
+
+                .Returns((m, t) => t
+                    .IsEqualTo(MonadType.MakeGenericType(m.ReturnType.GetGenericArguments())));
+
+            Assert.IsNotNull(ExtensionType.GetMethods().Single(spec.ToFunc()));
+        }
+    }
+
+    public abstract class MonadicLawsTestFixture
+    {
+        protected MonadicLawsTestFixture(Type monadType, Type extensionType)
+        {
+            MonadType = Guard.NotNull(monadType, "monadType");
+            ExtensionType = Guard.NotNull(extensionType, "extensionType");
+
+            OpenValueType = MonadType.GetGenericArguments()[0];
+        }
+
+        //private MethodInfo GetReturn()
+        //{
+        //    return ExtensionType.GetMethodsWithParameters()
+        //        .Where(x => x.Method.Name == "Return")
+        //        .Where(x => x.Method.IsStatic)
+        //        .Where(x => x.Method.IsGenericMethodDefinition)
+        //        .Where(x => !x.GenericArguments[0].GenericParameterAttributes.Contains(GenericParameterAttributes.NotNullableValueTypeConstraint))
+        //        .Where(x => x.Parameters.Count == 1)
+        //        .Where(x => x.Method.ReturnType == MonadType.MakeGenericType(x.Method.ReturnType.GetGenericArguments()))
+        //        .Select(x => x.Method)
+        //        .Single();
+        //}
+
+        //private MethodInfo GetBind()
+        //{
+        //    return ExtensionType.GetMethodsWithParameters()
+        //        .Where(x => x.Method.Name == "Bind")
+        //        .Where(x => x.Method.IsStatic)
+        //        .Where(x => x.Method.IsGenericMethodDefinition)
+        //        .Where(x => x.Parameters.Count == 2)
+        //        .Where(x => x.Parameters[0].ParameterType == MonadType.MakeGenericType(x.Parameters[0].ParameterType.GetGenericArguments()))
+        //        .Where(x => x.Parameters[1].ParameterType == typeof(Func<,>).MakeGenericType(new[]{x.Parameters[0].ParameterType.GetGenericArguments()[0]}.Concat(new [] {MonadType.MakeGenericType(x.Method.ReturnType.GetGenericArguments().ToArray())}).ToArray()))
+        //        .Where(x => x.Method.ReturnType == MonadType.MakeGenericType(x.Method.ReturnType.GetGenericArguments()))
+        //        .Select(x => x.Method)
+        //        .Single();
+        //}
+
+        //[Test]
+        //public void Monadic_Law_1()
+        //{
+        //    var @return = GetReturn();
+        //    var bind = GetBind();
+
+        //    Assert.Inconclusive();
+        //}
+
+        [Test]
+        public void MonadType_IsNotNull()
+        {
+            Assert.IsNotNull(MonadType);
+        }
+
+        [Test]
+        public void ExtensionType_IsNotNull()
+        {
+            Assert.IsNotNull(ExtensionType);
+        }
+
+        [Test]
+        public void MonadType_IsGenericTypeDefinition()
+        {
+            Assert.IsTrue(MonadType.IsGenericTypeDefinition);
+        }
+
+        [Test]
+        public void MonadType_IsAStruct()
+        {
+            Assert.IsTrue(MonadType.IsValueType);
+        }
+
+        [Test]
+        public void MonadType_FirstTypeArgument_IsTypeOfUnderlyingValue()
+        {
+            // First argument of the type of the underlying Value
+            var method = MonadType.GetMethodsWithParameters()
+                .Where(x => x.Method.IsSpecialName && x.Method.Name == "get_Value")
+                .Single(x => x.Parameters.Count == 0)
+                .Method;
+
+            Assert.IsTrue(method.ReturnType == OpenValueType);
+        }
+
+        [Test]
+        public void ExtensionType_IsStaticClass()
+        {
+            Assert.IsTrue(ExtensionType.IsSealed);
+            Assert.IsTrue(ExtensionType.IsAbstract);
+            Assert.IsTrue(ExtensionType.IsClass);
+        }
+
+        [Test]
+        public void ExtensionType_IsNotGenericType()
+        {
+            Assert.IsFalse(ExtensionType.IsGenericType);
+            Assert.IsFalse(ExtensionType.IsGenericTypeDefinition);
+        }
+
+        protected Type[] GetTypeArguments(Type firstTypeArgument)
         {
             Guard.NotNull(firstTypeArgument, "firstTypeArgument");
 
-            return new[]{firstTypeArgument}.Concat(Enumerable.Repeat(typeof(Unit), MonadType.GetGenericArguments().Length - 1)).ToArray();
+            return new[] { firstTypeArgument }.Concat(Enumerable.Repeat(typeof(Unit), MonadType.GetGenericArguments().Length - 1)).ToArray();
         }
+
+        public Type MonadType { get; private set; }
+        public Type ExtensionType { get; private set; }
+
+        public Type OpenValueType { get; private set; }
     }
 
     internal class MaybeMonadContractTestFixtureAttribute : TestFixtureAttribute
