@@ -170,6 +170,7 @@
     <Compile Include="TrySelector.cs" />
     <Compile Include="Unit.cs" />
     <Compile Include="UnsafeCast.cs" />
+    <Compile Include="ValidatedNotNullAttribute.cs" />
     <Compile Include="WeakReference.cs" />
     <Compile Include="Xml\DeclarativeXmlParser.cs" />
     <Compile Include="Xml\XmlToken.cs" />

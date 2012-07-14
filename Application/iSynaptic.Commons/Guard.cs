@@ -28,7 +28,7 @@ namespace iSynaptic.Commons
 {
     public static class Guard
     {
-        public static T NotNull<T>(T value, string name, string message = null)
+        public static T NotNull<T>([ValidatedNotNull] T value, string name, string message = null)
         {
             if (null == value)
                 throw new ArgumentNullException(name, message);
@@ -60,7 +60,7 @@ namespace iSynaptic.Commons
             return value;
         }
 
-        public static string NotNullOrEmpty(string value, string name, string message = "Must not be empty.")
+        public static string NotNullOrEmpty([ValidatedNotNull] string value, string name, string message = "Must not be empty.")
         {
             if (string.IsNullOrEmpty(value))
                 throw new ArgumentException(message, name);
@@ -68,7 +68,7 @@ namespace iSynaptic.Commons
             return value;
         }
 
-        public static IEnumerable<T> NotNullOrEmpty<T>(IEnumerable<T> value, string name, string message = "Must not be null or empty.")
+        public static IEnumerable<T> NotNullOrEmpty<T>([ValidatedNotNull] IEnumerable<T> value, string name, string message = "Must not be null or empty.")
         {
             if (null == value || value.Any() != true)
                 throw new ArgumentException(message, name);
@@ -76,7 +76,7 @@ namespace iSynaptic.Commons
             return value;
         }
 
-        public static string NotNullOrWhiteSpace(string value, string name)
+        public static string NotNullOrWhiteSpace([ValidatedNotNull] string value, string name)
         {
             if (string.IsNullOrWhiteSpace(value))
                 throw new ArgumentException(string.Format("{0} must not be whitespace only.", name), name);
