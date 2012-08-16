@@ -36,15 +36,15 @@ namespace iSynaptic.Commons
 
         private readonly Func<Outcome<TObservation>> _Computation;
 
-        public Outcome(bool wasSuccessfule)
-            : this(wasSuccessfule, null)
+        public Outcome(bool wasSuccessful)
+            : this(wasSuccessful, null)
         {
         }
 
-        public Outcome(bool wasSuccessfule, IEnumerable<TObservation> observations)
+        public Outcome(bool wasSuccessful, IEnumerable<TObservation> observations)
             : this()
         {
-            _IsFailure = !wasSuccessfule;
+            _IsFailure = !wasSuccessful;
 
             if (typeof(TObservation) != typeof(Unit))
             {
