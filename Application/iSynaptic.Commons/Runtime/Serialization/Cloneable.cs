@@ -405,6 +405,14 @@ namespace iSynaptic.Commons.Runtime.Serialization
 
         #region Helper Methods
 
+        private static bool IsNotCloneable(FieldInfo field)
+        {
+            if (field.DeclaringType != null && field.DeclaringType.FullName == "System.Runtime.Serialization.SafeSerializationManager")
+                return false;
+
+            return IsNotCloneable(GetRootType(field.FieldType));
+        }
+
         private static bool IsNotCloneable(Type inputType)
         {
             if (typeof(Delegate).IsAssignableFrom(inputType))
@@ -425,6 +433,9 @@ namespace iSynaptic.Commons.Runtime.Serialization
                 return true;
 
             if (inputType.IsPrimitive)
+                return true;
+
+            if (typeof(Delegate).IsAssignableFrom(inputType))
                 return true;
 
             return false;
@@ -459,7 +470,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
 
         #region Can Methods
 
-        private static bool CanClone(Type type, bool isShallow)
+        private static bool CanClone(Type type, bool isShallow, Func<FieldInfo, bool> includeFilter)
         {
             Type typeToCheck = GetRootType(type);
 
@@ -472,28 +483,30 @@ namespace iSynaptic.Commons.Runtime.Serialization
             if (IsRootTypeCloneablePrimitive(typeToCheck))
                 return true;
 
-            Func<FieldInfo, bool> includeFilter = f => FieldIncludeFilter(f) && f.FieldType != typeToCheck;
+            if (includeFilter == null)
+                includeFilter = FieldIncludeFilter;
 
-            foreach (FieldInfo field in typeToCheck.GetFieldsDeeply(includeFilter))
+            Func<FieldInfo, bool> fieldFilter = f => includeFilter(f) && f.FieldType != typeToCheck;
+
+            foreach (FieldInfo field in typeToCheck.GetFieldsDeeply(fieldFilter))
             {
-                Type fieldType = GetRootType(field.FieldType);
-
-                if (IsNotCloneable(fieldType))
+                if (IsNotCloneable(field))
                     return false;
 
+                Type fieldType = GetRootType(field.FieldType);
                 if (IsRootTypeCloneablePrimitive(fieldType))
                     continue;
 
                 if (fieldType.IsInterface)
-                         continue;
+                    continue;
 
                 if (isShallow != true)
                 {
                     Type fieldClonableType = typeof(Cloneable<>).MakeGenericType(fieldType);
-                    MethodInfo canCloneMethod = GetMethod(fieldClonableType, "CanClone");
-                    var canClone = canCloneMethod.ToDelegate<Func<bool>>();
+                    MethodInfo canCloneMethod = GetMethod(fieldClonableType, "CanClone", typeof(Type), typeof(bool), typeof(Func<FieldInfo, bool>));
+                    var canClone = canCloneMethod.ToDelegate<Func<Type, bool, Func<FieldInfo, bool>, bool>>();
 
-                    if (canClone() != true)
+                    if (canClone(fieldType, false, fieldFilter) != true)
                         return false;
                 }
             }
@@ -504,7 +517,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
         public static bool CanClone()
         {
             if (_CanClone.HasValue != true)
-                _CanClone = CanClone(TargetType, false);
+                _CanClone = CanClone(TargetType, false, null);
 
             return _CanClone.Value;
         }
@@ -512,7 +525,7 @@ namespace iSynaptic.Commons.Runtime.Serialization
         public static bool CanShallowClone()
         {
             if (_CanShallowClone.HasValue != true)
-                _CanShallowClone = CanClone(TargetType, true);
+                _CanShallowClone = CanClone(TargetType, true, null);
 
             return _CanShallowClone.Value;
         }

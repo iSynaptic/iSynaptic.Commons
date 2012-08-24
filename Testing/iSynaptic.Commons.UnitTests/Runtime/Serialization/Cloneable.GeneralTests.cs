@@ -34,6 +34,31 @@ namespace iSynaptic.Commons.Runtime.Serialization
     public partial class CloneableTests
     {
         [Test]
+        public void CanCloneTypesWithIndirectTypeRecursion()
+        {
+            Assert.IsTrue(Cloneable<ClassWithIndirectTypeRecursionLeft>.CanClone());
+            Assert.IsTrue(Cloneable<ClassWithIndirectTypeRecursionLeft>.CanShallowClone());
+        }
+
+        [Test]
+        public void CloneException()
+        {
+            var source = new Exception("Bad mojo!");
+
+            Assert.IsTrue(Cloneable<Exception>.CanClone());
+            Assert.IsTrue(Cloneable<Exception>.CanShallowClone());
+
+            var clone = Cloneable<Exception>.Clone(source);
+            var shallowClone = Cloneable<Exception>.ShallowClone(source);
+
+            Assert.IsFalse(ReferenceEquals(source, clone));
+            Assert.IsFalse(ReferenceEquals(source, shallowClone));
+
+            Assert.AreEqual(source.Message, clone.Message);
+            Assert.AreEqual(source.Message, shallowClone.Message);
+        }
+
+        [Test]
         public void CloneClass()
         {
             var source = new CloneTestClass { FirstName = "John", LastName = "Doe" };

@@ -29,6 +29,16 @@ namespace iSynaptic.Commons.Runtime.Serialization
 {
 	public partial class CloneableTests
 	{
+        private class ClassWithIndirectTypeRecursionLeft
+        {
+            public ClassWithIndirectTypeRecursionRight Right { get; set; }
+        }
+
+        private class ClassWithIndirectTypeRecursionRight
+        {
+            public ClassWithIndirectTypeRecursionLeft Left { get; set; }
+        }
+
         private class ClassWithReferenceToTypeThatHasCloneReferenceOnlyAttribute
         {
             public CloneOnlyByReferenceClass Reference { get; set; }
