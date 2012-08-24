@@ -2,7 +2,22 @@
 RELEASE NOTES: iSynaptic.Commons
 ======================================
 
-==== v0.4.8 (March 6, 2011) ====
+==== v0.4.9 (August 24, 2012) ====
+
+---- Features ----
+
+* Added TryElementAt operator to IEnumerable<T> that returns a Maybe<T>.
+
+* Cleaned up names of arguments to Maybe<T> extension methods.
+
+* Added If and ToResult operators for Result<T, TObservation>.
+
+* Added ValidatedNotNullAttribute to support FxCop detecting null checks.
+
+* Supports .NET 4.5 CLR/BCL changes.
+
+
+==== v0.4.8 (March 6, 2012) ====
 
 ---- Features ----
 
@@ -14,12 +29,12 @@ RELEASE NOTES: iSynaptic.Commons
   Exodata is resolved in an non-thread safe way.
 
 
-==== v0.4.7 (February 6, 2011) ====
+==== v0.4.7 (February 6, 2012) ====
 
 ---- Features ----
 
 * Added TryFirst, TryLast, TrySelect, and Or operators to IEnumerable<T>
-  that return a Maybe<T>.
+  that returns a Maybe<T>.
 
 * Fixed bugs in CopyTo IEnumerable<T> extension methods.
 
