@@ -5,9 +5,12 @@
 - Consider tying .WasSuccessful to each observation in Outcome<TObservation> and Result<T, TObservation>...
 - Eliminate all optional arguments from methods
 - Change all Guard.NotNull(@this, "@this") calls to Guard.NotNull(@this, "this") - argument name shouldn't have '@' sign
+- Rename Guard to Argument
+- Refactor CompositeDisposable to dispose enlisted items in reverse order...
 
-== Future Changes ==
+== Potential Future Changes ==
 
+- Create experimental fork
 - Move reflection based specification (and builders) out of unit test project into main library
 	* Potentially reinstate general purpose specification pattern that returns something like Outcome<T> that also references the subject/candidate...
 - Add Xml comments to public API surface...
@@ -40,7 +43,6 @@
 - Implement SmartFormat ( e.g. SmartFormat.Format("{Name}: {Description}", new { Name = "Foo", Description = "Bar" }); )
 - Add support for Dependant Scopes (e.g. System.Transactions.Transaction.DependantClone(...))
 - Add support for out-off-order disposal detection of Scopes with resulting exception...
-- Refactor CompositeDisposable to dispose enlisted items in reverse order...
 - Add support for Scopes that need to be explicitly passed around (e.g. ScopeBounds.Explicit)
 	* Create Push() method to create child scope
 	* Collapse CompositeDisposable into DisposableContext
