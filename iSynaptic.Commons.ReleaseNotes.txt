@@ -2,6 +2,14 @@
 RELEASE NOTES: iSynaptic.Commons
 ======================================
 
+==== v0.4.10 (October 1, 2012) ====
+
+---- Features ----
+
+* Fixed issue with merging assemblies using ILMerge when .NET 4.5
+  is installed.
+
+
 ==== v0.4.9 (August 24, 2012) ====
 
 ---- Features ----
