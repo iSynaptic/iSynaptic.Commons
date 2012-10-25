@@ -7,6 +7,7 @@
 - Change all Guard.NotNull(@this, "@this") calls to Guard.NotNull(@this, "this") - argument name shouldn't have '@' sign
 - Rename Guard to Argument
 - Refactor CompositeDisposable to dispose enlisted items in reverse order...
+- Fix SystemClock to not allow changes to default strategy after prevent is called; disallow returning times that are not in UTC.
 
 == Potential Future Changes ==
 

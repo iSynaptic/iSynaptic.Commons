@@ -134,6 +134,7 @@
     <Compile Include="Linq\Neighbors.cs" />
     <Compile Include="Maybe.cs" />
     <Compile Include="Outcome.cs" />
+    <Compile Include="Reflection\DynamicDispatcher.cs" />
     <Compile Include="Reflection\Emit\DynamicMethodExtensions.cs" />
     <Compile Include="Linq\EnumerableExtensions.cs" />
     <Compile Include="EnumExtensions.cs" />
@@ -152,6 +153,7 @@
     <Compile Include="IReadableIndexer.cs" />
     <Compile Include="IReadWriteIndexer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Reflection\TypeHierarchyComparer.cs" />
     <Compile Include="Result.cs" />
     <Compile Include="Runtime\Serialization\Cloneable.cs" />
     <Compile Include="Runtime\Serialization\CloneContext.cs" />

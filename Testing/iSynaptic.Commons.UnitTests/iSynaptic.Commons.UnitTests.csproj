@@ -132,6 +132,7 @@
     <Compile Include="MethodSpecificationBuilder.cs" />
     <Compile Include="OutcomeTests.cs" />
     <Compile Include="ParameterSpecificationBuilder.cs" />
+    <Compile Include="Reflection\DynamicDispatcherTests.cs" />
     <Compile Include="Reflection\Emit\DynamicMethodExtensionsTests.cs" />
     <Compile Include="Linq\EnumerableExtensionsTests.cs" />
     <Compile Include="EnumExtensionsTests.cs" />
@@ -139,6 +140,7 @@
     <Compile Include="IocTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Reflection\ReflectionExtensionsTests.cs" />
+    <Compile Include="Reflection\TypeHierarchyComparerTests.cs" />
     <Compile Include="ResultTests.cs" />
     <Compile Include="Runtime\Serialization\Cloneable.ClrPrimitiveTests.cs" />
     <Compile Include="Runtime\Serialization\Cloneable.GeneralTests.cs" />
