@@ -12,6 +12,8 @@
 == Potential Future Changes ==
 
 - Create experimental fork
+- Make SmartLoop enumerable
+- Make SmartLoop immutable (persistent data structure)
 - Move reflection based specification (and builders) out of unit test project into main library
 	* Potentially reinstate general purpose specification pattern that returns something like Outcome<T> that also references the subject/candidate...
 - Add Xml comments to public API surface...

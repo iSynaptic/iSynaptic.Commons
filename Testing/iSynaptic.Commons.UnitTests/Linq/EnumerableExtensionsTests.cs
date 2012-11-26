@@ -314,6 +314,20 @@ namespace iSynaptic.Commons.Linq
         }
 
         [Test]
+        public void ZipAll_WithSelector()
+        {
+            var rangeOne = Enumerable.Range(1, 10);
+            var rangeTwo = Enumerable.Range(10, 10);
+
+            var zipped = rangeOne.ZipAll(rangeTwo, (l, r) => new[]{l.Value, r.Value});
+
+            var expected = new[] { 1, 10, 2, 11, 3, 12, 4, 13, 5, 14, 6, 15, 7, 16, 8, 17, 9, 18, 10, 19 };
+
+            Assert.IsTrue(zipped.SelectMany(x => x).Select(x => x).SequenceEqual(expected));
+
+        }
+
+        [Test]
         public void ToDictionary_WithNull_ThrowsArgumentNullException()
         {
             IEnumerable<KeyValuePair<string, string>> pairs = null;
@@ -692,6 +706,39 @@ namespace iSynaptic.Commons.Linq
 
             var result = source.TrySingle(x => false);
             Assert.IsFalse(result.HasValue);
+        }
+
+        [Test]
+        public void Any_WithEnumerableBooleans_ReturnsTrueForAny()
+        {
+            Assert.IsFalse(new[]{ false, false, false }.Any());
+            Assert.IsTrue(new[] { false, true, false }.Any());
+            Assert.IsTrue(new[] { true, true, true }.Any());
+        }
+
+
+        [Test]
+        public void All_WithEnumerableBooleans_ReturnsTrueForAll()
+        {
+            Assert.IsFalse(new[] { false, false, false }.All());
+            Assert.IsFalse(new[] { false, true, false }.All());
+            Assert.IsTrue(new[] { true, true, true }.All());
+        }
+
+        [Test]
+        public void None_WithEnumerableBooleans_ReturnsTrueForNone()
+        {
+            Assert.IsTrue(new[] { false, false, false }.None());
+            Assert.IsFalse(new[] { false, true, false }.None());
+            Assert.IsFalse(new[] { true, true, true }.None());
+        }
+
+        [Test]
+        public void None_WithSelector_ReturnsTrueForNone()
+        {
+            Assert.IsTrue(new[] { "false", "false", "false" }.None(bool.Parse));
+            Assert.IsFalse(new[] { "false", "true", "false" }.None(bool.Parse));
+            Assert.IsFalse(new[] { "true", "true", "true" }.None(bool.Parse));
         }
 
         private static IEnumerable<int> GetRange(int start, int end, Action after)

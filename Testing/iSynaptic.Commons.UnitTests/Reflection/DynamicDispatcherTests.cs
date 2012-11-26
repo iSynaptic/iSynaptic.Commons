@@ -30,6 +30,23 @@ namespace iSynaptic.Commons.Reflection
     {
         private class TestTarget
         {
+            private void WriteSomething(string message)
+            {
+                Console.WriteLine(message);
+            }
+
+            private void WriteSomething(string message, params string[] messages)
+            {
+                Console.WriteLine(message);
+                foreach (var msg in messages)
+                    Console.WriteLine(msg);
+            }
+
+            private void WriteSomething(params string[] messages)
+            {
+                foreach(var msg in messages)
+                    Console.WriteLine(msg);
+            }
         }
 
         [Test]
@@ -60,9 +77,18 @@ namespace iSynaptic.Commons.Reflection
         public void Build_WithNoCandidateMethods_ReturnsNoOpDelegate_WhenConfigured()
         {
             var options = new DynamicDispatcherOptions(DynamicDispatcher.MissingMethodBehavior.ReturnNoOpDelegate);
-            var delgate = DynamicDispatcher.Build<Action<String>>(typeof (String), m => false, options);
+            var @delegate = DynamicDispatcher.Build<Action<String>>(typeof(String), m => false, options);
 
-            delgate("Yo");
+            @delegate("Yo");
+        }
+
+        [Test]
+        public void Build_WithNoCandidateMethods_ReturnsNullDelegate_WhenConfigured()
+        {
+            var options = new DynamicDispatcherOptions(DynamicDispatcher.MissingMethodBehavior.ReturnNull);
+            var @delegate = DynamicDispatcher.Build<Action<TestTarget, String>>(typeof(TestTarget), m => true, options);
+
+            Assert.IsNull(@delegate);
         }
     }
 }
