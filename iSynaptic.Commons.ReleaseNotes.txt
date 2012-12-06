@@ -2,6 +2,14 @@
 RELEASE NOTES: iSynaptic.Commons
 ======================================
 
+==== v0.4.11 (December 6, 2012) ====
+
+---- Features ----
+
+* Fixed bug in SurrogateExodataBindingSource where Lazy<T> was caching
+  exceptions.
+
+
 ==== v0.4.10 (October 1, 2012) ====
 
 ---- Features ----

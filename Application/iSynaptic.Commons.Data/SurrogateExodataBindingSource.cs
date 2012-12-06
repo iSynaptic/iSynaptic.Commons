@@ -32,7 +32,10 @@ namespace iSynaptic.Commons.Data
 {
     public class SurrogateExodataBindingSource : IExodataBindingSource
     {
-        private readonly Lazy<KeyValuePair<Type, IExodataBindingSource>[]> _Surrogates = new Lazy<KeyValuePair<Type, IExodataBindingSource>[]>(() =>
+        private readonly object _syncLock = new object();
+        private volatile KeyValuePair<Type, IExodataBindingSource>[] _Surrogates;
+
+        private static IEnumerable<KeyValuePair<Type, IExodataBindingSource>> ScanForSurrogates()
         {
             Type bindingSourceType = typeof(IExodataBindingSource);
 
@@ -43,9 +46,8 @@ namespace iSynaptic.Commons.Data
                 .Where(x => !x.IsAbstract && !x.IsGenericTypeDefinition && bindingSourceType.IsAssignableFrom(x))
                 .Select(x => new { Type = x, BaseType = GetExodataSurrgateBaseClass(x) })
                 .Where(x => x.BaseType.HasValue)
-                .Select(x => KeyValuePair.Create(x.BaseType.Value.GetGenericArguments()[0], InstantiateSurrogate(x.Type)))
-                .ToArray();
-        });
+                .Select(x => KeyValuePair.Create(x.BaseType.Value.GetGenericArguments()[0], InstantiateSurrogate(x.Type)));
+        }
 
         private static Maybe<Type> GetExodataSurrgateBaseClass(Type type)
         {
@@ -71,7 +73,16 @@ namespace iSynaptic.Commons.Data
         {
             Type subjectType = typeof(TSubject);
 
-            return _Surrogates.Value
+            if(_Surrogates == null)
+            {
+                lock(_syncLock)
+                {
+                    if (_Surrogates == null)
+                        _Surrogates = ScanForSurrogates().ToArray();
+                }
+            }
+
+            return _Surrogates
                 .Where(x => x.Key.IsAssignableFrom(subjectType))
                 .Select(x => x.Value)
                 .SelectMany(x => x.GetBindingsFor(request));
