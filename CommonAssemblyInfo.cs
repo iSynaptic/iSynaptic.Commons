@@ -1,4 +1,4 @@
-// The MIT License
+﻿// The MIT License
 // 
 // Copyright (c) 2012 Jordan E. Terrell
 // 
@@ -36,5 +36,5 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(true)]
 
-[assembly: AssemblyVersion("0.4.11.0")]
-[assembly: AssemblyFileVersion("0.4.11.0")]
+[assembly: AssemblyVersion("0.4.12.0")]
+[assembly: AssemblyFileVersion("0.4.12.0")]
