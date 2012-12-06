@@ -2,7 +2,7 @@
 RELEASE NOTES: iSynaptic.Commons
 ======================================
 
-==== v0.4.11 (December 6, 2012) ====
+==== v0.4.12 (December 6, 2012) ====
 
 ---- Features ----
 
