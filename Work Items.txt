@@ -7,6 +7,7 @@
 - Change all Guard.NotNull(@this, "@this") calls to Guard.NotNull(@this, "this") - argument name shouldn't have '@' sign
 - Rename Guard to Argument
 - Refactor CompositeDisposable to dispose enlisted items in reverse order...
+- Evaluate targeting Client profile...
 
 == Potential Future Changes ==
 
