@@ -132,7 +132,6 @@
     <Compile Include="MethodSpecificationBuilder.cs" />
     <Compile Include="OutcomeTests.cs" />
     <Compile Include="ParameterSpecificationBuilder.cs" />
-    <Compile Include="Reflection\DynamicDispatcherTests.cs" />
     <Compile Include="Reflection\Emit\DynamicMethodExtensionsTests.cs" />
     <Compile Include="Linq\EnumerableExtensionsTests.cs" />
     <Compile Include="EnumExtensionsTests.cs" />
