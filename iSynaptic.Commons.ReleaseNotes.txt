@@ -2,6 +2,16 @@
 RELEASE NOTES: iSynaptic.Commons
 ======================================
 
+==== v0.4.13 (December 12, 2012) ====
+
+---- Features ----
+
+* IEnumerable<T> extensions: added None, All, ZipAll, and OrderByDescending
+  overloads, updated OrderBy and OrderByPriorities overloads return type.
+
+* Added TypeHierarchyComparer.
+
+
 ==== v0.4.12 (December 6, 2012) ====
 
 ---- Features ----
