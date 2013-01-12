@@ -8,9 +8,9 @@
 - Rename Guard to Argument
 - Refactor CompositeDisposable to dispose enlisted items in reverse order...
 - Fix SystemClock to not allow changes to default strategy after prevent is called; disallow returning times that are not in UTC.
+- Evaluate targeting Client profile...
 
 == Potential Future Changes ==
-
 - Create experimental fork
 - Change Neighbors<T> to Neighborhood<T>...
 - Make SmartLoop enumerable
