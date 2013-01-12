@@ -30,6 +30,30 @@ namespace iSynaptic.Commons.Linq
 {
     public static class EnumerableExtensions
     {
+        public static bool None(this IEnumerable<bool> @this)
+        {
+            return Guard.NotNull(@this, "@this")
+                .All(x => !x);
+        }
+
+        public static bool None<T>(this IEnumerable<T> @this, Func<T, bool> predicate)
+        {
+            return Guard.NotNull(@this, "@this")
+                .All(x => !predicate(x));
+        }
+
+        public static bool All(this IEnumerable<bool> @this)
+        {
+            return Guard.NotNull(@this, "@this")
+                .All(x => x);
+        }
+
+        public static bool Any(this IEnumerable<bool> @this)
+        {
+            return Guard.NotNull(@this, "@this")
+                .Any(x => x);
+        }
+
         public static IEnumerable<TResult> Let<T, TResult>(this IEnumerable<T> @this, Func<IEnumerable<T>, IEnumerable<TResult>> selector)
         {
             Guard.NotNull(@this, "@this");
@@ -66,7 +90,12 @@ namespace iSynaptic.Commons.Linq
             return @this.Where(x => x.HasValue).Select(x => x.Value);
         }
 
-        public static IEnumerable<TSource> OrderBy<TSource, TKey>(this IEnumerable<TSource> @this, Func<TSource, TKey> keySelector, Func<TKey, TKey, int> comparer)
+        public static IOrderedEnumerable<TSource> OrderBy<TSource>(this IEnumerable<TSource> @this, Func<TSource, TSource, int> comparer)
+        {
+            return OrderBy(@this, x => x, comparer);
+        }
+
+        public static IOrderedEnumerable<TSource> OrderBy<TSource, TKey>(this IEnumerable<TSource> @this, Func<TSource, TKey> keySelector, Func<TKey, TKey, int> comparer)
         {
             Guard.NotNull(@this, "@this");
             Guard.NotNull(keySelector, "keySelector");
@@ -75,7 +104,21 @@ namespace iSynaptic.Commons.Linq
             return @this.OrderBy(keySelector, comparer.ToComparer());
         }
 
-        public static IEnumerable<TSource> OrderByPriorities<TSource>(this IEnumerable<TSource> @this, Func<TSource, bool> higherPrioritySelector, params Func<TSource, bool>[] additionalPrioritySelectors)
+        public static IOrderedEnumerable<TSource> OrderByDescending<TSource>(this IEnumerable<TSource> @this, Func<TSource, TSource, int> comparer)
+        {
+            return OrderByDescending(@this, x => x, comparer);
+        }
+
+        public static IOrderedEnumerable<TSource> OrderByDescending<TSource, TKey>(this IEnumerable<TSource> @this, Func<TSource, TKey> keySelector, Func<TKey, TKey, int> comparer)
+        {
+            Guard.NotNull(@this, "@this");
+            Guard.NotNull(keySelector, "keySelector");
+            Guard.NotNull(comparer, "comparer");
+
+            return @this.OrderByDescending(keySelector, comparer.ToComparer());
+        }
+
+        public static IOrderedEnumerable<TSource> OrderByPriorities<TSource>(this IEnumerable<TSource> @this, Func<TSource, bool> higherPrioritySelector, params Func<TSource, bool>[] additionalPrioritySelectors)
         {
             Guard.NotNull(@this, "@this");
             Guard.NotNull(higherPrioritySelector, "higherPrioritySelector");
@@ -85,7 +128,7 @@ namespace iSynaptic.Commons.Linq
                                                                                     : null);
         }
 
-        public static IEnumerable<TSource> OrderByPriorities<TSource>(this IEnumerable<TSource> @this, Func<TSource, TSource, bool> higherPrioritySelector, params Func<TSource, TSource, bool>[] additionalPrioritySelectors)
+        public static IOrderedEnumerable<TSource> OrderByPriorities<TSource>(this IEnumerable<TSource> @this, Func<TSource, TSource, bool> higherPrioritySelector, params Func<TSource, TSource, bool>[] additionalPrioritySelectors)
         {
             Guard.NotNull(@this, "@this");
             Guard.NotNull(higherPrioritySelector, "higherPrioritySelector");
@@ -224,6 +267,15 @@ namespace iSynaptic.Commons.Linq
             return builder.ToString();
         }
 
+        public static IEnumerable<TResult> ZipAll<TSource, TOther, TResult>(this IEnumerable<TSource> @this, IEnumerable<TOther> other, Func<Maybe<TSource>, Maybe<TOther>, TResult> selector)
+        {
+            Guard.NotNull(@this, "@this");
+            Guard.NotNull(other, "other");
+            Guard.NotNull(selector, "selector");
+
+            return ZipAllCore(@this, other, selector);
+        }
+
         public static IEnumerable<Maybe<T>[]> ZipAll<T>(this IEnumerable<T> @this, params IEnumerable<T>[] sources)
         {
             Guard.NotNull(@this, "@this");
@@ -242,6 +294,24 @@ namespace iSynaptic.Commons.Linq
         {
             Guard.NotNull(@this, "@this");
             return ZipAllCore(@this);
+        }
+
+        private static IEnumerable<TResult> ZipAllCore<TSource, TOther, TResult>(this IEnumerable<TSource> @this, IEnumerable<TOther> other, Func<Maybe<TSource>, Maybe<TOther>, TResult> selector)
+        {
+            using (var left = @this.ToZipableEnumerable().GetEnumerator())
+            using (var right = other.ToZipableEnumerable().GetEnumerator())
+            {
+                while (left.MoveNext() && right.MoveNext())
+                {
+                    var leftCurrent = left.Current;
+                    var rightCurrent = right.Current;
+
+                    if (leftCurrent.HasValue || rightCurrent.HasValue)
+                        yield return selector(leftCurrent, rightCurrent);
+                    else 
+                        yield break;
+                }
+            }
         }
 
         private static IEnumerable<Maybe<T>[]> ZipAllCore<T>(IEnumerable<IEnumerable<T>> sources)
@@ -268,7 +338,7 @@ namespace iSynaptic.Commons.Linq
             }
         }
 
-        private static IEnumerable<Maybe<T>> ToZipableEnumerable<T>(this IEnumerable<T> @this)
+        public static IEnumerable<Maybe<T>> ToZipableEnumerable<T>(this IEnumerable<T> @this)
         {
             Guard.NotNull(@this, "@this");
 
