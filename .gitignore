@@ -2,6 +2,7 @@
 *.user
 *.vs10x
 *.docstates
+*.ide
 bin/
 obj/
 Build/
