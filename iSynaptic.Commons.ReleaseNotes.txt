@@ -2,6 +2,16 @@
 RELEASE NOTES: iSynaptic.Commons
 ======================================
 
+==== v0.4.14 (January 19, 2012) ====
+
+---- Features ----
+
+* IEnumerable<T> extensions: added SelectMaybe overloads
+  
+* Maybe<T> extensions: added SelectMany overloads that transition to
+  IEnumerable<TResult>
+
+
 ==== v0.4.13 (December 12, 2012) ====
 
 ---- Features ----

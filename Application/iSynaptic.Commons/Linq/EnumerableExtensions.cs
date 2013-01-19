@@ -30,6 +30,26 @@ namespace iSynaptic.Commons.Linq
 {
     public static class EnumerableExtensions
     {
+        public static IEnumerable<TResult> SelectMaybe<T, TResult>(this IEnumerable<T> @this, Func<T, Maybe<TResult>> selector)
+        {
+            Guard.NotNull(@this, "this");
+            Guard.NotNull(selector, "selector");
+
+            return @this.Select(selector)
+                        .Where(x => x.HasValue)
+                        .Select(x => x.Value);
+        }
+
+        public static IEnumerable<TResult> SelectMaybe<T, TResult>(this IEnumerable<T> @this, Func<T, int, Maybe<TResult>> selector)
+        {
+            Guard.NotNull(@this, "this");
+            Guard.NotNull(selector, "selector");
+
+            return @this.Select(selector)
+                        .Where(x => x.HasValue)
+                        .Select(x => x.Value);
+        }
+
         public static bool None(this IEnumerable<bool> @this)
         {
             return Guard.NotNull(@this, "@this")

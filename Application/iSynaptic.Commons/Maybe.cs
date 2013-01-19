@@ -810,7 +810,7 @@ namespace iSynaptic.Commons
                 if (!self.HasValue)
                     return NoValue;
 
-                TResult result = default(TResult);
+                TResult result;
 
                 return selector(self.Value, out result)
                     ? new Maybe<TResult>(result)
@@ -827,6 +827,11 @@ namespace iSynaptic.Commons
             var self = @this;
 
             return new Maybe<TResult>(() => self.HasValue ? selector(self.Value) : NoValue);
+        }
+
+        public static IEnumerable<TResult> SelectMany<T, TResult>(this Maybe<T> @this, Func<T, IEnumerable<TResult>> selector)
+        {
+            return @this.Select(selector).Squash();
         }
 
         public static Maybe<Unit> Throw(Exception exception)
