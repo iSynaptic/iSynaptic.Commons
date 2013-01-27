@@ -20,5 +20,13 @@ namespace iSynaptic.Commons.Syntax
 
             return Maybe.SelectMaybe(@this, x => selector(x).Select(y => combiner(x, y)));
         }
+
+        public static IEnumerable<TResult> SelectMany<T, TIntermediate, TResult>(this Maybe<T> @this, Func<T, IEnumerable<TIntermediate>> selector, Func<T, TIntermediate, TResult> combinder)
+        {
+            Guard.NotNull(selector, "selector");
+            Guard.NotNull(combinder, "combiner");
+
+            return @this.Select(x => selector(x).Select(y => combinder(x, y))).Squash();
+        }
     }
 }
