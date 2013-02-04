@@ -33,6 +33,7 @@ namespace iSynaptic.Commons.Reflection
     public static class ReflectionExtensions
     {
         public static IEnumerable<T> GetAttributesOfType<T>(this ICustomAttributeProvider provider)
+            where T : Attribute
         {
             return GetAttributesOfType(provider, typeof(T))
                 .Cast<T>();

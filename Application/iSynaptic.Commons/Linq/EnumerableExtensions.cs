@@ -50,33 +50,34 @@ namespace iSynaptic.Commons.Linq
                         .Select(x => x.Value);
         }
 
-        public static bool None(this IEnumerable<bool> @this)
+        public static bool None<T>(this IEnumerable<T> @this)
         {
-            return Guard.NotNull(@this, "@this")
-                .All(x => !x);
+            return !Guard.NotNull(@this, "this").Any();
         }
 
         public static bool None<T>(this IEnumerable<T> @this, Func<T, bool> predicate)
         {
-            return Guard.NotNull(@this, "@this")
-                .All(x => !predicate(x));
+            return !Guard.NotNull(@this, "this").Any(predicate);
         }
 
-        public static bool All(this IEnumerable<bool> @this)
+        public static bool AllTrue(this IEnumerable<bool> @this)
         {
-            return Guard.NotNull(@this, "@this")
-                .All(x => x);
+            return Guard.NotNull(@this, "this").All(x => x);
+        }
+
+        public static bool AllFalse(this IEnumerable<bool> @this)
+        {
+            return Guard.NotNull(@this, "this").All(x => !x);
         }
 
         public static bool Any(this IEnumerable<bool> @this)
         {
-            return Guard.NotNull(@this, "@this")
-                .Any(x => x);
+            return Guard.NotNull(@this, "this").Any(x => x);
         }
 
         public static IEnumerable<TResult> Let<T, TResult>(this IEnumerable<T> @this, Func<IEnumerable<T>, IEnumerable<TResult>> selector)
         {
-            Guard.NotNull(@this, "@this");
+            Guard.NotNull(@this, "this");
             Guard.NotNull(selector, "selector");
 
             return LetCore(@this, selector);
@@ -90,7 +91,7 @@ namespace iSynaptic.Commons.Linq
 
         public static IEnumerable<T> Unless<T>(this IEnumerable<T> @this, Func<T, bool> predicate)
         {
-            Guard.NotNull(@this, "@this");
+            Guard.NotNull(@this, "this");
             Guard.NotNull(predicate, "predicate");
 
             return @this.Where(x => !predicate(x));
@@ -99,14 +100,14 @@ namespace iSynaptic.Commons.Linq
         public static IEnumerable<T> NotNull<T>(this IEnumerable<T> @this)
             where T : class
         {
-            Guard.NotNull(@this, "@this");
+            Guard.NotNull(@this, "this");
             return @this.Where(x => x != null);
         }
 
         public static IEnumerable<T> NotNull<T>(this IEnumerable<T?> @this)
             where T : struct
         {
-            Guard.NotNull(@this, "@this");
+            Guard.NotNull(@this, "this");
             return @this.Where(x => x.HasValue).Select(x => x.Value);
         }
 
@@ -117,7 +118,7 @@ namespace iSynaptic.Commons.Linq
 
         public static IOrderedEnumerable<TSource> OrderBy<TSource, TKey>(this IEnumerable<TSource> @this, Func<TSource, TKey> keySelector, Func<TKey, TKey, int> comparer)
         {
-            Guard.NotNull(@this, "@this");
+            Guard.NotNull(@this, "this");
             Guard.NotNull(keySelector, "keySelector");
             Guard.NotNull(comparer, "comparer");
 
@@ -131,7 +132,7 @@ namespace iSynaptic.Commons.Linq
 
         public static IOrderedEnumerable<TSource> OrderByDescending<TSource, TKey>(this IEnumerable<TSource> @this, Func<TSource, TKey> keySelector, Func<TKey, TKey, int> comparer)
         {
-            Guard.NotNull(@this, "@this");
+            Guard.NotNull(@this, "this");
             Guard.NotNull(keySelector, "keySelector");
             Guard.NotNull(comparer, "comparer");
 
@@ -140,7 +141,7 @@ namespace iSynaptic.Commons.Linq
 
         public static IOrderedEnumerable<TSource> OrderByPriorities<TSource>(this IEnumerable<TSource> @this, Func<TSource, bool> higherPrioritySelector, params Func<TSource, bool>[] additionalPrioritySelectors)
         {
-            Guard.NotNull(@this, "@this");
+            Guard.NotNull(@this, "this");
             Guard.NotNull(higherPrioritySelector, "higherPrioritySelector");
 
             return @this.OrderByPriorities((l, r) => higherPrioritySelector(l), additionalPrioritySelectors != null
@@ -150,7 +151,7 @@ namespace iSynaptic.Commons.Linq
 
         public static IOrderedEnumerable<TSource> OrderByPriorities<TSource>(this IEnumerable<TSource> @this, Func<TSource, TSource, bool> higherPrioritySelector, params Func<TSource, TSource, bool>[] additionalPrioritySelectors)
         {
-            Guard.NotNull(@this, "@this");
+            Guard.NotNull(@this, "this");
             Guard.NotNull(higherPrioritySelector, "higherPrioritySelector");
 
             IEnumerable<Func<TSource, TSource, bool>> selectors = new[] { higherPrioritySelector };
@@ -167,7 +168,7 @@ namespace iSynaptic.Commons.Linq
 
         public static IEnumerable<T> Distinct<T, TKey>(this IEnumerable<T> @this, Func<T, TKey> selector)
         {
-            Guard.NotNull(@this, "@this");
+            Guard.NotNull(@this, "this");
             Guard.NotNull(selector, "selector");
 
             return @this.Distinct(selector.ToEqualityComparer());
@@ -175,7 +176,7 @@ namespace iSynaptic.Commons.Linq
 
         public static void CopyTo<T>(this IEnumerable<T> @this, T[] array, int index)
         {
-            Guard.NotNull(@this, "@this");
+            Guard.NotNull(@this, "this");
             Guard.NotNull(array, "array");
 
             var buffer = new List<T>();
@@ -188,7 +189,7 @@ namespace iSynaptic.Commons.Linq
 
         public static IEnumerable<IndexedValue<T>> WithIndex<T>(this IEnumerable<T> @this)
         {
-            Guard.NotNull(@this, "@this");
+            Guard.NotNull(@this, "this");
 
             int index = 0;
             return @this.Select(x => new IndexedValue<T>(index++, x));
@@ -196,19 +197,19 @@ namespace iSynaptic.Commons.Linq
 
         public static IEnumerable<LookAheadableValue<T>> AsLookAheadable<T>(this IEnumerable<T> @this)
         {
-            Guard.NotNull(@this, "@this");
+            Guard.NotNull(@this, "this");
             return new LookAheadEnumerable<T>(@this);
         }
 
         public static IEnumerable<T> Buffer<T>(this IEnumerable<T> @this)
         {
-            Guard.NotNull(@this, "@this");
+            Guard.NotNull(@this, "this");
             return @this.ToArray();
         }
 
         public static IEnumerable<Batch<T>> Batch<T>(this IEnumerable<T> @this, int batchSize)
         {
-            Guard.NotNull(@this, "@this");
+            Guard.NotNull(@this, "this");
 
             if (batchSize < 0)
                 throw new ArgumentOutOfRangeException("batchSize", "Batch size must not be negative.");
@@ -243,20 +244,20 @@ namespace iSynaptic.Commons.Linq
 
         public static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> @this)
         {
-            Guard.NotNull(@this, "@this");
+            Guard.NotNull(@this, "this");
             return @this.ToDictionary(x => x.Key, x => x.Value);
         }
 
         public static ReadOnlyDictionary<TKey, TValue> ToReadOnlyDictionary<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> @this)
         {
-            Guard.NotNull(@this, "@this");
+            Guard.NotNull(@this, "this");
 
             return DictionaryExtensions.ToReadOnlyDictionary(@this.ToDictionary());
         }
 
         public static string Delimit<T>(this IEnumerable<T> @this, string delimiter)
         {
-            Guard.NotNull(@this, "@this");
+            Guard.NotNull(@this, "this");
             Guard.NotNull(delimiter, "delimiter");
 
             return Delimit(@this, delimiter, x => x.ToString());
@@ -264,7 +265,7 @@ namespace iSynaptic.Commons.Linq
 
         public static string Delimit<T>(this IEnumerable<T> @this, string delimiter, string formatString)
         {
-            Guard.NotNull(@this, "@this");
+            Guard.NotNull(@this, "this");
             Guard.NotNull(delimiter, "delimiter");
             Guard.NotNull(formatString, "formatString");
 
@@ -273,7 +274,7 @@ namespace iSynaptic.Commons.Linq
 
         public static string Delimit<T>(this IEnumerable<T> @this, string delimiter, Func<T, string> formatter)
         {
-            Guard.NotNull(@this, "@this");
+            Guard.NotNull(@this, "this");
             Guard.NotNull(delimiter, "delimiter");
             Guard.NotNull(formatter, "formatter");
 
@@ -289,7 +290,7 @@ namespace iSynaptic.Commons.Linq
 
         public static IEnumerable<TResult> ZipAll<TSource, TOther, TResult>(this IEnumerable<TSource> @this, IEnumerable<TOther> other, Func<Maybe<TSource>, Maybe<TOther>, TResult> selector)
         {
-            Guard.NotNull(@this, "@this");
+            Guard.NotNull(@this, "this");
             Guard.NotNull(other, "other");
             Guard.NotNull(selector, "selector");
 
@@ -298,7 +299,7 @@ namespace iSynaptic.Commons.Linq
 
         public static IEnumerable<Maybe<T>[]> ZipAll<T>(this IEnumerable<T> @this, params IEnumerable<T>[] sources)
         {
-            Guard.NotNull(@this, "@this");
+            Guard.NotNull(@this, "this");
             Guard.NotNull(sources, "sources");
 
             return ZipAll(new[] { @this }.Concat(sources));
@@ -306,13 +307,13 @@ namespace iSynaptic.Commons.Linq
 
         public static IEnumerable<Maybe<T>[]> ZipAll<T>(this IEnumerable<T>[] @this)
         {
-            Guard.NotNull(@this, "@this");
+            Guard.NotNull(@this, "this");
             return ZipAll((IEnumerable<IEnumerable<T>>)@this);
         }
 
         public static IEnumerable<Maybe<T>[]> ZipAll<T>(this IEnumerable<IEnumerable<T>> @this)
         {
-            Guard.NotNull(@this, "@this");
+            Guard.NotNull(@this, "this");
             return ZipAllCore(@this);
         }
 
@@ -360,7 +361,7 @@ namespace iSynaptic.Commons.Linq
 
         public static IEnumerable<Maybe<T>> ToZipableEnumerable<T>(this IEnumerable<T> @this)
         {
-            Guard.NotNull(@this, "@this");
+            Guard.NotNull(@this, "this");
 
             foreach (var item in @this)
                 yield return item.ToMaybe();
@@ -371,7 +372,7 @@ namespace iSynaptic.Commons.Linq
 
         public static IEnumerable<T> Run<T>(this IEnumerable<T> @this, Action<T> action = null)
         {
-            var source = Guard.NotNull(@this, "@this");
+            var source = Guard.NotNull(@this, "this");
 
             if (action != null)
                 source = source.OnValue(action);
@@ -381,53 +382,111 @@ namespace iSynaptic.Commons.Linq
 
         public static SmartLoop<T> SmartLoop<T>(this IEnumerable<T> @this)
         {
-            Guard.NotNull(@this, "@this");
+            Guard.NotNull(@this, "this");
             return new SmartLoop<T>(@this);
-        }
-
-        public static IEnumerable<T> Recurse<T>(this T @this, Func<T, IEnumerable<T>> selector)
-        {
-            Guard.NotNull(@this, "@this");
-            Guard.NotNull(selector, "selector");
-
-            return new[] { @this }.Recurse(selector);
-        }
-
-        public static IEnumerable<T> Recurse<T>(this IEnumerable<T> @this, Func<T, IEnumerable<T>> selector)
-        {
-            Guard.NotNull(@this, "@this");
-            Guard.NotNull(selector, "selector");
-
-            return @this.SelectMany(x => new[] { x }.Concat((selector(x) ?? Enumerable.Empty<T>()).Recurse(selector)));
         }
 
         public static IEnumerable<T> Recurse<T>(this T @this, Func<T, T> selector)
         {
-            Guard.NotNull(@this, "@this");
+            Guard.NotNull(@this, "this");
             Guard.NotNull(selector, "selector");
 
-            return @this.Recurse(x => selector(x).ToMaybe());
+            return RecurseCore(new[] {@this}, x => new[] {selector(x)}, null);
+        }
+
+        public static IEnumerable<T> RecurseWhile<T>(this T @this, Func<T, T> selector, Func<T, Boolean> predicate)
+        {
+            Guard.NotNull(@this, "this");
+            Guard.NotNull(selector, "selector");
+            Guard.NotNull(predicate, "predicate");
+
+            return RecurseCore(new[] { @this }, x => new[] { selector(x) }, predicate);
         }
 
         public static IEnumerable<T> Recurse<T>(this T @this, Func<T, Maybe<T>> selector)
         {
-            Guard.NotNull(@this, "@this");
+            Guard.NotNull(@this, "this");
             Guard.NotNull(selector, "selector");
 
-            return new[] { @this }.Concat(selector(@this).Select(x => Recurse(x, selector)).ValueOrDefault(Enumerable.Empty<T>()));
+            return RecurseCore(new[] {@this}, x => selector(x).ToEnumerable(), null);
         }
+
+        public static IEnumerable<T> RecurseWhile<T>(this T @this, Func<T, Maybe<T>> selector, Func<T, Boolean> predicate)
+        {
+            Guard.NotNull(@this, "this");
+            Guard.NotNull(selector, "selector");
+            Guard.NotNull(predicate, "predicate");
+
+            return RecurseCore(new[] { @this }, x => selector(x).ToEnumerable(), predicate);
+        }
+
+        public static IEnumerable<T> Recurse<T>(this T @this, Func<T, IEnumerable<T>> selector)
+        {
+            Guard.NotNull(@this, "this");
+            Guard.NotNull(selector, "selector");
+
+            return RecurseCore(new[] {@this}, selector, null);
+        }
+
+        public static IEnumerable<T> RecurseWhile<T>(this T @this, Func<T, IEnumerable<T>> selector, Func<T, Boolean> predicate)
+        {
+            Guard.NotNull(@this, "this");
+            Guard.NotNull(selector, "selector");
+            Guard.NotNull(predicate, "predicate");
+
+            return RecurseCore(new[] { @this }, selector, predicate);
+        }
+
 
         public static IEnumerable<T> Recurse<T>(this Maybe<T> @this, Func<T, Maybe<T>> selector)
         {
             Guard.NotNull(selector, "selector");
 
-            return @this.Select(x => x.Recurse(selector))
-                .ValueOrDefault(Enumerable.Empty<T>());
+            return RecurseCore(@this.ToEnumerable(), x => selector(x).ToEnumerable(), null);
+        }
+
+        public static IEnumerable<T> RecurseWhile<T>(this Maybe<T> @this, Func<T, Maybe<T>> selector, Func<T, Boolean> predicate)
+        {
+            Guard.NotNull(selector, "selector");
+            Guard.NotNull(predicate, "predicate");
+
+            return RecurseCore(@this.ToEnumerable(), x => selector(x).ToEnumerable(), predicate);
+        }
+
+        public static IEnumerable<T> Recurse<T>(this IEnumerable<T> @this, Func<T, IEnumerable<T>> selector)
+        {
+            Guard.NotNull(@this, "this");
+            Guard.NotNull(selector, "selector");
+
+            return RecurseCore(@this, selector, null);
+        }
+
+        public static IEnumerable<T> RecurseWhile<T>(this IEnumerable<T> @this, Func<T, IEnumerable<T>> selector, Func<T, Boolean> predicate)
+        {
+            Guard.NotNull(@this, "this");
+            Guard.NotNull(selector, "selector");
+            Guard.NotNull(predicate, "predicate");
+
+            return RecurseCore(@this, selector, predicate);
+        }
+
+        private static IEnumerable<T> RecurseCore<T>(this IEnumerable<T> @this, Func<T, IEnumerable<T>> selector, Func<T, Boolean> predicate)
+        {
+
+            foreach (var item in @this)
+            {
+                if (item == null || (predicate != null && !predicate(item)))
+                    continue;
+
+                yield return item;
+                foreach (var child in RecurseCore(selector(item), selector, predicate))
+                    yield return child;
+            }
         }
 
         public static IEnumerable<T> Squash<T>(this IEnumerable<Maybe<T>> @this)
         {
-            Guard.NotNull(@this, "@this");
+            Guard.NotNull(@this, "this");
 
             return @this.Where(x => x.HasValue)
                 .Select(x => x.Value);
@@ -435,7 +494,7 @@ namespace iSynaptic.Commons.Linq
 
         public static IEnumerable<T> Squash<T>(this IEnumerable<IMaybe<T>> @this)
         {
-            Guard.NotNull(@this, "@this");
+            Guard.NotNull(@this, "this");
 
             return @this
                 .Where(x => x != null && x.HasValue && x.Value != null)
@@ -444,7 +503,7 @@ namespace iSynaptic.Commons.Linq
 
         public static IEnumerable<T> OnFirst<T>(this IEnumerable<T> @this, Action<T> action)
         {
-            Guard.NotNull(@this, "@this");
+            Guard.NotNull(@this, "this");
             Guard.NotNull(action, "action");
 
             return OnFirstCore(@this, action);
@@ -467,7 +526,7 @@ namespace iSynaptic.Commons.Linq
 
         public static IEnumerable<T> OnLast<T>(this IEnumerable<T> @this, Action<T> action)
         {
-            Guard.NotNull(@this, "@this");
+            Guard.NotNull(@this, "this");
             Guard.NotNull(action, "action");
 
             return OnLastCore(@this, action);
@@ -496,7 +555,7 @@ namespace iSynaptic.Commons.Linq
 
         public static IEnumerable<T> OnValue<T>(this IEnumerable<T> @this, Action<T> action)
         {
-            Guard.NotNull(@this, "@this");
+            Guard.NotNull(@this, "this");
             Guard.NotNull(action, "action");
 
             return OnValueCore(@this, action);
@@ -513,7 +572,7 @@ namespace iSynaptic.Commons.Linq
 
         public static IEnumerable<T> OnNoValue<T>(this IEnumerable<T> @this, Action action)
         {
-            Guard.NotNull(@this, "@this");
+            Guard.NotNull(@this, "this");
             Guard.NotNull(action, "action");
 
             return OnNoValueCore(@this, action);
@@ -535,7 +594,7 @@ namespace iSynaptic.Commons.Linq
 
         public static IEnumerable<T> OnException<T>(this IEnumerable<T> @this, Action<Exception> action)
         {
-            Guard.NotNull(@this, "@this");
+            Guard.NotNull(@this, "this");
             Guard.NotNull(action, "action");
 
             return OnExceptionCore(@this, action);
@@ -568,7 +627,7 @@ namespace iSynaptic.Commons.Linq
 
         public static IEnumerable<T> Leading<T>(this IEnumerable<T> @this, Action action)
         {
-            Guard.NotNull(@this, "@this");
+            Guard.NotNull(@this, "this");
             Guard.NotNull(action, "action");
 
             return LeadingCore(@this, action);
@@ -584,7 +643,7 @@ namespace iSynaptic.Commons.Linq
 
         public static IEnumerable<T> Finally<T>(this IEnumerable<T> @this, Action action)
         {
-            Guard.NotNull(@this, "@this");
+            Guard.NotNull(@this, "this");
             Guard.NotNull(action, "action");
 
             return FinallyCore(@this, action);
@@ -613,7 +672,7 @@ namespace iSynaptic.Commons.Linq
 
         public static IEnumerable<Neighbors<T>> WithNeighbors<T>(this IEnumerable<T> @this)
         {
-            Guard.NotNull(@this, "@this");
+            Guard.NotNull(@this, "this");
             return WithNeighborsCore(@this);
         }
 
@@ -639,7 +698,7 @@ namespace iSynaptic.Commons.Linq
 
         public static IEnumerable<T> Or<T>(this IEnumerable<T> @this, IEnumerable<T> other)
         {
-            Guard.NotNull(@this, "@this");
+            Guard.NotNull(@this, "this");
             Guard.NotNull(other, "other");
 
             return OrCore(@this, other);

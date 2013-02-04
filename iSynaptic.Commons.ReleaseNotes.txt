@@ -2,6 +2,17 @@
 RELEASE NOTES: iSynaptic.Commons
 ======================================
 
+==== v0.4.15 (February 4, 2012) ====
+
+---- Features ----
+
+* IEnumerable<T> extensions: added RecurseWhile overloads; renamed methods 
+  that extend IEnumerable<Boolean> for clarity; improved argument validation.
+  
+* Added TryGetValue extension method to ConcurentDictionary<TKey, TValue>
+  that returns Maybe<TValue>.
+
+
 ==== v0.4.14 (January 19, 2012) ====
 
 ---- Features ----

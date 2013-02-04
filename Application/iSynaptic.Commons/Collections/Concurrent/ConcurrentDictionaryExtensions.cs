@@ -1,6 +1,6 @@
 ﻿// The MIT License
 // 
-// Copyright (c) 2012 Jordan E. Terrell
+// Copyright (c) 2013 Jordan E. Terrell
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,21 +20,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
+using System.Collections.Concurrent;
 
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-[assembly: AssemblyCompany("iSynaptic")]
-[assembly: AssemblyTrademark("iSynaptic")]
-[assembly: AssemblyProduct("iSynaptic.Commons")]
-[assembly: AssemblyCopyright("Copyright © Jordan Terrell 2012")]
+namespace iSynaptic.Commons.Collections.Concurrent
+{
+    public static class ConcurrentDictionaryExtensions
+    {
+        public static Maybe<TValue> TryGetValue<TKey, TValue>(this ConcurrentDictionary<TKey, TValue> @this, TKey key)
+        {
+            Guard.NotNull(@this, "@this");
 
-[assembly: ComVisible(false)]
-[assembly: CLSCompliant(true)]
+            TValue retreivedValue = default(TValue);
 
-[assembly: AssemblyVersion("0.4.15.0")]
-[assembly: AssemblyFileVersion("0.4.15.0")]
+            return @this
+                .ToMaybe()
+                .Where(x => x.TryGetValue(key, out retreivedValue))
+                .Select(x => retreivedValue);
+        }
+    }
+}

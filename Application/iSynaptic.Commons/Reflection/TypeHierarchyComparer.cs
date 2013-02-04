@@ -34,13 +34,13 @@ namespace iSynaptic.Commons.Reflection
 
             if (!left.IsInterface && right.IsInterface)
                 return 1;
-            
+
             int result = 0;
 
             if (left.IsAssignableFrom(right))
                 result--;
 
-            if (right.IsAssignableFrom(left))
+            if (!left.IsAssignableFrom(right))
                 result++;
 
             return result;

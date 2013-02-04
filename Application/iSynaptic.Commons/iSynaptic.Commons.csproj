@@ -75,6 +75,7 @@
     <Compile Include="ArrayIndex.cs" />
     <Compile Include="Cast.cs" />
     <Compile Include="Check.cs" />
+    <Compile Include="Collections\Concurrent\ConcurrentDictionaryExtensions.cs" />
     <Compile Include="Collections\Concurrent\ProducerConsumerCollectionExtensions.cs" />
     <Compile Include="Collections\Generic\BaseDictionary.cs" />
     <Compile Include="Collections\Generic\BaseReadOnlyDictionary.cs" />

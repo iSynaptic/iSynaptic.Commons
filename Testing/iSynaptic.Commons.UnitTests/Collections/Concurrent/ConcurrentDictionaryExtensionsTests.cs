@@ -1,6 +1,6 @@
 ﻿// The MIT License
 // 
-// Copyright (c) 2012 Jordan E. Terrell
+// Copyright (c) 2013 Jordan E. Terrell
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -21,20 +21,33 @@
 // THE SOFTWARE.
 
 using System;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
+using System.Collections.Concurrent;
+using NUnit.Framework;
 
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-[assembly: AssemblyCompany("iSynaptic")]
-[assembly: AssemblyTrademark("iSynaptic")]
-[assembly: AssemblyProduct("iSynaptic.Commons")]
-[assembly: AssemblyCopyright("Copyright © Jordan Terrell 2012")]
+namespace iSynaptic.Commons.Collections.Concurrent
+{
+    [TestFixture]
+    public class ConcurrentDictionaryExtensionsTests
+    {
+        [Test]
+        public void TryGetValue_ReturnsNoValue_WhenItemDoesNotExist()
+        {
+            var dict = new ConcurrentDictionary<String, String>();
+            var result = dict.TryGetValue("Test");
 
-[assembly: ComVisible(false)]
-[assembly: CLSCompliant(true)]
+            Assert.IsFalse(result.HasValue);
+        }
 
-[assembly: AssemblyVersion("0.4.15.0")]
-[assembly: AssemblyFileVersion("0.4.15.0")]
+        [Test]
+        public void TryGetValue_ReturnsValue_WithItemExists()
+        {
+            var dict = new ConcurrentDictionary<String, String>();
+            dict.TryAdd("Test", "Hello, World!");
+
+            var result = dict.TryGetValue("Test");
+
+            Assert.IsTrue(result.HasValue);
+            Assert.AreEqual("Hello, World!", result.Value);
+        }
+    }
+}

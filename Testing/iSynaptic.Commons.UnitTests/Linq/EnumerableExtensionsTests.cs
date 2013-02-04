@@ -390,7 +390,7 @@ namespace iSynaptic.Commons.Linq
         }
 
         [Test]
-        public void TestRecursivePopulationThreeLevel()
+        public void Recurse()
         {
             var r1 = new Recursive(1,
                         new Recursive(2,
@@ -399,8 +399,22 @@ namespace iSynaptic.Commons.Linq
 
             var recursives = r1.Recurse(r => r.Recursives).ToArray();
 
-            Assert.AreEqual(4, recursives.Length);
             Assert.IsTrue(recursives.Select(x => x.Value).SequenceEqual(new[] { 1, 2, 4, 3 }));
+        }
+
+        [Test]
+        public void RecurseWhile()
+        {
+            var r1 = new Recursive(1,
+                        new Recursive(2,
+                            new Recursive(4),
+                            new Recursive(5)),
+                        new Recursive(3,
+                            new Recursive(6),
+                            new Recursive(7)));
+
+            var recursives = r1.RecurseWhile(r => r.Recursives, r => r.Value % 2 == 1).ToArray();
+            Assert.IsTrue(recursives.Select(x => x.Value).SequenceEqual(new[] { 1, 3, 7 }));
         }
 
         [Test]
@@ -718,27 +732,50 @@ namespace iSynaptic.Commons.Linq
 
 
         [Test]
-        public void All_WithEnumerableBooleans_ReturnsTrueForAll()
+        public void AllTrue_WithEnumerableBooleans_ReturnsTrueForAll()
         {
-            Assert.IsFalse(new[] { false, false, false }.All());
-            Assert.IsFalse(new[] { false, true, false }.All());
-            Assert.IsTrue(new[] { true, true, true }.All());
+            Assert.IsFalse(new[] { false, false, false }.AllTrue());
+            Assert.IsFalse(new[] { false, true, false }.AllTrue());
+            Assert.IsTrue(new[] { true, true, true }.AllTrue());
         }
 
         [Test]
-        public void None_WithEnumerableBooleans_ReturnsTrueForNone()
+        public void AllFalse_WithEnumerableBooleans_ReturnsTrueForNone()
         {
-            Assert.IsTrue(new[] { false, false, false }.None());
-            Assert.IsFalse(new[] { false, true, false }.None());
-            Assert.IsFalse(new[] { true, true, true }.None());
+            Assert.IsTrue(new[] { false, false, false }.AllFalse());
+            Assert.IsFalse(new[] { false, true, false }.AllFalse());
+            Assert.IsFalse(new[] { true, true, true }.AllFalse());
         }
 
         [Test]
-        public void None_WithSelector_ReturnsTrueForNone()
+        public void None_WithPredicate_ReturnsTrueForNone()
         {
             Assert.IsTrue(new[] { "false", "false", "false" }.None(bool.Parse));
             Assert.IsFalse(new[] { "false", "true", "false" }.None(bool.Parse));
             Assert.IsFalse(new[] { "true", "true", "true" }.None(bool.Parse));
+        }
+
+        [Test]
+        public void None_WithNoPredicate_ReturnsTrueForEmptyEnumerables()
+        {
+            Assert.IsTrue(new String[]{}.None());
+            Assert.IsFalse(new [] { "Hello, World!" }.None());
+        }
+
+        [Test]
+        public void SelectMaybe_OnlyYieldsValuesWhereMaybeHasValue()
+        {
+            Assert.IsTrue(Enumerable.Range(1, 10)
+                .SelectMaybe(x => x.ToMaybe().Where(y => y % 2 == 0))
+                .SequenceEqual(new[]{2,4,6,8,10}));
+        }
+
+        [Test]
+        public void SelectMaybe_WithIndexedSelector_OnlyYieldsValuesWhereMaybeHasValue()
+        {
+            Assert.IsTrue(Enumerable.Range(1, 10)
+                .SelectMaybe((i, x) => x.ToMaybe().Where(y => i % 2 == 0))
+                .SequenceEqual(new[] { 1, 3, 5, 7, 9 }));
         }
 
         private static IEnumerable<int> GetRange(int start, int end, Action after)
