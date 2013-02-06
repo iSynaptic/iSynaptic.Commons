@@ -254,7 +254,7 @@ namespace iSynaptic.Commons
 
         public static implicit operator Result<T, TObservation>(Result<T, Unit> result)
         {
-            return new Result<T, TObservation>(result.ToMaybe(), new Outcome<TObservation>());
+            return new Result<T, TObservation>(result.ToMaybe(), new Outcome<TObservation>(result.WasSuccessful, null));
         }
 
         public static implicit operator Result<T, TObservation>(Result<Unit, TObservation> result)
@@ -264,7 +264,7 @@ namespace iSynaptic.Commons
 
         public static implicit operator Result<T, TObservation>(Result<Unit, Unit> result)
         {
-            return new Result<T, TObservation>();
+            return new Result<T, TObservation>(result.WasSuccessful, null);
         }
     }
 
@@ -526,6 +526,11 @@ namespace iSynaptic.Commons
             var self = @this;
 
             return new Result<T, TObservation>(() => new Result<T, TObservation>(self.ToMaybe(), self.ToOutcome().Combine(outcomes)));
+        }
+
+        public static Result<T, TObservation> Fail<T, TObservation>(this Result<T, TObservation> @this)
+        {
+            return new Result<T, TObservation>(@this.ToMaybe(), new Outcome<TObservation>(false, @this.Observations));
         }
 
         public static Result<Unit, Unit> FailIf(bool predicate)

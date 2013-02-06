@@ -243,6 +243,16 @@ namespace iSynaptic.Commons
         }
 
         [Test]
+        public void ImplicitConversion_WhenObservationTypeIsUnit_DoesNotLooseFailures()
+        {
+            Result<int, string> intStringResult = Result.Failure();
+            Assert.IsFalse(intStringResult.WasSuccessful);
+
+            intStringResult = 42.ToResult().Fail();
+            Assert.IsFalse(intStringResult.WasSuccessful);
+        }
+
+        [Test]
         public void Success_Default()
         {
             var result = Result.Success();

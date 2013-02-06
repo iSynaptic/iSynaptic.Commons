@@ -2,6 +2,14 @@
 RELEASE NOTES: iSynaptic.Commons
 ======================================
 
+==== v0.4.16 (February 6, 2012) ====
+
+---- Features ----
+
+* Fixed bug where failures are lost in implicit conversion to Outcome<TObservation>
+  and Result<T, TObservation> when the source TObservation type is Unit.
+
+
 ==== v0.4.15 (February 4, 2012) ====
 
 ---- Features ----

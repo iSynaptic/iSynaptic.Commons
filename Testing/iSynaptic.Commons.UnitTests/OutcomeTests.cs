@@ -21,9 +21,7 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using NUnit.Framework;
 
 namespace iSynaptic.Commons
@@ -254,6 +252,13 @@ namespace iSynaptic.Commons
 
             outcome.Run();
             Assert.IsTrue(executed);
+        }
+
+        [Test]
+        public void ImplicitConversion_WhenObservationTypeIsUnit_DoesNotLooseFailures()
+        {
+            Outcome<String> outcome = Outcome.Failure();
+            Assert.IsFalse(outcome.WasSuccessful);
         }
     }
 

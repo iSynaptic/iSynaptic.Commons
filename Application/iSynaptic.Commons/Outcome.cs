@@ -310,6 +310,11 @@ namespace iSynaptic.Commons
             return new Outcome<TObservation>(() => new Outcome<TObservation>(self.WasSuccessful, self.Observations.Concat(selector(self.WasSuccessful))));
         }
 
+        public static Outcome<T> Fail<T>(this Outcome<T> @this)
+        {
+            return new Outcome<T>(false, @this.Observations);
+        }
+
         public static Outcome<Unit> FailIf(bool predicate)
         {
             return new Outcome<Unit>(!predicate);
