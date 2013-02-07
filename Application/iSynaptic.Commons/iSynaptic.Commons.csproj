@@ -163,7 +163,9 @@
     <Compile Include="Syntax\OutcomeComprehension.cs" />
     <Compile Include="Syntax\ResultComprehension.cs" />
     <Compile Include="SystemClock.cs" />
+    <Compile Include="Text\IndentingTextWriter.cs" />
     <Compile Include="Text\Parsing\ScanningTextReader.cs" />
+    <Compile Include="Text\TextWriterDecorator.cs" />
     <Compile Include="Transactions\ITransactional.cs" />
     <Compile Include="Transactions\Transactional.cs" />
     <Compile Include="Transactions\TransactionalBase.cs" />

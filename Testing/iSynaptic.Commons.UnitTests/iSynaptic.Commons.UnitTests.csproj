@@ -145,6 +145,7 @@
     <Compile Include="Runtime\Serialization\Cloneable.ClrPrimitiveTests.cs" />
     <Compile Include="Runtime\Serialization\Cloneable.GeneralTests.cs" />
     <Compile Include="SystemClockTests.cs" />
+    <Compile Include="Text\IndentingTestWriterTests.cs" />
     <Compile Include="Text\Parsing\ScanningTextReaderTests.cs" />
     <Compile Include="Transactions\SimpleObject.cs" />
     <Compile Include="Transactions\TransactionalGatewayTests.cs" />
