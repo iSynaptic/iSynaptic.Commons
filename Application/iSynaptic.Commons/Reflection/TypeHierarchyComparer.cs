@@ -29,6 +29,12 @@ namespace iSynaptic.Commons.Reflection
     {
         public int Compare(Type left, Type right)
         {
+            if (left == null)
+                return -1;
+
+            if (right == null)
+                return 1;
+
             if (left.IsInterface && !right.IsInterface)
                 return -1;
 
@@ -40,7 +46,7 @@ namespace iSynaptic.Commons.Reflection
             if (left.IsAssignableFrom(right))
                 result--;
 
-            if (!left.IsAssignableFrom(right))
+            if (right.IsAssignableFrom(left))
                 result++;
 
             return result;

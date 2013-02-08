@@ -29,6 +29,8 @@ namespace iSynaptic.Commons.Reflection
 {
     public class TypeHierarchyComparerTests
     {
+        private readonly IComparer<Type> _comparer = new TypeHierarchyComparer();
+
         private interface IBase { }
         private interface IDerived : IBase { }
         private class Base : IBase { }
@@ -38,27 +40,57 @@ namespace iSynaptic.Commons.Reflection
 
         public TypeHierarchyComparerTests()
         {
-            _SortedTypes = new[] { typeof(IBase), typeof(Derived), typeof(Base), typeof(IDerived), typeof(string), typeof(int), typeof(IFormattable) }.ToList();
-            _SortedTypes.Sort(new TypeHierarchyComparer());
-
+            _SortedTypes = new[] { null, typeof(IBase), typeof(Derived), typeof(Base), typeof(IDerived), typeof(string), typeof(int), typeof(IFormattable) }
+                .OrderBy(x => x, _comparer)
+                .ToList();
         }
 
         [Test]
-        public void CompareViaSort_InterfacesAreLesser()
+        public void CompareViaSort_InCorrectOrder()
         {
-            Assert.IsTrue(_SortedTypes.Take(3).All(x => x.IsInterface));
+            Assert.IsTrue(_SortedTypes
+                .SelectMany((r, i) => _SortedTypes.Take(i).Select(l => _comparer.Compare(l, r)))
+                .All(x => x == -1 || x == 0));
         }
 
         [Test]
-        public void CompareViaSort_BaseInterfacesAreLesserThatDerivedInterfaces()
+        public void Compare_NullSortsLowestOfAll()
         {
-            Assert.IsTrue(_SortedTypes.IndexOf(typeof(IBase)) < _SortedTypes.IndexOf(typeof(IDerived)));
+            Assert.AreEqual(-1, _comparer.Compare(null, typeof(Object)));
+            Assert.AreEqual(1, _comparer.Compare(typeof(Object), null));
+
+            Assert.AreEqual(-1, _comparer.Compare(null, typeof(IBase)));
+            Assert.AreEqual(1, _comparer.Compare(typeof(IBase), null));
+
+            Assert.AreEqual(-1, _comparer.Compare(null, typeof(Derived)));
+            Assert.AreEqual(1, _comparer.Compare(typeof(Derived), null));
         }
 
         [Test]
-        public void CompareViaSort_BaseClassesAreLesserThanDerivedClasses()
+        public void Compare_InterfacesAreLesser()
         {
-            Assert.IsTrue(_SortedTypes.IndexOf(typeof(Base)) < _SortedTypes.IndexOf(typeof(Derived)));
+            Assert.AreEqual(-1, _comparer.Compare(typeof(IBase), typeof(Object)));
+            Assert.AreEqual(1, _comparer.Compare(typeof(Object), typeof(IBase)));
+
+            Assert.AreEqual(-1, _comparer.Compare(typeof(IBase), typeof(Base)));
+            Assert.AreEqual(1, _comparer.Compare(typeof(Base), typeof(IBase)));
+            
+            Assert.AreEqual(-1, _comparer.Compare(typeof(IBase), typeof(Derived)));
+            Assert.AreEqual(1, _comparer.Compare(typeof(Derived), typeof(IBase)));
+        }
+
+        [Test]
+        public void Compare_BaseInterfacesAreLesserThatDerivedInterfaces()
+        {
+            Assert.AreEqual(-1, _comparer.Compare(typeof(IBase), typeof(IDerived)));
+            Assert.AreEqual(1, _comparer.Compare(typeof(IDerived), typeof(IBase)));
+        }
+
+        [Test]
+        public void Compare_BaseClassesAreLesserThanDerivedClasses()
+        {
+            Assert.AreEqual(-1, _comparer.Compare(typeof(Base), typeof(Derived)));
+            Assert.AreEqual(1, _comparer.Compare(typeof(Derived), typeof(Base)));
         }
     }
 }

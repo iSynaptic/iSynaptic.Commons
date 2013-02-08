@@ -2,6 +2,13 @@
 RELEASE NOTES: iSynaptic.Commons
 ======================================
 
+==== v0.4.17 (February 8, 2012) ====
+
+---- Features ----
+
+* Added support to TypeHierarchyComparer for comparing with null types.
+
+
 ==== v0.4.16 (February 6, 2012) ====
 
 ---- Features ----
