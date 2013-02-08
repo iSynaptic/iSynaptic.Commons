@@ -46,6 +46,12 @@ namespace iSynaptic.Commons.Reflection
         }
 
         [Test]
+        public void Compare_WithTwoNulls_ReturnsZero()
+        {
+            Assert.AreEqual(0, _comparer.Compare(null, null));
+        }
+
+        [Test]
         public void CompareViaSort_InCorrectOrder()
         {
             Assert.IsTrue(_SortedTypes

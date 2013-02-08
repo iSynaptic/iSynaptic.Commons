@@ -29,6 +29,9 @@ namespace iSynaptic.Commons.Reflection
     {
         public int Compare(Type left, Type right)
         {
+            if (left == null && right == null)
+                return 0;
+
             if (left == null)
                 return -1;
 
