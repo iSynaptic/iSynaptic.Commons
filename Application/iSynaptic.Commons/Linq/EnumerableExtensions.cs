@@ -386,12 +386,21 @@ namespace iSynaptic.Commons.Linq
             return new SmartLoop<T>(@this);
         }
 
-        public static IEnumerable<T> Recurse<T>(this T @this, Func<T, T> selector)
+        public static IEnumerable<T> Recurse<T>(this T @this, Func<T, T> recurseSelector)
         {
             Guard.NotNull(@this, "this");
-            Guard.NotNull(selector, "selector");
+            Guard.NotNull(recurseSelector, "recurseSelector");
 
-            return RecurseCore(new[] {@this}, x => new[] {selector(x)}, null);
+            return RecurseCore(new[] { @this }, x => new[] { recurseSelector(x) }, x => x, null);
+        }
+
+        public static IEnumerable<TResult> RecurseSelect<T, TResult>(this T @this, Func<T, T> recurseSelector, Func<T, TResult> resultSelector)
+        {
+            Guard.NotNull(@this, "this");
+            Guard.NotNull(recurseSelector, "recurseSelector");
+            Guard.NotNull(resultSelector, "resultSelector");
+
+            return RecurseCore(new[] { @this }, x => new[] { recurseSelector(x) }, resultSelector, null);
         }
 
         public static IEnumerable<T> RecurseWhile<T>(this T @this, Func<T, T> selector, Func<T, Boolean> predicate)
@@ -400,7 +409,7 @@ namespace iSynaptic.Commons.Linq
             Guard.NotNull(selector, "selector");
             Guard.NotNull(predicate, "predicate");
 
-            return RecurseCore(new[] { @this }, x => new[] { selector(x) }, predicate);
+            return RecurseCore(new[] { @this }, x => new[] { selector(x) }, x => x, predicate);
         }
 
         public static IEnumerable<T> Recurse<T>(this T @this, Func<T, Maybe<T>> selector)
@@ -408,7 +417,16 @@ namespace iSynaptic.Commons.Linq
             Guard.NotNull(@this, "this");
             Guard.NotNull(selector, "selector");
 
-            return RecurseCore(new[] {@this}, x => selector(x).ToEnumerable(), null);
+            return RecurseCore(new[] { @this }, x => selector(x).ToEnumerable(), x => x, null);
+        }
+
+        public static IEnumerable<TResult> RecurseSelect<T, TResult>(this T @this, Func<T, Maybe<T>> recurseSelector, Func<T, TResult> resultSelector)
+        {
+            Guard.NotNull(@this, "this");
+            Guard.NotNull(recurseSelector, "recurseSelector");
+            Guard.NotNull(resultSelector, "resultSelector");
+
+            return RecurseCore(new[] { @this }, x => recurseSelector(x).ToEnumerable(), resultSelector, null);
         }
 
         public static IEnumerable<T> RecurseWhile<T>(this T @this, Func<T, Maybe<T>> selector, Func<T, Boolean> predicate)
@@ -417,7 +435,7 @@ namespace iSynaptic.Commons.Linq
             Guard.NotNull(selector, "selector");
             Guard.NotNull(predicate, "predicate");
 
-            return RecurseCore(new[] { @this }, x => selector(x).ToEnumerable(), predicate);
+            return RecurseCore(new[] { @this }, x => selector(x).ToEnumerable(), x => x, predicate);
         }
 
         public static IEnumerable<T> Recurse<T>(this T @this, Func<T, IEnumerable<T>> selector)
@@ -425,7 +443,16 @@ namespace iSynaptic.Commons.Linq
             Guard.NotNull(@this, "this");
             Guard.NotNull(selector, "selector");
 
-            return RecurseCore(new[] {@this}, selector, null);
+            return RecurseCore(new[] { @this }, selector, x => x, null);
+        }
+
+        public static IEnumerable<TResult> RecurseSelect<T, TResult>(this T @this, Func<T, IEnumerable<T>> recurseSelector, Func<T, TResult> resultSelector)
+        {
+            Guard.NotNull(@this, "this");
+            Guard.NotNull(recurseSelector, "recurseSelector");
+            Guard.NotNull(resultSelector, "resultSelector");
+
+            return RecurseCore(new[] { @this }, recurseSelector, resultSelector, null);
         }
 
         public static IEnumerable<T> RecurseWhile<T>(this T @this, Func<T, IEnumerable<T>> selector, Func<T, Boolean> predicate)
@@ -434,7 +461,7 @@ namespace iSynaptic.Commons.Linq
             Guard.NotNull(selector, "selector");
             Guard.NotNull(predicate, "predicate");
 
-            return RecurseCore(new[] { @this }, selector, predicate);
+            return RecurseCore(new[] { @this }, selector, x => x, predicate);
         }
 
 
@@ -442,7 +469,15 @@ namespace iSynaptic.Commons.Linq
         {
             Guard.NotNull(selector, "selector");
 
-            return RecurseCore(@this.ToEnumerable(), x => selector(x).ToEnumerable(), null);
+            return RecurseCore(@this.ToEnumerable(), x => selector(x).ToEnumerable(), x => x, null);
+        }
+
+        public static IEnumerable<TResult> RecurseSelect<T, TResult>(this Maybe<T> @this, Func<T, Maybe<T>> recurseSelector, Func<T, TResult> resultSelector)
+        {
+            Guard.NotNull(recurseSelector, "recurseSelector");
+            Guard.NotNull(resultSelector, "resultSelector");
+
+            return RecurseCore(@this.ToEnumerable(), x => recurseSelector(x).ToEnumerable(), resultSelector, null);
         }
 
         public static IEnumerable<T> RecurseWhile<T>(this Maybe<T> @this, Func<T, Maybe<T>> selector, Func<T, Boolean> predicate)
@@ -450,7 +485,7 @@ namespace iSynaptic.Commons.Linq
             Guard.NotNull(selector, "selector");
             Guard.NotNull(predicate, "predicate");
 
-            return RecurseCore(@this.ToEnumerable(), x => selector(x).ToEnumerable(), predicate);
+            return RecurseCore(@this.ToEnumerable(), x => selector(x).ToEnumerable(), x => x, predicate);
         }
 
         public static IEnumerable<T> Recurse<T>(this IEnumerable<T> @this, Func<T, IEnumerable<T>> selector)
@@ -458,7 +493,16 @@ namespace iSynaptic.Commons.Linq
             Guard.NotNull(@this, "this");
             Guard.NotNull(selector, "selector");
 
-            return RecurseCore(@this, selector, null);
+            return RecurseCore(@this, selector, x => x, null);
+        }
+
+        public static IEnumerable<TResult> RecurseSelect<T, TResult>(this IEnumerable<T> @this, Func<T, IEnumerable<T>> recurseSelector, Func<T, TResult> resultSelector)
+        {
+            Guard.NotNull(@this, "this");
+            Guard.NotNull(recurseSelector, "recurseSelector");
+            Guard.NotNull(resultSelector, "resultSelector");
+
+            return RecurseCore(@this, recurseSelector, resultSelector, null);
         }
 
         public static IEnumerable<T> RecurseWhile<T>(this IEnumerable<T> @this, Func<T, IEnumerable<T>> selector, Func<T, Boolean> predicate)
@@ -467,19 +511,18 @@ namespace iSynaptic.Commons.Linq
             Guard.NotNull(selector, "selector");
             Guard.NotNull(predicate, "predicate");
 
-            return RecurseCore(@this, selector, predicate);
+            return RecurseCore(@this, selector, x => x, predicate);
         }
 
-        private static IEnumerable<T> RecurseCore<T>(this IEnumerable<T> @this, Func<T, IEnumerable<T>> selector, Func<T, Boolean> predicate)
+        private static IEnumerable<TResult> RecurseCore<T, TResult>(this IEnumerable<T> @this, Func<T, IEnumerable<T>> recurseSelector, Func<T, TResult> resultSelector, Func<T, Boolean> predicate)
         {
-
             foreach (var item in @this)
             {
                 if (item == null || (predicate != null && !predicate(item)))
                     continue;
 
-                yield return item;
-                foreach (var child in RecurseCore(selector(item), selector, predicate))
+                yield return resultSelector(item);
+                foreach (var child in RecurseCore(recurseSelector(item), recurseSelector, resultSelector, predicate))
                     yield return child;
             }
         }

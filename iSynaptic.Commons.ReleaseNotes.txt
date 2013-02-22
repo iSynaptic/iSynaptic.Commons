@@ -2,6 +2,13 @@
 RELEASE NOTES: iSynaptic.Commons
 ======================================
 
+==== v0.4.19 (February 21, 2012) ====
+
+---- Features ----
+
+* Added RecurseSelect operators for Maybe<T> and IEnumerable<T>
+
+
 ==== v0.4.18 (February 8, 2012) ====
 
 ---- Features ----

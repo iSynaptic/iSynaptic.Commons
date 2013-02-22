@@ -403,6 +403,19 @@ namespace iSynaptic.Commons.Linq
         }
 
         [Test]
+        public void RecurseSelect()
+        {
+            var r1 = new Recursive(1,
+                        new Recursive(2,
+                            new Recursive(4)),
+                        new Recursive(3));
+
+            var values = r1.RecurseSelect(r => r.Recursives, x => x.Value).ToArray();
+
+            Assert.IsTrue(values.SequenceEqual(new[] { 1, 2, 4, 3 }));
+        }
+
+        [Test]
         public void RecurseWhile()
         {
             var r1 = new Recursive(1,
