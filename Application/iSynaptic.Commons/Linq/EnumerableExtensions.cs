@@ -488,6 +488,13 @@ namespace iSynaptic.Commons.Linq
             return RecurseCore(@this.ToEnumerable(), x => selector(x).ToEnumerable(), x => x, predicate);
         }
 
+        public static IEnumerable<T> Recurse<T>(this Maybe<T> @this, Func<T, IEnumerable<T>> selector)
+        {
+            Guard.NotNull(selector, "selector");
+
+            return RecurseCore(@this.ToEnumerable(), selector, x => x, null);
+        }
+
         public static IEnumerable<T> Recurse<T>(this IEnumerable<T> @this, Func<T, IEnumerable<T>> selector)
         {
             Guard.NotNull(@this, "this");
