@@ -2,6 +2,17 @@
 RELEASE NOTES: iSynaptic.Commons
 ======================================
 
+==== v0.4.21 (March 6, 2012) ====
+
+---- Features ----
+
+* Targeting 4.5 .NET Framework.
+
+* Added covariant ITask<TResult> interface that is awaitable
+  and an extension method that wraps Task<TResult> to make it
+  covariant.
+
+
 ==== v0.4.20 (February 26, 2012) ====
 
 ---- Features ----

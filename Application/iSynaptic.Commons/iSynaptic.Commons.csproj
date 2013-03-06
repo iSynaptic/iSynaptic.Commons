@@ -14,7 +14,7 @@
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -42,6 +42,7 @@
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -51,6 +52,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -166,6 +168,10 @@
     <Compile Include="Text\IndentingTextWriter.cs" />
     <Compile Include="Text\Parsing\ScanningTextReader.cs" />
     <Compile Include="Text\TextWriterDecorator.cs" />
+    <Compile Include="Threading\Tasks\ITask.cs" />
+    <Compile Include="Threading\Tasks\ITaskAwaiter.cs" />
+    <Compile Include="Threading\Tasks\TaskExtensions.cs" />
+    <Compile Include="Threading\Tasks\TaskWrapper.cs" />
     <Compile Include="Transactions\ITransactional.cs" />
     <Compile Include="Transactions\Transactional.cs" />
     <Compile Include="Transactions\TransactionalBase.cs" />

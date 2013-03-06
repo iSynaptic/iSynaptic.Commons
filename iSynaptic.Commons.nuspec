@@ -2,17 +2,17 @@
 <package>
   <metadata>
     <id>iSynaptic.Commons</id>
-    <version>0.4.20</version>
+    <version>0.4.21</version>
     <authors>Jordan Terrell</authors>
     <description>Library of common functionality in functional programming style.</description>
     <language>en-US</language>
     <licenseUrl>https://github.com/iSynaptic/iSynaptic.Commons/blob/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/iSynaptic/iSynaptic.Commons</projectUrl>
     <frameworkAssemblies>
-      <frameworkAssembly assemblyName="System" targetFramework="net40" />
-      <frameworkAssembly assemblyName="System.Core" targetFramework="net40" />
-      <frameworkAssembly assemblyName="System.Transactions" targetFramework="net40" />
-      <frameworkAssembly assemblyName="System.Xml" targetFramework="net40" />
+      <frameworkAssembly assemblyName="System" targetFramework="net45" />
+      <frameworkAssembly assemblyName="System.Core" targetFramework="net45" />
+      <frameworkAssembly assemblyName="System.Transactions" targetFramework="net45" />
+      <frameworkAssembly assemblyName="System.Xml" targetFramework="net45" />
     </frameworkAssemblies>
   </metadata>
   <files>

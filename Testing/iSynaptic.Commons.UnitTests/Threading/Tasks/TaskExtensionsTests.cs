@@ -1,6 +1,6 @@
 ﻿// The MIT License
 // 
-// Copyright (c) 2012 Jordan E. Terrell
+// Copyright (c) 2013 Jordan E. Terrell
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -21,20 +21,34 @@
 // THE SOFTWARE.
 
 using System;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
+using System.Threading.Tasks;
+using NUnit.Framework;
 
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-[assembly: AssemblyCompany("iSynaptic")]
-[assembly: AssemblyTrademark("iSynaptic")]
-[assembly: AssemblyProduct("iSynaptic.Commons")]
-[assembly: AssemblyCopyright("Copyright © Jordan Terrell 2012")]
+namespace iSynaptic.Commons.Threading.Tasks
+{
+    [TestFixture]
+    public class TaskExtensionsTests
+    {
+        public class Base { }
+        public class Derived : Base
+        {
+            public string Message { get; private set; }
+            public Derived(String message) { Message = message; }
+        }
 
-[assembly: ComVisible(false)]
-[assembly: CLSCompliant(true)]
+        [Test]
+        public async Task ToCovariantTask()
+        {
+            ITask<Base> task = GetAsyncValue().ToCovariantTask();
 
-[assembly: AssemblyVersion("0.4.21.0")]
-[assembly: AssemblyFileVersion("0.4.21.0")]
+            var value = (Derived) await task;
+            Assert.AreEqual("42", value.Message);
+        }
+
+        private async Task<Derived> GetAsyncValue()
+        {
+            await Task.Delay(100);
+            return new Derived("42");
+        }
+    }
+}
