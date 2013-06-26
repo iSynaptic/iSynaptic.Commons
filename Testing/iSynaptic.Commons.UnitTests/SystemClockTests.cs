@@ -36,7 +36,7 @@ namespace iSynaptic.Commons
         public void AbsoluteDefaultStrategy_ReturnsUtcNow()
         {
             var systemClockNow = SystemClock.UtcNow;
-            Assert.AreEqual(systemClockNow.ToUniversalTime().ToString(), systemClockNow.ToString());
+            Assert.AreEqual(DateTimeKind.Utc, systemClockNow.Kind);
         }
 
         [Test]
@@ -44,10 +44,12 @@ namespace iSynaptic.Commons
         {
             try
             {
-                SystemClock.DefaultDateTimeStrategy = () => DateTime.Now;
+                DateTime now = DateTime.UtcNow;
+
+                SystemClock.DefaultDateTimeStrategy = () => now;
                 var systemClockNow = SystemClock.UtcNow;
 
-                Assert.AreNotEqual(systemClockNow.ToString(), systemClockNow.ToUniversalTime().ToString());
+                Assert.AreEqual(systemClockNow.ToString(), now.ToString());
             }
             finally
             {
@@ -67,7 +69,7 @@ namespace iSynaptic.Commons
         [Test]
         public void WhileInFixedBlock_SystemTimeNowIsAlwaysTheSame()
         {
-            var fixedDateTime = DateTime.Now.Subtract(TimeSpan.FromDays(42));
+            var fixedDateTime = DateTime.UtcNow.Subtract(TimeSpan.FromDays(42));
 
             using(SystemClock.Fixed(fixedDateTime))
             {
@@ -80,7 +82,7 @@ namespace iSynaptic.Commons
         [Test]
         public void WhileInUsingBlock_SystemTimeNowUsesStrategy()
         {
-            var startDateTime = DateTime.Now.Subtract(TimeSpan.FromDays(42));
+            var startDateTime = DateTime.UtcNow.Subtract(TimeSpan.FromDays(42));
             var dateTime = startDateTime;
 
             using (SystemClock.Using(() => { dateTime = dateTime.AddMinutes(10); return dateTime; }))
@@ -104,11 +106,30 @@ namespace iSynaptic.Commons
             }
             finally
             {
-                typeof(SystemClock)
-                    .GetField("_PreventClockAlterations", BindingFlags.NonPublic | BindingFlags.Static)
-                    .SetValue(null, false);
-
+                RestoreClockAlterations();
             }
+        }
+
+        [Test]
+        public void SettingDefaultDateTimeStrategy_AfterPreventClockAlterations_ThrowsException()
+        {
+            try
+            {
+                SystemClock.PreventClockAlterations();
+
+                Assert.Throws<InvalidOperationException>(() => { SystemClock.DefaultDateTimeStrategy = () => DateTime.UtcNow; });
+            }
+            finally
+            {
+                RestoreClockAlterations();
+            }
+        }
+
+        private static void RestoreClockAlterations()
+        {
+            typeof (SystemClock)
+                .GetField("_PreventClockAlterations", BindingFlags.NonPublic | BindingFlags.Static)
+                .SetValue(null, false);
         }
     }
 }

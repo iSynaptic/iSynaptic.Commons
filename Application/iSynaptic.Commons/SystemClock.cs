@@ -31,6 +31,7 @@ namespace iSynaptic.Commons
     public sealed class SystemClock : Scope<SystemClock>
     {
         private static bool _PreventClockAlterations = false;
+        private static Func<DateTime> _defaultDateTimeStrategy;
 
         private SystemClock()
             : this(ScopeBounds.Thread, ScopeNesting.Allowed)
@@ -49,9 +50,7 @@ namespace iSynaptic.Commons
 
         public static IDisposable Using(Func<DateTime> strategy)
         {
-            if (_PreventClockAlterations)
-                throw new InvalidOperationException("Clock alterations are not permitted.");
-
+            EnsureAlterationsAreAllowed();
             return new SystemClock { UtcNowStrategy = Guard.NotNull(strategy, "strategy") };
         }
 
@@ -60,25 +59,44 @@ namespace iSynaptic.Commons
             _PreventClockAlterations = true;
         }
 
-        public static Func<DateTime> DefaultDateTimeStrategy { get; set; }
+        private static void EnsureAlterationsAreAllowed()
+        {
+            if (_PreventClockAlterations)
+                throw new InvalidOperationException("Clock alterations are not permitted.");
+        }
+
+        public static Func<DateTime> DefaultDateTimeStrategy
+        {
+            get { return _defaultDateTimeStrategy; }
+            set
+            {
+                EnsureAlterationsAreAllowed();
+                _defaultDateTimeStrategy = value;
+            }
+        }
+
         private Func<DateTime> UtcNowStrategy { get; set; }
 
         public static DateTime UtcNow
         {
             get
             {
+                DateTime value = DateTime.UtcNow;
+
                 if (_PreventClockAlterations != true)
                 {
                     var current = GetCurrentScope();
 
                     if (current != null && current.UtcNowStrategy != null)
-                        return current.UtcNowStrategy();
-
-                    if (DefaultDateTimeStrategy != null)
-                        return DefaultDateTimeStrategy();
+                        value = current.UtcNowStrategy();
+                    else if (DefaultDateTimeStrategy != null)
+                        value = DefaultDateTimeStrategy();
                 }
 
-                return DateTime.UtcNow;
+                if(value.Kind != DateTimeKind.Utc)
+                    throw new InvalidOperationException("DateTime returned by strategy does not return a value in UTC.");
+
+                return value;
             }
         }
     }
