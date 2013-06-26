@@ -105,8 +105,8 @@ namespace iSynaptic.Commons.AOP
             {
                 using (DisposableContext dc = new DisposableContext())
                 {
-                    dc.Enlist(throwOnDispose.ToDisposable());
                     dc.Enlist(dispose.ToDisposable());
+                    dc.Enlist(throwOnDispose.ToDisposable());
                 }
             }
             catch (AggregateException ex)

@@ -89,8 +89,9 @@ namespace iSynaptic.Commons
         public void Dispose()
         {
             var exceptions = new List<Exception>();
+            var dispoables = _Disposables.AsEnumerable().Reverse().ToArray();
 
-            foreach(var disposable in _Disposables)
+            foreach(var disposable in dispoables)
             {
                 try { disposable.Dispose(); }
                 catch (Exception ex) { exceptions.Add(ex); }
