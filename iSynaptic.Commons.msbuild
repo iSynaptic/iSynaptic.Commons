@@ -6,8 +6,6 @@
 
     <ILMergePath Condition="$(ILMergePath) == ''">External\Tools\ILMerge</ILMergePath>
     <NugetPath Condition="$(NugetPath) == ''">External\Tools\Nuget</NugetPath>
-
-    <Net45ReferenceAssembliesPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5</Net45ReferenceAssembliesPath>
   </PropertyGroup>
 
   <Import Project="External\Tools\SolutionBuild.targets" />
@@ -31,7 +29,7 @@
   <Target Name="MergeILAssembly">
     <MakeDir Directories="$(BinariesPath)\Temp" />
 
-    <Exec Command="&quot;$(ILMergePath)\ILMerge.exe&quot; /targetplatform:&quot;v4,$(Net45ReferenceAssembliesPath)&quot; &quot;/out:$(BinariesPath)\Temp\iSynaptic.Commons.dll&quot; /internalize:&quot;$(MSBuildProjectDirectory)\ILMergeInternalizationExcludes.txt&quot; &quot;$(BinariesPath)\iSynaptic.Commons.dll&quot; &quot;$(BinariesPath)\iSynaptic.Commons.IL.dll&quot; &quot;$(BinariesPath)\iSynaptic.Commons.Data.dll&quot;" />
+    <Exec Command="&quot;$(ILMergePath)\ILMerge.exe&quot; /targetplatform:v4 &quot;/out:$(BinariesPath)\Temp\iSynaptic.Commons.dll&quot; /internalize:&quot;$(MSBuildProjectDirectory)\ILMergeInternalizationExcludes.txt&quot; &quot;$(BinariesPath)\iSynaptic.Commons.dll&quot; &quot;$(BinariesPath)\iSynaptic.Commons.IL.dll&quot; &quot;$(BinariesPath)\iSynaptic.Commons.Data.dll&quot;" />
 
     <Delete Files="$(BinariesPath)\iSynaptic.Commons.dll;$(BinariesPath)\iSynaptic.Commons.pdb" />
     <Delete Files="$(BinariesPath)\iSynaptic.Commons.Data.dll;$(BinariesPath)\iSynaptic.Commons.Data.pdb" />
