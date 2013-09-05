@@ -1,6 +1,6 @@
 // The MIT License
 // 
-// Copyright (c) 2012 Jordan E. Terrell
+// Copyright (c) 2012-2013 Jordan E. Terrell
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -21,8 +21,6 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using System.Threading;
 
 namespace iSynaptic.Commons
 {
@@ -41,7 +39,7 @@ namespace iSynaptic.Commons
 
         private sealed class ActionDisposer : IDisposable
         {
-            private readonly Action<bool> _Action = null;
+            private readonly Action<bool> _Action;
 
             public ActionDisposer(Action<bool> action)
             {
