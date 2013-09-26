@@ -2,7 +2,14 @@
 RELEASE NOTES: iSynaptic.Commons
 ======================================
 
-==== v0.4.21 (March 6, 2012) ====
+==== v0.4.22 (August 16, 2013) ====
+
+---- Features ----
+
+* Added generic Visitor and MessageHandler implementation.
+
+
+==== v0.4.21 (March 6, 2013) ====
 
 ---- Features ----
 
@@ -13,35 +20,35 @@ RELEASE NOTES: iSynaptic.Commons
   covariant.
 
 
-==== v0.4.20 (February 26, 2012) ====
+==== v0.4.20 (February 26, 2013) ====
 
 ---- Features ----
 
 * Adding missing Recurse overload.
 
 
-==== v0.4.19 (February 21, 2012) ====
+==== v0.4.19 (February 21, 2013) ====
 
 ---- Features ----
 
 * Added RecurseSelect operators for Maybe<T> and IEnumerable<T>
 
 
-==== v0.4.18 (February 8, 2012) ====
+==== v0.4.18 (February 8, 2013) ====
 
 ---- Features ----
 
 * Fixing bug with TypeHierarchyComparer when two nulls are compared.
 
 
-==== v0.4.17 (February 8, 2012) ====
+==== v0.4.17 (February 8, 2013) ====
 
 ---- Features ----
 
 * Added support to TypeHierarchyComparer for comparing with null types.
 
 
-==== v0.4.16 (February 6, 2012) ====
+==== v0.4.16 (February 6, 2013) ====
 
 ---- Features ----
 
@@ -49,7 +56,7 @@ RELEASE NOTES: iSynaptic.Commons
   and Result<T, TObservation> when the source TObservation type is Unit.
 
 
-==== v0.4.15 (February 4, 2012) ====
+==== v0.4.15 (February 4, 2013) ====
 
 ---- Features ----
 
@@ -60,7 +67,7 @@ RELEASE NOTES: iSynaptic.Commons
   that returns Maybe<TValue>.
 
 
-==== v0.4.14 (January 19, 2012) ====
+==== v0.4.14 (January 19, 2013) ====
 
 ---- Features ----
 

@@ -1,6 +1,6 @@
 ﻿// The MIT License
 // 
-// Copyright (c) 2012-2013 Jordan E. Terrell
+// Copyright (c) 2013 Jordan E. Terrell
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -21,20 +21,36 @@
 // THE SOFTWARE.
 
 using System;
-using System.Reflection;
-using System.Runtime.InteropServices;
+using System.Collections.Generic;
 
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-[assembly: AssemblyCompany("iSynaptic")]
-[assembly: AssemblyTrademark("iSynaptic")]
-[assembly: AssemblyProduct("iSynaptic.Commons")]
-[assembly: AssemblyCopyright("Copyright © Jordan Terrell 2012-2013")]
+namespace iSynaptic.Commons
+{
+    public interface IVisitor
+    {
+        void Dispatch<T>(IEnumerable<T> subjects);
+    }
+    
+    public interface IVisitor<TState> : IVisitor
+    {
+        TState Dispatch<T>(IEnumerable<T> subjects, TState state);
+    }
 
-[assembly: ComVisible(false)]
-[assembly: CLSCompliant(true)]
+    public static class VisitorExtensions
+    {
+        public static void Dispatch(this IVisitor @this, Object subject)
+        {
+            Guard.NotNull(@this, "this");
+            Guard.NotNull(subject, "subject");
 
-[assembly: AssemblyVersion("0.4.22.0")]
-[assembly: AssemblyFileVersion("0.4.22.0")]
-[assembly: AssemblyInformationalVersion("0.4.22.0")]
+            @this.Dispatch(new[]{subject});
+        }
+
+        public static TState Dispatch<TState>(this IVisitor<TState> @this, Object subject, TState state)
+        {
+            Guard.NotNull(@this, "this");
+            Guard.NotNull(subject, "subject");
+
+            return @this.Dispatch(new[] { subject }, state);
+        }
+    }
+}

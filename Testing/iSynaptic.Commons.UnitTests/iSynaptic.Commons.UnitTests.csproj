@@ -132,6 +132,7 @@
     <Compile Include="Collections\Generic\DictionaryExtensionsTests.cs" />
     <Compile Include="MaybeMonadContractTests.cs" />
     <Compile Include="MaybeTests.cs" />
+    <Compile Include="MessageHandlerTests.cs" />
     <Compile Include="MethodSpecificationBuilder.cs" />
     <Compile Include="OutcomeTests.cs" />
     <Compile Include="ParameterSpecificationBuilder.cs" />
@@ -157,6 +158,7 @@
     <Compile Include="TypeExtensions.cs" />
     <Compile Include="TypeSpecificationBuilder.cs" />
     <Compile Include="UnsafeCastTests.cs" />
+    <Compile Include="VisitorTests.cs" />
     <Compile Include="WeakReferenceTests.cs" />
     <Compile Include="Xml\DeclarativeXmlParserTests.cs" />
   </ItemGroup>

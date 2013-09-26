@@ -124,6 +124,8 @@
     <Compile Include="IOutcome.cs" />
     <Compile Include="IResult.cs" />
     <Compile Include="ISymbol.cs" />
+    <Compile Include="IVisitableChildren.cs" />
+    <Compile Include="IVisitor.cs" />
     <Compile Include="KeyedReaderWriter.cs" />
     <Compile Include="Linq\Expressions\ExpressionExtensions.cs" />
     <Compile Include="FuncExtensions.generated.cs">
@@ -136,6 +138,7 @@
     <Compile Include="IMaybe.cs" />
     <Compile Include="Linq\Neighbors.cs" />
     <Compile Include="Maybe.cs" />
+    <Compile Include="MessageHandler.cs" />
     <Compile Include="Outcome.cs" />
     <Compile Include="Reflection\Emit\DynamicMethodExtensions.cs" />
     <Compile Include="Linq\EnumerableExtensions.cs" />
@@ -181,6 +184,7 @@
     <Compile Include="Unit.cs" />
     <Compile Include="UnsafeCast.cs" />
     <Compile Include="ValidatedNotNullAttribute.cs" />
+    <Compile Include="Visitor.cs" />
     <Compile Include="WeakReference.cs" />
     <Compile Include="Xml\DeclarativeXmlParser.cs" />
     <Compile Include="Xml\XmlToken.cs" />
