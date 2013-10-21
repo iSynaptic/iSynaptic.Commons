@@ -2,6 +2,14 @@
 RELEASE NOTES: iSynaptic.Commons
 ======================================
 
+==== v0.4.23 (October 10, 2013) ====
+
+---- Features ----
+
+* LookAheadEnumerator no longer retreives the underlying enumerator's
+  Current value after MoveNext() returns false
+
+
 ==== v0.4.22 (August 16, 2013) ====
 
 ---- Features ----

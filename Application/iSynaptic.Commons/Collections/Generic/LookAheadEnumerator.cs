@@ -53,8 +53,8 @@ namespace iSynaptic.Commons.Collections.Generic
             if (LookAheadList.Count <= 0)
             {
                 bool results = _InnerEnumerator.MoveNext();
+                _Current = results ? _InnerEnumerator.Current : default(T);
 
-                _Current = _InnerEnumerator.Current;
                 return results;
             }
 
