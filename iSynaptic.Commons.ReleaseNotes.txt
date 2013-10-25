@@ -2,6 +2,14 @@
 RELEASE NOTES: iSynaptic.Commons
 ======================================
 
+==== v0.4.24 (October 25, 2013) ====
+
+---- Features ----
+
+* Added support to DeclarativeXmlParser for empty elements and
+  content elements
+
+
 ==== v0.4.23 (October 10, 2013) ====
 
 ---- Features ----
