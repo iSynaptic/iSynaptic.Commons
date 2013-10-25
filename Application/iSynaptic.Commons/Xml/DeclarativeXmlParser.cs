@@ -43,25 +43,26 @@ namespace iSynaptic.Commons.Xml
 
         protected interface IUponBuilder : IFluentInterface
         {
-            IAttributeMultiplicity Attribute<T>(string name, Action<T> action);
-            IElementMultiplicity ContentElement<T>(string name, Action<T> action);
-            IElementMultiplicity Element(string name, Action action);
+            IAttributeOptions Attribute<T>(string name, Action<T> action);
+            IElementOptions ContentElement<T>(string name, Action<T> action);
+            IElementOptions Element(string name, Action action);
 
             void IgnoreUnrecognizedAttributes();
             void IgnoreUnrecognizedElements();
             void IgnoreUnrecognizedText();
         }
 
-        protected interface IAttributeMultiplicity : IFluentInterface
+        protected interface IAttributeOptions : IFluentInterface
         {
-            void Optional();
+            IAttributeOptions Optional();
         }
 
-        protected interface IElementMultiplicity : IFluentInterface
+        protected interface IElementOptions : IFluentInterface
         {
-            void ZeroOrOne();
-            void ZeroOrMore();
-            void OneOrMore();
+            IElementOptions Empty();
+            IElementOptions ZeroOrOne();
+            IElementOptions ZeroOrMore();
+            IElementOptions OneOrMore();
         }
 
         protected class UponBuilder : IUponBuilder
@@ -81,7 +82,7 @@ namespace iSynaptic.Commons.Xml
             public void IgnoreUnrecognizedElements() { _IgnoreUnrecognizedElements = true; }
             public void IgnoreUnrecognizedText() { _IgnoreUnrecognizedText = true; }
 
-            public IAttributeMultiplicity Attribute<T>(string name, Action<T> action)
+            public IAttributeOptions Attribute<T>(string name, Action<T> action)
             {
                 var matcher = new Matcher<T>(_Parent, name, XmlNodeType.Attribute, pc => new Maybe<T>(Convert<string, T>.From(pc.Token.Value)), action);
                 Matchers.Add(matcher);
@@ -89,11 +90,21 @@ namespace iSynaptic.Commons.Xml
                 return matcher;
             }
 
-            public IElementMultiplicity ContentElement<T>(string name, Action<T> action)
+            public IElementOptions ContentElement<T>(string name, Action<T> action)
             {
                 Func<ParseContext, Maybe<T>> converter = pc =>
                 {
                     var token = pc.Token;
+
+                    if (pc.Token.IsEmptyElement)
+                    {
+                        pc.Panic();
+
+                        string message = string.Format("Content element '{0}' must contain text.", name);
+                        pc.Errors.Add(new ParseError(message, token));
+
+                        return Maybe<T>.NoValue;
+                    }
 
                     pc.MoveNext();
 
@@ -130,7 +141,7 @@ namespace iSynaptic.Commons.Xml
                 return matcher;
             }
 
-            public IElementMultiplicity Element(string name, Action action)
+            public IElementOptions Element(string name, Action action)
             {
                 var matcher = new Matcher<string>(_Parent, name, XmlNodeType.Element, pc => pc.Token.Name.ToMaybe(), x => action());
                 Matchers.Add(matcher);
@@ -195,7 +206,7 @@ namespace iSynaptic.Commons.Xml
             void ValidateMatcher(ParseContext context);
         }
 
-        protected class Matcher<T> : IMatcher, IElementMultiplicity, IAttributeMultiplicity
+        protected class Matcher<T> : IMatcher, IElementOptions, IAttributeOptions
         {
             private readonly XmlToken _Parent;
             private readonly string _Name;
@@ -203,6 +214,7 @@ namespace iSynaptic.Commons.Xml
             private readonly Func<ParseContext, Maybe<T>> _Selector;
             private readonly Action<T> _MatchAction;
 
+            private bool _CanBeEmpty = false;
             private Multiplicity _Multiplicity = Multiplicity.One;
 
             private int _ExecutionCount = 0;
@@ -216,11 +228,12 @@ namespace iSynaptic.Commons.Xml
                 _MatchAction = matchAction;
             }
 
-            void IAttributeMultiplicity.Optional() { _Multiplicity = Multiplicity.ZeroOrOne; }
+            IAttributeOptions IAttributeOptions.Optional() { _Multiplicity = Multiplicity.ZeroOrOne; return this; }
 
-            void IElementMultiplicity.ZeroOrOne() { _Multiplicity = Multiplicity.ZeroOrOne; }
-            void IElementMultiplicity.ZeroOrMore() { _Multiplicity = Multiplicity.ZeroOrMore; }
-            void IElementMultiplicity.OneOrMore() { _Multiplicity = Multiplicity.OneOrMore; }
+            IElementOptions IElementOptions.Empty() { _CanBeEmpty = true; return this; }
+            IElementOptions IElementOptions.ZeroOrOne() { _Multiplicity = Multiplicity.ZeroOrOne; return this; }
+            IElementOptions IElementOptions.ZeroOrMore() { _Multiplicity = Multiplicity.ZeroOrMore; return this; }
+            IElementOptions IElementOptions.OneOrMore() { _Multiplicity = Multiplicity.OneOrMore; return this; }
 
             bool IMatcher.CanExecute(ParseContext context)
             {
@@ -246,6 +259,10 @@ namespace iSynaptic.Commons.Xml
 
                     string message = string.Format("More than one '{0}' {1} is not allowed.", _Name, nodeType);
                     context.Errors.Add(new ParseError(message, token));
+                }
+                else if (context.Token.IsEmptyElement && _CanBeEmpty)
+                {
+                    context.Panic();
                 }
                 else
                 {

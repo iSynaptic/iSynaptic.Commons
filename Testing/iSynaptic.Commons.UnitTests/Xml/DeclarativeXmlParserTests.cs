@@ -57,6 +57,7 @@ namespace iSynaptic.Commons.Xml
             private List<Book> _Books = null;
 
             public string Name { get; set; }
+            public bool ReferenceCateogry { get; set; }
 
             public List<Book> Books
             {
@@ -104,6 +105,7 @@ namespace iSynaptic.Commons.Xml
                         .Optional();
 
                     b.Element("category", () => library.Categories.Add(BookCategory()))
+                        .Empty()
                         .OneOrMore();
                 });
 
@@ -119,6 +121,9 @@ namespace iSynaptic.Commons.Xml
                     b.IgnoreUnrecognizedAttributes();
 
                     b.ContentElement<string>("name", x => category.Name = x);
+                    b.ContentElement<bool>("referenceCategory", x => category.ReferenceCateogry = x)
+                        .ZeroOrOne().Empty();
+
                     b.Element("book", () => category.Books.Add(Book()))
                         .ZeroOrMore();
                 });
@@ -180,11 +185,12 @@ namespace iSynaptic.Commons.Xml
             var r = XmlReader.Create(new StringReader(xml.ToString()));
 
             var results = TestParser.Parse(r);
+            AssertErrorCount(0, results.Item2);
+
             var library = results.Item1;
 
             Assert.AreEqual("iSynaptic", library.Owner);
             Assert.AreEqual("Office", library.Location);
-            AssertErrorCount(0, results.Item2);
         }
 
         [Test]
@@ -195,12 +201,13 @@ namespace iSynaptic.Commons.Xml
             var r = XmlReader.Create(new StringReader(xml.ToString()));
 
             var results = TestParser.Parse(r);
+            AssertErrorCount(0, results.Item2);
+
             var library = results.Item1;
 
             Assert.IsTrue(library.Categories.Count >= 1);
             Assert.IsTrue(library.Categories.Any(x => x.Name == "Testing"));
 
-            AssertErrorCount(0, results.Item2);
         }
 
         [Test]
@@ -214,11 +221,10 @@ namespace iSynaptic.Commons.Xml
             var r = XmlReader.Create(new StringReader(xml.ToString()));
 
             var results = TestParser.Parse(r);
-            var library = results.Item1;
-
-            Assert.AreEqual(lastUpdated, library.LastUpdated.Value);
-
             AssertErrorCount(0, results.Item2);
+
+            var library = results.Item1;
+            Assert.AreEqual(lastUpdated, library.LastUpdated.Value);
         }
 
         [Test]
@@ -232,11 +238,11 @@ namespace iSynaptic.Commons.Xml
             var r = XmlReader.Create(new StringReader(xml.ToString()));
 
             var results = TestParser.Parse(r);
-            var library = results.Item1;
+            AssertErrorCount(0, results.Item2);
 
+            var library = results.Item1;
             Assert.AreEqual(comment, library.Comment);
 
-            AssertErrorCount(0, results.Item2);
         }
 
         [Test]
@@ -251,11 +257,11 @@ namespace iSynaptic.Commons.Xml
             var r = XmlReader.Create(new StringReader(xml.ToString()));
 
             var results = TestParser.Parse(r);
+            AssertErrorCount(1, results.Item2);
+
             var library = results.Item1;
 
             Assert.AreEqual(comment, library.Comment);
-
-            AssertErrorCount(1, results.Item2);
         }
 
         [Test]
@@ -297,11 +303,11 @@ namespace iSynaptic.Commons.Xml
 
             var r = XmlReader.Create(new StringReader(xml.ToString()));
             var results = TestParser.Parse(r);
+            AssertErrorCount(1, results.Item2);
+
             var library = results.Item1;
 
-            Assert.AreEqual(xml.Elements("category").Count(), library.Categories.Count);
-
-            AssertErrorCount(1, results.Item2);
+            Assert.AreEqual(xml.Elements("category").Count(x => x.HasAttributes || x.IsEmpty != true), library.Categories.Count);
         }
 
         [Test]
@@ -312,11 +318,11 @@ namespace iSynaptic.Commons.Xml
 
             var r = XmlReader.Create(new StringReader(xml.ToString()));
             var results = TestParser.Parse(r);
+            AssertErrorCount(1, results.Item2);
+
             var library = results.Item1;
 
-            Assert.AreEqual(xml.Elements("category").Count(), library.Categories.Count);
-
-            AssertErrorCount(1, results.Item2);
+            Assert.AreEqual(xml.Elements("category").Count(x => x.HasAttributes || x.IsEmpty != true), library.Categories.Count);
         }
 
         [Test]
@@ -327,11 +333,11 @@ namespace iSynaptic.Commons.Xml
 
             var r = XmlReader.Create(new StringReader(xml.ToString()));
             var results = TestParser.Parse(r);
+            AssertErrorCount(1, results.Item2);
+
             var library = results.Item1;
 
-            Assert.AreEqual(xml.Elements("category").Count(), library.Categories.Count);
-
-            AssertErrorCount(1, results.Item2);
+            Assert.AreEqual(xml.Elements("category").Count(x => x.HasAttributes || x.IsEmpty != true), library.Categories.Count);
         }
 
         [Test]
@@ -347,11 +353,11 @@ namespace iSynaptic.Commons.Xml
 
             var r = XmlReader.Create(new StringReader(xml.ToString()));
             var results = TestParser.Parse(r);
+            AssertErrorCount(0, results.Item2);
+
             var library = results.Item1;
 
             Assert.AreEqual(firstBook.Attribute("title").Value, library.Categories[0].Books[0].Title);
-
-            AssertErrorCount(0, results.Item2);
         }
 
         [Test]
@@ -365,11 +371,11 @@ namespace iSynaptic.Commons.Xml
 
             var r = XmlReader.Create(new StringReader(xml.ToString()));
             var results = TestParser.Parse(r);
+            AssertErrorCount(0, results.Item2);
+
             var library = results.Item1;
 
             Assert.AreEqual(firstBook.Attribute("title").Value, library.Categories[0].Books[0].Title);
-
-            AssertErrorCount(0, results.Item2);
         }
 
         [Test]
@@ -382,11 +388,11 @@ namespace iSynaptic.Commons.Xml
 
             var r = XmlReader.Create(new StringReader(xml.ToString()));
             var results = TestParser.Parse(r);
+            AssertErrorCount(0, results.Item2);
+
             var library = results.Item1;
 
             Assert.AreEqual(firstCategory.Element("name").Value, library.Categories[0].Name);
-
-            AssertErrorCount(0, results.Item2);
         }
 
         [Test]
@@ -397,11 +403,11 @@ namespace iSynaptic.Commons.Xml
 
             var r = XmlReader.Create(new StringReader(xml.ToString()));
             var results = TestParser.Parse(r);
+            AssertErrorCount(1, results.Item2);
+
             var library = results.Item1;
 
             Assert.IsTrue(library.Categories.Count >= 1);
-
-            AssertErrorCount(1, results.Item2);
         }
 
         private void AssertErrorCount(int count, IEnumerable<DeclarativeXmlParser.ParseError> errors)
@@ -430,6 +436,7 @@ namespace iSynaptic.Commons.Xml
                 ),
                 new XElement("category",
                     new XElement("name", "Collective Intelligence"),
+                    new XElement("referenceCategory", "false"),
                     new XElement("book",
                         new XAttribute("title", "Collective Intelligence in Action"),
                         new XAttribute("author", "Satnam Alag"),
@@ -438,8 +445,10 @@ namespace iSynaptic.Commons.Xml
                     )
                 ),
                 new XElement("category",
-                    new XElement("name", "Category Theory")
-                )
+                    new XElement("name", "Category Theory"),
+                    new XElement("referenceCategory")
+                ),
+                new XElement("category")
             );
         }
     }

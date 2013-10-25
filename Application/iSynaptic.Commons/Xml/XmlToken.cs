@@ -35,6 +35,7 @@ namespace iSynaptic.Commons.Xml
 
         private readonly string _Name;
         private readonly XmlNodeType _Kind;
+        private readonly bool _IsEmptyElement;
         private readonly string _Value;
 
         private readonly int? _LineNumber;
@@ -50,6 +51,7 @@ namespace iSynaptic.Commons.Xml
         {
             _Name = null;
             _Kind = kind;
+            _IsEmptyElement = kind == XmlNodeType.Element;
             _Value = null;
             _LineNumber = null;
             _LinePosition = null;
@@ -59,6 +61,11 @@ namespace iSynaptic.Commons.Xml
         {
             _Name = reader.Name;
             _Kind = reader.NodeType;
+
+            _IsEmptyElement = reader.NodeType == XmlNodeType.Element &&
+                              reader.HasAttributes != true &&
+                              reader.IsEmptyElement;
+
             _Value = reader.Value;
             _LineNumber = null;
             _LinePosition = null;
@@ -73,6 +80,7 @@ namespace iSynaptic.Commons.Xml
 
         public string Name { get { return _Name; } }
         public XmlNodeType Kind { get { return _Kind; } }
+        public bool IsEmptyElement { get { return _IsEmptyElement; } }
         public string Value { get { return _Value; } }
 
         public int? LineNumber { get { return _LineNumber; } }
