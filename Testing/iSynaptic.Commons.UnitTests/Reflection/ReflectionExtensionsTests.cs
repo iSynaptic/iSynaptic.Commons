@@ -74,6 +74,15 @@ namespace iSynaptic.Commons.Reflection
             Assert.IsTrue(fields.SequenceEqual(new[] { "Foo", "Quux" }));
         }
 
+        [Test]
+        public void DoesImplementType_SupportsOpenGenerics()
+        {
+            var openType = typeof (Maybe<>);
+
+            var candidate = typeof (Maybe<Int32>);
+            Assert.IsTrue(candidate.DoesImplementType(openType));
+        }
+
         private class Base
         {
             public Guid Quux = Guid.Empty;
