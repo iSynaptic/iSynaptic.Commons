@@ -2,6 +2,20 @@
 RELEASE NOTES: iSynaptic.Commons
 ======================================
 
+==== v0.4.25 (January 2, 2014) ====
+
+---- Features ----
+
+* Fixed build issue with IL project where build script could not
+  find ilasm.exe
+
+* Added SelectMany overloads to support selecting Maybe<T> values
+  from IEnumerable<T> streams via query comprehension syntax
+
+* Maybe<T>'s ToString() method now returns the underlying value's
+  ToString() value
+
+
 ==== v0.4.24 (October 25, 2013) ====
 
 ---- Features ----
