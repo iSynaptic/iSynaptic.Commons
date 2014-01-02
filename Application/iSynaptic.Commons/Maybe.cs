@@ -158,6 +158,11 @@ namespace iSynaptic.Commons
                 : 0;
         }
 
+        public override string ToString()
+        {
+            return Value.ToString();
+        }
+
         public static bool operator ==(Maybe<T> left, Maybe<T> right)
         {
             return left.Equals(right);
