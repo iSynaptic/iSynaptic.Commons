@@ -12,11 +12,17 @@
   </Target>
 
   <Target Name="AfterBuild">
+    <GetFrameworkPath>
+      <Output
+          TaskParameter="Path"
+          PropertyName="FrameworkPath" />
+    </GetFrameworkPath>
+    
     <Copy SourceFiles="$(OutputPath)\iSynaptic.Commons.IL.dll"
           DestinationFiles="$(OutputPath)\iSynaptic.Commons.IL.Stub.dll" />
 
     <Delete Files="$(OutputPath)\iSynaptic.Commons.IL.dll;$(OutputPath)\iSynaptic.Commons.IL.pdb" />
-    <Exec Command="$(MSBuildBinPath)\ilasm @(ILFile -> '&quot;%(Identity)&quot;', ' ') &quot;/out=$(OutputPath)\iSynaptic.Commons.IL.dll&quot; /dll"
+    <Exec Command="&quot;$(FrameworkPath)\ilasm&quot; @(ILFile -> '&quot;%(Identity)&quot;', ' ') &quot;/out=$(OutputPath)\iSynaptic.Commons.IL.dll&quot; /dll"
           WorkingDirectory="$(MSBuildProjectDirectory)" />
   </Target>
 </Project>
