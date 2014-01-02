@@ -22,6 +22,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
 using System.Linq;
 using iSynaptic.Commons.Collections.Generic;
@@ -48,6 +49,28 @@ namespace iSynaptic.Commons.Linq
             return @this.Select(selector)
                         .Where(x => x.HasValue)
                         .Select(x => x.Value);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static IEnumerable<TResult> SelectMany<T, TResult>(this IEnumerable<T> @this, Func<T, Maybe<TResult>> selector)
+        {
+            return @this.SelectMaybe(selector);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static IEnumerable<TResult> SelectMany<T, TResult>(this IEnumerable<T> @this, Func<T, int, Maybe<TResult>> selector)
+        {
+            return @this.SelectMaybe(selector);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static IEnumerable<TResult> SelectMany<T, TIntermediate, TResult>(this IEnumerable<T> @this, Func<T, Maybe<TIntermediate>> selector, Func<T, TIntermediate, TResult> combiner)
+        {
+            Guard.NotNull(@this, "this");
+            Guard.NotNull(selector, "selector");
+            Guard.NotNull(combiner, "combiner");
+
+            return @this.Select(x => selector(x).Select(y => combiner(x, y))).Squash();
         }
 
         public static bool None<T>(this IEnumerable<T> @this)
