@@ -83,6 +83,7 @@
     <Compile Include="Collections\Generic\BaseReadOnlyDictionary.cs" />
     <Compile Include="Collections\Generic\BaseWeakDictionary.cs" />
     <Compile Include="Collections\Generic\Batch.cs" />
+    <Compile Include="Collections\Generic\BatchInfo.cs" />
     <Compile Include="Collections\Generic\IReadableSymbolDictionary.cs" />
     <Compile Include="Collections\Generic\ISymbolDictionary.cs" />
     <Compile Include="Collections\Generic\IWeakDictionary.cs" />
@@ -139,6 +140,7 @@
     <Compile Include="Linq\Neighbors.cs" />
     <Compile Include="Maybe.cs" />
     <Compile Include="MessageHandler.cs" />
+    <Compile Include="NoEnumerationAttribute.cs" />
     <Compile Include="Outcome.cs" />
     <Compile Include="Reflection\Emit\DynamicMethodExtensions.cs" />
     <Compile Include="Linq\EnumerableExtensions.cs" />

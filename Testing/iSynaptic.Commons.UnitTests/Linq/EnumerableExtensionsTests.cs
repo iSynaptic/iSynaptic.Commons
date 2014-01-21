@@ -345,9 +345,9 @@ namespace iSynaptic.Commons.Linq
             Assert.AreEqual(1, batches[1].Index);
             Assert.AreEqual(2, batches[2].Index);
 
-            Assert.AreEqual(3, batches[0].Size);
-            Assert.AreEqual(3, batches[1].Size);
-            Assert.AreEqual(3, batches[2].Size);
+            Assert.AreEqual(3, batches[0].Count);
+            Assert.AreEqual(3, batches[1].Count);
+            Assert.AreEqual(3, batches[2].Count);
 
             Assert.IsTrue(batches[0].SequenceEqual(new[] { 0, 1, 2 }));
             Assert.IsTrue(batches[1].SequenceEqual(new[] { 3, 4, 5 }));
@@ -366,15 +366,46 @@ namespace iSynaptic.Commons.Linq
             Assert.AreEqual(2, batches[2].Index);
             Assert.AreEqual(3, batches[3].Index);
 
-            Assert.AreEqual(3, batches[0].Size);
-            Assert.AreEqual(3, batches[1].Size);
-            Assert.AreEqual(3, batches[2].Size);
-            Assert.AreEqual(1, batches[3].Size);
+            Assert.AreEqual(3, batches[0].Count);
+            Assert.AreEqual(3, batches[1].Count);
+            Assert.AreEqual(3, batches[2].Count);
+            Assert.AreEqual(1, batches[3].Count);
 
             Assert.IsTrue(batches[0].SequenceEqual(new[] { 0, 1, 2 }));
             Assert.IsTrue(batches[1].SequenceEqual(new[] { 3, 4, 5 }));
             Assert.IsTrue(batches[2].SequenceEqual(new[] { 6, 7, 8 }));
             Assert.IsTrue(batches[3].SequenceEqual(new[] { 9 }));
+        }
+
+        [Test]
+        public void Batch_ViaPredicate()
+        {
+            var batches = Enumerable.Range(0, 18)
+                .Batch(x => x%5 != 0)
+                .ToArray();
+
+            Assert.AreEqual(4, batches.Length);
+
+            Assert.IsTrue(batches[0].SequenceEqual(new[] { 0, 1, 2, 3, 4 }));
+            Assert.IsTrue(batches[1].SequenceEqual(new[] { 5, 6, 7, 8, 9 }));
+            Assert.IsTrue(batches[2].SequenceEqual(new[] { 10, 11, 12, 13, 14 }));
+            Assert.IsTrue(batches[3].SequenceEqual(new[] { 15, 16, 17 }));
+        }
+
+        [Test]
+        public void Batch_WithNeighbors_ViaPredicate()
+        {
+            var batches = Enumerable.Range(1, 18)
+                .WithNeighbors()
+                .Batch((x, i, info) => x.Previous.Select(y => y % 5).ValueOrDefault(-1) != 0, x => x.Value)
+                .ToArray();
+
+            Assert.AreEqual(4, batches.Length);
+
+            Assert.IsTrue(batches[0].SequenceEqual(new[] { 1, 2, 3, 4, 5 }));
+            Assert.IsTrue(batches[1].SequenceEqual(new[] { 6, 7, 8, 9, 10 }));
+            Assert.IsTrue(batches[2].SequenceEqual(new[] { 11, 12, 13, 14, 15 }));
+            Assert.IsTrue(batches[3].SequenceEqual(new[] { 16, 17, 18 }));
         }
 
         [Test]
@@ -400,19 +431,6 @@ namespace iSynaptic.Commons.Linq
             var recursives = r1.Recurse(r => r.Recursives).ToArray();
 
             Assert.IsTrue(recursives.Select(x => x.Value).SequenceEqual(new[] { 1, 2, 4, 3 }));
-        }
-
-        [Test]
-        public void RecurseSelect()
-        {
-            var r1 = new Recursive(1,
-                        new Recursive(2,
-                            new Recursive(4)),
-                        new Recursive(3));
-
-            var values = r1.RecurseSelect(r => r.Recursives, x => x.Value).ToArray();
-
-            Assert.IsTrue(values.SequenceEqual(new[] { 1, 2, 4, 3 }));
         }
 
         [Test]

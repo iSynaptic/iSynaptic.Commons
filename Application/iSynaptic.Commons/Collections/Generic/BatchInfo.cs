@@ -1,6 +1,6 @@
 // The MIT License
 // 
-// Copyright (c) 2012 Jordan E. Terrell
+// Copyright (c) 2014 Jordan E. Terrell
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -21,47 +21,24 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace iSynaptic.Commons.Collections.Generic
 {
-    public static class Batch
+    public struct BatchInfo
     {
-        public static Batch<T> Create<T>(IEnumerable<T> batch, int index)
+        private readonly int _index;
+        private readonly int _count;
+
+        public BatchInfo(int index, int count)
         {
-            return new Batch<T>(batch, index);
-        }
-    }
+            if (index < 0) throw new ArgumentOutOfRangeException("index", "Index must be not be negative.");
+            if (count < 0) throw new ArgumentOutOfRangeException("count", "Count must be not be negative.");
 
-    public class Batch<T> : IEnumerable<T>
-    {
-        private readonly T[] _batch;
-
-        public Batch(IEnumerable<T> batch, int index)
-        {
-            _batch = Guard.NotNull(batch, "batch")
-                .ToArray();
-
-            if(index < 0) throw new ArgumentOutOfRangeException("index", "Index must be not be negative.");
-
-            Index = index;
-            Count = _batch.Length;
+            _index = index;
+            _count = count;
         }
 
-        public int Index { get; private set; }
-        public int Count { get; private set; }
-
-        public IEnumerator<T> GetEnumerator()
-        {
-            return ((IEnumerable<T>)_batch).GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        public int Index { get { return _index; } }
+        public int Count { get { return _count; } }
     }
 }

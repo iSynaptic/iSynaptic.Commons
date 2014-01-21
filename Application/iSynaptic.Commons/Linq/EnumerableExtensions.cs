@@ -230,38 +230,80 @@ namespace iSynaptic.Commons.Linq
             return @this.ToArray();
         }
 
-        public static IEnumerable<Batch<T>> Batch<T>(this IEnumerable<T> @this, int batchSize)
+        public static IEnumerable<Batch<T>> Batch<T>(this IEnumerable<T> @this, int size)
         {
             Guard.NotNull(@this, "this");
 
-            if (batchSize < 0)
-                throw new ArgumentOutOfRangeException("batchSize", "Batch size must not be negative.");
+            if (size < 0) throw new ArgumentOutOfRangeException("size", "Size must not be negative.");
 
-            return BatchCore(@this, batchSize);
+            return BatchCore(@this, (x, i, info) => info.Count < size, x => x);
         }
 
-        private static IEnumerable<Batch<T>> BatchCore<T>(IEnumerable<T> @this, int batchSize)
+        public static IEnumerable<Batch<T>> Batch<T>(this IEnumerable<T> @this, Func<T, bool> predicate)
+        {
+            Guard.NotNull(@this, "this");
+            Guard.NotNull(predicate, "predicate");
+
+            return BatchCore(@this, (x, i, info) => predicate(x), x => x);
+        }
+
+        public static IEnumerable<Batch<T>> Batch<T>(this IEnumerable<T> @this, Func<T, int, bool> predicate)
+        {
+            Guard.NotNull(@this, "this");
+            Guard.NotNull(predicate, "predicate");
+
+            return BatchCore(@this, (x, i, info) => predicate(x, i), x => x);
+        }
+
+        public static IEnumerable<Batch<T>> Batch<T>(this IEnumerable<T> @this, Func<T, BatchInfo, bool> predicate)
+        {
+            Guard.NotNull(@this, "this");
+            Guard.NotNull(predicate, "predicate");
+
+            return BatchCore(@this, (x, i, info) => predicate(x, info), x => x);
+        }
+
+        public static IEnumerable<Batch<T>> Batch<T>(this IEnumerable<T> @this, Func<T, int, BatchInfo, bool> predicate)
+        {
+            Guard.NotNull(@this, "this");
+            Guard.NotNull(predicate, "predicate");
+
+            return BatchCore(@this, predicate, x => x);
+        }
+
+        public static IEnumerable<Batch<TResult>> Batch<T, TResult>(this IEnumerable<T> @this, Func<T, int, BatchInfo, bool> predicate, Func<T, TResult> selector)
+        {
+            Guard.NotNull(@this, "this");
+            Guard.NotNull(predicate, "predicate");
+            Guard.NotNull(selector, "selector");
+
+            return BatchCore(@this, predicate, selector);
+        }
+
+        private static IEnumerable<Batch<TResult>> BatchCore<T, TResult>(IEnumerable<T> @this, Func<T, int, BatchInfo, bool> predicate, Func<T, TResult> selector)
         {
             using (var enumerator = @this.GetEnumerator())
             {
+                int index = -1;
                 int batchIndex = 0;
-                int count = 0;
-                T[] buffer = new T[batchSize];
+                var buffer = new List<T>();
 
                 while (enumerator.MoveNext())
                 {
-                    buffer[count++] = enumerator.Current;
-                    if (count == batchSize)
+                    index++;
+
+                    if (!predicate(enumerator.Current, index, new BatchInfo(batchIndex, buffer.Count)) && buffer.Count > 0)
                     {
-                        yield return new Batch<T>(buffer, batchIndex, batchSize);
-                        count = 0;
+                        yield return new Batch<TResult>(buffer.Select(selector).ToArray(), batchIndex);
                         batchIndex++;
-                        buffer = new T[batchSize];
+                        buffer.Clear();
                     }
+
+                    buffer.Add(enumerator.Current);
                 }
 
-                if (count != 0)
-                    yield return new Batch<T>(buffer.Take(count), batchIndex, count);
+                if (buffer.Count != 0)
+                    yield return new Batch<TResult>(buffer.Select(selector).ToArray(), batchIndex);
             }
         }
 
@@ -417,15 +459,6 @@ namespace iSynaptic.Commons.Linq
             return RecurseCore(new[] { @this }, x => new[] { recurseSelector(x) }, x => x, null);
         }
 
-        public static IEnumerable<TResult> RecurseSelect<T, TResult>(this T @this, Func<T, T> recurseSelector, Func<T, TResult> resultSelector)
-        {
-            Guard.NotNull(@this, "this");
-            Guard.NotNull(recurseSelector, "recurseSelector");
-            Guard.NotNull(resultSelector, "resultSelector");
-
-            return RecurseCore(new[] { @this }, x => new[] { recurseSelector(x) }, resultSelector, null);
-        }
-
         public static IEnumerable<T> RecurseWhile<T>(this T @this, Func<T, T> selector, Func<T, Boolean> predicate)
         {
             Guard.NotNull(@this, "this");
@@ -441,15 +474,6 @@ namespace iSynaptic.Commons.Linq
             Guard.NotNull(selector, "selector");
 
             return RecurseCore(new[] { @this }, x => selector(x).ToEnumerable(), x => x, null);
-        }
-
-        public static IEnumerable<TResult> RecurseSelect<T, TResult>(this T @this, Func<T, Maybe<T>> recurseSelector, Func<T, TResult> resultSelector)
-        {
-            Guard.NotNull(@this, "this");
-            Guard.NotNull(recurseSelector, "recurseSelector");
-            Guard.NotNull(resultSelector, "resultSelector");
-
-            return RecurseCore(new[] { @this }, x => recurseSelector(x).ToEnumerable(), resultSelector, null);
         }
 
         public static IEnumerable<T> RecurseWhile<T>(this T @this, Func<T, Maybe<T>> selector, Func<T, Boolean> predicate)
@@ -469,15 +493,6 @@ namespace iSynaptic.Commons.Linq
             return RecurseCore(new[] { @this }, selector, x => x, null);
         }
 
-        public static IEnumerable<TResult> RecurseSelect<T, TResult>(this T @this, Func<T, IEnumerable<T>> recurseSelector, Func<T, TResult> resultSelector)
-        {
-            Guard.NotNull(@this, "this");
-            Guard.NotNull(recurseSelector, "recurseSelector");
-            Guard.NotNull(resultSelector, "resultSelector");
-
-            return RecurseCore(new[] { @this }, recurseSelector, resultSelector, null);
-        }
-
         public static IEnumerable<T> RecurseWhile<T>(this T @this, Func<T, IEnumerable<T>> selector, Func<T, Boolean> predicate)
         {
             Guard.NotNull(@this, "this");
@@ -493,14 +508,6 @@ namespace iSynaptic.Commons.Linq
             Guard.NotNull(selector, "selector");
 
             return RecurseCore(@this.ToEnumerable(), x => selector(x).ToEnumerable(), x => x, null);
-        }
-
-        public static IEnumerable<TResult> RecurseSelect<T, TResult>(this Maybe<T> @this, Func<T, Maybe<T>> recurseSelector, Func<T, TResult> resultSelector)
-        {
-            Guard.NotNull(recurseSelector, "recurseSelector");
-            Guard.NotNull(resultSelector, "resultSelector");
-
-            return RecurseCore(@this.ToEnumerable(), x => recurseSelector(x).ToEnumerable(), resultSelector, null);
         }
 
         public static IEnumerable<T> RecurseWhile<T>(this Maybe<T> @this, Func<T, Maybe<T>> selector, Func<T, Boolean> predicate)
@@ -524,15 +531,6 @@ namespace iSynaptic.Commons.Linq
             Guard.NotNull(selector, "selector");
 
             return RecurseCore(@this, selector, x => x, null);
-        }
-
-        public static IEnumerable<TResult> RecurseSelect<T, TResult>(this IEnumerable<T> @this, Func<T, IEnumerable<T>> recurseSelector, Func<T, TResult> resultSelector)
-        {
-            Guard.NotNull(@this, "this");
-            Guard.NotNull(recurseSelector, "recurseSelector");
-            Guard.NotNull(resultSelector, "resultSelector");
-
-            return RecurseCore(@this, recurseSelector, resultSelector, null);
         }
 
         public static IEnumerable<T> RecurseWhile<T>(this IEnumerable<T> @this, Func<T, IEnumerable<T>> selector, Func<T, Boolean> predicate)

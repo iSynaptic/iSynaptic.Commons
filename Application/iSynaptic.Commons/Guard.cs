@@ -28,7 +28,7 @@ namespace iSynaptic.Commons
 {
     public static class Guard
     {
-        public static T NotNull<T>([ValidatedNotNull] T value, string name, string message = null)
+        public static T NotNull<T>([ValidatedNotNull, JetBrains.Annotations.NoEnumeration] T value, string name, string message = null)
         {
             if (null == value)
                 throw new ArgumentNullException(name, message);

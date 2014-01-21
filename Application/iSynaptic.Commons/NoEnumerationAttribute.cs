@@ -1,4 +1,4 @@
-// The MIT License
+﻿// The MIT License
 // 
 // Copyright (c) 2012 Jordan E. Terrell
 // 
@@ -21,47 +21,11 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace iSynaptic.Commons.Collections.Generic
+namespace JetBrains.Annotations
 {
-    public static class Batch
+    [AttributeUsage(AttributeTargets.Parameter)]
+    internal sealed class NoEnumerationAttribute : Attribute
     {
-        public static Batch<T> Create<T>(IEnumerable<T> batch, int index)
-        {
-            return new Batch<T>(batch, index);
-        }
-    }
-
-    public class Batch<T> : IEnumerable<T>
-    {
-        private readonly T[] _batch;
-
-        public Batch(IEnumerable<T> batch, int index)
-        {
-            _batch = Guard.NotNull(batch, "batch")
-                .ToArray();
-
-            if(index < 0) throw new ArgumentOutOfRangeException("index", "Index must be not be negative.");
-
-            Index = index;
-            Count = _batch.Length;
-        }
-
-        public int Index { get; private set; }
-        public int Count { get; private set; }
-
-        public IEnumerator<T> GetEnumerator()
-        {
-            return ((IEnumerable<T>)_batch).GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
     }
 }
