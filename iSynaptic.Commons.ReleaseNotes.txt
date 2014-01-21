@@ -2,6 +2,20 @@
 RELEASE NOTES: iSynaptic.Commons
 ======================================
 
+==== v0.4.26 (January 21, 2014) ====
+
+---- Features ----
+
+* Added Batch overloads to support batching by predicate
+
+* Removed RecurseSelect - same behavior can be achomplished by
+  calling Recurse(...) followed by Select(...)
+  
+* Enhanced Guard.NotNull to assist Resharper static analysis - 
+  Resharper should now know that NotNull does not enumerate the
+  guarded argument.
+
+
 ==== v0.4.25 (January 2, 2014) ====
 
 ---- Features ----
