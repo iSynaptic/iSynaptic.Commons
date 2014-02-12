@@ -544,14 +544,35 @@ namespace iSynaptic.Commons.Linq
 
         private static IEnumerable<TResult> RecurseCore<T, TResult>(this IEnumerable<T> @this, Func<T, IEnumerable<T>> recurseSelector, Func<T, TResult> resultSelector, Func<T, Boolean> predicate)
         {
-            foreach (var item in @this)
+            var stack = new Stack<IEnumerator<T>>();
+            stack.Push(@this.GetEnumerator());
+
+            while (true)
             {
+                if (stack.Count == 0)
+                    yield break;
+
+                var top = stack.Peek();
+                if (!top.MoveNext())
+                {
+                    stack.Pop();
+                    continue;
+                }
+
+                var item = top.Current;
+
                 if (item == null || (predicate != null && !predicate(item)))
                     continue;
 
                 yield return resultSelector(item);
-                foreach (var child in RecurseCore(recurseSelector(item), recurseSelector, resultSelector, predicate))
-                    yield return child;
+
+                var children = recurseSelector(item);
+                if (children != null)
+                {
+                    var enumerator = children.GetEnumerator();
+                    if(enumerator != null)
+                        stack.Push(enumerator);
+                }
             }
         }
 

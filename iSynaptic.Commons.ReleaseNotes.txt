@@ -2,6 +2,15 @@
 RELEASE NOTES: iSynaptic.Commons
 ======================================
 
+==== v0.4.27 (February 12, 2014) ====
+
+---- Features ----
+
+* Recurse extension method is no-longer recursive internally.
+  It now uses iteration. This allows the Recurse function to
+  recurse through data structures without stack overflow issues.
+
+
 ==== v0.4.26 (January 21, 2014) ====
 
 ---- Features ----
