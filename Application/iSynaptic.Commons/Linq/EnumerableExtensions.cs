@@ -502,6 +502,20 @@ namespace iSynaptic.Commons.Linq
             return RecurseCore(new[] { @this }, selector, x => x, predicate);
         }
 
+        public static IEnumerable<T> Recurse<T>(this Maybe<T> @this, Func<T, T> selector)
+        {
+            Guard.NotNull(selector, "selector");
+
+            return RecurseCore(@this.ToEnumerable(), x => new[]{ selector(x) }, x => x, null);
+        }
+
+        public static IEnumerable<T> RecurseWhile<T>(this Maybe<T> @this, Func<T, T> selector, Func<T, Boolean> predicate)
+        {
+            Guard.NotNull(selector, "selector");
+            Guard.NotNull(predicate, "predicate");
+
+            return RecurseCore(@this.ToEnumerable(), x => new[]{ selector(x) }, x => x, predicate);
+        }
 
         public static IEnumerable<T> Recurse<T>(this Maybe<T> @this, Func<T, Maybe<T>> selector)
         {
@@ -523,6 +537,48 @@ namespace iSynaptic.Commons.Linq
             Guard.NotNull(selector, "selector");
 
             return RecurseCore(@this.ToEnumerable(), selector, x => x, null);
+        }
+
+        public static IEnumerable<T> RecurseWhile<T>(this Maybe<T> @this, Func<T, IEnumerable<T>> selector, Func<T, Boolean> predicate)
+        {
+            Guard.NotNull(selector, "selector");
+            Guard.NotNull(predicate, "predicate");
+
+            return RecurseCore(@this.ToEnumerable(), selector, x => x, predicate);
+        }
+
+        public static IEnumerable<T> Recurse<T>(this IEnumerable<T> @this, Func<T, T> selector)
+        {
+            Guard.NotNull(@this, "this");
+            Guard.NotNull(selector, "selector");
+
+            return RecurseCore(@this, x => new[]{ selector(x) }, x => x, null);
+        }
+
+        public static IEnumerable<T> RecurseWhile<T>(this IEnumerable<T> @this, Func<T, T> selector, Func<T, Boolean> predicate)
+        {
+            Guard.NotNull(@this, "this");
+            Guard.NotNull(selector, "selector");
+            Guard.NotNull(predicate, "predicate");
+
+            return RecurseCore(@this, x => new[]{ selector(x) }, x => x, predicate);
+        }
+
+        public static IEnumerable<T> Recurse<T>(this IEnumerable<T> @this, Func<T, Maybe<T>> selector)
+        {
+            Guard.NotNull(@this, "this");
+            Guard.NotNull(selector, "selector");
+
+            return RecurseCore(@this, x => selector(x).ToEnumerable(), x => x, null);
+        }
+
+        public static IEnumerable<T> RecurseWhile<T>(this IEnumerable<T> @this, Func<T, Maybe<T>> selector, Func<T, Boolean> predicate)
+        {
+            Guard.NotNull(@this, "this");
+            Guard.NotNull(selector, "selector");
+            Guard.NotNull(predicate, "predicate");
+
+            return RecurseCore(@this, x => selector(x).ToEnumerable(), x => x, predicate);
         }
 
         public static IEnumerable<T> Recurse<T>(this IEnumerable<T> @this, Func<T, IEnumerable<T>> selector)

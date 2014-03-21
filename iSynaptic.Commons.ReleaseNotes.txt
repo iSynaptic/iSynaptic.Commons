@@ -2,6 +2,13 @@
 RELEASE NOTES: iSynaptic.Commons
 ======================================
 
+==== v0.4.28 (March 21, 2014) ====
+
+---- Features ----
+
+* Added additional Recurse overloads...
+
+
 ==== v0.4.27 (February 12, 2014) ====
 
 ---- Features ----
