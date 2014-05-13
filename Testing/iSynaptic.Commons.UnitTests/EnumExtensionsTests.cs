@@ -52,11 +52,11 @@ namespace iSynaptic.Commons
         {
             FlagsEnum f = FlagsEnum.Flag3 | FlagsEnum.Flag5;
 
-            Assert.IsFalse(f.ContainsAny(FlagsEnum.Flag1));
-            Assert.IsFalse(f.ContainsAny(FlagsEnum.Flag2));
-            Assert.IsTrue(f.ContainsAny(FlagsEnum.Flag3));
-            Assert.IsFalse(f.ContainsAny(FlagsEnum.Flag4));
-            Assert.IsTrue(f.ContainsAny(FlagsEnum.Flag5));
+            Assert.IsFalse(f.ContainsAny(FlagsEnum.Flag1, FlagsEnum.Flag2));
+            Assert.IsFalse(f.ContainsAny(FlagsEnum.Flag2, FlagsEnum.Flag4));
+            Assert.IsTrue(f.ContainsAny(FlagsEnum.Flag3, FlagsEnum.Flag4));
+            Assert.IsFalse(f.ContainsAny(FlagsEnum.Flag2, FlagsEnum.Flag4));
+            Assert.IsTrue(f.ContainsAny(FlagsEnum.Flag1, FlagsEnum.Flag5));
 
             Assert.IsFalse(f.ContainsAny(FlagsEnum.Flag1, FlagsEnum.Flag2, FlagsEnum.Flag4));
             Assert.IsTrue(f.ContainsAny(FlagsEnum.Flag1, FlagsEnum.Flag3, FlagsEnum.Flag4));
