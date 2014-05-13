@@ -240,7 +240,7 @@ namespace iSynaptic.Commons
         [Test]
         public void Return_ReturnsValueWrapedInMaybe()
         {
-            AssertMaybe.Behavior(42, x => Maybe.Return(x), AssertMaybeResult.SameValue);
+            AssertMaybe.Behavior(42, (Expression<Func<int, IMaybe>>)(x => Maybe.Return(x)), AssertMaybeResult.SameValue);
         }
 
         [Test]

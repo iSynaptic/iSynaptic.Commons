@@ -74,7 +74,7 @@ namespace iSynaptic.Commons
                 .SelectMany(GetFlagsCore<T>)
                 .Distinct()
                 .Select(f => Convert.ToUInt64(f))
-                .Any(f => (thisValue & f) == f && thisValue != 0);
+                .Any(f => (thisValue & f) != 0 && thisValue != 0);
         }
 
         public static bool ContainsAll<T>(this Enum @this, params T[] flags)
