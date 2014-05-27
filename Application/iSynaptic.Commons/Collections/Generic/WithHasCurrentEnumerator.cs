@@ -1,6 +1,6 @@
 ﻿// The MIT License
 // 
-// Copyright (c) 2012-2014 Jordan E. Terrell
+// Copyright (c) 2012 Jordan E. Terrell
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -21,20 +21,28 @@
 // THE SOFTWARE.
 
 using System;
-using System.Reflection;
-using System.Runtime.InteropServices;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-[assembly: AssemblyCompany("iSynaptic")]
-[assembly: AssemblyTrademark("iSynaptic")]
-[assembly: AssemblyProduct("iSynaptic.Commons")]
-[assembly: AssemblyCopyright("Copyright © Jordan Terrell 2012-2014")]
+namespace iSynaptic.Commons.Collections.Generic
+{
+    internal class WithHasCurrentEnumerator<T> : WithHasCurrentEnumerator, IWithHasCurrentEnumerator<T>
+    {
+        private readonly IEnumerator<T> _underlying;
 
-[assembly: ComVisible(false)]
-[assembly: CLSCompliant(true)]
+        public WithHasCurrentEnumerator(IEnumerator<T> underlying) : base(underlying)
+        {
+            _underlying = Guard.NotNull(underlying, "underlying");
+        }
 
-[assembly: AssemblyVersion("0.4.29.0")]
-[assembly: AssemblyFileVersion("0.4.29.0")]
-[assembly: AssemblyInformationalVersion("0.4.29.0")]
+        public void Dispose()
+        {
+            _underlying.Dispose();
+        }
+
+        public new T Current { get { return _underlying.Current; } }
+    }
+}

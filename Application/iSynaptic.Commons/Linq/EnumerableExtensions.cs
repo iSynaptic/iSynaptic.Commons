@@ -21,10 +21,12 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
 using System.Linq;
+using iSynaptic.Commons.Collections;
 using iSynaptic.Commons.Collections.Generic;
 
 namespace iSynaptic.Commons.Linq
@@ -1007,6 +1009,18 @@ namespace iSynaptic.Commons.Linq
                            ? new Maybe<T>(lastItem)
                            : Maybe<T>.NoValue;
             });
+        }
+
+        public static IWithHasCurrentEnumerator<T> WithHasCurrent<T>(this IEnumerator<T> @this)
+        {
+            Guard.NotNull(@this, "this");
+            return new WithHasCurrentEnumerator<T>(@this);
+        }
+
+        public static IWithHasCurrentEnumerator WithHasCurrent(this IEnumerator @this)
+        {
+            Guard.NotNull(@this, "this");
+            return new WithHasCurrentEnumerator(@this);
         }
     }
 }

@@ -87,6 +87,7 @@
     <Compile Include="Collections\Generic\IReadableSymbolDictionary.cs" />
     <Compile Include="Collections\Generic\ISymbolDictionary.cs" />
     <Compile Include="Collections\Generic\IWeakDictionary.cs" />
+    <Compile Include="Collections\Generic\IWithHasCurrentEnumerator.cs" />
     <Compile Include="Collections\Generic\KeyValuePair.cs" />
     <Compile Include="Collections\Generic\LazyDictionary.cs" />
     <Compile Include="Collections\Generic\LazySelectionDictionary.cs" />
@@ -100,6 +101,9 @@
     <Compile Include="Collections\Generic\WeakKeyDictionary.cs" />
     <Compile Include="Collections\Generic\WeakKeyMemberDictionary.cs" />
     <Compile Include="Collections\Generic\WeakValueDictionary.cs" />
+    <Compile Include="Collections\Generic\WithHasCurrentEnumerator.cs" />
+    <Compile Include="Collections\IWithHasCurrentEnumerator.cs" />
+    <Compile Include="Collections\WithHasCurrentEnumerator.cs" />
     <Compile Include="CompositeDisposable.cs" />
     <Compile Include="Convert.cs" />
     <Compile Include="DataEventArgs.cs" />

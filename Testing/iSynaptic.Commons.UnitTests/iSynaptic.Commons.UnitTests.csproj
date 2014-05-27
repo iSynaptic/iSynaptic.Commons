@@ -93,6 +93,7 @@
     <Compile Include="Collections\Generic\SymbolDictionaryTests.cs" />
     <Compile Include="Collections\Generic\WeakDictionaryTestsBase.cs" />
     <Compile Include="Collections\Generic\WeakKeyMemberDictionaryTests.cs" />
+    <Compile Include="Collections\Generic\WithHasCurrentEnumeratorTests.cs" />
     <Compile Include="Data\AttributeExodataBindingSourceTests.cs" />
     <Compile Include="Data\CommonExodata.cs" />
     <Compile Include="Data\DescriptionAttribute.cs" />

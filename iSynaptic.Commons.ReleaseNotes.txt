@@ -2,6 +2,13 @@
 RELEASE NOTES: iSynaptic.Commons
 ======================================
 
+==== v0.4.29 (May 27, 2014) ====
+
+---- Features ----
+
+* Added WithHasCurrent extension method...
+
+
 ==== v0.4.28 (March 21, 2014) ====
 
 ---- Features ----
