@@ -1,6 +1,6 @@
 ﻿// The MIT License
 // 
-// Copyright (c) 2012-2014 Jordan E. Terrell
+// Copyright (c) 2012-2015 Jordan E. Terrell
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -30,7 +30,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCompany("iSynaptic")]
 [assembly: AssemblyTrademark("iSynaptic")]
 [assembly: AssemblyProduct("iSynaptic.Commons")]
-[assembly: AssemblyCopyright("Copyright © Jordan Terrell 2012-2015")]
+[assembly: AssemblyCopyright("Copyright © Jordan E. Terrell 2012-2015")]
 
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(true)]
