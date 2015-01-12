@@ -345,6 +345,10 @@ namespace iSynaptic.Commons.Linq
             Assert.AreEqual(1, batches[1].Index);
             Assert.AreEqual(2, batches[2].Index);
 
+            Assert.AreEqual(0, batches[0].ItemIndex);
+            Assert.AreEqual(3, batches[1].ItemIndex);
+            Assert.AreEqual(6, batches[2].ItemIndex);
+
             Assert.AreEqual(3, batches[0].Count);
             Assert.AreEqual(3, batches[1].Count);
             Assert.AreEqual(3, batches[2].Count);
@@ -365,6 +369,11 @@ namespace iSynaptic.Commons.Linq
             Assert.AreEqual(1, batches[1].Index);
             Assert.AreEqual(2, batches[2].Index);
             Assert.AreEqual(3, batches[3].Index);
+
+            Assert.AreEqual(0, batches[0].ItemIndex);
+            Assert.AreEqual(3, batches[1].ItemIndex);
+            Assert.AreEqual(6, batches[2].ItemIndex);
+            Assert.AreEqual(9, batches[3].ItemIndex);
 
             Assert.AreEqual(3, batches[0].Count);
             Assert.AreEqual(3, batches[1].Count);

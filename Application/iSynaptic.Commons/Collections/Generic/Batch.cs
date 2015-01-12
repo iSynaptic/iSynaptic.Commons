@@ -30,9 +30,9 @@ namespace iSynaptic.Commons.Collections.Generic
 {
     public static class Batch
     {
-        public static Batch<T> Create<T>(IEnumerable<T> batch, int index)
+        public static Batch<T> Create<T>(IEnumerable<T> batch, int index, int itemIndex)
         {
-            return new Batch<T>(batch, index);
+            return new Batch<T>(batch, index, itemIndex);
         }
     }
 
@@ -40,18 +40,21 @@ namespace iSynaptic.Commons.Collections.Generic
     {
         private readonly T[] _batch;
 
-        public Batch(IEnumerable<T> batch, int index)
+        public Batch(IEnumerable<T> batch, int index, int itemIndex)
         {
             _batch = Guard.NotNull(batch, "batch")
                 .ToArray();
 
             if(index < 0) throw new ArgumentOutOfRangeException("index", "Index must be not be negative.");
+            if(itemIndex < 0) throw new ArgumentOutOfRangeException("itemIndex", "Item index must not be negative.");
 
-            Index = index;
             Count = _batch.Length;
+            Index = index;
+            ItemIndex = itemIndex;
         }
 
         public int Index { get; private set; }
+        public int ItemIndex { get; private set; }
         public int Count { get; private set; }
 
         public IEnumerator<T> GetEnumerator()

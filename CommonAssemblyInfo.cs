@@ -30,11 +30,11 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCompany("iSynaptic")]
 [assembly: AssemblyTrademark("iSynaptic")]
 [assembly: AssemblyProduct("iSynaptic.Commons")]
-[assembly: AssemblyCopyright("Copyright © Jordan Terrell 2012-2014")]
+[assembly: AssemblyCopyright("Copyright © Jordan Terrell 2012-2015")]
 
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(true)]
 
-[assembly: AssemblyVersion("0.4.29.0")]
-[assembly: AssemblyFileVersion("0.4.29.0")]
-[assembly: AssemblyInformationalVersion("0.4.29.0")]
+[assembly: AssemblyVersion("0.4.30.0")]
+[assembly: AssemblyFileVersion("0.4.30.0")]
+[assembly: AssemblyInformationalVersion("0.4.30.0")]

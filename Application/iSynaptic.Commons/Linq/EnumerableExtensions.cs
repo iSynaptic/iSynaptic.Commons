@@ -287,6 +287,9 @@ namespace iSynaptic.Commons.Linq
             using (var enumerator = @this.GetEnumerator())
             {
                 int index = -1;
+
+                int itemIndex = 0;
+
                 int batchIndex = 0;
                 var buffer = new List<T>();
 
@@ -296,8 +299,10 @@ namespace iSynaptic.Commons.Linq
 
                     if (!predicate(enumerator.Current, index, new BatchInfo(batchIndex, buffer.Count)) && buffer.Count > 0)
                     {
-                        yield return new Batch<TResult>(buffer.Select(selector).ToArray(), batchIndex);
+                        yield return new Batch<TResult>(buffer.Select(selector).ToArray(), batchIndex, itemIndex);
                         batchIndex++;
+                        itemIndex = index;
+
                         buffer.Clear();
                     }
 
@@ -305,7 +310,7 @@ namespace iSynaptic.Commons.Linq
                 }
 
                 if (buffer.Count != 0)
-                    yield return new Batch<TResult>(buffer.Select(selector).ToArray(), batchIndex);
+                    yield return new Batch<TResult>(buffer.Select(selector).ToArray(), batchIndex, itemIndex);
             }
         }
 
