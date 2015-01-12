@@ -6,7 +6,7 @@
 bin/
 obj/
 Build/
-_ReSharper.*/
+_ReSharper*
 *.dotCover
 TestResult.xml
 TestResults.xml
