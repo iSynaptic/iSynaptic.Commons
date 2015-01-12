@@ -2,6 +2,13 @@
 RELEASE NOTES: iSynaptic.Commons
 ======================================
 
+==== v0.4.31 (January 12, 2015) ====
+
+---- Features ----
+
+* Batch class now includes an indexer to retreive items...
+
+
 ==== v0.4.30 (January 12, 2015) ====
 
 ---- Features ----

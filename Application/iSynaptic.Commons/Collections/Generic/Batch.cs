@@ -57,6 +57,11 @@ namespace iSynaptic.Commons.Collections.Generic
         public int ItemIndex { get; private set; }
         public int Count { get; private set; }
 
+        public T this[int index]
+        {
+            get { return _batch[index]; }
+        }
+
         public IEnumerator<T> GetEnumerator()
         {
             return ((IEnumerable<T>)_batch).GetEnumerator();

@@ -335,6 +335,18 @@ namespace iSynaptic.Commons.Linq
         }
 
         [Test]
+        public void Batch_Indexer_ReturnsCorrectValues()
+        {
+            var batches = Enumerable.Range(0, 5).Batch(3).ToArray();
+
+            Assert.AreEqual(0, batches[0][0]);
+            Assert.AreEqual(1, batches[0][1]);
+            Assert.AreEqual(2, batches[0][2]);
+            Assert.AreEqual(3, batches[1][0]);
+            Assert.AreEqual(4, batches[1][1]);
+        }
+
+        [Test]
         public void Batch_WithBalancedBatches_ReturnsAllItems()
         {
             var batches = Enumerable.Range(0, 9).Batch(3).ToArray();
