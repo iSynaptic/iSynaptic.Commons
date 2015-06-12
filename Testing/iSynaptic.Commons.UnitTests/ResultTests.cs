@@ -502,6 +502,16 @@ namespace iSynaptic.Commons
             //value = Result.If(() => false, 7.ToResult(), 42.ToResult());
             //Assert.That(value == 42);
         }
+
+        [Test]
+        public void Result_WithUnitValueAndObservationType_ReturnsEmptyObservations()
+        {
+            Result<Unit, Unit> result = Result.Success();
+            Assert.IsTrue(result.Observations.SequenceEqual(new Unit[0]));
+
+            IResult r = result;
+            Assert.IsTrue(r.Observations.SequenceEqual(new Object[0]));
+        }
     }
 }
 

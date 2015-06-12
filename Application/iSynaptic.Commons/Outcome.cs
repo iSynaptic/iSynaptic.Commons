@@ -93,7 +93,7 @@ namespace iSynaptic.Commons
 
         IEnumerable<object> IOutcome.Observations
         {
-            get { return (IEnumerable<object>)Observations; }
+            get { return Observations.Cast<object>(); }
         }
 
         public bool WasSuccessful

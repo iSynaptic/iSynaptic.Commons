@@ -2,6 +2,14 @@
 RELEASE NOTES: iSynaptic.Commons
 ======================================
 
+==== v0.4.32 (June 12, 2015) ====
+
+---- Features ----
+
+* Fixed bug where cast exception was being thrown
+  from IOutcome.Observations and IResult.Observations
+
+
 ==== v0.4.31 (January 12, 2015) ====
 
 ---- Features ----

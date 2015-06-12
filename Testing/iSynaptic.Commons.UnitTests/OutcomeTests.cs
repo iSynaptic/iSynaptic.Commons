@@ -260,6 +260,16 @@ namespace iSynaptic.Commons
             Outcome<String> outcome = Outcome.Failure();
             Assert.IsFalse(outcome.WasSuccessful);
         }
+
+        [Test]
+        public void Outcome_WithUnitObservationType_ReturnsEmptyObservations()
+        {
+            Outcome<Unit> outcome = Outcome.Success();
+            Assert.IsTrue(outcome.Observations.SequenceEqual(new Unit[0]));
+
+            IOutcome o = outcome;
+            Assert.IsTrue(o.Observations.SequenceEqual(new Object[0]));
+        }
     }
 
     public class Observation
