@@ -202,7 +202,25 @@ namespace iSynaptic.Commons
         {
             return new Maybe<T>();
         }
+
+		public static bool operator true(Maybe<T> self)
+		{
+    		return self.HasValue;
+		}
+
+    	public static bool operator false(Maybe<T> self)
+    	{
+			throw new NotImplementedException("Only used for & operator, which isn't implemented");
+    	}
+
+		public static Maybe<T> operator |(Maybe<T> self, Maybe<T> other)
+		{
+			return self.HasValue ? self : other;
+		}
     }
+
+	public static class MaybeOperators
+	{}
 
     public static class Maybe
     {

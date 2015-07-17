@@ -1270,6 +1270,62 @@ namespace iSynaptic.Commons
             Assert.AreEqual(42, result.Value);
         }
 
+		[Test]
+		public void BoolOperators_NonNullMabesAreTrue()
+		{
+			Maybe<int> item = 7.ToMaybe();
+			if(item)
+				Assert.Pass();
+			else
+				Assert.Fail();
+		}
+
+		[Test]
+		public void BoolOperators_NullMabesAreFalse()
+		{
+			var item = Maybe<int>.NoValue;
+			if(item)
+				Assert.Fail();
+		}
+
+		[Test]
+		public void BoolOperators_InitializationFromDefaultTo7Is7()
+		{
+			var item = default(Maybe<int>);
+			item |= 7.ToMaybe();
+			Assert.That(item.Value, Is.EqualTo(7));
+		}
+
+		[Test]
+		public void BoolOperators_InitializationFromNoneTo7Is7()
+		{
+			Maybe<int> item = Maybe.NoValue;
+			item |= 7.ToMaybe();
+			Assert.That(item.Value, Is.EqualTo(7));
+		}
+
+		[Test]
+		public void BoolOperators_InitializationFrom7ToNoneIs7()
+		{
+			var item = 7.ToMaybe();
+			item |= Maybe<int>.NoValue;
+			Assert.That(item.Value, Is.EqualTo(7));
+		}
+
+		[Test]
+		public void BoolOperators_7OrNone_7()
+		{
+			Assert.That(7.ToMaybe() | Maybe.NoValue, Is.EqualTo(7.ToMaybe()));
+			Assert.That(7.ToMaybe() || Maybe.NoValue, Is.EqualTo(7.ToMaybe()));
+		}
+
+		[Test]
+		public void BoolOperators_NoneOr7_7()
+		{
+			Assert.That(Maybe.NoValue | 7.ToMaybe(), Is.EqualTo(7.ToMaybe()));
+			Assert.That(Maybe.NoValue || 7.ToMaybe(), Is.EqualTo(7.ToMaybe()));
+		}
+
         public class Base{}
         public class Derived : Base{}
     }
